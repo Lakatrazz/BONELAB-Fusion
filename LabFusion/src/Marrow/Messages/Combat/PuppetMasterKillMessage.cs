@@ -14,31 +14,33 @@ public class PuppetMasterKillMessage : ModuleMessageHandler
     {
         var data = received.ReadData<NetworkEntityReference>();
 
-        data.HookEntityRegistered((entity) =>
+        if (!data.TryGetEntity(out var entity))
         {
-            var extender = entity.GetExtender<PuppetMasterExtender>();
+            return;
+        }
 
-            if (extender == null)
-            {
-                return;
-            }
+        var extender = entity.GetExtender<PuppetMasterExtender>();
 
-            // Save the most recent killed NPC
-            PuppetMasterExtender.LastKilled = entity;
+        if (extender == null)
+        {
+            return;
+        }
 
-            // Kill the puppet
-            PuppetMasterPatches.IgnorePatches = true;
+        // Save the most recent killed NPC
+        PuppetMasterExtender.LastKilled = entity;
 
-            try
-            {
-                extender.Component.Kill();
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("executing PuppetMaster.Kill", e);
-            }
+        // Kill the puppet
+        PuppetMasterPatches.IgnorePatches = true;
 
-            PuppetMasterPatches.IgnorePatches = false;
-        });
+        try
+        {
+            extender.Component.Kill();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing PuppetMaster.Kill", e);
+        }
+
+        PuppetMasterPatches.IgnorePatches = false;
     }
 }

@@ -39,7 +39,7 @@ public class InventorySlotDropMessage : ModuleMessageHandler
     {
         var data = received.ReadData<InventorySlotDropData>();
 
-        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.SlotEntityID);
+        var slotEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SlotEntityID);
 
         if (slotEntity == null)
         {

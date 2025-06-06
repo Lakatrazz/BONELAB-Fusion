@@ -34,7 +34,7 @@ public class AnimationStateMessage : ModuleMessageHandler
 
         if (data.ComponentData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ComponentData.EntityId);
+            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ComponentData.EntityId);
 
             if (entity == null)
             {

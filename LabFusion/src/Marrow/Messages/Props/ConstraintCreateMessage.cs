@@ -115,7 +115,7 @@ public class ConstraintCreateMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstraintCreateData>();
 
-        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstrainerID.Value) : null;
+        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstrainerID.Value) : null;
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
@@ -140,8 +140,8 @@ public class ConstraintCreateMessage : ModuleMessageHandler
             if (hasConstrainer)
             {
                 // Recreate the message so we can assign server-side sync ids
-                data.Point1Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
-                data.Point2Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
+                data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
+                data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
 
                 MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToClients);
             }

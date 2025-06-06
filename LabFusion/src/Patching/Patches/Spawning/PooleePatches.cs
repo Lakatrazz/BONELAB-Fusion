@@ -35,7 +35,7 @@ public class PooleeOnDespawnPatch
         FusionLogger.Log($"Unregistered entity at ID {entity.ID} after OnDespawnEvent.");
 #endif
 
-        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        NetworkEntityManager.IDManager.UnregisterEntity(entity);
     }
 }
 
@@ -128,6 +128,6 @@ public class PooleeDespawnPatch
         }
 
         PooleeUtilities.SendDespawn(entity.ID, false);
-        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        NetworkEntityManager.IDManager.UnregisterEntity(entity);
     }
 }

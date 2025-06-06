@@ -91,7 +91,7 @@ public class NetworkConstraint : IEntityExtender
     {
         if (NetworkEntity != null && NetworkEntity.IsRegistered)
         {
-            NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+            NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
         }
 
         _destroySensor = null;

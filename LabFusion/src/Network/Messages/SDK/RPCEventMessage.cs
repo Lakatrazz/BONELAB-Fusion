@@ -84,7 +84,7 @@ public class RPCEventMessage : NativeMessageHandler
         // Entity object
         if (data.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.EntityId);
+            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityId);
 
             if (entity == null)
             {

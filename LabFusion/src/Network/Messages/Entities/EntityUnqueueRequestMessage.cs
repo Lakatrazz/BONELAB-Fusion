@@ -36,7 +36,7 @@ public class EntityUnqueueRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityUnqueueRequestData>();
 
-        var allocatedId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
+        var allocatedId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
 
         var response = EntityUnqueueResponseData.Create(data.queuedId, allocatedId);
 

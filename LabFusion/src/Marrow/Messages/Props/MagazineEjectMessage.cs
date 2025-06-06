@@ -37,7 +37,7 @@ public class MagazineEjectMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagazineEjectData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.GunID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.GunID);
 
         if (entity == null)
         {

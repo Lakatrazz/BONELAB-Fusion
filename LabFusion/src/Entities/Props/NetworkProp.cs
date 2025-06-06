@@ -233,7 +233,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.ID} after the GameObject was destroyed.");
 #endif
 
-            NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+            NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
         }
 
         _destroySensor = null;

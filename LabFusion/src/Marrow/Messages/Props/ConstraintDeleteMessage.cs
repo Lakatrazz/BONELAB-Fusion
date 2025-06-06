@@ -27,7 +27,7 @@ public class ConstraintDeleteMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstraintDeleteData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstraintID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstraintID);
 
         if (entity == null)
         {
@@ -58,6 +58,6 @@ public class ConstraintDeleteMessage : ModuleMessageHandler
         FusionLogger.Log($"Unregistered constraint at ID {entity.ID}.");
 #endif
 
-        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        NetworkEntityManager.IDManager.UnregisterEntity(entity);
     }
 }

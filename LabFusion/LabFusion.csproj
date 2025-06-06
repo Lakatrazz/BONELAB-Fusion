@@ -297,6 +297,7 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCFloat.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCInt.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCVariable.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\VoiceProxy.cs" />
   </ItemGroup>
 
   <ItemGroup>

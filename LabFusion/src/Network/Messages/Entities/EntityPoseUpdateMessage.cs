@@ -20,7 +20,7 @@ public class EntityPoseUpdateData : INetSerializable
 
     public NetworkEntity GetEntity()
     {
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(entityId);
         return entity;
     }
 

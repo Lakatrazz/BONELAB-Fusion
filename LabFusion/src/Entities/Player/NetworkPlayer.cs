@@ -445,7 +445,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Unregister the entity
-        NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+        NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
     }
 
     private void OnPlayerRegistered(NetworkEntity entity)

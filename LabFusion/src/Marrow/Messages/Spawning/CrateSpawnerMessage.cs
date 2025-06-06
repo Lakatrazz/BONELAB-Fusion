@@ -16,12 +16,12 @@ public class CrateSpawnerData : INetSerializable
 
     public int? GetSize() => Size;
 
-    public ushort SpawnedId;
+    public ushort SpawnedID;
     public ComponentHashData HashData;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SpawnedId);
+        serializer.SerializeValue(ref SpawnedID);
         serializer.SerializeValue(ref HashData);
     }
 
@@ -29,7 +29,7 @@ public class CrateSpawnerData : INetSerializable
     {
         return new CrateSpawnerData()
         {
-            SpawnedId = spawnedId,
+            SpawnedID = spawnedId,
             HashData = hashData,
         };
     }
@@ -49,24 +49,26 @@ public class CrateSpawnerMessage : ModuleMessageHandler
             return;
         }
 
-        NetworkEntityManager.HookEntityRegistered(data.SpawnedId, OnSpawnedRegistered);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SpawnedID);
 
-        void OnSpawnedRegistered(NetworkEntity entity)
+        if (entity == null)
         {
-            var pooleeExtender = entity.GetExtender<PooleeExtender>();
-
-            if (pooleeExtender == null)
-            {
-                return;
-            }
-
-            crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
-
-            entity.OnEntityDataCatchup += (entity, player) =>
-            {
-                SendCrateSpawnerMessage(crateSpawner, entity.ID, player);
-            };
+            return;
         }
+
+        var pooleeExtender = entity.GetExtender<PooleeExtender>();
+
+        if (pooleeExtender == null)
+        {
+            return;
+        }
+
+        crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
+
+        entity.OnEntityDataCatchup += (entity, player) =>
+        {
+            SendCrateSpawnerMessage(crateSpawner, entity.ID, player);
+        };
     }
 
     public static void SendCrateSpawnerMessage(CrateSpawner crateSpawner, ushort entityID, PlayerID target = null)

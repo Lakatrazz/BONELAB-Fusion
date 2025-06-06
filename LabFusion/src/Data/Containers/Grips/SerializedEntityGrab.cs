@@ -38,7 +38,7 @@ public class SerializedEntityGrab : SerializedGrab
     {
         entity = null;
 
-        var foundEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(id);
+        var foundEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(id);
 
         if (foundEntity != null)
         {

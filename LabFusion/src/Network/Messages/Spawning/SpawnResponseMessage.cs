@@ -158,7 +158,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         {
             FusionLogger.Warn($"Unregistered entity {conflictingEntity.ID} on poolee {poolee.name} due to conflicting id.");
 
-            NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
+            NetworkEntityManager.IDManager.UnregisterEntity(conflictingEntity);
         }
 
         NetworkEntity newEntity = null;
@@ -179,7 +179,7 @@ public class SpawnResponseMessage : NativeMessageHandler
             NetworkProp newProp = new(newEntity, marrowEntity);
 
             // Register this entity
-            NetworkEntityManager.IdManager.RegisterEntity(entityId, newEntity);
+            NetworkEntityManager.IDManager.RegisterEntity(entityId, newEntity);
 
             // Insert the catchup hook for future users
             newEntity.OnEntityCreationCatchup += (entity, player) =>

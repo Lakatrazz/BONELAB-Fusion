@@ -100,7 +100,7 @@ public static class PropSender
             newEntity = new();
             newProp = new(newEntity, info.marrowEntity);
 
-            ushort queuedId = NetworkEntityManager.IdManager.QueueEntity(newEntity);
+            ushort queuedId = NetworkEntityManager.IDManager.QueueEntity(newEntity);
             NetworkEntityManager.RequestUnqueue(queuedId);
 
             newEntity.HookOnRegistered((entity) =>

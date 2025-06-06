@@ -2,7 +2,7 @@
 
 namespace LabFusion.Entities;
 
-public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
+public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 {
     private readonly EntityIDList<TEntity> _registeredEntities = new();
 

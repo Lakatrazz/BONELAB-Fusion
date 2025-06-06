@@ -32,7 +32,7 @@ public struct NetworkEntityReference : INetSerializable
 
     public readonly NetworkEntity GetEntity()
     {
-        return NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(ID);
+        return NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(ID);
     }
 
     public NetworkEntityReference() : this(0) { }

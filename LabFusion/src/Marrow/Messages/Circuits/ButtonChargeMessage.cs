@@ -40,7 +40,7 @@ public class ButtonChargeMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ButtonChargeData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {

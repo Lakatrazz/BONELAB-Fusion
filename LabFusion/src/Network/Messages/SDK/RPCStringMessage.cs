@@ -123,7 +123,7 @@ public class RPCStringMessage : NativeMessageHandler
         // Entity object
         if (data.pathData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
+            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
 
             if (entity == null)
             {

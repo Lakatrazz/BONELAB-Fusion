@@ -38,7 +38,7 @@ public class EntityZoneRegisterMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityZoneRegisterData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {

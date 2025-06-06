@@ -47,7 +47,7 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
         }
 
         // Get network player
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerId);
 
         if (entity == null)
         {
