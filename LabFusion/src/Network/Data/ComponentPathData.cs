@@ -28,23 +28,12 @@ public class ComponentPathData : INetSerializable
         serializer.SerializeValue(ref HashData);
     }
 
-    public static ComponentPathData Create(bool hasEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)
-    {
-        return new ComponentPathData()
-        {
-            HasEntity = hasEntity,
-            EntityID = entityId,
-            ComponentIndex = componentIndex,
-            HashData = hashData,
-        };
-    }
-
     public static ComponentPathData CreateFromComponent<TComponent, TExtender>(TComponent component, ComponentHashTable<TComponent> hashTable, FusionComponentCache<TComponent, NetworkEntity> cache) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
     {
         var hashData = hashTable.GetDataFromComponent(component);
 
         var hasNetworkEntity = false;
-        ushort entityId = 0;
+        ushort entityID = 0;
         ushort componentIndex = 0;
 
         if (cache.TryGet(component, out var entity))
@@ -52,11 +41,17 @@ public class ComponentPathData : INetSerializable
             hasNetworkEntity = true;
             var extender = entity.GetExtender<TExtender>();
 
-            entityId = entity.ID;
+            entityID = entity.ID;
             componentIndex = extender.GetIndex(component).Value;
         }
 
-        return Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        return new ComponentPathData()
+        {
+            HasEntity = hasNetworkEntity,
+            EntityID = entityID,
+            ComponentIndex = componentIndex,
+            HashData = hashData,
+        };
     }
 
     public bool TryGetComponent<TComponent, TExtender>(ComponentHashTable<TComponent> hashTable, out TComponent component) where TComponent : Component where TExtender : EntityComponentArrayExtender<TComponent>
