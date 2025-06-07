@@ -29,7 +29,7 @@ public class NimbusGunNoClipMessage : ModuleMessageHandler
     {
         var data = received.ReadData<NimbusGunNoClipData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.NimbusGunID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.NimbusGunID);
 
         if (entity == null)
         {

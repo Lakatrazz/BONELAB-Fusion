@@ -16,28 +16,26 @@ public class MarrowModule : Module
 
     protected override void OnModuleRegistered()
     {
-        ModuleMessageHandler.RegisterHandler<ButtonChargeMessage>();
-        ModuleMessageHandler.RegisterHandler<EventActuatorMessage>();
+        ModuleMessageManager.RegisterHandler<ButtonChargeMessage>();
+        ModuleMessageManager.RegisterHandler<EventActuatorMessage>();
 
-        ModuleMessageHandler.RegisterHandler<GunShotMessage>();
-        ModuleMessageHandler.RegisterHandler<PuppetMasterKillMessage>();
+        ModuleMessageManager.RegisterHandler<GunShotMessage>();
+        ModuleMessageManager.RegisterHandler<PuppetMasterKillMessage>();
 
-        ModuleMessageHandler.RegisterHandler<InventoryAmmoReceiverDropMessage>();
-        ModuleMessageHandler.RegisterHandler<InventorySlotDropMessage>();
-        ModuleMessageHandler.RegisterHandler<InventorySlotInsertMessage>();
+        ModuleMessageManager.RegisterHandler<InventoryAmmoReceiverDropMessage>();
+        ModuleMessageManager.RegisterHandler<InventorySlotDropMessage>();
+        ModuleMessageManager.RegisterHandler<InventorySlotInsertMessage>();
 
-        ModuleMessageHandler.RegisterHandler<ConstrainerModeMessage>();
-        ModuleMessageHandler.RegisterHandler<ConstraintCreateMessage>();
-        ModuleMessageHandler.RegisterHandler<ConstraintDeleteMessage>();
-        ModuleMessageHandler.RegisterHandler<MagazineClaimMessage>();
-        ModuleMessageHandler.RegisterHandler<MagazineEjectMessage>();
-        ModuleMessageHandler.RegisterHandler<MagazineInsertMessage>();
-        ModuleMessageHandler.RegisterHandler<NimbusGunNoClipMessage>();
-        ModuleMessageHandler.RegisterHandler<ObjectDestructibleDestroyMessage>();
+        ModuleMessageManager.RegisterHandler<ConstrainerModeMessage>();
+        ModuleMessageManager.RegisterHandler<ConstraintCreateMessage>();
+        ModuleMessageManager.RegisterHandler<ConstraintDeleteMessage>();
+        ModuleMessageManager.RegisterHandler<MagazineClaimMessage>();
+        ModuleMessageManager.RegisterHandler<MagazineEjectMessage>();
+        ModuleMessageManager.RegisterHandler<MagazineInsertMessage>();
+        ModuleMessageManager.RegisterHandler<NimbusGunNoClipMessage>();
+        ModuleMessageManager.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
-        ModuleMessageHandler.RegisterHandler<CrateSpawnerMessage>();
-
-        ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
+        ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
 

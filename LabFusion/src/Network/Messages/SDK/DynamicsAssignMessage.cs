@@ -8,8 +8,6 @@ namespace LabFusion.Network;
 
 public class DynamicsAssignData : INetSerializable
 {
-    public string[] ModuleHandlerNames;
-
     public Dictionary<string, Dictionary<string, string>> GamemodeMetadatas;
 
     public int? GetSize()
@@ -17,22 +15,11 @@ public class DynamicsAssignData : INetSerializable
         int size = 0;
 
         size += sizeof(int);
-        foreach (var name in ModuleHandlerNames)
-        {
-            size += name.GetSize();
-        }
-
-        size += sizeof(int);
         foreach (var metadata in GamemodeMetadatas)
         {
             size += metadata.Key.GetSize();
 
-            size += sizeof(int);
-            foreach (var pair in metadata.Value)
-            {
-                size += pair.Key.GetSize();
-                size += pair.Value.GetSize();
-            }
+            size += metadata.Value.GetSize();
         }
 
         return size;
@@ -40,8 +27,6 @@ public class DynamicsAssignData : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref ModuleHandlerNames);
-
         if (serializer.IsReader)
         {
             int length = 0;
@@ -80,7 +65,6 @@ public class DynamicsAssignData : INetSerializable
     {
         return new DynamicsAssignData()
         {
-            ModuleHandlerNames = ModuleMessageHandler.GetExistingTypeNames(),
             GamemodeMetadatas = GamemodeRegistration.GetExistingMetadata(),
         };
     }
@@ -95,9 +79,6 @@ public class DynamicsAssignMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<DynamicsAssignData>();
-
-        // Modules
-        ModuleMessageHandler.PopulateHandlerTable(data.ModuleHandlerNames);
 
         // Gamemodes
         GamemodeRegistration.PopulateGamemodeMetadatas(data.GamemodeMetadatas);

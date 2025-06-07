@@ -3,6 +3,7 @@
 using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;
 
@@ -18,6 +19,13 @@ public static class StabSlashPatches
         if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
+        }
+
+        // StabSlash freaks out when stabbing rigidbodies that don't have a MarrowBody
+        // For stability purposes, prevent this in fusion
+        if (c.rigidbody != null && MarrowBody.Cache.Get(c.rigidbody.gameObject) == null)
+        {
+            c.m_Body = null;
         }
 
         var host = __instance._host;

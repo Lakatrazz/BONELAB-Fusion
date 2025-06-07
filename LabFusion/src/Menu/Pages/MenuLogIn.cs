@@ -10,7 +10,7 @@ public static class MenuLogIn
 {
     public static FunctionElement ChangeLayerElement { get; private set; } = null;
 
-    private static int _lastLayerIndex = 0;
+    private static int _lastLayerIndex = -1;
 
     private static void OnLogInPageShown()
     {

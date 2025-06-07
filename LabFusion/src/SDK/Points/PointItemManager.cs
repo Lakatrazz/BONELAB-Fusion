@@ -180,13 +180,13 @@ public static class PointItemManager
 
         foreach (var item in LoadedItems)
         {
-            if (player.PlayerId.EquippedItems.Contains(item.Barcode))
+            if (player.PlayerID.EquippedItems.Contains(item.Barcode))
             {
                 item.OnUpdateObjects(new PointItemPayload()
                 {
                     type = PointItemPayloadType.PLAYER_REP,
                     rigManager = rigManager,
-                    playerId = player.PlayerId,
+                    playerId = player.PlayerID,
                 }, true);
             }
         }

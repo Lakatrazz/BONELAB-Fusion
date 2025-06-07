@@ -2,7 +2,6 @@
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
-using LabFusion.Data;
 using LabFusion.Extensions;
 
 using MelonLoader;

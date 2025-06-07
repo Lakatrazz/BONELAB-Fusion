@@ -40,21 +40,23 @@ public class FlashlightToggleMessage : ModuleMessageHandler
     {
         var data = received.ReadData<FlashlightToggleData>();
 
-        data.FlashlightEntity.HookEntityRegistered((entity) =>
+        if (!data.FlashlightEntity.TryGetEntity(out var entity))
         {
-            var extender = entity.GetExtender<PropFlashlightExtender>();
+            return;
+        }
 
-            if (extender == null)
-            {
-                return;
-            }
+        var extender = entity.GetExtender<PropFlashlightExtender>();
 
-            var flashlight = extender.Component;
-            flashlight.lightOn = !data.LightOn;
+        if (extender == null)
+        {
+            return;
+        }
 
-            PropFlashlightPatches.IgnorePatches = true;
+        var flashlight = extender.Component;
+        flashlight.lightOn = !data.LightOn;
 
-            flashlight.SwitchLight();
-        });
+        PropFlashlightPatches.IgnorePatches = true;
+
+        flashlight.SwitchLight();
     }
 }

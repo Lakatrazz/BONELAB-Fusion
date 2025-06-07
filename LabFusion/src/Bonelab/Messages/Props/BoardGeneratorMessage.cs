@@ -27,7 +27,7 @@ public class BoardPointData : INetSerializable
             return null;
         }
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(EntityID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(EntityID);
 
         if (entity == null)
         {
@@ -89,7 +89,7 @@ public class BoardGeneratorMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BoardGeneratorData>();
 
-        var board = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.BoardID);
+        var board = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.BoardID);
 
         if (board == null)
         {
@@ -119,7 +119,7 @@ public class BoardGeneratorMessage : ModuleMessageHandler
         marrowEntity.ResetMass();
 
         // Get the board generator
-        var boardGun = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.BoardGeneratorID);
+        var boardGun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.BoardGeneratorID);
 
         if (boardGun == null)
         {

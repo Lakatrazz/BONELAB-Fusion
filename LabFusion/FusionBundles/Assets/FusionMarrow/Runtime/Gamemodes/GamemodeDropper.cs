@@ -9,7 +9,7 @@ using Il2CppSLZ.Marrow.Data;
 using LabFusion.RPC;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Marrow.Messages;
+using LabFusion.SDK.Messages;
 #else
 using SLZ.Marrow.Utilities;
 

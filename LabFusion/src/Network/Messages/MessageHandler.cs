@@ -8,12 +8,12 @@ public abstract class MessageHandler
 
     public Net.NetAttribute[] NetAttributes { get; set; }
 
-    protected virtual void Internal_HandleMessage(ReceivedMessage received)
+    internal virtual void StartHandlingMessage(ReceivedMessage received)
     {
         // If there are no attributes, just handle the message
         if (NetAttributes.Length <= 0)
         {
-            Internal_FinishMessage(received);
+            FinishHandlingMessage(received);
             return;
         }
 
@@ -50,15 +50,15 @@ public abstract class MessageHandler
         // Hook the awaitable attribute so that we can handle the message when its ready
         if (awaitable != null)
         {
-            awaitable.HookComplete(() => { Internal_FinishMessage(received); });
+            awaitable.HookComplete(() => { FinishHandlingMessage(received); });
         }
         else
         {
-            Internal_FinishMessage(received);
+            FinishHandlingMessage(received);
         }
     }
 
-    protected virtual void Internal_FinishMessage(ReceivedMessage received)
+    internal virtual void FinishHandlingMessage(ReceivedMessage received)
     {
         try
         {
@@ -70,6 +70,8 @@ public abstract class MessageHandler
             FusionLogger.LogException("handling message", e);
         }
     }
+
+    internal bool ProcessPreRelayMessage(ReceivedMessage received) => OnPreRelayMessage(received);
 
     public abstract void Handle(ReceivedMessage received);
 

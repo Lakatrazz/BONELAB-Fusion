@@ -37,7 +37,7 @@ public class EntityUnqueueResponseMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityUnqueueResponseData>();
 
-        var (success, entity) = NetworkEntityManager.IdManager.UnqueueEntity(data.queuedId, data.allocatedId);
+        var (success, entity) = NetworkEntityManager.IDManager.UnqueueEntity(data.queuedId, data.allocatedId);
 
 #if DEBUG
         if (success)

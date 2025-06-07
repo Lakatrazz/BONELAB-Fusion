@@ -22,7 +22,7 @@ public static class NetworkPlayerManager
         // Reserve all player ids
         for (var i = PlayerIDManager.MinPlayerID; i <= PlayerIDManager.MaxPlayerID; i++)
         {
-            NetworkEntityManager.IdManager.RegisteredEntities.ReserveID((ushort)i);
+            NetworkEntityManager.IDManager.RegisteredEntities.ReserveID((ushort)i);
         }
     }
 
@@ -53,14 +53,14 @@ public static class NetworkPlayerManager
 
     public static bool HasPlayer(byte playerId)
     {
-        return NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(playerId);
+        return NetworkEntityManager.IDManager.RegisteredEntities.HasEntity(playerId);
     }
 
     public static bool TryGetPlayer(byte playerId, out NetworkPlayer player)
     {
         player = null;
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerId);
 
         if (entity == null)
         {
@@ -99,7 +99,7 @@ public static class NetworkPlayerManager
         NetworkEntity networkEntity = new();
         NetworkPlayer networkPlayer = new(networkEntity, playerId);
 
-        NetworkEntityManager.IdManager.RegisterEntity(playerId.SmallID, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity(playerId.SmallID, networkEntity);
 
         return networkPlayer;
     }

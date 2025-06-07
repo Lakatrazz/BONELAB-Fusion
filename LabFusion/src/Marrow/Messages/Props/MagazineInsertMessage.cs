@@ -31,7 +31,7 @@ public class MagazineInsertMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagazineInsertData>();
 
-        var mag = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.MagazineId);
+        var mag = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.MagazineId);
 
         if (mag == null)
         {
@@ -45,7 +45,7 @@ public class MagazineInsertMessage : ModuleMessageHandler
             return;
         }
 
-        var gun = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.GunId);
+        var gun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.GunId);
 
         if (gun == null)
         {

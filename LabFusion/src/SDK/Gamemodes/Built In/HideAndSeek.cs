@@ -88,6 +88,9 @@ public class HideAndSeek : Gamemode
     public float ElapsedSeconds => _elapsedTime;
     public int ElapsedMinutes => Mathf.FloorToInt(ElapsedSeconds / 60f);
 
+    public override bool DisableDevTools => true;
+    public override bool DisableSpawnGun => true;
+
     public override GroupElementData CreateSettingsGroup()
     {
         var group = base.CreateSettingsGroup();
@@ -473,6 +476,7 @@ public class HideAndSeek : Gamemode
         Playlist.StartPlaylist();
 
         LocalPlayer.OnGrab += OnLocalPlayerGrab;
+        LocalControls.DisableSlowMo = true;
 
         if (NetworkInfo.IsHost)
         {
@@ -499,6 +503,7 @@ public class HideAndSeek : Gamemode
         Playlist.StopPlaylist();
 
         LocalPlayer.OnGrab -= OnLocalPlayerGrab;
+        LocalControls.DisableSlowMo = false;
 
         if (NetworkInfo.IsHost)
         {
@@ -605,9 +610,9 @@ public class HideAndSeek : Gamemode
         }
 
         // Check if they're a hider, and if they are, tag them
-        if (HiderTeam.HasPlayer(player.PlayerId))
+        if (HiderTeam.HasPlayer(player.PlayerID))
         {
-            var longId = player.PlayerId.PlatformID;
+            var longId = player.PlayerID.PlatformID;
 
             _tagRewards.Add(longId);
 

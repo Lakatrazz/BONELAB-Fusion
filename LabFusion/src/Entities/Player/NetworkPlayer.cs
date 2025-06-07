@@ -33,7 +33,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private NetworkEntity _networkEntity = null;
 
-    private PlayerID _playerId = null;
+    private PlayerID _playerID = null;
 
     private string _username = "No Name";
 
@@ -42,7 +42,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private MarrowEntity _marrowEntity = null;
     public MarrowEntity MarrowEntity => _marrowEntity;
 
-    public PlayerID PlayerId => _playerId;
+    public PlayerID PlayerID => _playerID;
 
     public string Username => _username;
 
@@ -84,6 +84,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigLivesBar _livesBar = null;
     public RigLivesBar LivesBar => _livesBar;
 
+    private RigVoiceSource _voiceSource = null;
+    public RigVoiceSource VoiceSource => _voiceSource;
+
     private bool _isPhysicsRigDirty = false;
     private Queue<PhysicsRigStateData> _physicsRigStates = new();
 
@@ -95,18 +98,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
 
     private PDController _pelvisPDController = null;
-
-    // Voice chat integration
-    private float _minMicrophoneDistance = 1f;
-    private float _maxMicrophoneDistance = 30f;
-
-    private IVoiceSpeaker _speaker = null;
-    private AudioSource _voiceSource = null;
-    private bool _hasVoice = false;
-
-    private bool _spatialized = false;
-
-    private readonly JawFlapper _flapper = new();
 
     private bool _isCulled = false;
 
@@ -172,17 +163,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public float DistanceSqr { get; private set; }
 
-    /// <summary>
-    /// Whether or not the player's microphone logic is disabled.
-    /// </summary>
-    public bool MicrophoneDisabled { get; private set; }
-
-    public JawFlapper JawFlapper => _flapper;
+    private readonly JawFlapper _jawFlapper = new();
+    public JawFlapper JawFlapper => _jawFlapper;
 
     public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerId)
     {
         _networkEntity = networkEntity;
-        _playerId = playerId;
+        _playerID = playerId;
 
         _pelvisPDController = new();
 
@@ -250,7 +237,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.Loading.GetValue())
+        while (FusionSceneManager.IsDelayedLoading() || PlayerID.Metadata.Loading.GetValue())
         {
             if (FusionSceneManager.IsLoading())
             {
@@ -261,7 +248,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Make sure the rep still exists
-        if (PlayerId == null || !PlayerId.IsValid)
+        if (PlayerID == null || !PlayerID.IsValid)
         {
             yield break;
         }
@@ -286,7 +273,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarkDirty();
 
         // Rename the rig to match our ID
-        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallID})";
+        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerID.SmallID})";
 
         // Hook into the rig
         // Wait one frame so that the rig is properly initialized
@@ -345,12 +332,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void HookPlayer()
     {
         // Lock the entity's owner to the player id
-        NetworkEntity.SetOwner(PlayerId);
+        NetworkEntity.SetOwner(PlayerID);
         NetworkEntity.LockOwner();
 
         // Hook into the player's events
-        PlayerId.Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
-        PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
+        PlayerID.Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
+        PlayerID.OnDestroyedEvent += OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged += OnServerSettingsChanged;
@@ -367,8 +354,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.UnlockOwner();
 
         // Unhook from the player's events
-        PlayerId.Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
-        PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
+        PlayerID.Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
+        PlayerID.OnDestroyedEvent -= OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged -= OnServerSettingsChanged;
@@ -406,7 +393,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnMetadataChanged()
     {
         // Read display name
-        if (PlayerId.TryGetDisplayName(out var name))
+        if (PlayerID.TryGetDisplayName(out var name))
         {
             _username = name;
         }
@@ -443,75 +430,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             _nametag.UpdateText();
 
-            _headUI.UpdateScale(RigRefs.RigManager);
-        }
+            HeadUI.UpdateScale(RigRefs.RigManager);
 
-        UpdateVoiceSourceSettings();
-    }
-
-    public void InsertVoiceSource(IVoiceSpeaker speaker, AudioSource source)
-    {
-        _speaker = speaker;
-        _voiceSource = source;
-        _hasVoice = true;
-    }
-
-    private void OnUpdateVoiceSource(float deltaTime)
-    {
-        if (!_hasVoice)
-        {
-            return;
-        }
-
-        // Modify the source settings
-        var rm = RigRefs.RigManager;
-
-        if (HasRig)
-        {
-            var mouthSource = rm.physicsRig.headSfx.mouthSrc;
-            _voiceSource.transform.position = mouthSource.transform.position;
-
-            if (!_spatialized)
-            {
-                UpdateVoiceSourceSettings();
-                _spatialized = true;
-            }
-
-            MicrophoneDisabled = DistanceSqr > _maxMicrophoneDistance * _maxMicrophoneDistance * 1.2f;
-        }
-        else
-        {
-            _spatialized = false;
-
-            MicrophoneDisabled = true;
-        }
-
-        // Update the jaw movement
-        if (MicrophoneDisabled)
-        {
-            JawFlapper.ClearJaw();
-        }
-        else
-        {
-            JawFlapper.UpdateJaw(_speaker.GetVoiceAmplitude(), deltaTime);
-        }
-    }
-
-    private void UpdateVoiceSourceSettings()
-    {
-        if (_voiceSource == null)
-            return;
-
-        var rm = RigRefs.RigManager;
-
-        if (HasRig && rm._avatar)
-        {
-            float heightMult = rm._avatar.height / 1.76f;
-
-            _minMicrophoneDistance = 3f * MathF.Sqrt(heightMult);
-            _maxMicrophoneDistance = 30f * MathF.Sqrt(heightMult);
-
-            _voiceSource.minDistance = _minMicrophoneDistance;
+            VoiceSource.SetVoiceRange(RigRefs.RigManager.avatar.height);
         }
     }
 
@@ -524,7 +445,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Unregister the entity
-        NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+        NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
     }
 
     private void OnPlayerRegistered(NetworkEntity entity)
@@ -544,7 +465,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
 #if DEBUG
-        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallID}.");
+        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerID.SmallID}.");
 #endif
 
         Players.Remove(this);
@@ -554,7 +475,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         entity.DisconnectExtender(this);
 
         _networkEntity = null;
-        _playerId = null;
+        _playerID = null;
+
+        if (VoiceSource != null)
+        {
+            VoiceSource.DestroyVoiceSource();
+            _voiceSource = null;
+        }
 
         OnUnregisterUpdates();
     }
@@ -596,7 +523,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
-            OnUpdateVoiceSource(deltaTime);
+            VoiceSource.UpdateVoiceSource(DistanceSqr, deltaTime);
 
             remapRig._crouchTarget = RigPose.CrouchTarget;
             remapRig._feetOffset = RigPose.FeetOffset;
@@ -699,7 +626,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerId);
+        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerID);
     }
 
     public void OnEntityCull(bool isInactive)
@@ -877,8 +804,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         if (!ReceivedPose)
         {
+            RigRefs.RigManager.remapHeptaRig.inWeight = 0f;
             return;
         }
+
+        RigRefs.RigManager.remapHeptaRig.inWeight = 1f;
 
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
@@ -912,6 +842,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _art = new(rigManager);
         _physics = new(rigManager);
+
+        _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
+        _voiceSource.CreateVoiceSource(PlayerID.SmallID);
 
         HookRig();
 

@@ -8,15 +8,15 @@ public class PlayerRepSeatData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
-    public byte SitterId;
-    public ushort SeatId;
+    public byte SitterID;
+    public ushort SeatID;
     public byte SeatIndex;
     public bool IsIngress;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SitterId);
-        serializer.SerializeValue(ref SeatId);
+        serializer.SerializeValue(ref SitterID);
+        serializer.SerializeValue(ref SeatID);
         serializer.SerializeValue(ref SeatIndex);
         serializer.SerializeValue(ref IsIngress);
     }
@@ -25,8 +25,8 @@ public class PlayerRepSeatData : INetSerializable
     {
         return new PlayerRepSeatData
         {
-            SitterId = sitterId,
-            SeatId = seatId,
+            SitterID = sitterId,
+            SeatID = seatId,
             SeatIndex = seatIndex,
             IsIngress = isIngress,
         };
@@ -42,21 +42,19 @@ public class PlayerRepSeatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepSeatData>();
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.SitterId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(data.SitterID, out var player))
         {
             return;
         }
 
-        NetworkEntity seatEntity = null;
+        var seatEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SeatID);
 
-        NetworkEntityManager.HookEntityRegistered(data.SeatId, OnSeatRegistered);
-
-        void OnSeatRegistered(NetworkEntity entity)
+        if (seatEntity == null)
         {
-            seatEntity = entity;
-
-            player.HookOnReady(OnPlayerReady);
+            return;
         }
+
+        player.HookOnReady(OnPlayerReady);
 
         void OnPlayerReady()
         {

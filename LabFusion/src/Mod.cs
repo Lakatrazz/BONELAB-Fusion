@@ -107,6 +107,7 @@ public class FusionMod : MelonMod
 
         // Initialize player
         LocalPlayer.OnInitializeMelon();
+        VoiceSourceManager.OnInitializeMelon();
 
         // Register base modules
         InitializeBaseModules();
@@ -131,6 +132,7 @@ public class FusionMod : MelonMod
 
         GamemodeManager.OnInitializeMelon();
         GamemodeConditionsChecker.OnInitializeMelon();
+        GamemodeRoundManager.OnInitializeMelon();
 
         // Hook into asset warehouse
         var onReady = () =>

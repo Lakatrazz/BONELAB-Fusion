@@ -1,7 +1,8 @@
 ﻿using LabFusion.Marrow.Integration;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.SDK.Extenders;
 
 public class RPCEventExtender : EntityComponentArrayExtender<RPCEvent>
 {

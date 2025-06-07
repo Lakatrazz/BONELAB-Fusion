@@ -1,8 +1,9 @@
 ﻿using LabFusion.Marrow.Integration;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.SDK.Extenders;
 
 public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSyncer>
 {

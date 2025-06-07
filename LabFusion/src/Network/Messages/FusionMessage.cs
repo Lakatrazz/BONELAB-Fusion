@@ -1,7 +1,7 @@
 ﻿using LabFusion.Network.Serialization;
 
 using LabFusion.SDK.Modules;
-
+using LabFusion.Utilities;
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Network;
@@ -153,7 +153,7 @@ public unsafe class FusionMessage : IDisposable
     public static FusionMessage ModuleCreate(Type type, ArraySegment<byte> buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
     {
         // Assign the module type
-        var tag = ModuleMessageHandler.GetHandlerTag(type);
+        var tag = ModuleMessageManager.GetHandlerTagByType(type);
 
         if (!tag.HasValue)
         {
@@ -171,17 +171,17 @@ public unsafe class FusionMessage : IDisposable
             Target = target,
         };
 
-        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(ushort) + sizeof(int));
+        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(long) + sizeof(int));
 
         writer.SerializeValue(ref prefix);
 
-        var expandedBuffer = new byte[buffer.Count + sizeof(ushort)];
-        expandedBuffer[0] = (byte)(value >> 8);
-        expandedBuffer[1] = (byte)value;
+        var expandedBuffer = new byte[buffer.Count + sizeof(long)];
+
+        BigEndianHelper.WriteBytes(expandedBuffer, 0, value);
 
         for (var i = 0; i < buffer.Count; i++)
         {
-            expandedBuffer[i + 2] = buffer[i];
+            expandedBuffer[i + sizeof(long)] = buffer[i];
         }
 
         writer.Write(expandedBuffer);

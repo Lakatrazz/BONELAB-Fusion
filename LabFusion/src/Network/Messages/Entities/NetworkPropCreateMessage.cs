@@ -61,7 +61,7 @@ public class NetworkPropCreateMessage : NativeMessageHandler
         NetworkProp networkProp = new(networkEntity, marrowEntity);
 
         // Register the entity with the sent id
-        NetworkEntityManager.IdManager.RegisterEntity(data.EntityID, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity(data.EntityID, networkEntity);
 
         // Set the owner to the received owner id
         var ownerId = PlayerIDManager.GetPlayerID(data.OwnerID);

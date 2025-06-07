@@ -1,6 +1,7 @@
 ﻿using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow.Proxies;
-using UnityEngine.Profiling.Memory.Experimental;
+
+using UnityEngine.UI;
 
 namespace LabFusion.Menu;
 
@@ -8,86 +9,66 @@ public static class ElementIconHelper
 {
     public const float WideAspectRatio = 16f / 9f;
 
-    public static void SetProfileIcon(PlayerElement element, string avatarTitle, int modId = -1)
+    public static void SetProfileIcon(RawImage rawImage, AspectRatioFitter aspectRatioFitter, string avatarTitle, int modID = -1)
     {
-        element.PlayerIconFitter.aspectRatio = 1f;
+        aspectRatioFitter.aspectRatio = 1f;
 
-        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
+        var icon = MenuResources.GetAvatarIcon(avatarTitle);
 
-        if (avatarIcon == null)
+        if (icon == null)
         {
-            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
+            icon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
         }
 
-        element.PlayerIcon.texture = avatarIcon;
+        rawImage.texture = icon;
 
-        if (modId != -1)
+        if (modID != -1)
         {
-            ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
+            ModIOThumbnailDownloader.GetThumbnail(modID, (texture) =>
             {
-                if (element == null)
+                if (rawImage == null)
                 {
                     return;
                 }
 
-                element.PlayerIcon.texture = texture;
-                element.PlayerIconFitter.aspectRatio = WideAspectRatio;
+                rawImage.texture = texture;
+                aspectRatioFitter.aspectRatio = WideAspectRatio;
             });
         }
     }
 
-    public static void SetProfileResultIcon(PlayerResultElement element, string avatarTitle, int modId = -1)
+    public static void SetProfileIcon(PlayerElement element, string avatarTitle, int modID = -1) => SetProfileIcon(element.PlayerIcon, element.PlayerIconFitter, avatarTitle, modID);
+
+    public static void SetProfileResultIcon(PlayerResultElement element, string avatarTitle, int modID = -1) => SetProfileIcon(element.PlayerIcon, element.PlayerIconFitter, avatarTitle, modID);
+
+    public static void SetLevelIcon(RawImage rawImage, string levelTitle, int modID = -1)
     {
-        element.PlayerIconFitter.aspectRatio = 1f;
+        var icon = MenuResources.GetLevelIcon(levelTitle);
 
-        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
-
-        if (avatarIcon == null)
+        if (icon == null)
         {
-            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
+            icon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
         }
 
-        element.PlayerIcon.texture = avatarIcon;
+        rawImage.texture = icon;
 
-        if (modId != -1)
+        if (modID != -1)
         {
-            ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
+            ModIOThumbnailDownloader.GetThumbnail(modID, (texture) =>
             {
-                if (element == null)
+                if (rawImage == null)
                 {
                     return;
                 }
 
-                element.PlayerIcon.texture = texture;
-                element.PlayerIconFitter.aspectRatio = WideAspectRatio;
+                rawImage.texture = texture;
             });
         }
     }
 
-    public static void SetLevelIcon(LobbyElement element, string levelTitle, int modId = -1)
-    {
-        var levelIcon = MenuResources.GetLevelIcon(levelTitle);
+    public static void SetLevelIcon(LobbyElement element, string levelTitle, int modID = -1) => SetLevelIcon(element.LevelIcon, levelTitle, modID);
 
-        if (levelIcon == null)
-        {
-            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.LevelIcon.texture = levelIcon;
-
-        if (modId != -1)
-        {
-            ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
-            {
-                if (element == null)
-                {
-                    return;
-                }
-
-                element.LevelIcon.texture = texture;
-            });
-        }
-    }
+    public static void SetLevelResultIcon(LobbyResultElement element, string levelTitle, int modID = -1) => SetLevelIcon(element.LevelIcon, levelTitle, modID);
 
     public static void SetGamemodeIcon(LobbyElement element, string gamemodeTitle)
     {
@@ -104,30 +85,5 @@ public static class ElementIconHelper
         }
 
         element.GamemodeIcon.texture = gamemodeIcon;
-    }
-
-    public static void SetLevelResultIcon(LobbyResultElement element, string levelTitle, int modId = -1)
-    {
-        var levelIcon = MenuResources.GetLevelIcon(levelTitle);
-
-        if (levelIcon == null)
-        {
-            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.LevelIcon.texture = levelIcon;
-
-        if (modId != -1)
-        {
-            ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
-            {
-                if (element == null)
-                {
-                    return;
-                }
-
-                element.LevelIcon.texture = texture;
-            });
-        }
     }
 }

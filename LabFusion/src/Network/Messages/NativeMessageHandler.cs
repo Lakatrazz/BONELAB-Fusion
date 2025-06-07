@@ -74,7 +74,7 @@ public abstract class NativeMessageHandler : MessageHandler
                     IsServerHandled = message.IsServerHandled,
                 };
 
-                Handlers[tag].Internal_HandleMessage(payload);
+                Handlers[tag].StartHandlingMessage(payload);
             }
 #if DEBUG
             else

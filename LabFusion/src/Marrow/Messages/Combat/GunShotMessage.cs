@@ -39,7 +39,7 @@ public class GunShotMessage : ModuleMessageHandler
     {
         var data = received.ReadData<GunShotData>();
 
-        var gun = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.gunId);
+        var gun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.gunId);
 
         if (gun == null)
         {

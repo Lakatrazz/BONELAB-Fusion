@@ -2,7 +2,7 @@
 using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Data;
-using LabFusion.Entities;
+using LabFusion.SDK.Extenders;
 using LabFusion.Network;
 using LabFusion.Scene;
 using LabFusion.SDK.Messages;

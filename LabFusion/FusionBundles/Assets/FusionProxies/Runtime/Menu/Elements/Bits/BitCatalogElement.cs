@@ -604,7 +604,7 @@ namespace LabFusion.Marrow.Proxies
 
             for (var i = 0; i < elementCount && i + startIndex < pointItems.Count; i++)
             {
-                BitResultElements[i].AssignPointItem(pointItems[i + startIndex]);
+                BitResultElements[i].ApplyPointItem(pointItems[i + startIndex]);
                 BitResultElements[i].gameObject.SetActive(true);
             }
         }

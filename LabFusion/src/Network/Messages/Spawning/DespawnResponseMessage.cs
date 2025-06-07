@@ -38,41 +38,43 @@ public class DespawnResponseMessage : NativeMessageHandler
         // Despawn the poolee if it exists
         var data = received.ReadData<DespawnResponseData>();
 
-        data.Entity.HookEntityRegistered((entity) =>
+        if (!data.Entity.TryGetEntity(out var entity))
         {
-            // Don't allow the despawning of players
-            if (entity.GetExtender<NetworkPlayer>() != null)
-            {
-                return;
-            }
+            return;
+        }
 
-            var pooleeExtender = entity.GetExtender<PooleeExtender>();
+        // Don't allow the despawning of players
+        if (entity.GetExtender<NetworkPlayer>() != null)
+        {
+            return;
+        }
 
-            if (pooleeExtender == null)
-            {
-                return;
-            }
+        var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
-            PooleeUtilities.CanDespawn = true;
+        if (pooleeExtender == null)
+        {
+            return;
+        }
 
-            var poolee = pooleeExtender.Component;
+        PooleeUtilities.CanDespawn = true;
+
+        var poolee = pooleeExtender.Component;
 
 #if DEBUG
-            FusionLogger.Log($"Unregistering entity at ID {entity.ID} after despawning.");
+        FusionLogger.Log($"Unregistering entity at ID {entity.ID} after despawning.");
 #endif
 
-            var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
+        var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
 
-            if (marrowEntity != null && data.DespawnEffect)
-            {
-                SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
-            }
+        if (marrowEntity != null && data.DespawnEffect)
+        {
+            SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
+        }
 
-            poolee.Despawn();
+        poolee.Despawn();
 
-            NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        NetworkEntityManager.IDManager.UnregisterEntity(entity);
 
-            PooleeUtilities.CanDespawn = false;
-        });
+        PooleeUtilities.CanDespawn = false;
     }
 }

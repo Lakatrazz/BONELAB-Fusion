@@ -62,7 +62,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        public void AssignPointItem(PointItem item)
+        public void ApplyPointItem(PointItem item)
         {
             GetReferences();
 

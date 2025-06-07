@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.SDK.Extenders;
 using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
@@ -118,7 +118,7 @@ public class RPCFloatMessage : NativeMessageHandler
         // Entity object
         if (data.pathData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
+            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
 
             if (entity == null)
             {

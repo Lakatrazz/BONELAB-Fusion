@@ -34,31 +34,28 @@ public class InventorySlotInsertMessage : ModuleMessageHandler
     {
         var data = received.ReadData<InventorySlotInsertData>();
 
-        NetworkEntity weaponEntity = null;
-        NetworkEntity slotEntity = null;
+        var weaponEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.WeaponID);
 
-        NetworkEntityManager.HookEntityRegistered(data.WeaponID, OnWeaponRegistered);
-
-        void OnWeaponRegistered(NetworkEntity entity)
+        if (weaponEntity == null)
         {
-            weaponEntity = entity;
-
-            NetworkEntityManager.HookEntityRegistered(data.SlotEntityID, OnSlotRegistered);
+            return;
         }
 
-        void OnSlotRegistered(NetworkEntity entity)
+        var slotEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SlotEntityID);
+
+        if (slotEntity == null)
         {
-            slotEntity = entity;
-
-            var slotEntityExtender = slotEntity.GetExtender<IMarrowEntityExtender>();
-
-            if (slotEntityExtender == null)
-            {
-                return;
-            }
-
-            slotEntityExtender.HookOnReady(OnSlotReady);
+            return;
         }
+
+        var slotEntityExtender = slotEntity.GetExtender<IMarrowEntityExtender>();
+
+        if (slotEntityExtender == null)
+        {
+            return;
+        }
+
+        slotEntityExtender.HookOnReady(OnSlotReady);
 
         void OnSlotReady()
         {

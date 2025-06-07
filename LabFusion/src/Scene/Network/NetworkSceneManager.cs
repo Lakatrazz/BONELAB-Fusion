@@ -1,5 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
-using LabFusion.Network;
+﻿using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -180,6 +179,16 @@ public static class NetworkSceneManager
     }
 
     /// <summary>
+    /// Returns if a player is the host of any level.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns></returns>
+    public static bool PlayerIsLevelHost(PlayerID player)
+    {
+        return player == PlayerIDManager.GetHostID();
+    }
+
+    /// <summary>
     /// Returns a list of all players in a specific level.
     /// </summary>
     /// <param name="barcode">The barcode level.</param>
@@ -187,6 +196,11 @@ public static class NetworkSceneManager
     public static List<PlayerID> GetPlayersInLevel(string barcode)
     {
         var players = new List<PlayerID>(PlayerIDManager.PlayerIDs.Count);
+
+        if (!IsLevelNetworked)
+        {
+            return players;
+        }
 
         foreach (var player in PlayerIDManager.PlayerIDs)
         {

@@ -7,7 +7,7 @@ using LabFusion.Network;
 namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(FadeVolume))]
-public static class FadeAndDespawnVolumePatches
+public static class FadeVolumePatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(FadeVolume.Awake))]

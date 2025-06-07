@@ -7,7 +7,7 @@ using Il2CppSLZ.VRMK;
 using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.MonoBehaviours;
-using LabFusion.Network;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 namespace LabFusion.Marrow.Patching;
@@ -89,7 +89,7 @@ public static class MarrowEntityPatches
     [HarmonyPatch(nameof(MarrowEntity.OnCullResolve))]
     public static void OnCullResolve(MarrowEntity __instance, InactiveStatus status, bool isInactive)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -110,8 +110,8 @@ public static class MarrowEntityPatches
     [HarmonyPatch(nameof(MarrowEntity.Despawn))]
     public static bool Despawn(MarrowEntity __instance)
     {
-        // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        // Make sure the level is networked
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }

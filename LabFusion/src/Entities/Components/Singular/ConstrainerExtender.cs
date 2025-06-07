@@ -55,7 +55,7 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
             return;
         }
 
-        if (FusionDevTools.DespawnConstrainer(player.PlayerId))
+        if (FusionDevTools.DespawnConstrainer(player.PlayerID))
         {
             _poolee.Despawn();
         }

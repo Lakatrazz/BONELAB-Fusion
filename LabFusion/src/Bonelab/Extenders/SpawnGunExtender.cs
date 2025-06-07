@@ -69,7 +69,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
             return;
         }
 
-        if (FusionDevTools.DespawnDevTool(player.PlayerId))
+        if (FusionDevTools.DespawnDevTool(player.PlayerID))
         {
             _poolee.Despawn();
         }

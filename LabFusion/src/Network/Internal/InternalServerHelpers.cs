@@ -44,10 +44,6 @@ public static class InternalServerHelpers
 
         NetworkPlayerManager.CreateLocalPlayer();
 
-        // Register module message handlers so they can send messages
-        var names = ModuleMessageHandler.GetExistingTypeNames();
-        ModuleMessageHandler.PopulateHandlerTable(names);
-
         // Update hooks
         MultiplayerHooking.InvokeOnStartedServer();
 
@@ -55,7 +51,9 @@ public static class InternalServerHelpers
 
         // Unlock achievement
         if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+        {
             achievement.IncrementTask();
+        }
 
         // Reload the scene
         SceneStreamer.Reload();
@@ -84,9 +82,6 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnDisconnect(string reason = "")
     {
-        // Cleanup modules
-        ModuleMessageHandler.ClearHandlerTable();
-
         // Cleanup information
         DisposeUsers();
         NetworkEntityManager.OnCleanupEntities();

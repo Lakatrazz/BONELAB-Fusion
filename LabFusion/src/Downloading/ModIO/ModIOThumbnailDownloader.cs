@@ -27,7 +27,7 @@ public static class ModIOThumbnailDownloader
 
     public static void GetThumbnail(int modId, Action<Texture> callback)
     {
-        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture))
+        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture) && cachedTexture != null)
         {
             callback?.Invoke(cachedTexture);
             return;
@@ -42,12 +42,12 @@ public static class ModIOThumbnailDownloader
 
         void OnModReceived(ModCallbackInfo info)
         {
-            if (info.result != ModResult.SUCCEEDED)
+            if (info.Result != ModResult.SUCCEEDED)
             {
                 return;
             }
 
-            var url = info.data.ThumbnailUrl;
+            var url = info.Data.ThumbnailUrl;
 
             GetThumbnail(url, callback);
         }

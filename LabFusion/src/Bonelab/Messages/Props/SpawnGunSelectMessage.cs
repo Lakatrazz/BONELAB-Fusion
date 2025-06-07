@@ -32,7 +32,7 @@ public class SpawnGunSelectMessage : ModuleMessageHandler
     {
         var data = received.ReadData<SpawnGunSelectData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.SpawnGunID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SpawnGunID);
 
         if (entity == null)
         {

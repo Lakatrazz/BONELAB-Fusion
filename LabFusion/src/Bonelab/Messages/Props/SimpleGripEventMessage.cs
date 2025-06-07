@@ -47,7 +47,7 @@ public class SimpleGripEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<SimpleGripEventData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {

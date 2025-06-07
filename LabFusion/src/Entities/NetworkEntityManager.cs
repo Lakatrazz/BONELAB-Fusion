@@ -11,8 +11,8 @@ namespace LabFusion.Entities;
 
 public static class NetworkEntityManager
 {
-    private static readonly EntityIdManager<NetworkEntity> _idManager = new();
-    public static EntityIdManager<NetworkEntity> IdManager => _idManager;
+    private static readonly EntityIDManager<NetworkEntity> _idManager = new();
+    public static EntityIDManager<NetworkEntity> IDManager => _idManager;
 
     private static readonly EntityUpdateList<IEntityUpdatable> _updateManager = new();
     public static EntityUpdateList<IEntityUpdatable> UpdateManager => _updateManager;
@@ -31,13 +31,13 @@ public static class NetworkEntityManager
     public static void OnInitializeManager()
     {
         CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
-        IdManager.OnEntityRegistered += OnEntityRegistered;
+        IDManager.OnEntityRegistered += OnEntityRegistered;
     }
 
     public static void OnCleanupIds()
     {
-        IdManager.RegisteredEntities.ClearId();
-        IdManager.QueuedEntities.ClearId();
+        IDManager.RegisteredEntities.ClearId();
+        IDManager.QueuedEntities.ClearId();
 
         _entityRegisteredCallbacks.Clear();
     }
@@ -45,13 +45,13 @@ public static class NetworkEntityManager
     public static void OnCleanupEntities()
     {
         // Clear registered entities
-        var registeredEntities = IdManager.RegisteredEntities.EntityIDLookup.Keys.ToList();
+        var registeredEntities = IDManager.RegisteredEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in registeredEntities)
         {
             try
             {
-                IdManager.UnregisterEntity(entity);
+                IDManager.UnregisterEntity(entity);
             }
             catch (Exception e)
             {
@@ -59,10 +59,10 @@ public static class NetworkEntityManager
             }
         }
 
-        IdManager.RegisteredEntities.Clear();
+        IDManager.RegisteredEntities.Clear();
 
         // Clear queued entities
-        var queuedEntities = IdManager.QueuedEntities.EntityIDLookup.Keys.ToList();
+        var queuedEntities = IDManager.QueuedEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in queuedEntities)
         {
@@ -76,7 +76,7 @@ public static class NetworkEntityManager
             }
         }
 
-        IdManager.QueuedEntities.Clear();
+        IDManager.QueuedEntities.Clear();
 
         _entityRegisteredCallbacks.Clear();
     }
@@ -110,7 +110,7 @@ public static class NetworkEntityManager
 
     private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerID)
     {
-        var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IDEntityLookup.Values);
+        var catchupQueue = new Queue<NetworkEntity>(IDManager.RegisteredEntities.IDEntityLookup.Values);
 
         while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerID.IsValid)
         {
@@ -250,7 +250,7 @@ public static class NetworkEntityManager
 
     public static void HookEntityRegistered(ushort id, NetworkEntityDelegate callback)
     {
-        var entity = IdManager.RegisteredEntities.GetEntity(id);
+        var entity = IDManager.RegisteredEntities.GetEntity(id);
 
         if (entity != null)
         {

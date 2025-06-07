@@ -6,7 +6,7 @@ namespace LabFusion.Marrow;
 
 public static class CrateFilterer
 {
-    public static int GetModId(Pallet pallet)
+    public static int GetModID(Pallet pallet)
     {
         // Get the mod info
         var manifest = GetManifest(pallet);

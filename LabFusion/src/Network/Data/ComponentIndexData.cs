@@ -6,14 +6,14 @@ public class ComponentIndexData : INetSerializable
 {
     public const int Size = sizeof(ushort) * 2;
 
-    public ushort EntityId;
+    public ushort EntityID;
     public ushort ComponentIndex;
 
     public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref EntityId);
+        serializer.SerializeValue(ref EntityID);
         serializer.SerializeValue(ref ComponentIndex);
     }
 
@@ -21,7 +21,7 @@ public class ComponentIndexData : INetSerializable
     {
         return new ComponentIndexData()
         {
-            EntityId = entityId,
+            EntityID = entityId,
             ComponentIndex = componentIndex,
         };
     }

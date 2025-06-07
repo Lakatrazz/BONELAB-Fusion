@@ -4,7 +4,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.Entities;
 using LabFusion.SDK.MonoBehaviours;
 
-namespace LabFusion.Marrow.Messages;
+namespace LabFusion.SDK.Messages;
 
 public class GamemodeDropperData : INetSerializable
 {
@@ -27,17 +27,19 @@ public class GamemodeDropperMessage : ModuleMessageHandler
     {
         var data = received.ReadData<GamemodeDropperData>();
 
-        data.Entity.HookEntityRegistered((entity) =>
+        if (!data.Entity.TryGetEntity(out var entity))
         {
-            var propExtender = entity.GetExtender<NetworkProp>();
-            var pooleeExtender = entity.GetExtender<PooleeExtender>();
+            return;
+        }
 
-            if (propExtender != null && pooleeExtender != null)
-            {
-                var gamemodeItem = propExtender.MarrowEntity.gameObject.AddComponent<GamemodeItem>();
+        var propExtender = entity.GetExtender<NetworkProp>();
+        var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
-                gamemodeItem.Initialize(entity, pooleeExtender.Component);
-            }
-        });
+        if (propExtender != null && pooleeExtender != null)
+        {
+            var gamemodeItem = propExtender.MarrowEntity.gameObject.AddComponent<GamemodeItem>();
+
+            gamemodeItem.Initialize(entity, pooleeExtender.Component);
+        }
     }
 }
