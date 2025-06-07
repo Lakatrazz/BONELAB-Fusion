@@ -15,5 +15,6 @@ public sealed class SDKModule : Module
     {
         ModuleMessageManager.RegisterHandler<AnimationStateMessage>();
         ModuleMessageManager.RegisterHandler<GamemodeDropperMessage>();
+        ModuleMessageManager.RegisterHandler<VoiceProxyInputMessage>();
     }
 }

@@ -1,5 +1,4 @@
-﻿using LabFusion.Entities;
-using LabFusion.Marrow.Integration;
+﻿using LabFusion.Marrow.Integration;
 using LabFusion.Network;
 using LabFusion.SDK.Extenders;
 using LabFusion.Network.Serialization;
@@ -32,40 +31,8 @@ public class AnimationStateMessage : ModuleMessageHandler
     {
         var data = received.ReadData<AnimationStateData>();
 
-        if (data.ComponentData.HasEntity)
+        if (data.ComponentData.TryGetComponent<AnimatorSyncer, AnimatorSyncerExtender>(AnimatorSyncer.HashTable, out var animatorSyncer))
         {
-            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ComponentData.EntityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<AnimatorSyncerExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var animatorSyncer = extender.GetComponent(data.ComponentData.ComponentIndex);
-
-            if (animatorSyncer == null)
-            {
-                return;
-            }
-
-            OnFoundAnimatorSyncer(animatorSyncer, data);
-        }
-        else
-        {
-            var animatorSyncer = AnimatorSyncer.HashTable.GetComponentFromData(data.ComponentData.HashData);
-
-            if (animatorSyncer == null)
-            {
-                return;
-            }
-
             OnFoundAnimatorSyncer(animatorSyncer, data);
         }
     }
