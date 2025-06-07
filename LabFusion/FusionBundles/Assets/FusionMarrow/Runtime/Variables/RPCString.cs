@@ -30,7 +30,7 @@ namespace LabFusion.Marrow.Integration
         public bool SetValue(string value)
         {
             string domain;
-            if (isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
+            if (URLWhitelistManager.isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
             {
                 FusionLogger.Warn($"Blocking sending the url {value}, as the domain {domain} is not whitelisted.");
                 return false;
@@ -43,7 +43,7 @@ namespace LabFusion.Marrow.Integration
         {
             // makes sure the text actually is a url before checking if its banned
             string domain;
-            if (isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
+            if (URLWhitelistManager.isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
             {
                 FusionLogger.Warn($"Received potentially dangerous URL. Blocking the url {value}, as the domain {domain} is not whitelisted.");
                 return;
@@ -52,15 +52,6 @@ namespace LabFusion.Marrow.Integration
             _latestValue = value;
 
             InvokeHolder();
-        }
-
-        private static bool isUrl(string value)
-        {
-            //checks text to see if its a valid url
-            Uri uriResult;
-            bool result = Uri.TryCreate(value, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            return result;
         }
 
         [HideFromIl2Cpp]

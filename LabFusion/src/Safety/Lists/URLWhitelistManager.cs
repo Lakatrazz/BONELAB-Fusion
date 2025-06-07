@@ -1,10 +1,5 @@
 ﻿using LabFusion.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace LabFusion.Safety
 {
@@ -55,6 +50,15 @@ namespace LabFusion.Safety
                 }
             }
             return false;
+        }
+
+        public static bool isUrl(string value)
+        {
+            //checks text to see if its a valid url
+            Uri uriResult;
+            bool result = Uri.TryCreate(value, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            return result;
         }
     }
 }
