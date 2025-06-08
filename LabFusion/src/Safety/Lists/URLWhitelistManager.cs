@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace LabFusion.Safety;
 
+[Serializable]
 public class URLInfo
 {
     [JsonPropertyName("domain")]
@@ -15,7 +16,6 @@ public class URLWhitelist
 {
     [JsonPropertyName("whitelist")]
     public List<URLInfo> Whitelist { get; set; } = new();
-    
 }
 
 public static class URLWhitelistManager
@@ -49,7 +49,7 @@ public static class URLWhitelistManager
         }
 
         var domain = uri.Host;
-        
+
         foreach(var whitelist in List.Whitelist)
         {
             if (domain == whitelist.Domain)
