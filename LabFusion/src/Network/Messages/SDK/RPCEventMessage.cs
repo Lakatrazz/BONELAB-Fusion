@@ -1,5 +1,5 @@
-﻿using LabFusion.Entities;
-using LabFusion.Marrow.Integration;
+﻿using LabFusion.Marrow.Integration;
+using LabFusion.Scene;
 using LabFusion.SDK.Extenders;
 
 namespace LabFusion.Network;
@@ -28,7 +28,7 @@ public static class RPCEventSender
     public static bool Invoke(RPCEvent rpcEvent) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
@@ -37,26 +37,13 @@ public static class RPCEventSender
 
         var channel = ConvertRPCChannel(rpcEvent.Channel);
 
-        // Get the rpc event
-        var hashData = RPCEvent.HashTable.GetDataFromComponent(rpcEvent);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCEventExtender.Cache.TryGet(rpcEvent, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcEvent.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCEventExtender>();
-
-            entityId = entity.ID;
-            componentIndex = extender.GetIndex(rpcEvent).Value;
         }
         else if (rpcEvent.requiresOwnership && !NetworkInfo.IsHost)
         {
@@ -64,7 +51,7 @@ public static class RPCEventSender
         }
 
         // Send the message
-        var data = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var data = ComponentPathData.CreateFromComponent<RPCEvent, RPCEventExtender>(rpcEvent, RPCEvent.HashTable, RPCEventExtender.Cache);
 
         MessageRelay.RelayNative(data, NativeMessageTag.RPCEvent, channel, relayType);
 
@@ -81,42 +68,8 @@ public class RPCEventMessage : NativeMessageHandler
     {
         var data = received.ReadData<ComponentPathData>();
 
-        // Entity object
-        if (data.HasEntity)
+        if (data.TryGetComponent<RPCEvent, RPCEventExtender>(RPCEvent.HashTable, out var rpcEvent))
         {
-            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCEventExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcEvent = extender.GetComponent(data.ComponentIndex);
-
-            if (rpcEvent == null)
-            {
-                return;
-            }
-
-            OnFoundRPCEvent(rpcEvent);
-        }
-        // Scene object
-        else
-        {
-            var rpcEvent = RPCEvent.HashTable.GetComponentFromData(data.HashData);
-
-            if (rpcEvent == null)
-            {
-                return;
-            }
-
             OnFoundRPCEvent(rpcEvent);
         }
     }

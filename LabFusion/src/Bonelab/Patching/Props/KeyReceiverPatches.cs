@@ -77,25 +77,10 @@ public static class KeyReceiverPatches
             return;
         }
 
-        var hashData = HashTable.GetDataFromComponent(__instance);
-
-        var hasEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
-        if (KeyReceiverExtender.Cache.TryGet(__instance, out var receiverEntity))
-        {
-            hasEntity = true;
-            var extender = receiverEntity.GetExtender<KeyReceiverExtender>();
-
-            entityId = receiverEntity.ID;
-            componentIndex = extender.GetIndex(__instance).Value;
-        }
-
         var data = new KeySlotData()
         {
             KeyId = keyEntity.ID,
-            ReceiverData = ComponentPathData.Create(hasEntity, entityId, componentIndex, hashData),
+            ReceiverData = ComponentPathData.CreateFromComponent<KeyReceiver, KeyReceiverExtender>(__instance, HashTable, KeyReceiverExtender.Cache),
         };
 
         MessageRelay.RelayModule<KeySlotMessage, KeySlotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);

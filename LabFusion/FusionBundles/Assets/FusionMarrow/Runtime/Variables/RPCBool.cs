@@ -39,7 +39,7 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        public override void CatchupPlayer(PlayerID playerId) => RPCBoolSender.CatchupValue(this, playerId);
+        public override void CatchupPlayer(PlayerID playerID) => RPCBoolSender.CatchupValue(this, playerID);
 #else
         public bool GetLatestValue()
         {

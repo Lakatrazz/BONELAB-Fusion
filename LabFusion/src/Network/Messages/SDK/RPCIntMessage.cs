@@ -12,31 +12,18 @@ public static class RPCIntSender
     public static bool SetValue(RPCInt rpcInt, int value) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcInt);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCVariableExtender.Cache.TryGet(rpcInt, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcInt.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.ID;
-            componentIndex = extender.GetIndex(rpcInt).Value;
         }
         else if (rpcInt.RequiresOwnership && !NetworkInfo.IsHost)
         {
@@ -44,7 +31,7 @@ public static class RPCIntSender
         }
 
         // Send the message
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var intData = RPCIntData.Create(pathData, value);
 
         MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToClients);
@@ -52,7 +39,7 @@ public static class RPCIntSender
         return true;
     }
 
-    public static void CatchupValue(RPCInt rpcInt, PlayerID playerId)
+    public static void CatchupValue(RPCInt rpcInt, PlayerID playerID)
     {
         // Make sure we are the level host
         if (!NetworkSceneManager.IsLevelHost)
@@ -60,53 +47,36 @@ public static class RPCIntSender
             return;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcInt);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
-        if (RPCVariableExtender.Cache.TryGet(rpcInt, out var entity))
-        {
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.ID;
-            componentIndex = extender.GetIndex(rpcInt).Value;
-        }
-
         // Send the message
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCIntData.Create(pathData, rpcInt.GetLatestValue());
 
-        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToTarget, playerID.SmallID);
     }
 }
 
-[Net.SkipHandleWhileLoading]
 public class RPCIntData : INetSerializable
 {
-    public ComponentPathData pathData;
-    public int value;
+    public ComponentPathData PathData;
+    public int Value;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref pathData);
-        serializer.SerializeValue(ref value);
+        serializer.SerializeValue(ref PathData);
+        serializer.SerializeValue(ref Value);
     }
 
     public static RPCIntData Create(ComponentPathData pathData, int value)
     {
         return new RPCIntData()
         {
-            pathData = pathData,
-            value = value,
+            PathData = pathData,
+            Value = value,
         };
     }
 }
 
-
+[Net.SkipHandleWhileLoading]
 public class RPCIntMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCInt;
@@ -115,30 +85,8 @@ public class RPCIntMessage : NativeMessageHandler
     {
         var data = received.ReadData<RPCIntData>();
 
-        // Entity object
-        if (data.pathData.HasEntity)
+        if (data.PathData.TryGetComponent<RPCVariable, RPCVariableExtender>(RPCVariable.HashTable, out var rpcVariable))
         {
-            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcVariable = extender.GetComponent(data.pathData.ComponentIndex);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
             var rpcInt = rpcVariable.TryCast<RPCInt>();
 
             if (rpcInt == null)
@@ -146,26 +94,7 @@ public class RPCIntMessage : NativeMessageHandler
                 return;
             }
 
-            OnFoundRPCInt(rpcInt, data.value);
-        }
-        // Scene object
-        else
-        {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.HashData);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
-            var rpcInt = rpcVariable.TryCast<RPCInt>();
-
-            if (rpcInt == null)
-            {
-                return;
-            }
-
-            OnFoundRPCInt(rpcInt, data.value);
+            OnFoundRPCInt(rpcInt, data.Value);
         }
     }
 

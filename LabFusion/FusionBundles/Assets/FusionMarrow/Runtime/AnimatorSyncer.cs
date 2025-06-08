@@ -98,24 +98,9 @@ namespace LabFusion.Marrow.Integration
             var nameHash = currentState.shortNameHash;
             var normalizedTime = currentState.normalizedTime;
 
-            var hashData = HashTable.GetDataFromComponent(this);
-
-            var hasNetworkEntity = false;
-            ushort entityId = 0;
-            ushort componentIndex = 0;
-
-            if (AnimatorSyncerExtender.Cache.TryGet(this, out var entity))
-            {
-                hasNetworkEntity = true;
-                var extender = entity.GetExtender<AnimatorSyncerExtender>();
-
-                entityId = entity.ID;
-                componentIndex = extender.GetIndex(this).Value;
-            }
-
             var data = new AnimationStateData()
             {
-                ComponentData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData),
+                ComponentData = ComponentPathData.CreateFromComponent<AnimatorSyncer, AnimatorSyncerExtender>(this, HashTable, AnimatorSyncerExtender.Cache),
                 StateNameHash = nameHash,
                 Layer = layer,
                 NormalizedTime = normalizedTime,

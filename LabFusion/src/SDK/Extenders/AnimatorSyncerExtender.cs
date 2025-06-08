@@ -11,9 +11,9 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
 
     protected override void OnRegister(NetworkEntity entity, AnimatorSyncer[] components)
     {
-        foreach (var grip in components)
+        foreach (var component in components)
         {
-            Cache.Add(grip, entity);
+            Cache.Add(component, entity);
         }
 
         entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
@@ -27,9 +27,9 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
 
     protected override void OnUnregister(NetworkEntity entity, AnimatorSyncer[] components)
     {
-        foreach (var grip in components)
+        foreach (var component in components)
         {
-            Cache.Remove(grip);
+            Cache.Remove(component);
         }
 
         entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;

@@ -41,7 +41,7 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        public override void CatchupPlayer(PlayerID playerId) => RPCVector3Sender.CatchupValue(this, playerId);
+        public override void CatchupPlayer(PlayerID playerID) => RPCVector3Sender.CatchupValue(this, playerID);
 
 #else
         public Vector3 GetLatestValue()

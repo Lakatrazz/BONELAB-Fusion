@@ -59,40 +59,8 @@ public class KeySlotMessage : ModuleMessageHandler
             return;
         }
 
-        if (data.ReceiverData.HasEntity)
+        if (data.ReceiverData.TryGetComponent<KeyReceiver, KeyReceiverExtender>(KeyReceiverPatches.HashTable, out var receiver))
         {
-            var receiverEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ReceiverData.EntityId);
-
-            if (receiverEntity == null)
-            {
-                return;
-            }
-
-            var receiverExtender = receiverEntity.GetExtender<KeyReceiverExtender>();
-
-            if (receiverExtender == null)
-            {
-                return;
-            }
-
-            var receiver = receiverExtender.GetComponent(data.ReceiverData.ComponentIndex);
-
-            if (receiver == null)
-            {
-                return;
-            }
-
-            OnFoundKey(host, receiver);
-        }
-        else
-        {
-            var receiver = KeyReceiverPatches.HashTable.GetComponentFromData(data.ReceiverData.HashData);
-
-            if (receiver == null)
-            {
-                return;
-            }
-
             OnFoundKey(host, receiver);
         }
     }

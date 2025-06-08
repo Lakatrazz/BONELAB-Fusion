@@ -57,14 +57,14 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        private void OnPlayerServerCatchup(PlayerID playerId)
+        private void OnPlayerServerCatchup(PlayerID playerID)
         {
             if (HasNetworkEntity)
             {
                 return;
             }
 
-            CatchupPlayer(playerId);
+            CatchupPlayer(playerID);
         }
 
         private void OnDestroy()
@@ -80,7 +80,7 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        public virtual void CatchupPlayer(PlayerID playerId) { }
+        public virtual void CatchupPlayer(PlayerID playerID) { }
 #else
         public bool requiresOwnership = false;
 
