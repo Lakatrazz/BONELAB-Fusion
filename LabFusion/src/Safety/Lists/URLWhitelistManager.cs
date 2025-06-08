@@ -1,64 +1,63 @@
 ﻿using LabFusion.Data;
+
 using System.Text.Json.Serialization;
 
-namespace LabFusion.Safety
+namespace LabFusion.Safety;
+
+public class URLInfo
 {
-    public class URLInfo
+    [JsonPropertyName("domain")]
+    public string Domain { get; set; }
+}
+
+[Serializable]
+public class URLWhitelist
+{
+    [JsonPropertyName("whitelist")]
+    public List<URLInfo> Whitelist { get; set; } = new();
+    
+}
+
+public static class URLWhitelistManager
+{
+    public const string FileName = "urlWhitelist.json";
+
+    public static URLWhitelist List { get; private set; } = new();
+
+    public static void FetchFile()
     {
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
+        ListFetcher.FetchFile(FileName, OnFileFetched);
     }
 
-    [Serializable]
-    public class URLWhitelistList
+    private static void OnFileFetched(string text)
     {
-        [JsonPropertyName("whitelist")]
-        public List<URLInfo> Whitelist { get; set; } = new();
+        List = DataSaver.ReadJsonFromText<URLWhitelist>(text);
+    }
+
+    public static bool IsURLWhitelisted(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            return true;
+        }
+
+        bool isLink = uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
+
+        if (!isLink)
+        {
+            return true;
+        }
+
+        var domain = uri.Host;
         
-    }
-
-    public static class URLWhitelistManager
-    {
-        public const string FileName = "UrlWhitelist.json";
-
-        public static URLWhitelistList urlList { get; private set; } = new();
-
-        public static void FetchFile()
+        foreach(var whitelist in List.Whitelist)
         {
-            //Should be replaced with normal banlist repo
-            ListFetcher.FetchAltUrlFile(FileName, "https://raw.githubusercontent.com/elijoeispog/URLBanningExample/main/", OnFileFetched);
-        }
-
-        private static void OnFileFetched(string text)
-        {
-            urlList = DataSaver.ReadJsonFromText<URLWhitelistList>(text);
-        }
-
-        public static bool IsLinkWhitelisted(string link, out string urlDomain)
-        {
-            Uri url = new Uri(link);
-
-            urlDomain = url.Host;
-            
-            foreach(var whitelist in urlList.Whitelist)
+            if (domain == whitelist.Domain)
             {
-                if(urlDomain == whitelist.Url)
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
         }
 
-        public static bool isUrl(string value)
-        {
-            //checks text to see if its a valid url
-            Uri uriResult;
-            bool result = Uri.TryCreate(value, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            return result;
-        }
+        return false;
     }
 }

@@ -3,8 +3,6 @@ using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Safety;
-using LabFusion.Utilities;
 using MelonLoader;
 #endif
 
@@ -29,26 +27,11 @@ namespace LabFusion.Marrow.Integration
 
         public bool SetValue(string value)
         {
-            string domain;
-            if (URLWhitelistManager.isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
-            {
-                FusionLogger.Warn($"Blocking sending the url {value}, as the domain {domain} is not whitelisted.");
-                return false;
-            }
-
             return RPCStringSender.SetValue(this, value);
         }
 
         public void ReceiveValue(string value)
         {
-            // makes sure the text actually is a url before checking if its banned
-            string domain;
-            if (URLWhitelistManager.isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
-            {
-                FusionLogger.Warn($"Received potentially dangerous URL. Blocking the url {value}, as the domain {domain} is not whitelisted.");
-                return;
-            }
-
             _latestValue = value;
 
             InvokeHolder();

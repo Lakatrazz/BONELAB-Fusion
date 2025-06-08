@@ -25,16 +25,6 @@ public static class ListFetcher
         MelonCoroutines.Start(CoFetchFile(url, callback));
     }
     
-    //Should be removed if pull request accepted only made for testing because i dont have access to the list repo
-    public static void FetchAltUrlFile(string path, string altUrl, Action<string> callback)
-    {
-        var url = altUrl + path;
-
-        FusionLogger.Log($"{LogPrefix} Fetching {path} from url {url}...", ConsoleColor.DarkGreen);
-
-        MelonCoroutines.Start(CoFetchFile(url, callback));
-    }
-
     private static IEnumerator CoFetchFile(string url, Action<string> callback)
     {
         using var client = new HttpClient();
