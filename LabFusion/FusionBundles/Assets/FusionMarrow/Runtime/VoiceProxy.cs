@@ -302,6 +302,11 @@ namespace LabFusion.Marrow.Integration
                 return false;
             }
 
+            if (!proxy.InputID.HasValue)
+            {
+                return false;
+            }
+
             return true;
         }
 #else
