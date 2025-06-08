@@ -192,15 +192,19 @@ namespace LabFusion.Marrow.Integration
             Channel = channel.ToString();
         }
 
-        public void SetConnectedProxy(VoiceProxy connectedProxy)
+        public void SetConnectedProxy(UnityEngine.Object connectedProxy)
         {
-            ConnectedProxy = connectedProxy;
+            ConnectedProxy = connectedProxy.TryCast<VoiceProxy>();
         }
 
         public void SetCanHearSelf(bool value)
         {
             CanHearSelf = value;
         }
+
+        public float GetOutputAmplitude() => VoiceSource != null ? VoiceSource.Amplitude : 0f;
+
+        public bool IsOutputtingVoice() => VoiceSource != null && VoiceSource.ID != -1 && VoiceSource.ReceivingInput;
 
         public void ToggleInput(bool input)
         {
@@ -327,13 +331,17 @@ namespace LabFusion.Marrow.Integration
         {
         }
 
-        public void SetConnectedProxy(VoiceProxy connectedProxy)
+        public void SetConnectedProxy(UnityEngine.Object connectedProxy)
         {
         }
 
         public void SetCanHearSelf(bool value)
         {
         }
+
+        public float GetOutputAmplitude() => 0f;
+
+        public bool IsOutputtingVoice() => false;
 
         public void ToggleInput(bool input)
         {

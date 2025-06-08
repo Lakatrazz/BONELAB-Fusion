@@ -9,6 +9,8 @@ using System;
 
 using UnityEngine;
 
+using System.Reflection;
+
 namespace LabFusion.Marrow.Integration
 {
     [CustomEditor(typeof(VoiceProxy))]
@@ -95,7 +97,7 @@ namespace LabFusion.Marrow.Integration
             ultEvent.Clear();
 
             Action<string> setChannelAction = proxy.SetChannelString;
-            Action<VoiceProxy> setConnectedProxyAction = proxy.SetConnectedProxy;
+            Action<UnityEngine.Object> setConnectedProxyAction = proxy.SetConnectedProxy;
             Action<bool> setCanHearSelfAction = proxy.SetCanHearSelf;
 
             if (!string.IsNullOrWhiteSpace(proxy.DefaultChannel))
@@ -107,7 +109,11 @@ namespace LabFusion.Marrow.Integration
             if (proxy.DefaultConnectedProxy != null)
             {
                 var setConnectedProxyCall = ultEvent.AddPersistentCall(setConnectedProxyAction);
-                setConnectedProxyCall.PersistentArguments[0].Object = proxy.DefaultConnectedProxy;
+                var connectedProxyArgument = setConnectedProxyCall.PersistentArguments[0];
+
+                connectedProxyArgument.Object = proxy.DefaultConnectedProxy;
+
+                typeof(PersistentArgument).GetField("_String", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(connectedProxyArgument, typeof(UnityEngine.Object).AssemblyQualifiedName);
             }
 
             if (proxy.CanHearSelf)
