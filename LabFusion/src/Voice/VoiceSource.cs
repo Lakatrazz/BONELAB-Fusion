@@ -107,6 +107,9 @@ public class VoiceSource : MonoBehaviour
         OnVoiceEnabled?.Invoke(this);
 
         ReceivingInput = false;
+
+        StreamFilter.enabled = true;
+        StreamFilter.enabled = false;
     }
 
     private void OnDisable()
@@ -114,6 +117,8 @@ public class VoiceSource : MonoBehaviour
         OnVoiceDisabled?.Invoke(this);
 
         ReceivingInput = false;
+
+        StreamFilter.enabled = false;
     }
 
     private void Update()
