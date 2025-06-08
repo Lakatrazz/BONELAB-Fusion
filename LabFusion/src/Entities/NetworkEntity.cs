@@ -60,6 +60,9 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private NetworkEntityDelegate _registeredCallback = null;
 
+    private readonly List<byte> _dataCaughtUpPlayers = new();
+    private readonly Dictionary<byte, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
+
     private readonly HashSet<IEntityExtender> _extenders = new();
 
     public void ConnectExtender(IEntityExtender extender)
@@ -98,28 +101,56 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return null;
     }
 
-    public bool InvokeCreationCatchup(PlayerID playerID)
+    internal void OnPlayerLeft(PlayerID playerID)
     {
-        if (OnEntityCreationCatchup == null)
+        byte smallID = playerID.SmallID;
+
+        _dataCaughtUpPlayers.Remove(smallID);
+        _dataCatchupCallbacks.Remove(smallID);
+
+        if (OwnerID == playerID)
         {
-            return false;
+            RemoveOwner();
         }
-
-        OnEntityCreationCatchup?.Invoke(this, playerID);
-
-        return true;
     }
 
-    public bool InvokeDataCatchup(PlayerID playerID)
+    internal bool InvokeCreationCatchup(PlayerID playerID)
     {
-        if (OnEntityDataCatchup == null)
+        bool caughtUp = false;
+
+        if (OnEntityCreationCatchup != null)
         {
-            return false;
+            OnEntityCreationCatchup?.InvokeSafe(this, playerID, "executing OnEntityCreationCatchup");
+            caughtUp = true;
         }
 
-        OnEntityDataCatchup?.Invoke(this, playerID);
+        return caughtUp;
+    }
 
-        return true;
+    internal bool InvokeDataCatchup(PlayerID playerID)
+    {
+        bool caughtUp = false;
+
+        byte smallID = playerID.SmallID;
+
+        if (OnEntityDataCatchup != null)
+        {
+            OnEntityDataCatchup?.InvokeSafe(this, playerID, "executing OnEntityDataCatchup");
+            caughtUp = true;
+        }
+
+        if (_dataCatchupCallbacks.TryGetValue(smallID, out var callback))
+        {
+            _dataCatchupCallbacks.Remove(smallID);
+
+            callback?.InvokeSafe(this, playerID, "executing data catchup callback");
+
+            caughtUp = true;
+        }
+
+        _dataCaughtUpPlayers.Add(smallID);
+
+        return caughtUp;
     }
 
     public void HookOnRegistered(NetworkEntityDelegate registeredCallback)
@@ -133,6 +164,27 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
             _registeredCallback += registeredCallback;
         }
     }
+
+    public void HookOnDataCatchup(PlayerID playerID, NetworkEntityPlayerDelegate dataCatchupCallback)
+    {
+        if (HasDataCaughtUp(playerID))
+        {
+            dataCatchupCallback?.Invoke(this, playerID);
+        }
+        else
+        {
+            byte smallID = playerID.SmallID;
+
+            if (!_dataCatchupCallbacks.ContainsKey(smallID))
+            {
+                _dataCatchupCallbacks[smallID] = null;
+            }
+
+            _dataCatchupCallbacks[smallID] += dataCatchupCallback;
+        }
+    }
+
+    public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID);
 
     public void Queue(ushort queuedId)
     {

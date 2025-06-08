@@ -32,6 +32,7 @@ public static class NetworkEntityManager
     {
         CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
         IDManager.OnEntityRegistered += OnEntityRegistered;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
     public static void OnCleanupIds()
@@ -100,6 +101,14 @@ public static class NetworkEntityManager
             }
 
             _entityRegisteredCallbacks.Remove(id);
+        }
+    }
+
+    private static void OnPlayerLeft(PlayerID playerID)
+    {
+        foreach (var entity in IDManager.RegisteredEntities.IDEntityLookup.Values)
+        {
+            entity.OnPlayerLeft(playerID);
         }
     }
 

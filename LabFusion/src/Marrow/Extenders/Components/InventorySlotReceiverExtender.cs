@@ -5,6 +5,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using UnityEngine;
 
 namespace LabFusion.Marrow.Extenders;
 
@@ -36,11 +37,11 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
     {
         foreach (var component in Components)
         {
-            OnEntityCatchup(component, entity, player);
+            OnEntityDataCatchup(component, entity, player);
         }
     }
 
-    private void OnEntityCatchup(InventorySlotReceiver receiver, NetworkEntity entity, PlayerID player)
+    private void OnEntityDataCatchup(InventorySlotReceiver receiver, NetworkEntity entity, PlayerID player)
     {
         if (receiver._slottedWeapon == null)
         {
@@ -54,6 +55,14 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             return;
         }
 
+        weaponEntity.HookOnDataCatchup(player, (weaponEntity, playerID) =>
+        {
+            OnWeaponSlotCatchup(weaponEntity, receiver, entity, player);
+        });
+    }
+
+    private void OnWeaponSlotCatchup(NetworkEntity weaponEntity, InventorySlotReceiver receiver, NetworkEntity slotEntity, PlayerID player)
+    {
         byte? index = (byte?)GetIndex(receiver);
 
         if (!index.HasValue)
@@ -63,9 +72,9 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
 
         var data = new InventorySlotInsertData()
         {
-            SlotEntityID = entity.ID,
-            WeaponID = weaponEntity.ID,
+            SlotEntityID = slotEntity.ID,
             SlotIndex = index.Value,
+            WeaponID = weaponEntity.ID,
         };
 
         MessageRelay.RelayModule<InventorySlotInsertMessage, InventorySlotInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
