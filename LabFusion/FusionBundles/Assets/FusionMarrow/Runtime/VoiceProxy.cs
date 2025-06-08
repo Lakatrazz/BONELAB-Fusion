@@ -41,6 +41,11 @@ namespace LabFusion.Marrow.Integration
             }
             set
             {
+                if (_channel == value)
+                {
+                    return;
+                }
+
                 _channel = value;
 
                 ProcessVoiceProxies();
@@ -56,6 +61,11 @@ namespace LabFusion.Marrow.Integration
             }
             set
             {
+                if (_connectedProxy == value)
+                {
+                    return;
+                }
+
                 _connectedProxy = value;
 
                 ProcessVoiceProxies();
@@ -71,6 +81,11 @@ namespace LabFusion.Marrow.Integration
             }
             set
             {
+                if (_canHearSelf == value)
+                {
+                    return;
+                }
+
                 _canHearSelf = value;
 
                 if (!value && VoiceSource != null && VoiceSource.ID == PlayerIDManager.LocalSmallID)
@@ -89,6 +104,11 @@ namespace LabFusion.Marrow.Integration
             }
             set
             {
+                if (_inputID == value)
+                {
+                    return;
+                }
+
                 _inputID = value;
 
                 ProcessVoiceProxies();
@@ -100,9 +120,33 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public VoiceSource VoiceSource => _voiceSource;
 
+        public bool Enabled { get; private set; } = false;
+
+        private bool _hasNetworkEntity = false;
+        public bool HasNetworkEntity
+        {
+            get
+            {
+                return _hasNetworkEntity;
+            }
+            set
+            {
+                if (_hasNetworkEntity == value)
+                {
+                    return;
+                }
+
+                _hasNetworkEntity = value;
+
+                ProcessVoiceProxies();
+            }
+        }
+
         private void Awake()
         {
             HashTable.AddComponent(GameObjectHasher.GetHierarchyHash(gameObject), this);
+
+            Proxies.Add(this);
 
             if (NetworkSceneManager.IsLevelNetworked)
             {
@@ -114,16 +158,18 @@ namespace LabFusion.Marrow.Integration
         private void OnDestroy()
         {
             HashTable.RemoveComponent(this);
+
+            Proxies.RemoveAll(p => p == this);
         }
 
         private void OnEnable()
         {
-            Proxies.Add(this);
+            Enabled = true;
         }
 
         private void OnDisable()
         {
-            Proxies.RemoveAll(p => p == this);
+            Enabled = false;
         }
 
         private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
@@ -217,7 +263,7 @@ namespace LabFusion.Marrow.Integration
             }
             else if (!string.IsNullOrWhiteSpace(Channel))
             {
-                listeningProxy = Proxies.Find(p => p != this && p.Channel == Channel && !p.ConnectedProxy);
+                listeningProxy = Proxies.Find(ProxyChannelPredicate);
             }
 
             if (listeningProxy != null)
@@ -231,6 +277,32 @@ namespace LabFusion.Marrow.Integration
 
                 VoiceSource.ID = inputID;
             }
+        }
+
+        [HideFromIl2Cpp]
+        private bool ProxyChannelPredicate(VoiceProxy proxy)
+        {
+            if (proxy == this)
+            {
+                return false;
+            }
+
+            if (proxy.Channel != Channel)
+            {
+                return false;
+            }
+
+            if (proxy.ConnectedProxy != null)
+            {
+                return false;
+            }
+
+            if (!proxy.HasNetworkEntity && !proxy.Enabled)
+            {
+                return false;
+            }
+
+            return true;
         }
 #else
         [Tooltip("The default channel that this VoiceProxy will listen for. If another VoiceProxy with the same channel is receiving input, then it will play back.")]

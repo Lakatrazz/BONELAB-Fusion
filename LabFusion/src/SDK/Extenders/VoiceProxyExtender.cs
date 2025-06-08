@@ -13,6 +13,8 @@ public class VoiceProxyExtender : EntityComponentArrayExtender<VoiceProxy>
         foreach (var component in components)
         {
             Cache.Add(component, entity);
+
+            component.HasNetworkEntity = true;
         }
     }
 
@@ -21,6 +23,8 @@ public class VoiceProxyExtender : EntityComponentArrayExtender<VoiceProxy>
         foreach (var component in components)
         {
             Cache.Remove(component);
+
+            component.HasNetworkEntity = false;
         }
     }
 }
