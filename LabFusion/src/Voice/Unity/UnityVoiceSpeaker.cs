@@ -55,10 +55,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         {
             float value = BitConverter.ToSingle(decompressed, i) * logarithmicVolume;
 
-            foreach (var source in sources)
-            {
-                source.StreamFilter.ReadingQueue.Enqueue(value);
-            }
+            VoiceSourceManager.EnqueueSample(sources, value);
 
             amplitude += Math.Abs(value);
             sampleCount++;
@@ -71,10 +68,6 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
         Amplitude = amplitude;
 
-        foreach (var source in sources)
-        {
-            source.ReceivingInput = true;
-            source.Amplitude = amplitude;
-        }
+        VoiceSourceManager.SetAmplitude(sources, amplitude);
     }
 }

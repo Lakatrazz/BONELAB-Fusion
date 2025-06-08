@@ -432,7 +432,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             HeadUI.UpdateScale(RigRefs.RigManager);
 
-            VoiceSource.SetVoiceRange(RigRefs.RigManager.avatar.height);
+            VoiceSource?.SetVoiceRange(RigRefs.RigManager.avatar.height);
         }
     }
 
@@ -477,11 +477,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _networkEntity = null;
         _playerID = null;
 
-        if (VoiceSource != null)
-        {
-            VoiceSource.DestroyVoiceSource();
-            _voiceSource = null;
-        }
+        VoiceSource?.DestroyVoiceSource();
+        _voiceSource = null;
 
         OnUnregisterUpdates();
     }
@@ -523,7 +520,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
-            VoiceSource.UpdateVoiceSource(DistanceSqr, deltaTime);
+            VoiceSource?.UpdateVoiceSource(DistanceSqr, deltaTime);
 
             remapRig._crouchTarget = RigPose.CrouchTarget;
             remapRig._feetOffset = RigPose.FeetOffset;
@@ -843,9 +840,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _art = new(rigManager);
         _physics = new(rigManager);
 
-        _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
-        _voiceSource.CreateVoiceSource(PlayerID.SmallID);
-
         HookRig();
 
         // Register components for the rig objects
@@ -858,6 +852,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             // Match the current cull state
             OnEntityCull(MarrowEntity.IsCulled);
+
+            // Create voice source
+            _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
+            _voiceSource.CreateVoiceSource(PlayerID.SmallID);
         }
 
         // Run events

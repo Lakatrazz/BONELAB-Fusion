@@ -7,6 +7,7 @@ using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.SDK.Extenders;
 using LabFusion.SDK.Messages;
+using LabFusion.Utilities;
 using LabFusion.Voice;
 
 using MelonLoader;
@@ -26,8 +27,6 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public VoiceProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public static readonly Dictionary<int, VoiceProxy> IDToProxy = new();
-
         public static readonly List<VoiceProxy> Proxies = new();
 
         public static readonly ComponentHashTable<VoiceProxy> HashTable = new();
@@ -42,6 +41,8 @@ namespace LabFusion.Marrow.Integration
             set
             {
                 _channel = value;
+
+                ProcessVoiceProxies();
             }
         }
 
@@ -55,32 +56,41 @@ namespace LabFusion.Marrow.Integration
             set
             {
                 _connectedProxy = value;
+
+                ProcessVoiceProxies();
             }
         }
 
-        private bool _connectedToSelf = false;
-        public bool ConnectedToSelf
+        private bool _canHearSelf = false;
+        public bool CanHearSelf
         {
             get
             {
-                return _connectedToSelf;
+                return _canHearSelf;
             }
             set
             {
-                _connectedToSelf = value;
+                _canHearSelf = value;
+
+                if (!value && VoiceSource != null && VoiceSource.ID == PlayerIDManager.LocalSmallID)
+                {
+                    VoiceSource.ID = -1;
+                }
             }
         }
 
-        private int? _inputtingPlayerID = null;
-        public int? InputtingPlayerID
+        private int? _inputID = null;
+        public int? InputID
         {
             get
             {
-                return _inputtingPlayerID;
+                return _inputID;
             }
             set
             {
-                _inputtingPlayerID = value;
+                _inputID = value;
+
+                ProcessVoiceProxies();
             }
         }
 
@@ -93,8 +103,6 @@ namespace LabFusion.Marrow.Integration
         {
             HashTable.AddComponent(GameObjectHasher.GetHierarchyHash(gameObject), this);
 
-            Proxies.Add(this);
-
             if (NetworkSceneManager.IsLevelNetworked)
             {
                 _voiceSource = VoiceSourceManager.CreateVoiceSource(gameObject, -1);
@@ -104,7 +112,15 @@ namespace LabFusion.Marrow.Integration
         private void OnDestroy()
         {
             HashTable.RemoveComponent(this);
+        }
 
+        private void OnEnable()
+        {
+            Proxies.Add(this);
+        }
+
+        private void OnDisable()
+        {
             Proxies.RemoveAll(p => p == this);
         }
 
@@ -123,9 +139,9 @@ namespace LabFusion.Marrow.Integration
             ConnectedProxy = connectedProxy;
         }
 
-        public void SetConnectedToSelf(bool connectedToSelf)
+        public void SetCanHearSelf(bool value)
         {
-            ConnectedToSelf = connectedToSelf;
+            CanHearSelf = value;
         }
 
         public void ToggleInput(bool input)
@@ -157,17 +173,62 @@ namespace LabFusion.Marrow.Integration
             MessageRelay.RelayModule<VoiceProxyInputMessage, VoiceProxyInputData>(data, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
-        [HideFromIl2Cpp]
-        private void SendChannel(string channel)
+        private static void ProcessVoiceProxies()
         {
+            if (!NetworkSceneManager.IsLevelNetworked)
+            {
+                return;
+            }
 
+            foreach (var proxy in Proxies)
+            {
+                try
+                {
+                    proxy.ProcessVoiceProxy();
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("processing VoiceProxy", e);
+                }
+            }
+        }
+
+        private void ProcessVoiceProxy()
+        {
+            VoiceSource.ID = -1;
+
+            VoiceProxy listeningProxy = null;
+
+            if (ConnectedProxy != null)
+            {
+                listeningProxy = ConnectedProxy;
+            }
+            else if (!string.IsNullOrWhiteSpace(Channel))
+            {
+                listeningProxy = Proxies.Find(p => p != this && p.Channel == Channel && !p.ConnectedProxy);
+            }
+
+            if (listeningProxy != null)
+            {
+                int inputID = listeningProxy.InputID ?? -1;
+
+                if (inputID == PlayerIDManager.LocalSmallID && !CanHearSelf)
+                {
+                    inputID = -1;
+                }
+
+                VoiceSource.ID = inputID;
+            }
         }
 #else
+        [Tooltip("The default channel that this VoiceProxy will listen for. If another VoiceProxy with the same channel is receiving input, then it will play back.")]
         public string DefaultChannel = null;
 
+        [Tooltip("A specific VoiceProxy that this VoiceProxy will listen for. If the connected proxy is receiving input, then it will play back.")]
         public VoiceProxy DefaultConnectedProxy = null;
 
-        public bool ConnectedToSelf = false;
+        [Tooltip("Whether or not this VoiceProxy is able to play the Local Player's voice back to them.")]
+        public bool CanHearSelf = false;
 
         public void SetChannelString(string channel)
         {
@@ -181,7 +242,7 @@ namespace LabFusion.Marrow.Integration
         {
         }
 
-        public void SetConnectedToSelf(bool connectedToSelf)
+        public void SetCanHearSelf(bool value)
         {
         }
 

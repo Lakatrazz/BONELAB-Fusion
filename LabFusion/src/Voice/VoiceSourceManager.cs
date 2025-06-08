@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using LabFusion.Utilities;
+
+using UnityEngine;
 
 namespace LabFusion.Voice;
 
@@ -7,6 +9,37 @@ public static class VoiceSourceManager
     public static List<VoiceSource> ActiveVoices { get; } = new();
 
     public static IEnumerable<VoiceSource> GetVoicesByID(int id) => ActiveVoices.Where(voice => voice.ID == id);
+
+    public static void EnqueueSample(IEnumerable<VoiceSource> sources, float sample)
+    {
+        foreach (var source in sources)
+        {
+            try
+            {
+                source.StreamFilter.Enqueue(sample);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("enqueueing VoiceSource sample", e);
+            }
+        }
+    }
+
+    public static void SetAmplitude(IEnumerable<VoiceSource> sources, float amplitude)
+    {
+        foreach (var source in sources)
+        {
+            try
+            {
+                source.ReceivingInput = true;
+                source.Amplitude = amplitude;
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("setting VoiceSource amplitude", e);
+            }
+        }
+    }
 
     public static VoiceSource CreateVoiceSource(int id)
     {

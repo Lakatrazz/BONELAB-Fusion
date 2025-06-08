@@ -3,6 +3,7 @@
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 using LabFusion.Audio;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -12,6 +13,8 @@ using System;
 
 public sealed class UnityVoiceReceiver : IVoiceReceiver
 {
+    private static readonly float[] SampleBuffer = new float[AudioInfo.OutputSampleRate];
+
     private byte[] _uncompressedData = null;
 
     private bool _hasVoiceActivity = false;
@@ -130,6 +133,9 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         for (int i = 0; i < sampleCount; i++)
         {
             float sample = InteropUtilities.FloatArrayFastRead(pointer, pointerSize, i) * VoiceVolume.DefaultSampleMultiplier;
+
+            SampleBuffer[i] = sample;
+
             _amplitude += Math.Abs(sample);
 
             int elementPosition = i * elementSize;
@@ -169,6 +175,36 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         {
             _amplitude = 0f;
         }
+        else
+        {
+            SendToSources(SampleBuffer, sampleCount);
+        }
+    }
+
+    private static void SendToSources(float[] buffer, int sampleCount)
+    {
+        var sources = VoiceSourceManager.GetVoicesByID(PlayerIDManager.LocalSmallID);
+
+        if (!sources.Any())
+        {
+            return;
+        }
+
+        float volume = VoiceVolume.GetVolumeMultiplier();
+        float logarithmicVolume = volume * volume;
+
+        float amplitude = 0f;
+
+        for (var i = 0; i < sampleCount; i++)
+        {
+            float sample = buffer[i] * logarithmicVolume;
+
+            VoiceSourceManager.EnqueueSample(sources, sample);
+
+            amplitude += Math.Abs(sample);
+        }
+
+        VoiceSourceManager.SetAmplitude(sources, amplitude);
     }
 
     private bool _wasTalking = false;

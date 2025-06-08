@@ -40,11 +40,11 @@ public class VoiceProxyInputMessage : ModuleMessageHandler
     {
         if (data.Input)
         {
-            proxy.InputtingPlayerID = data.PlayerID;
+            proxy.InputID = data.PlayerID;
         }
         else
         {
-            proxy.InputtingPlayerID = null;
+            proxy.InputID = null;
         }
     }
 }

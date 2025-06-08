@@ -6,6 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 using System;
+
 using UnityEngine;
 
 namespace LabFusion.Marrow.Integration
@@ -15,13 +16,13 @@ namespace LabFusion.Marrow.Integration
     {
         private SerializedProperty _defaultChannelProperty;
         private SerializedProperty _defaultConnectedProxyProperty;
-        private SerializedProperty _connectedToSelfProperty;
+        private SerializedProperty _canHearSelfProperty;
 
         public void OnEnable()
         {
             _defaultChannelProperty = serializedObject.FindProperty(nameof(VoiceProxy.DefaultChannel));
             _defaultConnectedProxyProperty = serializedObject.FindProperty(nameof(VoiceProxy.DefaultConnectedProxy));
-            _connectedToSelfProperty = serializedObject.FindProperty(nameof(VoiceProxy.ConnectedToSelf));
+            _canHearSelfProperty = serializedObject.FindProperty(nameof(VoiceProxy.CanHearSelf));
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -54,8 +55,8 @@ namespace LabFusion.Marrow.Integration
             var defaultConnectedProxy = new PropertyField(_defaultConnectedProxyProperty);
             root.Add(defaultConnectedProxy);
 
-            var connectedToSelf = new PropertyField(_connectedToSelfProperty);
-            root.Add(connectedToSelf);
+            var canHearSelf = new PropertyField(_canHearSelfProperty);
+            root.Add(canHearSelf);
 
             if (proxy.TryGetComponent<AudioSource>(out _))
             {
@@ -95,7 +96,7 @@ namespace LabFusion.Marrow.Integration
 
             Action<string> setChannelAction = proxy.SetChannelString;
             Action<VoiceProxy> setConnectedProxyAction = proxy.SetConnectedProxy;
-            Action<bool> setConnectedToSelfAction = proxy.SetConnectedToSelf;
+            Action<bool> setCanHearSelfAction = proxy.SetCanHearSelf;
 
             if (!string.IsNullOrWhiteSpace(proxy.DefaultChannel))
             {
@@ -109,10 +110,10 @@ namespace LabFusion.Marrow.Integration
                 setConnectedProxyCall.PersistentArguments[0].Object = proxy.DefaultConnectedProxy;
             }
 
-            if (proxy.ConnectedToSelf)
+            if (proxy.CanHearSelf)
             {
-                var setConnectedToSelfCall = ultEvent.AddPersistentCall(setConnectedToSelfAction);
-                setConnectedToSelfCall.PersistentArguments[0].Bool = proxy.ConnectedToSelf;
+                var setCanHearSelfCall = ultEvent.AddPersistentCall(setCanHearSelfAction);
+                setCanHearSelfCall.PersistentArguments[0].Bool = proxy.CanHearSelf;
             }
         }
     }

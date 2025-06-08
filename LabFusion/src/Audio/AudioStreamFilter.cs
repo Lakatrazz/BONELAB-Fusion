@@ -14,11 +14,24 @@ public sealed class AudioStreamFilter : MonoBehaviour
 {
     public AudioStreamFilter(IntPtr intPtr) : base(intPtr) { }
 
+    public const int QueueCapacity = 8192;
+
     [HideFromIl2Cpp]
-    public Queue<float> ReadingQueue { get; } = new();
+    public Queue<float> ReadingQueue { get; } = new(QueueCapacity);
 
     [HideFromIl2Cpp]
     public float[] ReadingArray { get; } = new float[AudioInfo.OutputSampleRate];
+
+    [HideFromIl2Cpp]
+    public void Enqueue(float sample)
+    {
+        if (ReadingQueue.Count >= QueueCapacity)
+        {
+            ReadingQueue.Dequeue();
+        }
+
+        ReadingQueue.Enqueue(sample);
+    }
 
     public unsafe void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
     {
