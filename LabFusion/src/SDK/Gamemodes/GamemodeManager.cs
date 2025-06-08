@@ -57,7 +57,7 @@ public static class GamemodeManager
 
     public static event Action<float> OnStartTimerChanged;
 
-    private static float _startTimer = DefaultTime;
+    private static float _startTimer = DefaultStartTime;
     public static float StartTimer
     {
         get
@@ -75,7 +75,7 @@ public static class GamemodeManager
     private static bool _startTimerActive = false;
     public static bool StartTimerActive => _startTimerActive;
 
-    public const float DefaultTime = 30f;
+    public const float DefaultStartTime = 30f;
 
     public const string NotificationTag = "Gamemode";
 
@@ -250,7 +250,7 @@ public static class GamemodeManager
 
             Notifier.Send(new Notification()
             {
-                Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
+                Message = $"{ActiveGamemode.Title} is ready! Starting in {GetInitialStartTime()} seconds!",
                 Title = "Gamemode Ready",
                 Tag = NotificationTag,
                 Type = NotificationType.SUCCESS,
@@ -262,7 +262,7 @@ public static class GamemodeManager
 
         _startTimerActive = true;
 
-        StartTimer = DefaultTime;
+        StartTimer = GetInitialStartTime();
     }
 
     private static void StopReadyTimer()
@@ -284,7 +284,17 @@ public static class GamemodeManager
 
         _startTimerActive = false;
 
-        StartTimer = DefaultTime;
+        StartTimer = GetInitialStartTime();
+    }
+
+    private static float GetInitialStartTime()
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return DefaultStartTime;
+        }
+
+        return LobbyInfoManager.LobbyInfo.TimeBetweenGamemodeRounds;
     }
 
     /// <summary>

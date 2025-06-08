@@ -18,6 +18,7 @@ public static class MenuGamemodeRounds
     public static TMP_Text SelectedLevelRotationText { get; private set; } = null;
     public static IntElement RotationRoundsElement { get; private set; } = null;
     public static BoolElement ShuffleLevelsElement { get; private set; } = null;
+    public static IntElement TimeBetweenRoundsElement { get; private set; } = null;
 
     public static MenuPage LevelRotationSettingsPage { get; private set; } = null;
     public static StringElement LevelRotationNameElement { get; private set; } = null;
@@ -55,6 +56,12 @@ public static class MenuGamemodeRounds
             .WithTitle("Shuffle Levels")
             .WithValue(GamemodeRoundManager.Settings.ShuffleLevels);
         ShuffleLevelsElement.OnValueChanged += OnShuffleLevelsChanged;
+
+        TimeBetweenRoundsElement = roundsLayout.Find("button_TimeBetweenRounds").GetComponent<IntElement>()
+            .WithTitle("Time Between Rounds")
+            .WithLimits(1, 60)
+            .WithValue(GamemodeRoundManager.Settings.TimeBetweenRounds);
+        TimeBetweenRoundsElement.OnValueChanged += OnTimeBetweenRoundsChanged;
 
         // Level rotation settings page
         var levelRotationSettingsPage = roundsPage.transform.Find("page_LevelRotationSettings");
@@ -230,6 +237,12 @@ public static class MenuGamemodeRounds
     private static void OnShuffleLevelsChanged(bool value)
     {
         GamemodeRoundManager.Settings.ShuffleLevels = value;
+        GamemodeRoundManager.SaveSettings();
+    }
+
+    private static void OnTimeBetweenRoundsChanged(int value)
+    {
+        GamemodeRoundManager.Settings.TimeBetweenRounds = value;
         GamemodeRoundManager.SaveSettings();
     }
 

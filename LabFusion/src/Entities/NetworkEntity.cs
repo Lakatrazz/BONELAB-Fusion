@@ -148,11 +148,18 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
             caughtUp = true;
         }
 
-        _dataCaughtUpPlayers.Add(smallID);
+        if (!_dataCaughtUpPlayers.Contains(smallID))
+        {
+            _dataCaughtUpPlayers.Add(smallID);
+        }
 
         return caughtUp;
     }
 
+    /// <summary>
+    /// Registers a callback for when the NetworkEntity is registered. If the entity is already registered, this will invoke immediately.
+    /// </summary>
+    /// <param name="registeredCallback"></param>
     public void HookOnRegistered(NetworkEntityDelegate registeredCallback)
     {
         if (IsRegistered)
@@ -165,6 +172,12 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         }
     }
 
+    /// <summary>
+    /// Registers a callback for when a Player requests data catchup for a NetworkEntity. If they've already requested it, the callback invokes immediately.
+    /// <para>Hook into this when catchup depends on multiple NetworkEntities.</para>
+    /// </summary>
+    /// <param name="playerID"></param>
+    /// <param name="dataCatchupCallback"></param>
     public void HookOnDataCatchup(PlayerID playerID, NetworkEntityPlayerDelegate dataCatchupCallback)
     {
         if (HasDataCaughtUp(playerID))
@@ -184,6 +197,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         }
     }
 
+    /// <summary>
+    /// Returns if this NetworkEntity has already had data catchup requested from a specific Player.
+    /// </summary>
+    /// <param name="playerID"></param>
+    /// <returns></returns>
     public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID);
 
     public void Queue(ushort queuedId)

@@ -58,6 +58,9 @@ public class LobbyInfo
     [JsonPropertyName("gamemodeBarcode")]
     public string GamemodeBarcode { get; set; }
 
+    [JsonPropertyName("timeBetweenGamemodeRounds")]
+    public int TimeBetweenGamemodeRounds { get; set; } = 30;
+
     // Settings
     [JsonPropertyName("nameTags")]
     public bool NameTags { get; set; }
@@ -142,6 +145,8 @@ public class LobbyInfo
             GamemodeTitle = GamemodeManager.ActiveGamemode.Title;
             GamemodeBarcode = GamemodeManager.ActiveGamemode.Barcode;
         }
+
+        TimeBetweenGamemodeRounds = GamemodeRoundManager.Settings.TimeBetweenRounds;
 
         // Settings
         NameTags = SavedServerSettings.NameTags.Value;

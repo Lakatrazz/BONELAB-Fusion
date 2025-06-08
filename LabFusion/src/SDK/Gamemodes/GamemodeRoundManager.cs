@@ -29,6 +29,9 @@ public class GamemodeRoundSettings
     [JsonPropertyName("shuffleLevels")]
     public bool ShuffleLevels { get; set; } = true;
 
+    [JsonPropertyName("timeBetweenRounds")]
+    public int TimeBetweenRounds { get; set; } = 30;
+
     public GamemodeLevelRotations GetRotationsByGamemode(string gamemodeBarcode)
     {
         foreach (var rotation in LevelRotations)
