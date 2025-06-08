@@ -33,7 +33,13 @@ public sealed class AudioStreamFilter : MonoBehaviour
         ReadingQueue.Enqueue(sample);
     }
 
-    public unsafe void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
+    private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
+    {
+        ProcessAudioFilter(data, channels);
+    }
+
+    [HideFromIl2Cpp]
+    public void ProcessAudioFilter(Il2CppStructArray<float> data, int channels)
     {
         int length = data.Length;
 

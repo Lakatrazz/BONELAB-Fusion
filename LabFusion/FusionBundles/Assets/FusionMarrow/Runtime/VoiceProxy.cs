@@ -1,5 +1,6 @@
 #if MELONLOADER
 using Il2CppInterop.Runtime.Attributes;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -106,6 +107,7 @@ namespace LabFusion.Marrow.Integration
             if (NetworkSceneManager.IsLevelNetworked)
             {
                 _voiceSource = VoiceSourceManager.CreateVoiceSource(gameObject, -1);
+                _voiceSource.OverrideFilter = true;
             }
         }
 
@@ -122,6 +124,16 @@ namespace LabFusion.Marrow.Integration
         private void OnDisable()
         {
             Proxies.RemoveAll(p => p == this);
+        }
+
+        private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
+        {
+            if (VoiceSource == null || !VoiceSource.Playing)
+            {
+                return;
+            }
+
+            VoiceSource.StreamFilter.ProcessAudioFilter(data, channels);
         }
 
         public void SetChannelString(string channel)

@@ -22,6 +22,26 @@ public class VoiceSource : MonoBehaviour
     [HideFromIl2Cpp]
     public AudioStreamFilter StreamFilter { get; private set; } = null;
 
+    private bool _overrideFilter = false;
+    public bool OverrideFilter
+    {
+        get
+        {
+            return _overrideFilter;
+        }
+        set
+        {
+            if (_overrideFilter == value)
+            {
+                return;
+            }
+
+            _overrideFilter = value;
+
+            StreamFilter.enabled = Playing && !value;
+        }
+    }
+
     [HideFromIl2Cpp]
     public float Amplitude { get; set; } = 0f;
 
@@ -136,7 +156,7 @@ public class VoiceSource : MonoBehaviour
 
     private void PlaySources()
     {
-        StreamFilter.enabled = true;
+        StreamFilter.enabled = !OverrideFilter;
         AudioSource.Play();
 
         Amplitude = 0f;
