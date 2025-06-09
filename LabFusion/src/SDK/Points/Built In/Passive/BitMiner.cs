@@ -36,14 +36,14 @@ public class BitMiner : PointItem
 
     private static string CreateNextLevelDescription(int level)
     {
-        return $"\n\nNext Level: {level} - Grants {level + 1} bits per minute.";
+        return $"\nNext: {level + 1} Bits/Player/Minute";
     }
 
     private static string CreateDescription(int bits)
     {
         string suffix = bits != 1 ? "s" : "";
 
-        return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} for every other player per minute you are in a Fusion lobby.";
+        return $"<size=18>Hires NullMen to extract void energy from the depths of MythOS.\n\nCurrent: {bits} Bit{suffix}/Player/Minute";
     }
 
     public override void OnLateUpdate()
