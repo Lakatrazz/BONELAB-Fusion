@@ -109,7 +109,7 @@ public class ConstraintCreateData : INetSerializable
 [Net.DelayWhileTargetLoading]
 public class ConstraintCreateMessage : ModuleMessageHandler
 {
-    public const int MaxConstraintsPerSecond = 2;
+    public const int MaxConstraintsPerSecond = 4;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

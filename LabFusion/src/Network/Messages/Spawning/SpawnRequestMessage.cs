@@ -51,7 +51,7 @@ public class SpawnRequestMessage : NativeMessageHandler
 
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
-    public const int MaxSpawnsPerSecond = 5;
+    public const int MaxSpawnsPerSecond = 15;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
