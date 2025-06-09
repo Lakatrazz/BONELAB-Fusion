@@ -362,7 +362,7 @@ namespace LabFusion.Marrow.Proxies
             ItemNameLabel.Title = pointItem.Title;
             ItemNameLabel.Color = PointItemManager.ParseColor(pointItem.Rarity);
 
-            ItemDescriptionLabel.Title = pointItem.Description;
+            ItemDescriptionLabel.Title = pointItem.CurrentDescription;
             ItemPriceLabel.Title = PointItemManager.ParsePrice(pointItem.CurrentPrice, pointItem.IsMaxUpgrade && pointItem.IsUnlocked);
 
             ItemBuyElement.Interactable = true;
