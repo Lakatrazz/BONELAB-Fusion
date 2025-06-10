@@ -192,7 +192,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         for (var i = 0; i < sampleCount; i++)
         {
-            float sample = buffer[i] * logarithmicVolume * VoiceVolume.DefaultSampleMultiplier;
+            float sample = buffer[i] * logarithmicVolume;
 
             VoiceSourceManager.EnqueueSample(sources, sample);
 
