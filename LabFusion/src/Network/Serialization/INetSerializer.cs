@@ -30,6 +30,8 @@ public interface INetSerializer
 
     void SerializeValue(ref byte[] value);
 
+    void SerializeValue(ref ArraySegment<byte> value);
+
     void SerializeValue(ref string[] value);
 
     void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum;

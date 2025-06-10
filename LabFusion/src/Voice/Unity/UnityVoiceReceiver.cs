@@ -15,7 +15,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 {
     private static readonly float[] SampleBuffer = new float[AudioInfo.OutputSampleRate];
 
-    private byte[] _uncompressedData = null;
+    private byte[] _encodedData = null;
 
     private bool _hasVoiceActivity = false;
 
@@ -34,9 +34,9 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         return _amplitude;
     }
 
-    public byte[] GetCompressedVoiceData()
+    public byte[] GetEncodedData()
     {
-        return VoiceCompressor.CompressVoiceData(_uncompressedData);
+        return _encodedData;
     }
 
     public bool HasVoiceActivity()
@@ -51,7 +51,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     private void ClearData()
     {
-        _uncompressedData = null;
+        _encodedData = null;
         _hasVoiceActivity = false;
         _amplitude = 0f;
     }
@@ -107,11 +107,11 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
             return;
         }
 
-        var audioData = new Il2CppStructArray<float>(sampleCount);
+        var rawData = new Il2CppStructArray<float>(sampleCount);
 
-        _voiceClip.GetData(audioData, _lastSample);
+        _voiceClip.GetData(rawData, _lastSample);
 
-        var pointer = audioData.Pointer;
+        var pointer = rawData.Pointer;
         var pointerSize = IntPtr.Size;
 
         if (_loopedData)
@@ -124,31 +124,20 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
             _lastSample = position;
         }
 
-        int elementSize = sizeof(float);
-        byte[] byteArray = new byte[sampleCount * elementSize];
+        float[] samples = new float[sampleCount];
+
+        InteropUtilities.Copy(pointer, pointerSize, sampleCount, samples);
 
         bool isTalking = false;
         _amplitude = 0f;
 
         for (int i = 0; i < sampleCount; i++)
         {
-            float sample = InteropUtilities.FloatArrayFastRead(pointer, pointerSize, i) * VoiceVolume.DefaultSampleMultiplier;
+            float sample = samples[i] * VoiceVolume.DefaultSampleMultiplier;
 
             SampleBuffer[i] = sample;
 
             _amplitude += Math.Abs(sample);
-
-            int elementPosition = i * elementSize;
-
-            unsafe
-            {
-                byte* p = (byte*)&sample;
-
-                for (var j = 0; j < elementSize; j++)
-                {
-                    byteArray[j + elementPosition] = *p++;
-                }
-            }
 
             // Check for talking
             if (isTalking)
@@ -166,18 +155,24 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         CheckTalkingTimeout(ref isTalking);
 
-        _wasTalking = isTalking;
-
-        _uncompressedData = byteArray;
         _hasVoiceActivity = isTalking;
 
         if (!isTalking)
         {
             _amplitude = 0f;
+
+            _encodedData = null;
         }
         else
         {
             SendToSources(SampleBuffer, sampleCount);
+
+            // Write encoded data
+            short[] smallSamples = new short[sampleCount];
+
+            VoiceConverter.CopySamples(samples, smallSamples, sampleCount);
+
+            _encodedData = VoiceConverter.Encode(smallSamples);
         }
     }
 
@@ -197,7 +192,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         for (var i = 0; i < sampleCount; i++)
         {
-            float sample = buffer[i] * logarithmicVolume;
+            float sample = buffer[i] * logarithmicVolume * VoiceVolume.DefaultSampleMultiplier;
 
             VoiceSourceManager.EnqueueSample(sources, sample);
 
@@ -206,8 +201,6 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         VoiceSourceManager.SetAmplitude(sources, amplitude);
     }
-
-    private bool _wasTalking = false;
 
     private void CheckTalkingTimeout(ref bool isTalking)
     {
@@ -226,7 +219,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     public void Disable()
     {
-        _uncompressedData = null;
+        _encodedData = null;
         _hasVoiceActivity = false;
     }
 }

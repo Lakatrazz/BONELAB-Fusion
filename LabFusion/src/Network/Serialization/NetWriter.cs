@@ -237,6 +237,8 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void SerializeValue(ref byte[] value) => Write(value);
 
+    public void SerializeValue(ref ArraySegment<byte> value) => Write(value);
+
     public void SerializeValue(ref string[] value) => Write(value);
 
     public void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum => Write(value);

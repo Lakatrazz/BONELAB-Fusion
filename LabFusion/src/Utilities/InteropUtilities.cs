@@ -28,4 +28,19 @@ public static class InteropUtilities
     {
         return *(float*)((byte*)IntPtr.Add(pointer, 4 * size).ToPointer() + (nint)index * (nint)sizeof(float));
     }
+
+    /// <summary>
+    /// Copies all floats from an Il2Cpp float struct array into a managed float array.
+    /// </summary>
+    /// <param name="pointer">The pointer of the array.</param>
+    /// <param name="size"><see cref="IntPtr.Size"/>.</param>
+    /// <param name="length">The length of the array.</param>
+    /// <param name="array">The managed array to copy into.</param>
+    public static void Copy(IntPtr pointer, int size, int length, float[] array)
+    {
+        for (var i = 0; i < length; i++)
+        {
+            array[i] = FloatArrayFastRead(pointer, size, i);
+        }
+    }
 }

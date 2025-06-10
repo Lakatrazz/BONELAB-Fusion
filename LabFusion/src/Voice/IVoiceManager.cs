@@ -133,7 +133,7 @@ public abstract class VoiceManager : IVoiceManager
 
         if (_receiver.HasVoiceActivity())
         {
-            PlayerSender.SendPlayerVoiceChat(_receiver.GetCompressedVoiceData());
+            PlayerSender.SendPlayerVoiceChat(_receiver.GetEncodedData());
         }
     }
 

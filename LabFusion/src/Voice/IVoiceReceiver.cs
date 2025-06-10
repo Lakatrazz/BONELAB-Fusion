@@ -6,7 +6,7 @@ public interface IVoiceReceiver
 
     bool HasVoiceActivity();
 
-    byte[] GetCompressedVoiceData();
+    byte[] GetEncodedData();
 
     void UpdateVoice(bool enabled);
 

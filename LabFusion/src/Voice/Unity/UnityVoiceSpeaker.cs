@@ -39,7 +39,13 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     public override void OnVoiceDataReceived(byte[] data)
     {
-        byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
+        short[] smallSamples = VoiceConverter.Decode(data);
+
+        int sampleCount = smallSamples.Length;
+
+        float[] samples = new float[sampleCount];
+
+        VoiceConverter.CopySamples(smallSamples, samples, sampleCount);
 
         // Convert the byte array back to a float array and enqueue it
         float volume = VoiceVolume.GetVolumeMultiplier() * Volume;
@@ -47,18 +53,16 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         float logarithmicVolume = volume * volume;
 
         float amplitude = 0f;
-        int sampleCount = 0;
 
         var sources = VoiceSourceManager.GetVoicesByID(ID.SmallID);
 
-        for (int i = 0; i < decompressed.Length; i += sizeof(float))
+        for (int i = 0; i < sampleCount; i++)
         {
-            float value = BitConverter.ToSingle(decompressed, i) * logarithmicVolume;
+            float sample = samples[i] * logarithmicVolume * VoiceVolume.DefaultSampleMultiplier;
 
-            VoiceSourceManager.EnqueueSample(sources, value);
+            VoiceSourceManager.EnqueueSample(sources, sample);
 
-            amplitude += Math.Abs(value);
-            sampleCount++;
+            amplitude += Math.Abs(sample);
         }
 
         if (sampleCount > 0)

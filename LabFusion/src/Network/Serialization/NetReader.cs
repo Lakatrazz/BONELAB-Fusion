@@ -283,6 +283,8 @@ public sealed class NetReader : INetSerializer, IDisposable
 
     public void SerializeValue(ref byte[] value) => value = ReadBytes();
 
+    public void SerializeValue(ref ArraySegment<byte> value) => value = ReadBytes();
+
     public void SerializeValue(ref string[] value) => value = ReadStrings();
 
     public void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum => value = ReadEnum<TEnum>();
