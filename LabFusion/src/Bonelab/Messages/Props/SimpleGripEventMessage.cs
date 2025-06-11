@@ -16,27 +16,19 @@ public enum SimpleGripEventType
 
 public class SimpleGripEventData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = NetworkEntityReference.Size + sizeof(byte) * 2;
 
-    public ushort entityId;
-    public byte gripEventIndex;
-    public SimpleGripEventType type;
+    public int? GetSize() => Size;
+
+    public NetworkEntityReference Entity;
+    public byte GripEventIndex;
+    public SimpleGripEventType Type;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref gripEventIndex);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-    }
-
-    public static SimpleGripEventData Create(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
-    {
-        return new SimpleGripEventData()
-        {
-            entityId = entityId,
-            gripEventIndex = gripEventIndex,
-            type = type
-        };
+        serializer.SerializeValue(ref Entity);
+        serializer.SerializeValue(ref GripEventIndex);
+        serializer.SerializeValue(ref Type, Precision.OneByte);
     }
 }
 
@@ -47,9 +39,7 @@ public class SimpleGripEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<SimpleGripEventData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
-
-        if (entity == null)
+        if (!data.Entity.TryGetEntity(out var entity))
         {
             return;
         }
@@ -61,28 +51,32 @@ public class SimpleGripEventMessage : ModuleMessageHandler
             return;
         }
 
-        var gripEvent = extender.GetComponent(data.gripEventIndex);
+        var gripEvent = extender.GetComponent(data.GripEventIndex);
 
         if (gripEvent == null)
         {
             return;
         }
 
-        switch (data.type)
+        try
         {
-            default:
-            case SimpleGripEventType.TRIGGER_DOWN:
-                gripEvent.OnIndexDown.Invoke();
-                break;
-            case SimpleGripEventType.MENU_TAP:
-                gripEvent.OnMenuTapDown.Invoke();
-                break;
-            case SimpleGripEventType.ATTACH:
-                gripEvent.OnAttach.Invoke();
-                break;
-            case SimpleGripEventType.DETACH:
-                gripEvent.OnDetach.Invoke();
-                break;
+            switch (data.Type)
+            {
+                default:
+                case SimpleGripEventType.TRIGGER_DOWN:
+                    gripEvent.OnIndexDown.Invoke();
+                    break;
+                case SimpleGripEventType.MENU_TAP:
+                    gripEvent.OnMenuTapDown.Invoke();
+                    break;
+                case SimpleGripEventType.ATTACH:
+                    gripEvent.OnAttach.Invoke();
+                    break;
+                case SimpleGripEventType.DETACH:
+                    gripEvent.OnDetach.Invoke();
+                    break;
+            }
         }
+        catch { }
     }
 }

@@ -18,6 +18,7 @@ public static class ZoneCullManagerPatches
         typeof(int),
         typeof(MarrowEntity)
     })]
+
     public static void Register(int cullerId, MarrowEntity entity)
     {
         if (!NetworkInfo.HasServer)
@@ -32,9 +33,9 @@ public static class ZoneCullManagerPatches
         {
             return;
         }
-        
+
         // Send message to move entity's active culler
-        var data = EntityZoneRegisterData.Create(networkEntity.ID);
+        var data = new NetworkEntityReference(networkEntity.ID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityZoneRegister, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

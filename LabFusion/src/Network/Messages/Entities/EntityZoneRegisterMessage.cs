@@ -10,37 +10,15 @@ using MelonLoader;
 
 namespace LabFusion.Network;
 
-public class EntityZoneRegisterData : INetSerializable
-{
-    public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int);
-
-    public ushort entityId;
-
-    public void Serialize(INetSerializer serializer)
-    {
-        serializer.SerializeValue(ref entityId);
-    }
-
-    public static EntityZoneRegisterData Create(ushort entityId)
-    {
-        return new EntityZoneRegisterData()
-        {
-            entityId = entityId,
-        };
-    }
-}
-
 public class EntityZoneRegisterMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityZoneRegister;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var data = received.ReadData<EntityZoneRegisterData>();
+        var data = received.ReadData<NetworkEntityReference>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
-
-        if (entity == null)
+        if (!data.TryGetEntity(out var entity))
         {
             return;
         }

@@ -33,33 +33,48 @@ public class RigArt
 
     public void CullArt(bool isInactive)
     {
-        if (isInactive)
+        bool enabled = !isInactive;
+
+        TogglePhysicsRenderers(enabled);
+        ToggleAvatar(enabled);
+        ToggleAmmoPouch(enabled);
+    }
+
+    private void TogglePhysicsRenderers(bool enabled)
+    {
+        if (_physicsRenderers == null)
         {
-            // Hide the renderers on the physics rig like holsters
-            foreach (var renderer in _physicsRenderers)
+            return;
+        }
+
+        foreach (var renderer in _physicsRenderers)
+        {
+            if (renderer == null)
             {
-                renderer.enabled = false;
+                continue;
             }
 
-            // Hide the avatar
-            _rigManager.avatar.gameObject.SetActive(false);
-
-            // Hide the ammo pouch
-            _ammoReceiver.gameObject.SetActive(false);
+            renderer.enabled = enabled;
         }
-        else
+    }
+
+    private void ToggleAvatar(bool enabled)
+    {
+        if (_rigManager == null || _rigManager.avatar == null)
         {
-            // Show the holster renderers
-            foreach (var renderer in _physicsRenderers)
-            {
-                renderer.enabled = true;
-            }
-
-            // Show the avatar
-            _rigManager.avatar.gameObject.SetActive(true);
-
-            // Show the ammo pouch
-            _ammoReceiver.gameObject.SetActive(true);
+            return;
         }
+
+        _rigManager.avatar.gameObject.SetActive(enabled);
+    }
+
+    private void ToggleAmmoPouch(bool enabled)
+    {
+        if (_ammoReceiver == null)
+        {
+            return;
+        }
+
+        _ammoReceiver.gameObject.SetActive(enabled);
     }
 }

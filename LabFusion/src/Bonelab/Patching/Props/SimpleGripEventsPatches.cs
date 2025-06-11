@@ -176,7 +176,12 @@ public static class SimpleGripEventsPatches
 
     private static void SendGripEvent(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
     {
-        var data = SimpleGripEventData.Create(entityId, gripEventIndex, type);
+        var data = new SimpleGripEventData()
+        {
+            Entity = new NetworkEntityReference(entityId),
+            GripEventIndex = gripEventIndex,
+            Type = type,
+        };
 
         MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, NetworkChannel.Reliable, RelayType.ToClients);
     }
