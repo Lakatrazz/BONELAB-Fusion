@@ -191,8 +191,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         OnReregisterUpdates();
 
-        _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
-        _destroySensor.Hook(OnSensorDestroyed);
+        AddDestroySensor();
 
         // Cull the entity if it needs to be
         OnEntityCull(MarrowEntity.IsCulled);
@@ -222,7 +221,23 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _networkEntity = null;
         _marrowEntity = null;
 
+        RemoveDestroySensor();
+
         OnUnregisterUpdates();
+    }
+
+    private void AddDestroySensor()
+    {
+        _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
+        _destroySensor.Hook(OnSensorDestroyed);
+    }
+
+    private void RemoveDestroySensor()
+    {
+        if (_destroySensor != null)
+        {
+            GameObject.Destroy(_destroySensor);
+        }
     }
 
     private void OnSensorDestroyed()

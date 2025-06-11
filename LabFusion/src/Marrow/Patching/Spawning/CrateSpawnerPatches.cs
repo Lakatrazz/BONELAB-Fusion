@@ -9,6 +9,7 @@ using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.Zones;
 
 using UnityEngine;
 
@@ -78,6 +79,7 @@ public static class CrateSpawnerPatches
         // Make sure we actually have a network entity
         if (info.Entity == null)
         {
+            spawner.OnFinishNetworkSpawn(info.Spawned);
             return;
         }
 
@@ -89,14 +91,55 @@ public static class CrateSpawnerPatches
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)
     {
-        // Invoke spawn events
-        spawner.onSpawnEvent?.Invoke(spawner, go);
-
+        // Run listener events
         var poolee = Poolee.Cache.Get(go);
 
-        spawner.OnPooleeSpawn(go);
+        try
+        {
+            if (spawner.gameObject.activeInHierarchy)
+            {
+                spawner.OnPooleeSpawn(go);
+            }
+            else
+            {
+                // ISpawnListenables unregister from CrateSpawners on disable
+                // This can cause problems due to latency if the CrateSpawner itself becomes disabled on a NetworkEntity
+                ManualInvokeListeners(spawner, go);
+            }
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing CrateSpawner.OnPooleeSpawn", e);
+        }
 
         poolee.OnDespawnDelegate += (Action<GameObject>)spawner.OnPooleeDespawn;
+
+        // Invoke on spawn event
+        try
+        {
+            spawner.onSpawnEvent?.Invoke(spawner, go);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing CrateSpawner.onmmSpawnEvent", e);
+        }
+    }
+
+    private static void ManualInvokeListeners(CrateSpawner spawner, GameObject go)
+    {
+        var listeners = spawner.GetComponents<ISpawnListenable>();
+
+        foreach (var listener in listeners)
+        {
+            var monobehaviour = listener.TryCast<MonoBehaviour>();
+
+            if (monobehaviour != null && !monobehaviour.enabled)
+            {
+                continue;
+            }
+
+            listener.OnSpawn(go);
+        }
     }
 
     private static bool IsSingleplayerOnly(CrateSpawner crateSpawner)

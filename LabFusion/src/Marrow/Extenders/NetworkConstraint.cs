@@ -48,8 +48,7 @@ public class NetworkConstraint : IEntityExtender
 
         Cache.Add(Tracker, NetworkEntity);
 
-        _destroySensor = Tracker.gameObject.AddComponent<DestroySensor>();
-        _destroySensor.Hook(OnSensorDestroyed);
+        AddDestroySensor();
     }
 
     private void OnConstraintUnregistered(NetworkEntity entity)
@@ -63,10 +62,7 @@ public class NetworkConstraint : IEntityExtender
             Cache.Remove(Tracker);
         }
 
-        if (_destroySensor != null)
-        {
-            GameObject.Destroy(_destroySensor);
-        }
+        RemoveDestroySensor();
 
         _tracker = null;
         _networkEntity = null;
@@ -85,6 +81,20 @@ public class NetworkConstraint : IEntityExtender
         data.Point2Id = OtherId;
 
         MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
+    }
+
+    private void AddDestroySensor()
+    {
+        _destroySensor = Tracker.gameObject.AddComponent<DestroySensor>();
+        _destroySensor.Hook(OnSensorDestroyed);
+    }
+
+    private void RemoveDestroySensor()
+    {
+        if (_destroySensor != null)
+        {
+            GameObject.Destroy(_destroySensor);
+        }
     }
 
     private void OnSensorDestroyed()

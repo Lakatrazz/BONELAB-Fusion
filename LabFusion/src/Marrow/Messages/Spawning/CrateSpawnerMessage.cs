@@ -1,10 +1,10 @@
 ﻿using LabFusion.Marrow.Patching;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
-using LabFusion.Data;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -12,26 +12,17 @@ namespace LabFusion.Marrow.Messages;
 
 public class CrateSpawnerData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + ComponentHashData.Size;
+    public const int Size = sizeof(ushort) + ComponentPathData.Size;
 
     public int? GetSize() => Size;
 
     public ushort SpawnedID;
-    public ComponentHashData HashData;
+    public ComponentPathData PathData;
 
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref SpawnedID);
-        serializer.SerializeValue(ref HashData);
-    }
-
-    public static CrateSpawnerData Create(ushort spawnedId, ComponentHashData hashData)
-    {
-        return new CrateSpawnerData()
-        {
-            SpawnedID = spawnedId,
-            HashData = hashData,
-        };
+        serializer.SerializeValue(ref PathData);
     }
 }
 
@@ -42,9 +33,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
     {
         var data = received.ReadData<CrateSpawnerData>();
 
-        var crateSpawner = CrateSpawnerPatches.HashTable.GetComponentFromData(data.HashData);
-
-        if (crateSpawner == null)
+        if (!data.PathData.TryGetComponent<CrateSpawner, CrateSpawnerExtender>(CrateSpawnerPatches.HashTable, out var crateSpawner))
         {
             return;
         }
@@ -73,9 +62,11 @@ public class CrateSpawnerMessage : ModuleMessageHandler
 
     public static void SendCrateSpawnerMessage(CrateSpawner crateSpawner, ushort entityID, PlayerID target = null)
     {
-        var hashData = CrateSpawnerPatches.HashTable.GetDataFromComponent(crateSpawner);
-
-        var data = CrateSpawnerData.Create(entityID, hashData);
+        var data = new CrateSpawnerData()
+        {
+            SpawnedID = entityID,
+            PathData = ComponentPathData.CreateFromComponent<CrateSpawner, CrateSpawnerExtender>(crateSpawner, CrateSpawnerPatches.HashTable, CrateSpawnerExtender.Cache),
+        };
 
         if (target != null)
         {
