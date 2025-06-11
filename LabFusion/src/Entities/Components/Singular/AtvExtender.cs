@@ -6,7 +6,7 @@ namespace LabFusion.Entities;
 
 public class AtvExtender : EntityComponentExtender<Atv>
 {
-    public static FusionComponentCache<Atv, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Atv, NetworkEntity> Cache = new();
 
     private Il2CppSystem.Action _onSeatRegistered = null;
     private Il2CppSystem.Action _onSeatDeregistered = null;

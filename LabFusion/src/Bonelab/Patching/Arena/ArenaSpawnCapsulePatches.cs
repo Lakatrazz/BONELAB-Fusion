@@ -4,6 +4,7 @@ using Il2CppSLZ.Bonelab;
 
 using LabFusion.RPC;
 using LabFusion.Scene;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -25,6 +26,15 @@ public static class SpawnCapsuleLaunchSequencePatches
         // If we aren't the level host, don't allow a spawn
         if (!NetworkSceneManager.IsLevelHost)
         {
+            try
+            {
+                __instance.__4__this.OnSpawn?.Invoke();
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("invoking Arena_SpawnCapsule.OnSpawn", e);
+            }
+
             return false;
         }
 

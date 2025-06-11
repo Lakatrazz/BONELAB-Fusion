@@ -6,7 +6,7 @@ namespace LabFusion.Entities;
 
 public class GunExtender : EntityComponentArrayExtender<Gun>
 {
-    public static FusionComponentCache<Gun, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Gun, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity entity, Gun[] components)
     {

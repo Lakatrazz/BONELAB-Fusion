@@ -9,18 +9,18 @@ namespace LabFusion.Bonelab.Messages;
 
 public enum ArenaTransitionType
 {
-    UNKNOWN = 0,
-    ARENA_PLAYER_ENTER = 1,
-    INIT_OBJECTIVE_CONTAINER = 2,
-    ARENA_START_MATCH = 3,
-    START_NEXT_WAVE = 4,
-    ARENA_QUIT_CHALLENGE = 5,
-    ARENA_CANCEL_MATCH = 6,
-    ARENA_RESET_THE_BELL = 7,
-    ARENA_RING_THE_BELL = 8,
-    FAIL_OBJECTIVE_MODE = 9,
-    FAIL_ESCAPE_MODE = 10,
-    SPAWN_LOOT = 11,
+    UNKNOWN,
+    ARENA_PlayerEnter,
+    InitObjectiveContainer,
+    ARENA_StartMatch,
+    StartNextWave,
+    ARENA_QuitChallenge,
+    ARENA_CancelMatch,
+    ARENA_ResetTheBell,
+    ARENA_RingTheBell,
+    FailObjectiveMode,
+    FailEscapeMode,
+    SpawnLoot,
 }
 
 public class ArenaTransitionData : INetSerializable
@@ -56,10 +56,10 @@ public class ArenaTransitionMessage : ModuleMessageHandler
                 default:
                 case ArenaTransitionType.UNKNOWN:
                     break;
-                case ArenaTransitionType.ARENA_PLAYER_ENTER:
+                case ArenaTransitionType.ARENA_PlayerEnter:
                     ArenaEventHandler.GameController.ARENA_PlayerEnter();
                     break;
-                case ArenaTransitionType.INIT_OBJECTIVE_CONTAINER:
+                case ArenaTransitionType.InitObjectiveContainer:
                     ArenaEventHandler.GameController.InitObjectiveContainer();
 
                     if (ArenaEventHandler.GameControlDisplay)
@@ -67,31 +67,31 @@ public class ArenaTransitionMessage : ModuleMessageHandler
                         ArenaEventHandler.GameControlDisplay.gameObject.SetActive(true);
                     }
                     break;
-                case ArenaTransitionType.ARENA_START_MATCH:
+                case ArenaTransitionType.ARENA_StartMatch:
                     ArenaEventHandler.GameController.ARENA_StartMatch();
                     break;
-                case ArenaTransitionType.START_NEXT_WAVE:
+                case ArenaTransitionType.StartNextWave:
                     ArenaEventHandler.GameController.StartNextWave();
                     break;
-                case ArenaTransitionType.ARENA_QUIT_CHALLENGE:
+                case ArenaTransitionType.ARENA_QuitChallenge:
                     ArenaEventHandler.GameController.ARENA_QuitChallenge();
                     break;
-                case ArenaTransitionType.ARENA_CANCEL_MATCH:
+                case ArenaTransitionType.ARENA_CancelMatch:
                     ArenaEventHandler.GameController.ARENA_CancelMatch();
                     break;
-                case ArenaTransitionType.ARENA_RESET_THE_BELL:
+                case ArenaTransitionType.ARENA_ResetTheBell:
                     ArenaEventHandler.GameController.ARENA_ResetTheBell();
                     break;
-                case ArenaTransitionType.ARENA_RING_THE_BELL:
+                case ArenaTransitionType.ARENA_RingTheBell:
                     ArenaEventHandler.GameController.ARENA_RingTheBell();
                     break;
-                case ArenaTransitionType.FAIL_OBJECTIVE_MODE:
+                case ArenaTransitionType.FailObjectiveMode:
                     ArenaEventHandler.GameController.FailObjectiveMode();
                     break;
-                case ArenaTransitionType.FAIL_ESCAPE_MODE:
+                case ArenaTransitionType.FailEscapeMode:
                     ArenaEventHandler.GameController.FailEscapeMode();
                     break;
-                case ArenaTransitionType.SPAWN_LOOT:
+                case ArenaTransitionType.SpawnLoot:
                     ArenaEventHandler.GameController.SpawnLoot();
                     break;
             }

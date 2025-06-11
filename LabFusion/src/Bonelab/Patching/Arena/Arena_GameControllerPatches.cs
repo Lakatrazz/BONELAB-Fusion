@@ -17,77 +17,96 @@ public static class Arena_GameControllerPatches
     [HarmonyPatch(nameof(Arena_GameController.ARENA_PlayerEnter))]
     public static bool ARENA_PlayerEnter()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_PLAYER_ENTER);
+        return SendArenaTransition(ArenaTransitionType.ARENA_PlayerEnter);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.InitObjectiveContainer))]
     public static bool InitObjectiveContainer()
     {
-        return SendArenaTransition(ArenaTransitionType.INIT_OBJECTIVE_CONTAINER);
+        return SendArenaTransition(ArenaTransitionType.InitObjectiveContainer);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.ARENA_StartMatch))]
     public static bool ARENA_StartMatch()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_START_MATCH);
+        return SendArenaTransition(ArenaTransitionType.ARENA_StartMatch);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.StartNextWave))]
     public static bool StartNextWave()
     {
-        return SendArenaTransition(ArenaTransitionType.START_NEXT_WAVE);
+        return SendArenaTransition(ArenaTransitionType.StartNextWave);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.ARENA_QuitChallenge))]
     public static bool ARENA_QuitChallenge()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_QUIT_CHALLENGE);
+        return SendArenaTransition(ArenaTransitionType.ARENA_QuitChallenge);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.ARENA_CancelMatch))]
     public static bool ARENA_CancelMatch()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_CANCEL_MATCH);
+        return SendArenaTransition(ArenaTransitionType.ARENA_CancelMatch);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.ARENA_ResetTheBell))]
     public static bool ARENA_ResetTheBell()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_RESET_THE_BELL);
+        return SendArenaTransition(ArenaTransitionType.ARENA_ResetTheBell);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.ARENA_RingTheBell))]
     public static bool ARENA_RingTheBell()
     {
-        return SendArenaTransition(ArenaTransitionType.ARENA_RING_THE_BELL);
+        return SendArenaTransition(ArenaTransitionType.ARENA_RingTheBell);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.FailObjectiveMode))]
     public static bool FailObjectiveMode()
     {
-        return SendArenaTransition(ArenaTransitionType.FAIL_OBJECTIVE_MODE);
+        return SendArenaTransition(ArenaTransitionType.FailObjectiveMode);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.FailEscapeMode))]
     public static bool FailEscapeMode()
     {
-        return SendArenaTransition(ArenaTransitionType.FAIL_ESCAPE_MODE);
+        return SendArenaTransition(ArenaTransitionType.FailEscapeMode);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Arena_GameController.SpawnLoot))]
     public static bool SpawnLoot()
     {
-        return SendArenaTransition(ArenaTransitionType.SPAWN_LOOT);
+        return SendArenaTransition(ArenaTransitionType.SpawnLoot);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Arena_GameController.StartSpawning))]
+    public static bool StartSpawning()
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return true;
+        }
+
+        // If not the level host, cancel StartSpawning and consequently the SpawnEnemyLoop
+        // This can lead to freezes from the game controller state sometimes not matching the host's state (which SpawnEnemyLoop logs constantly for some reason)
+        if (!NetworkSceneManager.IsLevelHost)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static bool SendArenaTransition(ArenaTransitionType type)
