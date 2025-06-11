@@ -8,6 +8,7 @@ Added:
 - Seat catchup
 - Holster catchup
 - Destructible catchup
+- Constraint catchup
 - Voice chat muffling behind walls
 - Visible Platform ID on players
 - Global ban list for malicious client users
