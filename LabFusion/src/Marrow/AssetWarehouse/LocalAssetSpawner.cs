@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LabFusion.Marrow;
 
-public static class SafeAssetSpawner
+public static class LocalAssetSpawner
 {
     public static void Spawn(Spawnable spawnable, Vector3 position, Quaternion rotation, Action<Poolee> spawnCallback = null)
     {

@@ -31,8 +31,6 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public BitMart(IntPtr intPtr) : base(intPtr) { }
 
-        public const float SoundVolume = 0.4f;
-
         public const float PowerTransitionLength = 0.5f;
 
         public BitMartElement BitMartElement { get; set; } = null;
@@ -168,7 +166,8 @@ namespace LabFusion.Marrow.Proxies
 
             if (!_turnedOn)
             {
-                FusionAudio.Play3D(BitMartElement.transform.position, FusionContentLoader.UITurnOn.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOn.Asset, BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
+
                 _turnedOn = true;
                 _powerTransitioning = true;
 
@@ -185,7 +184,8 @@ namespace LabFusion.Marrow.Proxies
 
             if (_turnedOn)
             {
-                FusionAudio.Play3D(BitMartElement.transform.position, FusionContentLoader.UITurnOff.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOff.Asset, BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
+
                 _turnedOn = false;
                 _powerTransitioning = true;
             }
@@ -240,7 +240,7 @@ namespace LabFusion.Marrow.Proxies
 
             AssetSpawner.Register(gachaSpawnable);
 
-            SafeAssetSpawner.Spawn(gachaSpawnable, ItemSpawnPoint.position, ItemSpawnPoint.rotation, (poolee) =>
+            LocalAssetSpawner.Spawn(gachaSpawnable, ItemSpawnPoint.position, ItemSpawnPoint.rotation, (poolee) =>
             {
                 var gachaCapsule = poolee.GetComponent<GachaCapsule>();
 

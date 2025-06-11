@@ -143,7 +143,7 @@ public class SpawnResponseMessage : NativeMessageHandler
                 OnSpawnFinished(owner, barcode, entityId, go, trackerId, spawnEffect);
             }
 
-            SafeAssetSpawner.Spawn(spawnable, data.SerializedTransform.position, data.SerializedTransform.rotation, OnPooleeSpawned);
+            LocalAssetSpawner.Spawn(spawnable, data.SerializedTransform.position, data.SerializedTransform.rotation, OnPooleeSpawned);
         }
     }
 

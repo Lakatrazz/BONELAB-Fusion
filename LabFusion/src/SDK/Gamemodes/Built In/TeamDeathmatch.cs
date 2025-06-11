@@ -735,20 +735,14 @@ public class TeamDeathmatch : Gamemode
 
         if (winMusic.HasClip())
         {
-            winMusic.LoadClip((clip) =>
-            {
-                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-            });
+            LocalAudioPlayer.Play2dOneShot(winMusic, LocalAudioPlayer.MusicSettings);
 
             return;
         }
 
         MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangVictoryReference : FusionMonoDiscReferences.SabrelakeVictoryReference;
 
-        AudioLoader.LoadMonoDisc(randomChoice, (c) =>
-        {
-            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-        });
+        LocalAudioPlayer.Play2dOneShot(new AudioReference(randomChoice), LocalAudioPlayer.MusicSettings);
     }
 
     protected void OnTeamLost(Team team)
@@ -757,35 +751,21 @@ public class TeamDeathmatch : Gamemode
 
         if (loseMusic.HasClip())
         {
-            loseMusic.LoadClip((clip) =>
-            {
-                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-            });
+            LocalAudioPlayer.Play2dOneShot(loseMusic, LocalAudioPlayer.MusicSettings);
 
             return;
         }
 
         MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangFailureReference : FusionMonoDiscReferences.SabrelakeFailureReference;
 
-        AudioLoader.LoadMonoDisc(randomChoice, (c) =>
-        {
-            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-        });
+        LocalAudioPlayer.Play2dOneShot(new AudioReference(randomChoice), LocalAudioPlayer.MusicSettings);
     }
 
     protected void OnTeamTied()
     {
         var tieMusic = TeamMusicManager.TieMusic;
 
-        if (!tieMusic.HasClip())
-        {
-            return;
-        }
-
-        tieMusic.LoadClip((clip) =>
-        {
-            SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-        });
+        LocalAudioPlayer.Play2dOneShot(tieMusic, LocalAudioPlayer.MusicSettings);
     }
 
     protected static void InitializeTeamSpawns(Team team)

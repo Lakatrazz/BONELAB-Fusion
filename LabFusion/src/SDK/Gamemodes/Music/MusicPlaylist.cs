@@ -2,7 +2,6 @@
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
-using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -14,7 +13,7 @@ public class MusicPlaylist
     private int _currentTrack = -1;
     public int CurrentTrack => _currentTrack;
 
-    private float _volume = SafeAudio3dPlayer.MusicVolume;
+    private float _volume = LocalAudioPlayer.MusicVolume;
     public float Volume
     {
         get { return _volume; }

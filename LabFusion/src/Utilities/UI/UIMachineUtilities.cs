@@ -62,12 +62,14 @@ public static class UIMachineUtilities
 
         zoneEvent.onZoneEnter.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(true);
-            FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn.Asset);
+
+            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOn.Asset, canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         zoneEvent.onZoneExit.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(false);
-            FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff.Asset);
+
+            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOff.Asset, canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         trigger.SetActive(true);

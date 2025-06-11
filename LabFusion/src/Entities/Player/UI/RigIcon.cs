@@ -76,7 +76,7 @@ public class RigIcon : IPopupLayoutElement
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _iconPoolee = poolee;
             _iconImage = poolee.GetComponentInChildren<RawImage>();

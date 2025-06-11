@@ -419,16 +419,7 @@ public class Juggernaut : Gamemode
             return;
         }
 
-        var dataCard = stingerReference.DataCard;
-
-        if (dataCard == null)
-        {
-            return;
-        }
-
-        dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
-            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-        }));
+        LocalAudioPlayer.Play2dOneShot(new AudioReference(stingerReference), LocalAudioPlayer.MusicSettings);
     }
 
     private void OnScoreChanged(PlayerID player, int score)

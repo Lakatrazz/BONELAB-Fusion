@@ -144,7 +144,7 @@ public static class MuteUIHelper
 
         AssetSpawner.Register(muteSpawnable);
 
-        SafeAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             // Store references to the spawned mute icon
             _indicatorPoolee = poolee;

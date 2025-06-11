@@ -53,7 +53,7 @@ public static class BitPopup
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             var popupTransform = poolee.transform;
             popupTransform.parent = camera;
@@ -80,7 +80,7 @@ public static class BitPopup
             amountText.color = color;
             canvas.Find("bit").GetComponent<RawImage>().color = color;
 
-            FusionAudio.Play2D(FusionContentLoader.BitGet.Asset, 1f);
+            LocalAudioPlayer.Play2dOneShot(FusionContentLoader.BitGet.Asset, LocalAudioPlayer.InHeadSettings);
 
             PooleeHelper.DespawnDelayed(poolee, DefaultDuration + 0.1f);
         });

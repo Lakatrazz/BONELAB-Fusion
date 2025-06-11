@@ -1,8 +1,5 @@
 #if MELONLOADER
 using Il2CppInterop.Runtime.Attributes;
-using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Props;
 using Il2CppTMPro;
 
 using LabFusion.Menu;
@@ -24,8 +21,6 @@ namespace LabFusion.Marrow.Proxies
     {
 #if MELONLOADER
         public BitCatalogElement(IntPtr intPtr) : base(intPtr) { }
-
-        public const float SoundVolume = 0.4f;
 
         public enum CatalogTab
         {
@@ -214,7 +209,7 @@ namespace LabFusion.Marrow.Proxies
 
             OnAllItemsUnequipped?.Invoke();
 
-            FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem.Asset, SoundVolume);
+            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UnequipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
 
             Draw();
 
@@ -257,11 +252,11 @@ namespace LabFusion.Marrow.Proxies
 
                 GoToBitResults();
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseSuccess.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseFailure.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
         }
 
@@ -271,11 +266,11 @@ namespace LabFusion.Marrow.Proxies
             {
                 GoToBitResults();
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseSuccess.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseFailure.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
         }
 
@@ -292,7 +287,7 @@ namespace LabFusion.Marrow.Proxies
 
                 PointItemManager.SetEquipped(_currentItem, false);
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UnequipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
@@ -300,7 +295,7 @@ namespace LabFusion.Marrow.Proxies
 
                 PointItemManager.SetEquipped(_currentItem, true);
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem.Asset, SoundVolume);
+                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.EquipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
             }
 
             DrawPointItem();

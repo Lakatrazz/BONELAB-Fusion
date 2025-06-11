@@ -89,7 +89,7 @@ public class RigProgressBar : IPopupLayoutElement, IProgress<float>
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _poolee = poolee;
             _animator = poolee.GetComponent<Animator>();

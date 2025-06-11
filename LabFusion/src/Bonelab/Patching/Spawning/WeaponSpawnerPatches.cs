@@ -12,6 +12,7 @@ using LabFusion.RPC;
 using LabFusion.Scene;
 
 using UnityEngine;
+using static MelonLoader.MelonLogger;
 
 namespace LabFusion.Bonelab.Patching;
 
@@ -115,7 +116,10 @@ public static class WeaponSpawnerPatches
 
         if (__instance.pooleeDict.Count >= __instance.weaponLimit)
         {
-            SafeAudio3dPlayer.PlayAtPoint(__instance.overLimitClip, __instance.defSpawn.position, Audio3dManager.hardInteraction);
+            LocalAudioPlayer.PlayAtPoint(__instance.overLimitClip, __instance.defSpawn.position, new AudioPlayerSettings()
+            {
+                Mixer = LocalAudioPlayer.HardInteraction
+            });
             return false;
         }
 
@@ -208,8 +212,11 @@ public static class WeaponSpawnerPatches
         var position = spawned.transform.position;
 
         // SFX and VFX
-        SafeAudio3dPlayer.PlayAtPoint(spawner.spawnClip, position, Audio3dManager.hardInteraction);
+        LocalAudioPlayer.PlayAtPoint(spawner.spawnClip, position, new AudioPlayerSettings()
+        {
+            Mixer = LocalAudioPlayer.HardInteraction
+        });
 
-        SafeAssetSpawner.Spawn(spawner.spawnFXSpawnable, position, Quaternion.identity, null);
+        LocalAssetSpawner.Spawn(spawner.spawnFXSpawnable, position, Quaternion.identity, null);
     }
 }

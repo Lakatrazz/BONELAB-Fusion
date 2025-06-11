@@ -213,7 +213,7 @@ public static class MenuCreator
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnMenuSpawned);
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnMenuSpawned);
     }
 
     private static void OnMenuSpawned(Poolee poolee)

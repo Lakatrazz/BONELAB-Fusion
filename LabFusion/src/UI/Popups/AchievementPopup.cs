@@ -48,7 +48,7 @@ public static class AchievementPopup
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             var popupTransform = poolee.transform;
             popupTransform.parent = camera;
@@ -68,7 +68,7 @@ public static class AchievementPopup
             canvas.Find("title").GetComponent<TMP_Text>().text = achievement.Title;
             canvas.Find("description").GetComponent<TMP_Text>().text = achievement.Description;
 
-            FusionAudio.Play2D(FusionContentLoader.UITurnOn.Asset, 1f);
+            LocalAudioPlayer.Play2dOneShot(FusionContentLoader.UITurnOn.Asset, LocalAudioPlayer.InHeadSettings);
 
             PooleeHelper.DespawnDelayed(poolee, DefaultDuration + 0.1f);
         });

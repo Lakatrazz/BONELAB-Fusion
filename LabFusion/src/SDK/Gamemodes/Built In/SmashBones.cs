@@ -799,17 +799,15 @@ public class SmashBones : Gamemode
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, position, Quaternion.LookRotation(forward));
+        LocalAssetSpawner.Spawn(spawnable, position, Quaternion.LookRotation(forward));
 
-        var sfxCard = FusionMonoDiscReferences.DeathExplosionReference.DataCard;
+        var sfxReference = new AudioReference(FusionMonoDiscReferences.DeathExplosionReference);
 
-        if (sfxCard != null)
+        LocalAudioPlayer.PlayAtPoint(sfxReference, position, new AudioPlayerSettings()
         {
-            sfxCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)(clip =>
-            {
-                SafeAudio3dPlayer.PlayAtPoint(clip, position, Audio3dManager.hardInteraction, 1f, 1f, 50f);
-            }));
-        }
+            Mixer = LocalAudioPlayer.HardInteraction,
+            MinDistance = 50f,
+        });
     }
 
     private void AssignTeams()
@@ -1163,15 +1161,6 @@ public class SmashBones : Gamemode
             return;
         }
 
-        var dataCard = stingerReference.DataCard;
-
-        if (dataCard == null)
-        {
-            return;
-        }
-
-        dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
-            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
-        }));
+        LocalAudioPlayer.Play2dOneShot(new AudioReference(stingerReference), LocalAudioPlayer.MusicSettings);
     }
 }

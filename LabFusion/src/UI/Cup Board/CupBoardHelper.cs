@@ -26,7 +26,7 @@ namespace LabFusion.UI
 
             AssetSpawner.Register(spawnable);
 
-            SafeAssetSpawner.Spawn(spawnable, position, rotation);
+            LocalAssetSpawner.Spawn(spawnable, position, rotation);
         }
     }
 }

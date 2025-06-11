@@ -3,8 +3,6 @@ using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
-using Il2CppSLZ.Marrow.Audio;
-
 namespace LabFusion.Marrow.Messages;
 
 public class InventoryAmmoReceiverDropData : INetSerializable
@@ -44,6 +42,10 @@ public class InventoryAmmoReceiverDropMessage : ModuleMessageHandler
 
         var ammoReceiver = ammoReceiverExtender.Component;
 
-        SafeAudio3dPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
+        LocalAudioPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, new AudioPlayerSettings()
+        {
+            Mixer = LocalAudioPlayer.SoftInteraction,
+            Volume = 0.2f,
+        });
     }
 }

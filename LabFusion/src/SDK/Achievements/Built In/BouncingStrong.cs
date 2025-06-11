@@ -33,10 +33,7 @@ public class BouncingStrong : Achievement
 
     protected override void OnComplete()
     {
-        AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.FistfightFusionReference, (c) =>
-        {
-            FusionAudio.Play2D(c, 0.6f);
-        });
+        LocalAudioPlayer.Play2dOneShot(new AudioReference(FusionMonoDiscReferences.FistfightFusionReference), LocalAudioPlayer.MusicSettings);
     }
 
     private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer)

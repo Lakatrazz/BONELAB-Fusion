@@ -52,7 +52,7 @@ public class RigHeadUI
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnSpawned);
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnSpawned);
     }
 
     public void Despawn()

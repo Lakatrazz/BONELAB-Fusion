@@ -19,6 +19,6 @@ public static class PointShopHelper
 
         AssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, position, rotation);
+        LocalAssetSpawner.Spawn(spawnable, position, rotation);
     }
 }
