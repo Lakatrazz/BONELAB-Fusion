@@ -1,23 +1,68 @@
 ## **Fusion**
 #### Added:
-- CrateSpawner support to Desyncer script
-#### Improved:
-- Lobby sorting
+- Avatar surface data instead of always blood
+- Arena/gun range spawner sync
+- Health bar for specific gamemodes
+- Juggernaut gamemode
+- Smash Bones gamemode
+- Profanity filter
+- Seat catchup
+- Holster catchup
+- Destructible catchup
+- Constraint catchup
+- Voice chat muffling behind walls
+- Visible Platform ID on players
+- Global ban list for malicious client users
+- Avatar height limit setting
+- Hidden mod downloading
+- Saved inventory items spawning
+- Level queue settings for gamemodes
+- Default pose for players instead of mirroring
+- Time between rounds setting for gamemodes
 #### Fixed:
-- Random player teleports
-- DM scoring issues (potentially)
-- Player element hooks not being cleared
-- Victory Trophy not being rewarded
-- Dev Tools not disabling in Gamemodes
-- Hub and Reset buttons not being disabled
+- Player volume setting
+- Invalid steam_api64.dll remaining broken
+- Corrupted ban lists breaking the mod
+- Invincible avatars
+- Teleporting requiring higher permissions
+- Jaw movement being strange and jittery
+- Voice chat delay
+- Deathmatch using team spawns/vice versa
+- Certain CrateSpawners in encounters being broken
+- Broken teleporting
+- Swimming rig pose
+- Gachapons not spawning
+- Voice Chat randomly breaking, fixed on level reload if broken
+- Arena crashes
+- CrateSpawner onSpawnEvent not running for spawnables/avatars
+#### Improved:
+- Cache mod thumbnails and delete on level change
+- Player positions being offset
+- Voice chat data consumption (using G711 encoding)
+- Disabling of certain matchmaking tabs based on the networking layer
+- Low gravity slow mo getting stuck (potentially)
+- Clearing of gamemode data on gamemode end
+- Notification spam (similar notifications cancel each other)
+- BitMart UI
 #### Removed:
-- Gamemode late join prevention
+- Voice muting on death
+- Voice chat in loading screens
 
 ## **Fusion Auto Updater**
 - No changes
 
 ## **Fusion SDK**
-- No changes
+- Cosmetic alignment previews
+- AnimatorSyncer script
+- New message relay system
+- Code based Rpc attributes
+- GetOwner and SetOwner in OwnershipEvents
+- Catchup of RPCVariables
+- Relays for RPC events
+- Event when all players load in
+- Spawnables with a Singleplayer Only tag don't spawn
+- Module messages changed from ushorts to hashed longs (host no longer needs the module if relayed)
+- Voice chat proxy
 
 ## **Fusion Helper**
 - [Download Here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)
