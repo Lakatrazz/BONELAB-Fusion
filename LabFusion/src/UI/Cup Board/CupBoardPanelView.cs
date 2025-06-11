@@ -1,6 +1,7 @@
 ﻿using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
 using LabFusion.Math;
+using LabFusion.Menu;
 
 using MelonLoader;
 
@@ -48,7 +49,7 @@ public sealed class CupBoardPanelView : FusionPanelView
 
         Achievement.OnAchievementUpdated += OnAchievementUpdated;
 
-        LoadPage();
+        MenuResources.HookResourcesReady(LoadPage);
     }
 
     private void OnDestroy()
@@ -177,9 +178,9 @@ public sealed class CupBoardPanelView : FusionPanelView
         bitCount.text = achievement.BitReward.ToString();
         progress.text = achievement.Progress;
 
-        if (achievement.PreviewImage != null)
+        if (achievement.Logo != null)
         {
-            icon.texture = achievement.PreviewImage;
+            icon.texture = achievement.Logo;
         }
         else
         {

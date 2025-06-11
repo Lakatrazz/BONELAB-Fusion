@@ -60,15 +60,15 @@ public static class AchievementPopup
 
             Transform canvas = popupTransform.Find("Offset/Canvas");
 
-            if (achievement.PreviewImage != null)
+            if (achievement.Logo != null)
             {
-                canvas.Find("icon").GetComponent<RawImage>().texture = achievement.PreviewImage;
+                canvas.Find("icon").GetComponent<RawImage>().texture = achievement.Logo;
             }
 
             canvas.Find("title").GetComponent<TMP_Text>().text = achievement.Title;
             canvas.Find("description").GetComponent<TMP_Text>().text = achievement.Description;
 
-            LocalAudioPlayer.Play2dOneShot(FusionContentLoader.UITurnOn.Asset, LocalAudioPlayer.InHeadSettings);
+            LocalAudioPlayer.Play2dOneShot(new AudioReference(FusionMonoDiscReferences.UITurnOnReference), LocalAudioPlayer.InHeadSettings);
 
             PooleeHelper.DespawnDelayed(poolee, DefaultDuration + 0.1f);
         });

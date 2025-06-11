@@ -156,8 +156,8 @@ public class TeamDeathmatch : Gamemode
 
         var tieReference = FusionMonoDiscReferences.ErmReference;
 
-        var sabrelakeLogo = FusionContentLoader.SabrelakeLogo.Asset;
-        var lavaGangLogo = FusionContentLoader.LavaGangLogo.Asset;
+        var sabrelakeLogo = MenuResources.GetLogoIcon("Sabrelake");
+        var lavaGangLogo = MenuResources.GetLogoIcon("LavaGang");
 
         var sabrelakeDisplayName = DefaultSabrelakeName;
         var lavaGangDisplayName = DefaultLavaGangName;

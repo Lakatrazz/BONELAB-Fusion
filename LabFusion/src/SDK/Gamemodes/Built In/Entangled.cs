@@ -5,7 +5,6 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
-using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.UI.Popups;
 using LabFusion.Menu;
@@ -32,9 +31,12 @@ public class Entangled : Gamemode
             this.player1 = player1;
             this.player2 = player2;
 
-            lineInstance = GameObject.Instantiate(FusionContentLoader.EntangledLinePrefab.Asset);
-            GameObject.DontDestroyOnLoad(lineInstance);
-            lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            FusionSpawnableReferences.EntangledLineReference.Crate.LoadAsset((Action<GameObject>)((prefab) =>
+            {
+                lineInstance = GameObject.Instantiate(prefab);
+                GameObject.DontDestroyOnLoad(lineInstance);
+                lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            }));
         }
 
         public void Dispose()

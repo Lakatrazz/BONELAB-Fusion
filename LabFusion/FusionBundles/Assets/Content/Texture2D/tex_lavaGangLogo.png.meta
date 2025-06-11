@@ -135,5 +135,5 @@ TextureImporter:
     <detailMap>false</detailMap>\r\n  <hemiOctNormals>true</hemiOctNormals>\r\n 
     <geoRoughness>GenRoughness</geoRoughness>\r\n  <geoRoughnessPow>1</geoRoughnessPow>\r\n 
     <dontReadSource>false</dontReadSource>\r\n</ExtraTextureSettings>"
-  assetBundleName: content_bundle
-  assetBundleVariant: fusion
+  assetBundleName: 
+  assetBundleVariant: 

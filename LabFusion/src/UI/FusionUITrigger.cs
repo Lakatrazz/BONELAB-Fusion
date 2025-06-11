@@ -29,7 +29,7 @@ namespace LabFusion.UI
             };
             click.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
             { 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UIConfirm.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UIConfirmReference), transform.position, LocalAudioPlayer.SFXSettings);
 
                 button.onClick?.Invoke(); 
             }));
@@ -42,7 +42,7 @@ namespace LabFusion.UI
 
             hover.callback.AddListener((UnityAction<BaseEventData>)((eventData) => 
             { 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UISelect.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UISelectReference), transform.position, LocalAudioPlayer.SFXSettings);
             }));
 
 

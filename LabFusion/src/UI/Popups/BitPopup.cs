@@ -80,7 +80,7 @@ public static class BitPopup
             amountText.color = color;
             canvas.Find("bit").GetComponent<RawImage>().color = color;
 
-            LocalAudioPlayer.Play2dOneShot(FusionContentLoader.BitGet.Asset, LocalAudioPlayer.InHeadSettings);
+            LocalAudioPlayer.Play2dOneShot(new AudioReference(FusionMonoDiscReferences.BitGetReference), LocalAudioPlayer.InHeadSettings);
 
             PooleeHelper.DespawnDelayed(poolee, DefaultDuration + 0.1f);
         });

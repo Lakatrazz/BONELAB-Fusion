@@ -166,7 +166,7 @@ namespace LabFusion.Marrow.Proxies
 
             if (!_turnedOn)
             {
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOn.Asset, BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOnReference), BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
 
                 _turnedOn = true;
                 _powerTransitioning = true;
@@ -184,7 +184,7 @@ namespace LabFusion.Marrow.Proxies
 
             if (_turnedOn)
             {
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOff.Asset, BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOffReference), BitMartElement.transform.position, LocalAudioPlayer.SFXSettings);
 
                 _turnedOn = false;
                 _powerTransitioning = true;

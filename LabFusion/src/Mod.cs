@@ -102,9 +102,6 @@ public class FusionMod : MelonMod
         FusionFileLoader.OnInitializeMelon();
         ListLoader.OnInitializeMelon();
 
-        // Load assetbundles
-        FusionBundleLoader.OnBundleLoad();
-
         // Initialize player
         LocalPlayer.OnInitializeMelon();
         VoiceSourceManager.OnInitializeMelon();
@@ -202,9 +199,6 @@ public class FusionMod : MelonMod
 
         // Unhook assembly loads
         PointItemManager.UnhookEvents();
-
-        // Unload assetbundles
-        FusionBundleLoader.OnBundleUnloaded();
 
         // Undo game changes
         PlayerAdditionsHelper.OnDeinitializeMelon();

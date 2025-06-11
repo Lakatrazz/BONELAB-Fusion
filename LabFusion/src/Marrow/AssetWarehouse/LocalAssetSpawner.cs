@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using UnityEngine;
 
@@ -7,6 +8,13 @@ namespace LabFusion.Marrow;
 
 public static class LocalAssetSpawner
 {
+    public static Spawnable CreateSpawnable(SpawnableCrateReference crateReference) => new Spawnable() { crateRef = crateReference, policyData = null };
+
+    public static void Register(Spawnable spawnable)
+    {
+        AssetSpawner.Register(spawnable);
+    }
+
     public static void Spawn(Spawnable spawnable, Vector3 position, Quaternion rotation, Action<Poolee> spawnCallback = null)
     {
         // spawnCallback and despawnCallback no longer seem to work in patch 4 through MelonLoader

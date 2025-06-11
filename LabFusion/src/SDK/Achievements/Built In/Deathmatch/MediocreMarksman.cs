@@ -1,19 +1,12 @@
-﻿using LabFusion.Utilities;
+﻿namespace LabFusion.SDK.Achievements;
 
-using UnityEngine;
-
-namespace LabFusion.SDK.Achievements
+public class MediocreMarksman : KillerAchievement
 {
-    public class MediocreMarksman : KillerAchievement
-    {
-        public override string Title => "Mediocre Marksman";
+    public override string Title => "Mediocre Marksman";
 
-        public override string Description => "Kill 10 players in Deathmatch or Team Deathmatch.";
+    public override string Description => "Kill 10 players in Deathmatch or Team Deathmatch.";
 
-        public override int BitReward => 50;
+    public override int BitReward => 50;
 
-        public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(MediocreMarksman)).Preview;
-
-        public override int MaxTasks => 10;
-    }
+    public override int MaxTasks => 10;
 }

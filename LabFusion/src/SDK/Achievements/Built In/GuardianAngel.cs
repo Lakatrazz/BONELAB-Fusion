@@ -3,8 +3,6 @@ using LabFusion.Senders;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Utilities;
 
-using UnityEngine;
-
 namespace LabFusion.SDK.Achievements;
 
 public class GuardianAngel : Achievement
@@ -14,8 +12,6 @@ public class GuardianAngel : Achievement
     public override string Description => "Save another person from dying.";
 
     public override int BitReward => 500;
-
-    public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(GuardianAngel)).Preview;
 
     protected override void OnRegister()
     {

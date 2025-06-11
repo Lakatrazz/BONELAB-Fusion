@@ -63,13 +63,13 @@ public static class UIMachineUtilities
         zoneEvent.onZoneEnter.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(true);
 
-            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOn.Asset, canvas.transform.position, LocalAudioPlayer.SFXSettings);
+            LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOnReference), canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         zoneEvent.onZoneExit.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(false);
 
-            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UITurnOff.Asset, canvas.transform.position, LocalAudioPlayer.SFXSettings);
+            LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOffReference), canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         trigger.SetActive(true);

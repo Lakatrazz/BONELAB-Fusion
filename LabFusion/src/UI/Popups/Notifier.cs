@@ -3,7 +3,6 @@
 using LabFusion.Data;
 using LabFusion.Menu;
 using LabFusion.Scene;
-using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -141,10 +140,10 @@ public static class Notifier
     {
         Texture2D incomingTexture = notification.Type switch
         {
-            NotificationType.WARNING => FusionContentLoader.NotificationWarning.Asset,
-            NotificationType.ERROR => FusionContentLoader.NotificationError.Asset,
-            NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess.Asset,
-            _ => FusionContentLoader.NotificationInformation.Asset,
+            NotificationType.WARNING => MenuResources.GetNotificationIcon("Warning").TryCast<Texture2D>(),
+            NotificationType.ERROR => MenuResources.GetNotificationIcon("Error").TryCast<Texture2D>(),
+            NotificationType.SUCCESS => MenuResources.GetNotificationIcon("Success").TryCast<Texture2D>(),
+            _ => MenuResources.GetNotificationIcon("Information").TryCast<Texture2D>(),
         };
 
         if (incomingTexture != null)
@@ -207,7 +206,7 @@ public static class Notifier
     internal static void OnUpdate()
     {
         // Make sure we aren't loading so we can dequeue existing notifications
-        if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer)
+        if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer && MenuResources.HasResources)
         {
             // Enable the tutorial rig a frame before showing notifs
             if (!_hasEnabledTutorialRig)

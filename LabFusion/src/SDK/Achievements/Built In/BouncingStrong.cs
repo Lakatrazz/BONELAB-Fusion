@@ -5,8 +5,6 @@ using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
-using UnityEngine;
-
 namespace LabFusion.SDK.Achievements;
 
 public class BouncingStrong : Achievement
@@ -16,8 +14,6 @@ public class BouncingStrong : Achievement
     public override string Description => "Jump as Strong 1000 times across servers.";
 
     public override int BitReward => 1000;
-
-    public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(BouncingStrong)).Preview;
 
     public override int MaxTasks => 1000;
 

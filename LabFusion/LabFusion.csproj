@@ -107,12 +107,6 @@
 
   <ItemGroup>
     <None Remove="dependencies\BoneLib.dll" />
-    <None Remove="dependencies\resources\bundles\Android\achievement_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\Android\content_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\Android\item_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
     <None Remove="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <None Remove="dependencies\resources\text\credits\raw_credits_01.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
@@ -301,12 +295,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\achievement_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\content_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\item_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
     <EmbeddedResource Include="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_02.txt" />

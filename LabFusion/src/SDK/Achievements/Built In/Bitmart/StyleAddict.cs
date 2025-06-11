@@ -1,19 +1,12 @@
-﻿using LabFusion.Utilities;
+﻿namespace LabFusion.SDK.Achievements;
 
-using UnityEngine;
-
-namespace LabFusion.SDK.Achievements
+public class StyleAddict : StyleAchievement
 {
-    public class StyleAddict : StyleAchievement
-    {
-        public override string Title => "Style Addict";
+    public override string Title => "Style Addict";
 
-        public override string Description => "Purchase your twentieth cosmetic.";
+    public override string Description => "Purchase your twentieth cosmetic.";
 
-        public override int BitReward => 5000;
+    public override int BitReward => 5000;
 
-        public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(StyleAddict)).Preview;
-
-        public override int MaxTasks => 20;
-    }
+    public override int MaxTasks => 20;
 }

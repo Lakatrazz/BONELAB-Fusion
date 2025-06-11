@@ -209,7 +209,7 @@ namespace LabFusion.Marrow.Proxies
 
             OnAllItemsUnequipped?.Invoke();
 
-            LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UnequipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+            LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UnequipItemReference), transform.position, LocalAudioPlayer.SFXSettings);
 
             Draw();
 
@@ -252,11 +252,11 @@ namespace LabFusion.Marrow.Proxies
 
                 GoToBitResults();
 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseSuccess.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.SuccessfulPurchaseReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseFailure.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.FailedPurchaseReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
         }
 
@@ -266,11 +266,11 @@ namespace LabFusion.Marrow.Proxies
             {
                 GoToBitResults();
 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseSuccess.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.SuccessfulPurchaseReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.PurchaseFailure.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.FailedPurchaseReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
         }
 
@@ -287,7 +287,7 @@ namespace LabFusion.Marrow.Proxies
 
                 PointItemManager.SetEquipped(_currentItem, false);
 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.UnequipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UnequipItemReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
             else
             {
@@ -295,7 +295,7 @@ namespace LabFusion.Marrow.Proxies
 
                 PointItemManager.SetEquipped(_currentItem, true);
 
-                LocalAudioPlayer.PlayAtPoint(FusionContentLoader.EquipItem.Asset, transform.position, LocalAudioPlayer.SFXSettings);
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.EquipItemReference), transform.position, LocalAudioPlayer.SFXSettings);
             }
 
             DrawPointItem();
