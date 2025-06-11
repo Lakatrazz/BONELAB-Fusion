@@ -180,7 +180,7 @@ public class FusionMod : MelonMod
 
         if (!_hasAutoUpdater)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 SaveToMenu = false,
                 ShowPopup = true,
