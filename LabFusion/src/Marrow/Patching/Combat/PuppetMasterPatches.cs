@@ -4,6 +4,7 @@ using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Messages;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 
@@ -14,8 +15,18 @@ public static class PuppetMasterPatches
 {
     public static bool IgnorePatches { get; set; } = false;
 
-    [HarmonyPatch(nameof(PuppetMaster.PostKill))]
     [HarmonyPrefix]
+    [HarmonyPatch(nameof(PuppetMaster.Kill))]
+    [HarmonyPatch(new Type[] { })]
+    public static bool KillPrefix(PuppetMaster __instance) => ValidateKill(__instance);
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PuppetMaster.Kill))]
+    [HarmonyPatch(new Type[] { typeof(PuppetMaster.StateSettings) })]
+    public static bool KillPrefix(PuppetMaster __instance, PuppetMaster.StateSettings stateSettings) => ValidateKill(__instance);
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PuppetMaster.PostKill))]
     public static void PostKill(PuppetMaster __instance)
     {
         if (IgnorePatches)
@@ -23,7 +34,7 @@ public static class PuppetMasterPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -38,5 +49,30 @@ public static class PuppetMasterPatches
         MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
         PuppetMasterExtender.LastKilled = entity;
+    }
+
+    private static bool ValidateKill(PuppetMaster puppetMaster)
+    {
+        if (IgnorePatches)
+        {
+            return true;
+        }
+
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return true;
+        }
+
+        if (!PuppetMasterExtender.Cache.TryGet(puppetMaster, out var entity))
+        {
+            return true;
+        }
+
+        if (!entity.IsOwner)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
