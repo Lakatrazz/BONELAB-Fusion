@@ -67,6 +67,11 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
     public TComponent GetComponentFromData(ComponentHashData data)
     {
+        if (data == null)
+        {
+            return null;
+        }
+
         if (!HashToComponents.TryGetValue(data.Hash, out var components))
         {
             return null;
@@ -82,6 +87,11 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
     public ComponentHashData GetDataFromComponent(TComponent component)
     {
+        if (component == null)
+        {
+            return null;
+        }
+
         if (!ComponentToHash.TryGetValue(component, out var hash))
         {
             return null;
@@ -97,5 +107,5 @@ public class ComponentHashTable<TComponent> where TComponent : Component
         };
     }
 
-    public bool IsHashed(TComponent component) => ComponentToHash.ContainsKey(component);
+    public bool IsHashed(TComponent component) => component != null && ComponentToHash.ContainsKey(component);
 }

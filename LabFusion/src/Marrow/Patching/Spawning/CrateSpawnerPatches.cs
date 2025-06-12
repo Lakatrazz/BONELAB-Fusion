@@ -70,6 +70,12 @@ public static class CrateSpawnerPatches
 
     private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info, UniTaskCompletionSource<Poolee> source)
     {
+        // In the event that the CrateSpawner was part of a now destroyed GameObject, null check
+        if (spawner == null)
+        {
+            return;
+        }
+
         var spawned = info.Spawned;
 
         var poolee = Poolee.Cache.Get(spawned);
