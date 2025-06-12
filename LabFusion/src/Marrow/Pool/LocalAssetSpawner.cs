@@ -8,7 +8,9 @@ namespace LabFusion.Marrow.Pool;
 
 public static class LocalAssetSpawner
 {
-    public static Spawnable CreateSpawnable(SpawnableCrateReference crateReference) => new Spawnable() { crateRef = crateReference, policyData = null };
+    public static Spawnable CreateSpawnable(SpawnableCrateReference crateReference) => new() { crateRef = crateReference, policyData = null };
+
+    public static Spawnable CreateSpawnable(string barcode) => new() { crateRef = new(barcode), policyData = null };
 
     public static void Register(Spawnable spawnable)
     {

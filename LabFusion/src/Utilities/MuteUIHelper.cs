@@ -137,13 +137,9 @@ public static class MuteUIHelper
         var openControllerRig = manager.ControllerRig.TryCast<OpenControllerRig>();
         Transform headset = openControllerRig.headset;
 
-        var muteSpawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.MuteIndicatorReference,
-            policyData = null,
-        };
+        var muteSpawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.MuteIndicatorReference);
 
-        AssetSpawner.Register(muteSpawnable);
+        LocalAssetSpawner.Register(muteSpawnable);
 
         LocalAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {

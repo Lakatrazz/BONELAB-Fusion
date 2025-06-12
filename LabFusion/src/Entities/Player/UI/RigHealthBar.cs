@@ -88,13 +88,9 @@ public class RigHealthBar : IPopupLayoutElement
 
     public void Spawn(Transform parent)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.HealthBarReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.HealthBarReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {

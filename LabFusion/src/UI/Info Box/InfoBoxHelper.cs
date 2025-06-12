@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 
-using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Pool;
-
 using LabFusion.Marrow;
 using LabFusion.Marrow.Pool;
 
@@ -18,13 +15,9 @@ public static class InfoBoxHelper
 
     public static void SpawnInfoBoard(Vector3 position, Quaternion rotation)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.InfoBoardReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.InfoBoardReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, position, rotation);
     }

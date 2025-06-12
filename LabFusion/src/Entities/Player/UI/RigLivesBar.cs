@@ -85,13 +85,9 @@ public class RigLivesBar : IPopupLayoutElement
 
     public void Spawn(Transform parent)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.LivesBarReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.LivesBarReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {

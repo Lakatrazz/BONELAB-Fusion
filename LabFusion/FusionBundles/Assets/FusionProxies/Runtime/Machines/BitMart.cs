@@ -233,13 +233,9 @@ namespace LabFusion.Marrow.Proxies
                 return;
             }
 
-            var gachaSpawnable = new Spawnable()
-            {
-                crateRef = BonelabSpawnableReferences.GachaCapsuleReference,
-                policyData = null,
-            };
+            var gachaSpawnable = LocalAssetSpawner.CreateSpawnable(BonelabSpawnableReferences.GachaCapsuleReference);
 
-            AssetSpawner.Register(gachaSpawnable);
+            LocalAssetSpawner.Register(gachaSpawnable);
 
             LocalAssetSpawner.Spawn(gachaSpawnable, ItemSpawnPoint.position, ItemSpawnPoint.rotation, (poolee) =>
             {

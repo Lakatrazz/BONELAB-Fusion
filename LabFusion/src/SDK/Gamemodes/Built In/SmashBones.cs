@@ -791,13 +791,9 @@ public class SmashBones : Gamemode
 
     private static void SpawnExplosion(Vector3 position, Vector3 forward)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.DeathExplosionReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.DeathExplosionReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, position, Quaternion.LookRotation(forward));
 

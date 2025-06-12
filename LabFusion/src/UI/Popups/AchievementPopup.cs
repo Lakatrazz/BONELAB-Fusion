@@ -41,13 +41,9 @@ public static class AchievementPopup
 
         var camera = RigData.Refs.ControllerRig.m_head;
 
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.AchievementPopupReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.AchievementPopupReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {

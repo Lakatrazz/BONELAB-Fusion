@@ -12,13 +12,9 @@ public static class PointShopHelper
 {
     public static void SpawnBitMart(Vector3 position, Quaternion rotation)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.BitMartReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.BitMartReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, position, rotation);
     }

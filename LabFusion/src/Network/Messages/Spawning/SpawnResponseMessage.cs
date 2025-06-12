@@ -131,15 +131,9 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         void BeginSpawn()
         {
-            var crateRef = new SpawnableCrateReference(barcode);
+            var spawnable = LocalAssetSpawner.CreateSpawnable(barcode);
 
-            var spawnable = new Spawnable()
-            {
-                crateRef = crateRef,
-                policyData = null
-            };
-
-            AssetSpawner.Register(spawnable);
+            LocalAssetSpawner.Register(spawnable);
 
             void OnPooleeSpawned(Poolee go)
             {

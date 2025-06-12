@@ -206,13 +206,9 @@ public static class MenuCreator
         }
 
         // Register and spawn the menu spawnable
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.FusionMenuReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.FusionMenuReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnMenuSpawned);
     }

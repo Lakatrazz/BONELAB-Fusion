@@ -46,13 +46,9 @@ public static class BitPopup
 
         var camera = RigData.Refs.ControllerRig.m_head;
 
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.BitPopupReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.BitPopupReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {

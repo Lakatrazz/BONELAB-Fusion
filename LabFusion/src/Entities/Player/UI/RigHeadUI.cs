@@ -45,13 +45,9 @@ public class RigHeadUI
 
     public void Spawn()
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.HeadLayoutReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.HeadLayoutReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
         LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnSpawned);
     }
