@@ -73,6 +73,11 @@ public abstract class ScoreKeeper<TProperty>
 
     public MetadataInt GetScoreMetadata(TProperty property)
     {
+        if (property == null)
+        {
+            return null;
+        }
+
         if (!_propertyToScore.TryGetValue(property, out var variable))
         {
             variable = new MetadataInt(GetKeyWithProperty(property), _metadata);
@@ -84,6 +89,11 @@ public abstract class ScoreKeeper<TProperty>
 
     public void SetScore(TProperty property, int score)
     {
+        if (property == null)
+        {
+            return;
+        }
+
         var variable = GetScoreMetadata(property);
 
         variable.SetValue(score);
@@ -91,6 +101,11 @@ public abstract class ScoreKeeper<TProperty>
 
     public int GetScore(TProperty property)
     {
+        if (property == null)
+        {
+            return 0;
+        }
+
         var variable = GetScoreMetadata(property);
 
         return variable.GetValue();
@@ -98,12 +113,22 @@ public abstract class ScoreKeeper<TProperty>
 
     public void AddScore(TProperty property, int amount = 1)
     {
+        if (property == null)
+        {
+            return;
+        }
+
         var score = GetScore(property) + amount;
         SetScore(property, score);
     }
 
     public void SubtractScore(TProperty property, int amount = 1, bool allowNegatives = false)
     {
+        if (property == null)
+        {
+            return;
+        }
+
         var score = GetScore(property) - amount;
 
         if (!allowNegatives && score < 0)

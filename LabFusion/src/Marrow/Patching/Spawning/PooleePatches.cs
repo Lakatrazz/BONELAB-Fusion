@@ -7,7 +7,7 @@ using LabFusion.Scene;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Interaction;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(Poolee), nameof(Poolee.OnDespawnEvent))]
 public class PooleeOnDespawnPatch

@@ -25,7 +25,15 @@ public class ComponentPathData : INetSerializable
         serializer.SerializeValue(ref HasEntity);
         serializer.SerializeValue(ref EntityID);
         serializer.SerializeValue(ref ComponentIndex);
-        serializer.SerializeValue(ref HashData);
+
+        bool hasHashData = HashData != null;
+
+        serializer.SerializeValue(ref hasHashData);
+
+        if (hasHashData)
+        {
+            serializer.SerializeValue(ref HashData);
+        }
     }
 
     public static ComponentPathData CreateFromComponent<TComponent, TExtender>(TComponent component, ComponentHashTable<TComponent> hashTable, FusionComponentCache<TComponent, NetworkEntity> cache) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
