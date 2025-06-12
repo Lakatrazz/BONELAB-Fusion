@@ -821,7 +821,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _pose = null;
         _receivedPose = false;
 
-        NetworkEntity.ClearDataCaughtUpPlayers();
+        NetworkEntity?.ClearDataCaughtUpPlayers();
 
         UnregisterComponents();
     }
