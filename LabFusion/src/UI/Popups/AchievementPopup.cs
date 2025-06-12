@@ -3,6 +3,7 @@ using LabFusion.SDK.Achievements;
 using LabFusion.Marrow;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ public static class AchievementPopup
     public const float DefaultDuration = 5f;
     public static readonly Vector3 LocalPosition = new(0f, -0.06f, 0.9f);
 
-    private static Queue<Achievement> _queuedAchievements = new();
+    private static readonly Queue<Achievement> _queuedAchievements = new();
 
     private static float _timeOfPopup = 0f;
 

@@ -10,6 +10,7 @@ using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.UI;

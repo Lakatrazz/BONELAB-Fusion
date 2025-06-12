@@ -37,8 +37,8 @@ public static class NetworkEntityManager
 
     public static void OnCleanupIds()
     {
-        IDManager.RegisteredEntities.ClearId();
-        IDManager.QueuedEntities.ClearId();
+        IDManager.RegisteredEntities.ClearID();
+        IDManager.QueuedEntities.ClearID();
 
         _entityRegisteredCallbacks.Clear();
     }

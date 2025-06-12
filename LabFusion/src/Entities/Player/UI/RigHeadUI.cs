@@ -6,6 +6,7 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.UI;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 

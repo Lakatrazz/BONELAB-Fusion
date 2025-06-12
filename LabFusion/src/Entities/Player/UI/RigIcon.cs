@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
 using LabFusion.UI;
 
 using UnityEngine;

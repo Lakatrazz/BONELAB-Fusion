@@ -6,6 +6,7 @@ using Il2CppTMPro;
 using LabFusion.Marrow;
 using LabFusion.UI;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 

@@ -91,7 +91,7 @@ public class SpawnRequestMessage : NativeMessageHandler
             }
         }
 
-        var entityId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
+        var entityId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
 
         PooleeUtilities.SendSpawn(received.Sender.Value, data.Barcode, entityId, data.SerializedTransform, data.TrackerId, data.SpawnEffect);
     }

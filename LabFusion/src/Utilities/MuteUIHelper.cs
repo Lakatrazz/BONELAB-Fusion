@@ -2,6 +2,7 @@
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.Rendering;

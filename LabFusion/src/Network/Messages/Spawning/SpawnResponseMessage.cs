@@ -9,6 +9,7 @@ using LabFusion.Downloading;
 using LabFusion.Preferences.Client;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
+using LabFusion.Marrow.Pool;
 
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -16,6 +17,8 @@ using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Interaction;
 
 using Il2CppSLZ.Marrow.VFX;
+
+using UnityEngine;
 
 namespace LabFusion.Network;
 
@@ -29,7 +32,7 @@ public class SpawnResponseData : INetSerializable
 
     public SerializedTransform SerializedTransform;
 
-    public uint TrackerId;
+    public uint TrackerID;
 
     public bool SpawnEffect;
 
@@ -40,7 +43,7 @@ public class SpawnResponseData : INetSerializable
         serializer.SerializeValue(ref EntityID);
         serializer.SerializeValue(ref SerializedTransform);
 
-        serializer.SerializeValue(ref TrackerId);
+        serializer.SerializeValue(ref TrackerID);
 
         serializer.SerializeValue(ref SpawnEffect);
     }
@@ -53,7 +56,7 @@ public class SpawnResponseData : INetSerializable
             Barcode = barcode,
             EntityID = entityId,
             SerializedTransform = serializedTransform,
-            TrackerId = trackerId,
+            TrackerID = trackerId,
             SpawnEffect = spawnEffect,
         };
     }
@@ -72,8 +75,8 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         byte owner = data.OwnerID;
         string barcode = data.Barcode;
-        ushort entityId = data.EntityID;
-        var trackerId = data.TrackerId;
+        ushort entityID = data.EntityID;
+        var trackerID = data.TrackerID;
         var spawnEffect = data.SpawnEffect;
 
         // Check for spawnable blacklist
@@ -140,14 +143,14 @@ public class SpawnResponseMessage : NativeMessageHandler
 
             void OnPooleeSpawned(Poolee go)
             {
-                OnSpawnFinished(owner, barcode, entityId, go, trackerId, spawnEffect);
+                OnSpawnFinished(owner, barcode, entityID, go, trackerID, spawnEffect);
             }
 
             LocalAssetSpawner.Spawn(spawnable, data.SerializedTransform.position, data.SerializedTransform.rotation, OnPooleeSpawned);
         }
     }
 
-    public static void OnSpawnFinished(byte owner, string barcode, ushort entityId, Poolee poolee, uint trackerId = 0, bool spawnEffect = false)
+    public static void OnSpawnFinished(byte owner, string barcode, ushort entityID, Poolee poolee, uint trackerID = 0, bool spawnEffect = false)
     {
         // The poolee will never be null, so we don't have to check for it
         // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
@@ -169,40 +172,50 @@ public class SpawnResponseMessage : NativeMessageHandler
         // Make sure we have a marrow entity before creating a prop
         if (marrowEntity != null)
         {
-            // Create a network entity
-            var ownerId = PlayerIDManager.GetPlayerID(owner);
-
-            newEntity = new();
-            newEntity.SetOwner(ownerId);
-
-            // Setup a network prop
-            NetworkProp newProp = new(newEntity, marrowEntity);
-
-            // Register this entity
-            NetworkEntityManager.IDManager.RegisterEntity(entityId, newEntity);
-
-            // Insert the catchup hook for future users
-            newEntity.OnEntityCreationCatchup += (entity, player) =>
+            if (!SpawnableBlacklist.IsClientSide(barcode))
             {
-                SpawnSender.SendCatchupSpawn(owner, barcode, entityId, new SerializedTransform(go.transform), player);
-            };
+                newEntity = CreateNetworkEntity(go, barcode, marrowEntity, owner, entityID);
+            }
 
             if (spawnEffect)
             {
                 SpawnEffects.CallSpawnEffect(marrowEntity);
             }
-
-            CatchupManager.RequestEntityDataCatchup(new(newEntity));
         }
 
         // Invoke spawn callback
         if (owner == PlayerIDManager.LocalSmallID)
         {
-            NetworkAssetSpawner.OnSpawnComplete(trackerId, new NetworkAssetSpawner.SpawnCallbackInfo()
+            NetworkAssetSpawner.OnSpawnComplete(trackerID, new NetworkAssetSpawner.SpawnCallbackInfo()
             {
                 Spawned = go,
                 Entity = newEntity,
             });
         }
+    }
+
+    private static NetworkEntity CreateNetworkEntity(GameObject gameObject, string barcode, MarrowEntity marrowEntity, byte ownerID, ushort entityID)
+    {
+        // Create a network entity
+        var ownerId = PlayerIDManager.GetPlayerID(ownerID);
+
+        NetworkEntity networkEntity = new();
+        networkEntity.SetOwner(ownerId);
+
+        // Setup a network prop
+        NetworkProp newProp = new(networkEntity, marrowEntity);
+
+        // Register this entity
+        NetworkEntityManager.IDManager.RegisterEntity(entityID, networkEntity);
+
+        // Insert the catchup hook for future users
+        networkEntity.OnEntityCreationCatchup += (entity, player) =>
+        {
+            SpawnSender.SendCatchupSpawn(ownerID, barcode, entityID, new SerializedTransform(gameObject.transform), player);
+        };
+
+        CatchupManager.RequestEntityDataCatchup(new(networkEntity));
+
+        return networkEntity;
     }
 }

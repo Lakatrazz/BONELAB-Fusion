@@ -42,6 +42,8 @@ public class BonelabModule : Module
         ModuleMessageManager.RegisterHandler<SpawnGunSelectMessage>();
 
         ModuleMessageManager.RegisterHandler<RandomObjectMessage>();
+
+        BonelabSpawnableReferences.RegisterBlacklist();
     }
 
     protected override void OnModuleUnregistered()

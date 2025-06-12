@@ -55,7 +55,7 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 
     public ushort QueueEntity(TEntity entity)
     {
-        var id = QueuedEntities.AllocateNewId();
+        var id = QueuedEntities.AllocateNewID();
 
         QueuedEntities.AddEntity(id, entity);
         entity.Queue(id);

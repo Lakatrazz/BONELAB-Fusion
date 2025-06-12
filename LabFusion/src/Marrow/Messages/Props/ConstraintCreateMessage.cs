@@ -140,8 +140,8 @@ public class ConstraintCreateMessage : ModuleMessageHandler
             if (hasConstrainer)
             {
                 // Recreate the message so we can assign server-side sync ids
-                data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
-                data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewId();
+                data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
+                data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
 
                 MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToClients);
             }

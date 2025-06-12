@@ -2,39 +2,14 @@
 
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
-using LabFusion.Network;
-using LabFusion.Entities;
 using LabFusion.Player;
 using LabFusion.Data;
 using LabFusion.Marrow;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
-
-[HarmonyPatch(typeof(ForcePullGrip), nameof(ForcePullGrip.OnFarHandHoverUpdate))]
-public static class ForcePullPatches
-{
-    public static bool Prefix(ForcePullGrip __instance, ref bool __state, Hand hand)
-    {
-        __state = __instance.pullCoroutine != null;
-
-        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static void Postfix(ForcePullGrip __instance, ref bool __state, Hand hand)
-    {
-        if (!(__instance.pullCoroutine != null && !__state))
-            return;
-
-        GrabHelper.SendObjectForcePull(hand, __instance._grip);
-    }
-}
 
 [HarmonyPatch(typeof(Grip))]
 public static class GripPatches
@@ -73,6 +48,8 @@ public static class GripPatches
     [HarmonyPrefix]
     private static void Awake(Grip __instance)
     {
+        OverrideGripSettings(__instance);
+
         // Only hash grips which don't have an entity (static grips)
         if (HasMarrowEntity(__instance))
         {
@@ -95,6 +72,17 @@ public static class GripPatches
             FusionLogger.Log($"Grip {__instance.name} had a conflicting hash {hash} and has been added at index {index}.");
         }
 #endif
+    }
+
+    private static void OverrideGripSettings(Grip grip)
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
+
+        grip.minBreakForce = float.PositiveInfinity;
+        grip.maxBreakForce = float.PositiveInfinity;
     }
 
     [HarmonyPatch(nameof(Grip.OnDestroy))]

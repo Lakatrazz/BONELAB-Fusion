@@ -51,7 +51,7 @@ public class EntityIDList<TEntity>
         return IDEntityLookup.ContainsKey(id) || IsReserved(id);
     }
 
-    public ushort AllocateNewId()
+    public ushort AllocateNewID()
     {
         _lastID++;
 
@@ -122,7 +122,7 @@ public class EntityIDList<TEntity>
         OnEntityRemoved?.Invoke(id, entity);
     }
 
-    public void ClearId()
+    public void ClearID()
     {
         // Get highest unused id
         _lastID = 0;
@@ -143,6 +143,6 @@ public class EntityIDList<TEntity>
         _idsToEntities.Clear();
         _entitiesToIDs.Clear();
 
-        ClearId();
+        ClearID();
     }
 }

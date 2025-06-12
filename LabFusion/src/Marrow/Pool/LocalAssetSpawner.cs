@@ -4,7 +4,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 using UnityEngine;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Marrow.Pool;
 
 public static class LocalAssetSpawner
 {

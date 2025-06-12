@@ -10,6 +10,7 @@ using LabFusion.Extensions;
 using LabFusion.Bonelab;
 using LabFusion.Utilities;
 using LabFusion.Math;
+using LabFusion.Marrow.Pool;
 
 using Il2CppInterop.Runtime.Attributes;
 

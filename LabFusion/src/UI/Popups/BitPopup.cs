@@ -2,6 +2,7 @@
 using LabFusion.Marrow;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.UI;
