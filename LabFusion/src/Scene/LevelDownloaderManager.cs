@@ -18,10 +18,10 @@ public static class LevelDownloaderManager
 {
     public struct LevelDownloadInfo
     {
-        public string levelBarcode;
-        public byte levelHost;
+        public string LevelBarcode;
+        public byte LevelHost;
 
-        public Action onDownloadSucceeded, onDownloadFailed, onDownloadCanceled;
+        public Action OnDownloadSucceeded, OnDownloadFailed, OnDownloadCanceled;
     }
 
     private static bool _initializedDownloadUI = false;
@@ -45,7 +45,7 @@ public static class LevelDownloaderManager
 
     public static void DownloadLevel(LevelDownloadInfo info)
     {
-        _downloadingBarcode = info.levelBarcode;
+        _downloadingBarcode = info.LevelBarcode;
         _downloadingInfo = info;
 
         // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
@@ -54,8 +54,8 @@ public static class LevelDownloaderManager
         // Request the mod id from the host
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
-            target = info.levelHost,
-            barcode = info.levelBarcode,
+            target = info.LevelHost,
+            barcode = info.LevelBarcode,
             beginDownloadCallback = OnDownloadBegin,
             finishDownloadCallback = OnDownloadFinished,
             maxBytes = maxBytes,
@@ -83,17 +83,17 @@ public static class LevelDownloaderManager
 
         if (info.result == ModResult.CANCELED)
         {
-            _downloadingInfo.onDownloadCanceled?.Invoke();
+            _downloadingInfo.OnDownloadCanceled?.Invoke();
             return;
         }
 
         if (info.result == ModResult.FAILED)
         {
-            _downloadingInfo.onDownloadFailed?.Invoke();
+            _downloadingInfo.OnDownloadFailed?.Invoke();
             return;
         }
 
-        _downloadingInfo.onDownloadSucceeded?.Invoke();
+        _downloadingInfo.OnDownloadSucceeded?.Invoke();
     }
 
     private static void LoadWaitingScene()

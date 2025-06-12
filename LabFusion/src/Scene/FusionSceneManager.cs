@@ -65,6 +65,8 @@ public static partial class FusionSceneManager
                 {
                     LoadSender.SendLevelLoad(Barcode, LoadBarcode);
                 }
+
+                MultiplayerHooking.InvokeOnLoadingBegin();
             }
         }
         else if (_prevLevelBarcode == null)
@@ -150,11 +152,11 @@ public static partial class FusionSceneManager
                 {
                     LevelDownloaderManager.DownloadLevel(new LevelDownloaderManager.LevelDownloadInfo()
                     {
-                        levelBarcode = _targetServerScene,
-                        levelHost = PlayerIDManager.HostSmallID,
-                        onDownloadSucceeded = OnDownloadSucceeded,
-                        onDownloadFailed = OnDownloadFailed,
-                        onDownloadCanceled = OnDownloadCanceled,
+                        LevelBarcode = _targetServerScene,
+                        LevelHost = PlayerIDManager.HostSmallID,
+                        OnDownloadSucceeded = OnDownloadSucceeded,
+                        OnDownloadFailed = OnDownloadFailed,
+                        OnDownloadCanceled = OnDownloadCanceled,
                     });
 
                     _hasStartedDownloadingTarget = true;

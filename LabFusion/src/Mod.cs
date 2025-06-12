@@ -149,6 +149,7 @@ public class FusionMod : MelonMod
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
+        MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
         NetworkSceneManager.OnInitializeMelon();
 
         // Initialize the networking manager
@@ -223,8 +224,6 @@ public class FusionMod : MelonMod
         // Cache info
         NetworkEntityManager.OnCleanupIds();
 
-        ModIOThumbnailDownloader.ClearCache();
-
         RigData.OnCacheRigInfo();
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
@@ -249,6 +248,11 @@ public class FusionMod : MelonMod
 
         // Create the Fusion Menu
         MenuCreator.CreateMenu();
+    }
+
+    private void OnLoadingBegin()
+    {
+        ModIOThumbnailDownloader.ClearCache();
     }
 
     public override void OnUpdate()
