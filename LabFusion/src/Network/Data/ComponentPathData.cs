@@ -9,7 +9,7 @@ namespace LabFusion.Network;
 
 public class ComponentPathData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort) * 2 + ComponentHashData.Size;
+    public const int Size = sizeof(byte) + sizeof(ushort) * 2 + sizeof(bool) + ComponentHashData.Size;
 
     public bool HasEntity;
 
