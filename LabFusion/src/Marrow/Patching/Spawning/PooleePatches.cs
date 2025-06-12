@@ -84,22 +84,22 @@ public class PooleeDespawnPatch
             return true;
         }
 
-        // Also make sure we're not ignoring this patch
-        if (IgnorePatch)
-        {
-            return true;
-        }
-
         // Don't allow player despawning
         if (CheckPlayerDespawn(__instance))
         {
             return false;
         }
 
+        // Also make sure we're not ignoring this patch
+        if (IgnorePatch)
+        {
+            return true;
+        }
+
         bool isLevelHost = NetworkSceneManager.IsLevelHost;
 
-        // If we are not the level host, and we don't allow despawns currently, then don't let the entity be despawned
-        if (!isLevelHost && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
+        // If we are not the level host then don't let the entity be despawned
+        if (!isLevelHost && PooleeExtender.Cache.ContainsSource(__instance))
         {
             return false;
         }

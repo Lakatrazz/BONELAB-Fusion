@@ -2,6 +2,7 @@
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
+using LabFusion.Marrow.Patching;
 
 using Il2CppSLZ.Marrow.VFX;
 
@@ -56,7 +57,7 @@ public class DespawnResponseMessage : NativeMessageHandler
             return;
         }
 
-        PooleeUtilities.CanDespawn = true;
+        PooleeDespawnPatch.IgnorePatch = true;
 
         var poolee = pooleeExtender.Component;
 
@@ -75,6 +76,6 @@ public class DespawnResponseMessage : NativeMessageHandler
 
         NetworkEntityManager.IDManager.UnregisterEntity(entity);
 
-        PooleeUtilities.CanDespawn = false;
+        PooleeDespawnPatch.IgnorePatch = false;
     }
 }

@@ -2,7 +2,9 @@
 
 using Il2CppSLZ.Marrow;
 
-using LabFusion.Patching;
+using LabFusion.Entities;
+using LabFusion.RPC;
+using LabFusion.Scene;
 
 namespace LabFusion.Marrow.Patching;
 
@@ -11,17 +13,32 @@ public static class AmmoPlugPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
-    public static void OnPlugInsertCompletePrefix()
+    public static void OnPlugInsertCompletePrefix(AmmoPlug __instance)
     {
-        PooleeDespawnPatch.IgnorePatch = true;
-        AmmoSocketPatches.IgnorePatch = true;
-    }
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
 
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
-    public static void OnPlugInsertCompletePostfix()
-    {
-        PooleeDespawnPatch.IgnorePatch = false;
-        AmmoSocketPatches.IgnorePatch = false;
+        if (__instance.magazine == null)
+        {
+            return;
+        }
+        
+        if (!MagazineExtender.Cache.TryGet(__instance.magazine, out var networkEntity))
+        {
+            return;
+        }
+
+        var socket = __instance._lastSocket;
+
+        if (socket != null && socket.IsClearOnInsert)
+        {
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityID = networkEntity.ID,
+                DespawnEffect = false,
+            });
+        }
     }
 }

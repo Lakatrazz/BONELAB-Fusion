@@ -1,7 +1,5 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Utilities;
-
 namespace LabFusion.Extensions;
 
 public static class AlignPlugExtensions
@@ -15,10 +13,12 @@ public static class AlignPlugExtensions
                 plug.EjectPlug();
 
                 while (plug._isExitTransition)
+                {
                     plug.Update();
+                }
             }
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
 #if DEBUG
             FusionLogger.LogException("running ForceEject on AlignPlug", e);

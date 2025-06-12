@@ -104,6 +104,11 @@ public static class AmmoSocketPatches
             return;
         }
 
+        if (__instance.IsClearOnInsert)
+        {
+            return;
+        }
+
         var gunEntity = GunExtender.Cache.Get(__instance.gun);
 
         if (gunEntity == null)

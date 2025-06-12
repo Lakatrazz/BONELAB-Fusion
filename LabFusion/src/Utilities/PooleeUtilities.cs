@@ -8,8 +8,6 @@ namespace LabFusion.Utilities;
 
 public static class PooleeUtilities
 {
-    internal static bool CanDespawn = false;
-
     public static void DespawnAll()
     {
         if (!NetworkInfo.IsHost)
