@@ -239,7 +239,7 @@ public static class NetworkEntityManager
 
         var request = new EntityPlayerData()
         {
-            PlayerId = ownerID.SmallID,
+            PlayerID = ownerID.SmallID,
             Entity = new(entity),
         };
 

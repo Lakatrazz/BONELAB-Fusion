@@ -1,8 +1,11 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Utilities;
+using LabFusion.Entities;
+using LabFusion.Player;
+using LabFusion.Grabbables;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class GripExtender : EntityComponentArrayExtender<Grip>
 {
@@ -23,6 +26,8 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
             grip.attachedHandDelegate += _onAttachDelegate;
             grip.detachedHandDelegate += _onDetachDelegate;
         }
+
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, Grip[] components)
@@ -37,6 +42,8 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
 
         _onAttachDelegate = null;
         _onDetachDelegate = null;
+
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
     protected void OnAttach(Hand hand)
@@ -102,6 +109,45 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
         if (hand.manager.IsLocalPlayer())
         {
             NetworkEntityManager.TakeOwnership(NetworkEntity);
+        }
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
+    {
+        foreach (var component in Components)
+        {
+            OnEntityDataCatchup(component, entity, player);
+        }
+    }
+
+    private static void OnEntityDataCatchup(Grip grip, NetworkEntity entity, PlayerID player)
+    {
+        var localPlayer = LocalPlayer.GetNetworkPlayer();
+
+        if (localPlayer == null)
+        {
+            return;
+        }
+
+        foreach (var hand in grip.attachedHands)
+        {
+            if (hand == null)
+            {
+                continue;
+            }
+
+            if (hand.manager.IsLocalPlayer())
+            {
+                localPlayer.NetworkEntity.HookOnDataCatchup(player, (playerEntity, playerPlayer) =>
+                {
+                    if (hand.AttachedReceiver != grip)
+                    {
+                        return;
+                    }
+
+                    GrabHelper.SendObjectAttach(hand, grip, player);
+                });
+            }
         }
     }
 }

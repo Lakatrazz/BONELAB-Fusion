@@ -19,6 +19,11 @@ public static class MagazineUtilities
             cart = ammoReceiver._selectedCartridgeData;
         }
 
+        if (cart != null && cart.projectile != null)
+        {
+            ProjectileEmitter.Register(cart.projectile);
+        }
+
         magazine.Initialize(cart, AmmoInventory.Instance.GetCartridgeCount(cart));
         magazine.Claim();
 
@@ -31,29 +36,34 @@ public static class MagazineUtilities
 
     public static void GrabMagazine(Magazine magazine, NetworkPlayer player, Handedness handedness)
     {
-        var rigManager = player.RigRefs.RigManager;
+        player.HookOnReady(OnPlayerReady);
 
-        var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
-
-        if (ammoReceiverExtender != null)
+        void OnPlayerReady()
         {
-            ClaimMagazine(magazine, ammoReceiverExtender.Component);
-        }
+            var rigManager = player.RigRefs.RigManager;
 
-        // Attach the object to the hand
-        var grip = magazine.grip;
-        
-        var found = handedness == Handedness.LEFT ? rigManager.physicsRig.leftHand : rigManager.physicsRig.rightHand;
+            var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
 
-        if (found)
-        {
-            // Delay by one frame to fix weird grabbing
-            DelayUtilities.InvokeNextFrame(() =>
+            if (ammoReceiverExtender != null)
             {
-                grip.MoveIntoHand(found);
+                ClaimMagazine(magazine, ammoReceiverExtender.Component);
+            }
 
-                grip.TryAttach(found, true);
-            });
+            // Attach the object to the hand
+            var grip = magazine.grip;
+
+            var found = handedness == Handedness.UNDEFINED ? null : handedness == Handedness.LEFT ? rigManager.physicsRig.leftHand : rigManager.physicsRig.rightHand;
+
+            if (found)
+            {
+                // Delay by one frame to fix weird grabbing
+                DelayUtilities.InvokeNextFrame(() =>
+                {
+                    grip.MoveIntoHand(found);
+
+                    grip.TryAttach(found, true);
+                });
+            }
         }
     }
 }

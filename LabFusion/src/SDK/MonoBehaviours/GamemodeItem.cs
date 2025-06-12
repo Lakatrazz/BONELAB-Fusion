@@ -10,6 +10,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Extenders;
 
 using MelonLoader;
 

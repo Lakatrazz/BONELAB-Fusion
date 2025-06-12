@@ -51,16 +51,16 @@ public static class NetworkPlayerManager
         return NetworkPlayer.RigCache.ContainsSource(rigManager);
     }
 
-    public static bool HasPlayer(byte playerId)
+    public static bool HasPlayer(byte playerID)
     {
-        return NetworkEntityManager.IDManager.RegisteredEntities.HasEntity(playerId);
+        return NetworkEntityManager.IDManager.RegisteredEntities.HasEntity(playerID);
     }
 
-    public static bool TryGetPlayer(byte playerId, out NetworkPlayer player)
+    public static bool TryGetPlayer(byte playerID, out NetworkPlayer player)
     {
         player = null;
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerID);
 
         if (entity == null)
         {

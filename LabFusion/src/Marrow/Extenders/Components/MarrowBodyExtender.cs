@@ -1,8 +1,9 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class MarrowBodyExtender : EntityComponentArrayExtender<MarrowBody>
 {

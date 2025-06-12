@@ -9,6 +9,7 @@ using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Bonelab.Extenders;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 

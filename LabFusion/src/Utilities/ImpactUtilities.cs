@@ -2,6 +2,7 @@
 
 using LabFusion.Entities;
 using LabFusion.Senders;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 

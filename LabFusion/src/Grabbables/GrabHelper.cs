@@ -4,6 +4,7 @@ using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Patching;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow;
 
@@ -62,17 +63,17 @@ public static class GrabHelper
         }
     }
 
-    public static void SendObjectAttach(Hand hand, Grip grip)
+    public static void SendObjectAttach(Hand hand, Grip grip, PlayerID target = null)
     {
         if (!NetworkInfo.HasServer)
         {
             return;
         }
 
-        Internal_ObjectAttach(hand, grip);
+        Internal_ObjectAttach(hand, grip, target);
     }
 
-    internal static void Internal_ObjectAttach(Hand hand, Grip grip)
+    internal static void Internal_ObjectAttach(Hand hand, Grip grip, PlayerID target = null)
     {
         if (!NetworkInfo.HasServer)
         {
@@ -174,7 +175,14 @@ public static class GrabHelper
 
             var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            if (target == null)
+            {
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            }
+            else
+            {
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallID);
+            }
         }
     }
 

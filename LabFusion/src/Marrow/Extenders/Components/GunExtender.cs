@@ -1,8 +1,9 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class GunExtender : EntityComponentArrayExtender<Gun>
 {

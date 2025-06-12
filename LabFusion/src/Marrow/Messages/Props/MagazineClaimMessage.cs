@@ -26,7 +26,7 @@ public class MagazineClaimData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class MagazineClaimMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)

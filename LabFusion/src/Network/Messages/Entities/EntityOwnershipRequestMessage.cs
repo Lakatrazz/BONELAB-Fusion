@@ -14,7 +14,7 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         // Send response
         var response = new EntityPlayerData()
         {
-            PlayerId = data.PlayerId,
+            PlayerID = data.PlayerID,
             Entity = new(data.Entity.ID),
         };
 

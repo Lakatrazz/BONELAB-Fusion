@@ -36,22 +36,22 @@ public static class CatchupManager
             return;
         }
 
-        var data = new EntityPlayerData() { PlayerId = PlayerIDManager.LocalSmallID, Entity = entityReference };
+        var data = new EntityPlayerData() { PlayerID = PlayerIDManager.LocalSmallID, Entity = entityReference };
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, NetworkChannel.Reliable, RelayType.ToTarget, ownerID.SmallID);
     }
 
-    internal static void InvokePlayerServerCatchup(PlayerID playerId) => OnPlayerServerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
+    internal static void InvokePlayerServerCatchup(PlayerID playerID) => OnPlayerServerCatchup.InvokeSafe(playerID, "executing OnPlayerCatchup hook");
 
-    internal static void InvokeEntityDataCatchup(PlayerID playerId, NetworkEntityReference entityReference)
+    internal static void InvokeEntityDataCatchup(PlayerID playerID, NetworkEntityReference entityReference)
     {
         if (!entityReference.TryGetEntity(out var entity))
         {
             return;
         }
 
-        entity.InvokeDataCatchup(playerId);
+        entity.InvokeDataCatchup(playerID);
 
-        OnEntityDataCatchup?.InvokeSafe(playerId, entity, "executing CatchupManager.OnEntityDataCatchup");
+        OnEntityDataCatchup?.InvokeSafe(playerID, entity, "executing CatchupManager.OnEntityDataCatchup");
     }
 }

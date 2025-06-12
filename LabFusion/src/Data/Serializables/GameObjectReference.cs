@@ -1,9 +1,9 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Entities;
-using LabFusion.Extensions;
 using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 

@@ -14,24 +14,24 @@ public class MagazineInsertData : INetSerializable
 
     public int? GetSize() => Size;
 
-    public ushort MagazineId;
-    public ushort GunId;
+    public ushort MagazineID;
+    public ushort GunID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref MagazineId);
-        serializer.SerializeValue(ref GunId);
+        serializer.SerializeValue(ref MagazineID);
+        serializer.SerializeValue(ref GunID);
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class MagazineInsertMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<MagazineInsertData>();
 
-        var mag = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.MagazineId);
+        var mag = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.MagazineID);
 
         if (mag == null)
         {
@@ -45,7 +45,7 @@ public class MagazineInsertMessage : ModuleMessageHandler
             return;
         }
 
-        var gun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.GunId);
+        var gun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.GunID);
 
         if (gun == null)
         {

@@ -204,6 +204,14 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// <returns></returns>
     public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID);
 
+    /// <summary>
+    /// Clears the players that have had data catch up for this NetworkEntity.
+    /// </summary>
+    public void ClearDataCaughtUpPlayers()
+    {
+        _dataCaughtUpPlayers.Clear();
+    }
+
     public void Queue(ushort queuedId)
     {
         _queueID = queuedId;

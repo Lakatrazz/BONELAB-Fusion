@@ -7,12 +7,12 @@ public class EntityPlayerData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
-    public byte PlayerId;
+    public byte PlayerID;
     public NetworkEntityReference Entity;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref PlayerId);
+        serializer.SerializeValue(ref PlayerID);
         serializer.SerializeValue(ref Entity);
     }
 }

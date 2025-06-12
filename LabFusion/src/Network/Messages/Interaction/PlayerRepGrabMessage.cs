@@ -56,7 +56,7 @@ public class PlayerRepGrabData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class PlayerRepGrabMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepGrab;

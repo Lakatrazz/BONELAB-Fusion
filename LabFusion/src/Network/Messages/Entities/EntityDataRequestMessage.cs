@@ -10,7 +10,7 @@ public class EntityDataRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityPlayerData>();
 
-        var playerId = PlayerIDManager.GetPlayerID(data.PlayerId);
+        var playerId = PlayerIDManager.GetPlayerID(data.PlayerID);
 
         if (playerId == null)
         {

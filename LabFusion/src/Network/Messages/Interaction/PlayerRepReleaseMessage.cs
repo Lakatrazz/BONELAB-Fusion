@@ -39,7 +39,7 @@ public class PlayerRepReleaseData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class PlayerRepReleaseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepRelease;

@@ -1,7 +1,10 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Entities;
 
@@ -20,6 +23,8 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
             _despawnHandler = new();
             _despawnHandler.Register(component.interactableHost, component._poolee);
         }
+
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, Magazine component)
@@ -31,5 +36,15 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
             _despawnHandler.Unregister();
             _despawnHandler = null;
         }
+
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
+    {
+        // Send claim message
+        var data = new MagazineClaimData() { OwnerID = PlayerIDManager.LocalSmallID, EntityID = entity.ID, Handedness = Handedness.UNDEFINED };
+
+        MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }
 }

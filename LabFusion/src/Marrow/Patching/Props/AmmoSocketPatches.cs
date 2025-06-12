@@ -7,6 +7,7 @@ using LabFusion.Entities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Marrow.Extenders;
 using LabFusion.Scene;
 
 namespace LabFusion.Marrow.Patching;
@@ -80,7 +81,7 @@ public static class AmmoSocketPatches
             return;
         }
 
-        var data = new MagazineInsertData() { MagazineId = magEntity.ID, GunId = gunEntity.ID };
+        var data = new MagazineInsertData() { MagazineID = magEntity.ID, GunID = gunEntity.ID };
 
         MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

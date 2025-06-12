@@ -1,8 +1,9 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class InteractableHostExtender : EntityComponentArrayExtender<InteractableHost>
 {

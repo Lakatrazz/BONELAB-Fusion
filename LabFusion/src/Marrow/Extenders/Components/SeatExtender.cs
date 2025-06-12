@@ -1,10 +1,11 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Network;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class SeatExtender : EntityComponentArrayExtender<Seat>
 {

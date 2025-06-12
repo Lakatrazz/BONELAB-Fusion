@@ -2,6 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow;
 
@@ -58,8 +59,11 @@ public class AmmoSocketExtender : EntityComponentExtender<AmmoSocket>
             return;
         }
 
-        var data = new MagazineInsertData() { MagazineId = magEntity.ID, GunId = gunEntity.ID };
+        magEntity.HookOnDataCatchup(player, (magEntity, magPlayer) =>
+        {
+            var data = new MagazineInsertData() { MagazineID = magEntity.ID, GunID = gunEntity.ID };
 
-        MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
+            MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
+        });
     }
 }

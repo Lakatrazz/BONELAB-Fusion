@@ -7,6 +7,7 @@ using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Scene;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;

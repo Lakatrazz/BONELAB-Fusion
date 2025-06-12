@@ -4,12 +4,13 @@ using LabFusion.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Extenders;
 using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
-using LabFusion.SDK.Modules;
 
 namespace LabFusion.Bonelab.Messages;
 

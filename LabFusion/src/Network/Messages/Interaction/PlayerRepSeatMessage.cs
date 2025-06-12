@@ -1,6 +1,7 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Patching;
+using LabFusion.Marrow.Extenders;
 
 namespace LabFusion.Network;
 

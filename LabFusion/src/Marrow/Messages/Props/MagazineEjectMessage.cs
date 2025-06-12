@@ -30,7 +30,7 @@ public class MagazineEjectData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class MagazineEjectMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
