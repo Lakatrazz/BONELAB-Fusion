@@ -23,6 +23,9 @@ public sealed class AudioStreamFilter : MonoBehaviour
     public float[] ReadingArray { get; } = new float[AudioInfo.OutputSampleRate];
 
     [HideFromIl2Cpp]
+    public float SampleMultiplier { get; set; } = 1f;
+
+    [HideFromIl2Cpp]
     public void Enqueue(float sample)
     {
         if (ReadingQueue.Count >= QueueCapacity)
@@ -51,7 +54,7 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
             if (ReadingQueue.Count > 0)
             {
-                output = ReadingQueue.Dequeue();
+                output = ReadingQueue.Dequeue() * SampleMultiplier;
             }
 
             ReadingArray[i] = output;

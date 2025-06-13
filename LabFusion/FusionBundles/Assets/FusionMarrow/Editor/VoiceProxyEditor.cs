@@ -20,11 +20,19 @@ namespace LabFusion.Marrow.Integration
         private SerializedProperty _defaultConnectedProxyProperty;
         private SerializedProperty _canHearSelfProperty;
 
+        private SerializedProperty _distanceFalloffProperty;
+        private SerializedProperty _falloffMinDistanceProperty;
+        private SerializedProperty _falloffMaxDistanceProperty;
+
         public void OnEnable()
         {
             _defaultChannelProperty = serializedObject.FindProperty(nameof(VoiceProxy.DefaultChannel));
             _defaultConnectedProxyProperty = serializedObject.FindProperty(nameof(VoiceProxy.DefaultConnectedProxy));
             _canHearSelfProperty = serializedObject.FindProperty(nameof(VoiceProxy.CanHearSelf));
+
+            _distanceFalloffProperty = serializedObject.FindProperty(nameof(VoiceProxy.DistanceFalloff));
+            _falloffMinDistanceProperty = serializedObject.FindProperty(nameof(VoiceProxy.FalloffMinDistance));
+            _falloffMaxDistanceProperty = serializedObject.FindProperty(nameof(VoiceProxy.FalloffMaxDistance));
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -59,6 +67,15 @@ namespace LabFusion.Marrow.Integration
 
             var canHearSelf = new PropertyField(_canHearSelfProperty);
             root.Add(canHearSelf);
+
+            var distanceFalloff = new PropertyField(_distanceFalloffProperty);
+            root.Add(distanceFalloff);
+
+            var minDistance = new PropertyField(_falloffMinDistanceProperty);
+            root.Add(minDistance);
+
+            var maxDistance = new PropertyField(_falloffMaxDistanceProperty);
+            root.Add(maxDistance);
 
             if (proxy.TryGetComponent<AudioSource>(out _))
             {
@@ -99,6 +116,7 @@ namespace LabFusion.Marrow.Integration
             Action<string> setChannelAction = proxy.SetChannelString;
             Action<UnityEngine.Object> setConnectedProxyAction = proxy.SetConnectedProxy;
             Action<bool> setCanHearSelfAction = proxy.SetCanHearSelf;
+            Action<bool, float, float> setDistanceFalloffAction = proxy.SetDistanceFalloff;
 
             if (!string.IsNullOrWhiteSpace(proxy.DefaultChannel))
             {
@@ -120,6 +138,14 @@ namespace LabFusion.Marrow.Integration
             {
                 var setCanHearSelfCall = ultEvent.AddPersistentCall(setCanHearSelfAction);
                 setCanHearSelfCall.PersistentArguments[0].Bool = proxy.CanHearSelf;
+            }
+
+            if (proxy.DistanceFalloff)
+            {
+                var setDistanceFalloffCall = ultEvent.AddPersistentCall(setDistanceFalloffAction);
+                setDistanceFalloffCall.PersistentArguments[0].Bool = proxy.DistanceFalloff;
+                setDistanceFalloffCall.PersistentArguments[1].Float = proxy.FalloffMinDistance;
+                setDistanceFalloffCall.PersistentArguments[2].Float = proxy.FalloffMaxDistance;
             }
         }
     }

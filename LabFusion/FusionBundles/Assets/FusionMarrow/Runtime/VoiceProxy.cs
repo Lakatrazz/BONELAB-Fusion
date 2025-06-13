@@ -3,6 +3,7 @@ using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Data;
+using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
@@ -19,6 +20,8 @@ using UnityEngine;
 namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
+    using Math = System.Math;
+
     [RegisterTypeInIl2Cpp]
 #else
     [DisallowMultipleComponent]
@@ -53,6 +56,8 @@ namespace LabFusion.Marrow.Integration
         }
 
         private VoiceProxy _connectedProxy = null;
+
+        [HideFromIl2Cpp]
         public VoiceProxy ConnectedProxy
         {
             get
@@ -95,7 +100,15 @@ namespace LabFusion.Marrow.Integration
             }
         }
 
+        public bool DistanceFalloff { get; set; } = false;
+
+        public float FalloffMinDistance { get; set; } = 0.2f;
+
+        public float FalloffMaxDistance { get; set; } = 500f;
+
         private int? _inputID = null;
+
+        [HideFromIl2Cpp]
         public int? InputID
         {
             get
@@ -115,10 +128,18 @@ namespace LabFusion.Marrow.Integration
             }
         }
 
+        [HideFromIl2Cpp]
+        public float InputVolume { get; set; } = 1f;
+
         private VoiceSource _voiceSource = null;
 
         [HideFromIl2Cpp]
         public VoiceSource VoiceSource => _voiceSource;
+
+        private VoiceProxy _listeningProxy = null;
+
+        [HideFromIl2Cpp]
+        public VoiceProxy ListeningProxy => _listeningProxy;
 
         public bool Enabled { get; private set; } = false;
 
@@ -165,11 +186,20 @@ namespace LabFusion.Marrow.Integration
         private void OnEnable()
         {
             Enabled = true;
+
+            InputVolume = 1f;
         }
 
         private void OnDisable()
         {
             Enabled = false;
+
+            InputVolume = 1f;
+        }
+
+        private void LateUpdate()
+        {
+            InputVolume = CalculateInputFalloff();
         }
 
         private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
@@ -179,7 +209,58 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            VoiceSource.StreamFilter.ProcessAudioFilter(data, channels);
+            var streamFilter = VoiceSource.StreamFilter;
+
+            if (ListeningProxy != null)
+            {
+                float inputVolume = ListeningProxy.InputVolume;
+                streamFilter.SampleMultiplier = inputVolume * inputVolume;
+            }
+            else
+            {
+                streamFilter.SampleMultiplier = 1f;
+            }
+
+            streamFilter.ProcessAudioFilter(data, channels);
+        }
+
+        private float CalculateInputFalloff()
+        {
+            if (!DistanceFalloff)
+            {
+                return 1f;
+            }
+
+            if (!InputID.HasValue)
+            {
+                return 1f;
+            }
+
+            if (!NetworkPlayerManager.TryGetPlayer((byte)InputID.Value, out var networkPlayer) || !networkPlayer.HasRig)
+            {
+                return 1f;
+            }
+
+            var distance = (networkPlayer.RigRefs.Mouth.position - transform.position).magnitude;
+
+            return CalculateVolumeFalloff(distance);
+        }
+
+        private float CalculateVolumeFalloff(float distance)
+        {
+            if (!DistanceFalloff)
+            {
+                return 1f;
+            }
+
+            float clampedMin = Math.Max(0.05f, FalloffMinDistance);
+            float clampedMax = Math.Max(clampedMin + 0.05f, FalloffMaxDistance);
+
+            float clampedDistance = (float)Math.Pow(Math.Max(clampedMin, distance), 500f / clampedMax);
+
+            float volume = clampedMin / clampedDistance;
+
+            return volume;
         }
 
         public void SetChannelString(string channel)
@@ -200,6 +281,13 @@ namespace LabFusion.Marrow.Integration
         public void SetCanHearSelf(bool value)
         {
             CanHearSelf = value;
+        }
+
+        public void SetDistanceFalloff(bool enabled, float min, float max)
+        {
+            DistanceFalloff = enabled;
+            FalloffMinDistance = min;
+            FalloffMaxDistance = max;
         }
 
         public float GetOutputAmplitude() => VoiceSource != null ? VoiceSource.Amplitude : 0f;
@@ -259,20 +347,20 @@ namespace LabFusion.Marrow.Integration
         {
             VoiceSource.ID = -1;
 
-            VoiceProxy listeningProxy = null;
+            _listeningProxy = null;
 
             if (ConnectedProxy != null)
             {
-                listeningProxy = ConnectedProxy;
+                _listeningProxy = ConnectedProxy;
             }
             else if (!string.IsNullOrWhiteSpace(Channel))
             {
-                listeningProxy = Proxies.Find(ProxyChannelPredicate);
+                _listeningProxy = Proxies.Find(ProxyChannelPredicate);
             }
 
-            if (listeningProxy != null)
+            if (ListeningProxy != null)
             {
-                int inputID = listeningProxy.InputID ?? -1;
+                int inputID = ListeningProxy.InputID ?? -1;
 
                 if (inputID == PlayerIDManager.LocalSmallID && !CanHearSelf)
                 {
@@ -323,6 +411,17 @@ namespace LabFusion.Marrow.Integration
         [Tooltip("Whether or not this VoiceProxy is able to play the Local Player's voice back to them.")]
         public bool CanHearSelf = false;
 
+        [Tooltip("When inputting voice, should voice volume falloff logarithmically with distance from the mouth to the proxy?")]
+        public bool DistanceFalloff = false;
+
+        [Min(0f)]
+        [Tooltip("If distance falloff is enabled, then the voice will remain at full volume up until this distance.")]
+        public float FalloffMinDistance = 0.2f;
+
+        [Min(0f)]
+        [Tooltip("If distance falloff is enabled, then the voice will become quietest at this distance.")]
+        public float FalloffMaxDistance = 500f;
+
         public void SetChannelString(string channel)
         {
         }
@@ -339,12 +438,30 @@ namespace LabFusion.Marrow.Integration
         {
         }
 
+        public void SetDistanceFalloff(bool enabled, float min, float max)
+        {
+        }
+
         public float GetOutputAmplitude() => 0f;
 
         public bool IsOutputtingVoice() => false;
 
         public void ToggleInput(bool input)
         {
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!DistanceFalloff)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, FalloffMinDistance);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, FalloffMaxDistance);
         }
 #endif
     }
