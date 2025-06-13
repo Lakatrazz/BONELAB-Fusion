@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Metadata;
 
@@ -60,14 +59,14 @@ public class NetworkMetadata
     {
         _localDictionary[key] = value;
 
-        OnMetadataChanged?.Invoke(key, value);
+        OnMetadataChanged?.InvokeSafe(key, value, "executing OnMetadataChanged");
     }
 
     public void ForceRemoveLocalMetadata(string key)
     {
         if (_localDictionary.TryGetValue(key, out var value))
         {
-            OnMetadataRemoved?.Invoke(key, value);
+            OnMetadataRemoved?.InvokeSafe(key, value, "executing OnMetadataRemoved");
 
             _localDictionary.Remove(key);
         }
@@ -79,7 +78,7 @@ public class NetworkMetadata
 
         foreach (var key in keys)
         {
-            OnMetadataRemoved?.Invoke(key, _localDictionary[key]);
+            OnMetadataRemoved?.InvokeSafe(key, _localDictionary[key], "executing OnMetadataRemoved");
 
             _localDictionary.Remove(key);
         }
@@ -96,7 +95,7 @@ public class NetworkMetadata
                 continue;
             }
 
-            OnMetadataRemoved?.Invoke(key, _localDictionary[key]);
+            OnMetadataRemoved?.InvokeSafe(key, _localDictionary[key], "executing OnMetadataRemoved");
 
             _localDictionary.Remove(key);
         }
