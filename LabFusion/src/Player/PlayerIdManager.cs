@@ -8,6 +8,9 @@ public static class PlayerIDManager
     public const int MaxPlayerID = byte.MaxValue;
 
     public static readonly HashSet<PlayerID> PlayerIDs = new();
+    public static readonly Dictionary<byte, PlayerID> SmallIDLookup = new();
+    public static readonly Dictionary<ulong, PlayerID> PlatformIDLookup = new();
+
     public static int PlayerCount => PlayerIDs.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
@@ -17,13 +20,35 @@ public static class PlayerIDManager
 
     public const byte HostSmallID = 0;
 
-    public static byte? GetUnusedPlayerID()
+    public static void InsertPlayerID(PlayerID playerID)
     {
-        for (byte i = 0; i < 255; i++)
+        if (SmallIDLookup.TryGetValue(playerID.SmallID, out var conflictingPlayer))
         {
-            if (GetPlayerID(i) == null)
-                return i;
+            conflictingPlayer.Cleanup();
         }
+
+        PlayerIDs.Add(playerID);
+        SmallIDLookup[playerID.SmallID] = playerID;
+        PlatformIDLookup[playerID.PlatformID] = playerID;
+    }
+
+    public static void RemovePlayerID(PlayerID playerID)
+    {
+        PlayerIDs.Remove(playerID);
+        SmallIDLookup.Remove(playerID.SmallID);
+        PlatformIDLookup.Remove(playerID.PlatformID);
+    }
+
+    public static byte? GetUniquePlayerID()
+    {
+        for (byte i = MinPlayerID; i < MaxPlayerID; i++)
+        {
+            if (!HasPlayerID(i))
+            {
+                return i;
+            }
+        }
+
         return null;
     }
 
@@ -32,19 +57,29 @@ public static class PlayerIDManager
         return GetPlayerID(HostSmallID);
     }
 
-    public static PlayerID GetPlayerID(byte smallId)
+    public static PlayerID GetPlayerID(byte smallID)
     {
-        return PlayerIDs.FirstOrDefault(x => x.SmallID == smallId);
+        if (SmallIDLookup.TryGetValue(smallID, out var playerID))
+        {
+            return playerID;
+        }
+
+        return null;
     }
 
-    public static PlayerID GetPlayerID(ulong longId)
+    public static PlayerID GetPlayerID(ulong platformID)
     {
-        return PlayerIDs.FirstOrDefault(x => x.PlatformID == longId);
+        if (PlatformIDLookup.TryGetValue(platformID, out var playerID))
+        {
+            return playerID;
+        }
+
+        return null;
     }
 
-    public static bool HasPlayerID(byte smallId) => GetPlayerID(smallId) != null;
+    public static bool HasPlayerID(byte smallID) => SmallIDLookup.ContainsKey(smallID);
 
-    public static bool HasPlayerID(ulong longId) => GetPlayerID(longId) != null;
+    public static bool HasPlayerID(ulong platformID) => PlatformIDLookup.ContainsKey(platformID);
 
     internal static void ApplyLocalID()
     {

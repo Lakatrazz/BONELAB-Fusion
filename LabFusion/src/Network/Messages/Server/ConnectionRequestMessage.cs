@@ -76,7 +76,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
             return;
         }
 
-        var newSmallId = PlayerIDManager.GetUnusedPlayerID();
+        var newSmallId = PlayerIDManager.GetUniquePlayerID();
 
         // No unused ids available
         if (!newSmallId.HasValue)

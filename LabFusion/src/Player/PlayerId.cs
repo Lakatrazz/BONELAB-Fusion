@@ -197,7 +197,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             }
         }
 
-        PlayerIDManager.PlayerIDs.Add(this);
+        PlayerIDManager.InsertPlayerID(this);
     }
 
     public void Cleanup()
@@ -208,7 +208,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             return;
         }
 
-        PlayerIDManager.PlayerIDs.Remove(this);
+        PlayerIDManager.RemovePlayerID(this);
 
         if (PlayerIDManager.LocalID == this)
         {

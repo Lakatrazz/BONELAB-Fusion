@@ -1,5 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 
+using LabFusion.Utilities;
+
 namespace LabFusion.Extensions;
 
 public static class AlignPlugExtensions
