@@ -256,9 +256,9 @@ namespace LabFusion.Marrow.Integration
             float clampedMin = Math.Max(0.05f, FalloffMinDistance);
             float clampedMax = Math.Max(clampedMin + 0.05f, FalloffMaxDistance);
 
-            float clampedDistance = (float)Math.Pow(Math.Max(clampedMin, distance), 500f / clampedMax);
+            float clampedDistance = Math.Max(clampedMin, distance);
 
-            float volume = clampedMin / clampedDistance;
+            float volume = (float)Math.Pow(clampedMin / clampedDistance, 500f / clampedMax);
 
             return volume;
         }
