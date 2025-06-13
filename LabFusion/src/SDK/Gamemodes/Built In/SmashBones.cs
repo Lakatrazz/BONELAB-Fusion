@@ -2,7 +2,6 @@
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow.Integration;
 using LabFusion.Marrow;
@@ -20,6 +19,7 @@ using LabFusion.Extensions;
 using LabFusion.UI.Popups;
 using LabFusion.SDK.Points;
 using LabFusion.Marrow.Pool;
+using LabFusion.Senders;
 
 using UnityEngine;
 
@@ -33,8 +33,8 @@ public class SmashBones : Gamemode
     [Serializable]
     public struct DamageInfo
     {
-        [JsonPropertyName("longId")]
-        public ulong LongId { get; set; }
+        [JsonPropertyName("platformID")]
+        public ulong PlatformID { get; set; }
 
         [JsonPropertyName("damage")]
         public float Damage { get; set; }
@@ -43,8 +43,8 @@ public class SmashBones : Gamemode
     [Serializable]
     public struct DeathInfo
     {
-        [JsonPropertyName("longId")]
-        public ulong LongId { get; set; }
+        [JsonPropertyName("platformID")]
+        public ulong PlatformID { get; set; }
 
         [JsonPropertyName("position")]
         public JsonVector3 Position { get; set; }
@@ -341,7 +341,7 @@ public class SmashBones : Gamemode
 
         PlayerDamageEvent.TryInvoke(JsonSerializer.Serialize(new DamageInfo()
         {
-            LongId = PlayerIDManager.LocalPlatformID,
+            PlatformID = PlayerIDManager.LocalPlatformID,
             Damage = damage,
         }));
 
@@ -446,7 +446,7 @@ public class SmashBones : Gamemode
 
         var damageInfo = JsonSerializer.Deserialize<DamageInfo>(value);
 
-        var playerId = PlayerIDManager.GetPlayerID(damageInfo.LongId);
+        var playerId = PlayerIDManager.GetPlayerID(damageInfo.PlatformID);
 
         PlayerDamageKeeper.GetVariable(playerId).SetValue(damageInfo.Damage);
     }
@@ -460,7 +460,7 @@ public class SmashBones : Gamemode
 
         var deathInfo = JsonSerializer.Deserialize<DeathInfo>(value);
 
-        var playerId = PlayerIDManager.GetPlayerID(deathInfo.LongId);
+        var playerId = PlayerIDManager.GetPlayerID(deathInfo.PlatformID);
 
         if (NetworkInfo.IsHost)
         {
@@ -484,6 +484,8 @@ public class SmashBones : Gamemode
         }
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
+
+        MultiplayerHooking.InvokeOnPlayerAction(playerId, PlayerActionType.DEATH);
     }
 
     private void OnLivesChanged(PlayerID player, int lives)
@@ -781,7 +783,7 @@ public class SmashBones : Gamemode
 
         PlayerDeathEvent.TryInvoke(JsonSerializer.Serialize(new DeathInfo()
         {
-            LongId = PlayerIDManager.LocalPlatformID,
+            PlatformID = PlayerIDManager.LocalPlatformID,
             Position = new(pelvis.position),
             Direction = new(pelvis.velocity.normalized),
         }));
