@@ -33,7 +33,7 @@ public static class RPCFloatSender
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcFloat, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var floatData = RPCFloatData.Create(pathData, value);
 
-        MessageRelay.RelayNative(floatData, NativeMessageTag.RPCFloat, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(floatData, NativeMessageTag.RPCFloat, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
@@ -50,7 +50,7 @@ public static class RPCFloatSender
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcFloat, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCFloatData.Create(pathData, rpcFloat.GetLatestValue());
 
-        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCFloat, NetworkChannel.Reliable, RelayType.ToTarget, playerID.SmallID);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCFloat, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
     }
 }
 

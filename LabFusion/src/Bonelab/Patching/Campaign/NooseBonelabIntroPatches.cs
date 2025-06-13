@@ -31,7 +31,7 @@ public static class NooseBonelabIntroPatches
 
         var nooseEvent = DescentEventHandler.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.ATTACH_NOOSE);
 
-        MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -50,6 +50,6 @@ public static class NooseBonelabIntroPatches
 
         var nooseEvent = DescentEventHandler.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.CUT_NOOSE);
 
-        MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

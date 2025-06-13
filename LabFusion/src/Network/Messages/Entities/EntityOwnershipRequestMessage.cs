@@ -18,6 +18,6 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
             Entity = new(data.Entity.ID),
         };
 
-        MessageRelay.RelayNative(response, NativeMessageTag.EntityOwnershipResponse, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(response, NativeMessageTag.EntityOwnershipResponse, CommonMessageRoutes.ReliableToClients);
     }
 }

@@ -152,7 +152,7 @@ public static class ConstrainerPatches
             // Send create message
             var data = ConstraintCreateData.Create(PlayerIDManager.LocalSmallID, entity.ID, new ConstrainerPointPair(__instance));
 
-            MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToServer);
+            MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, CommonMessageRoutes.ReliableToServer);
         }
         // If this is a received message, setup the constraints
         else
@@ -219,7 +219,7 @@ public static class ConstrainerPatches
                 Mode = nextMode,
             };
 
-            MessageRelay.RelayModule<ConstrainerModeMessage, ConstrainerModeData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<ConstrainerModeMessage, ConstrainerModeData>(data, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         return true;

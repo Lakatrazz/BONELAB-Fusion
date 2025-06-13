@@ -30,7 +30,7 @@ public static class GameControl_DescentPatches
             return;
         }
 
-        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -49,6 +49,6 @@ public static class GameControl_DescentPatches
             return;
         }
 
-        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

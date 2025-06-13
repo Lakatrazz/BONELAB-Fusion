@@ -44,7 +44,7 @@ public static class GameControl_MagmaGatePatches
             return false;
         }
 
-        MessageRelay.RelayModule<MagmaGateEventMessage, MagmaGateEventData>(new MagmaGateEventData() { Type = type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagmaGateEventMessage, MagmaGateEventData>(new MagmaGateEventData() { Type = type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

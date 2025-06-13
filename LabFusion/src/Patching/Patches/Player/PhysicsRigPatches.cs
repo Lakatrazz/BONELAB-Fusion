@@ -50,7 +50,7 @@ public static class PhysicsRigPatches
         {
             var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, true);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 
@@ -73,7 +73,7 @@ public static class PhysicsRigPatches
 
             var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, false);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         return true;
@@ -92,7 +92,7 @@ public static class PhysicsRigPatches
         {
             var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, true);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 
@@ -118,7 +118,7 @@ public static class PhysicsRigPatches
 
         var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, false);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
 
         return true;
     }
@@ -136,7 +136,7 @@ public static class PhysicsRigPatches
         {
             var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, true);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 
@@ -153,7 +153,7 @@ public static class PhysicsRigPatches
         {
             var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, false);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 }

@@ -42,6 +42,6 @@ public static class PhysLimbPatches
 
         var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.LEG_SHUTDOWN, true, left);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

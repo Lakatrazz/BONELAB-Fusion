@@ -80,7 +80,7 @@ public static class GameControl_OutroPatches
             return false;
         }
 
-        MessageRelay.RelayModule<HomeEventMessage, HomeEventData>(new HomeEventData() { Type = type, SelectionNumber = selectionNumber }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<HomeEventMessage, HomeEventData>(new HomeEventData() { Type = type, SelectionNumber = selectionNumber }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

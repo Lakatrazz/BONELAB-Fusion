@@ -26,4 +26,9 @@ public enum RelayType : byte
     /// Relays the message to a set target user.
     /// </summary>
     ToTarget,
+
+    /// <summary>
+    /// Relays the message to multiple target users.
+    /// </summary>
+    ToTargets,
 }

@@ -53,7 +53,7 @@ public static class RPCEventSender
         // Send the message
         var data = ComponentPathData.CreateFromComponent<RPCEvent, RPCEventExtender>(rpcEvent, RPCEvent.HashTable, RPCEventExtender.Cache);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.RPCEvent, channel, relayType);
+        MessageRelay.RelayNative(data, NativeMessageTag.RPCEvent, new MessageRoute(relayType, channel));
 
         return true;
     }

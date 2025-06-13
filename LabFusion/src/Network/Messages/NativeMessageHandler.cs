@@ -66,10 +66,8 @@ public abstract class NativeMessageHandler : MessageHandler
             {
                 var payload = new ReceivedMessage()
                 {
-                    Type = prefix.Type,
-                    Channel = prefix.Channel,
+                    Route = prefix.Route,
                     Sender = prefix.Sender,
-                    Target = prefix.Target,
                     Bytes = bytes,
                     IsServerHandled = message.IsServerHandled,
                 };
@@ -105,7 +103,11 @@ public abstract class NativeMessageHandler : MessageHandler
             return;
         }
 
-        switch (received.Type)
+        var route = received.Route;
+        var type = route.Type;
+        var channel = route.Channel;
+
+        switch (type)
         {
             case RelayType.ToServer:
                 if (!received.IsServerHandled)
@@ -116,9 +118,9 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToClients:
                 if (received.IsServerHandled)
                 {
-                    using var message = FusionMessage.Create(Tag, received);
+                    using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.BroadcastMessage(received.Channel, message);
+                    MessageSender.BroadcastMessage(channel, message);
 
                     return;
                 }
@@ -126,9 +128,9 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToOtherClients:
                 if (received.IsServerHandled)
                 {
-                    using var message = FusionMessage.Create(Tag, received);
+                    using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.BroadcastMessageExcept(received.Sender.Value, received.Channel, message, false);
+                    MessageSender.BroadcastMessageExcept(received.Sender.Value, channel, message, false);
 
                     return;
                 }
@@ -136,9 +138,22 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToTarget:
                 if (received.IsServerHandled)
                 {
-                    using var message = FusionMessage.Create(Tag, received);
+                    using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.SendFromServer(received.Target.Value, received.Channel, message);
+                    MessageSender.SendFromServer(route.Target.Value, channel, message);
+
+                    return;
+                }
+                break;
+            case RelayType.ToTargets:
+                if (received.IsServerHandled)
+                {
+                    using var message = NetMessage.Create(Tag, received);
+
+                    foreach (var target in route.Targets)
+                    {
+                        MessageSender.SendFromServer(target, channel, message);
+                    }
 
                     return;
                 }

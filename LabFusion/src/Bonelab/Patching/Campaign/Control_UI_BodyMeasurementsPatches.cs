@@ -30,6 +30,6 @@ public static class Control_UI_BodyMeasurementsPatches
             return;
         }
 
-        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = introEvent.Type, SelectionNumber = (byte)introEvent.SelectionNumber }, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

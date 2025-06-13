@@ -24,7 +24,7 @@ public static class KartRacePatches
 
         if (NetworkSceneManager.IsLevelNetworked)
         {
-            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.START_RACE }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.START_RACE }, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 
@@ -39,7 +39,7 @@ public static class KartRacePatches
 
         if (NetworkSceneManager.IsLevelNetworked)
         {
-            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.NEW_LAP }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.NEW_LAP }, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 
@@ -62,7 +62,7 @@ public static class KartRacePatches
             return false;
         }
 
-        MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.RESET_RACE }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.RESET_RACE }, CommonMessageRoutes.ReliableToOtherClients);
 
         return true;
     }
@@ -78,7 +78,7 @@ public static class KartRacePatches
 
         if (NetworkSceneManager.IsLevelNetworked)
         {
-            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.END_RACE }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<KartRaceEventMessage, KartRaceEventData>(new KartRaceEventData() { Type = KartRaceEventType.END_RACE }, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 }

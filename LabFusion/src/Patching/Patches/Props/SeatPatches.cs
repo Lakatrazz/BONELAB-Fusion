@@ -110,7 +110,7 @@ public static class SeatPatches
 
         var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, true);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -144,6 +144,6 @@ public static class SeatPatches
 
         var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, false);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

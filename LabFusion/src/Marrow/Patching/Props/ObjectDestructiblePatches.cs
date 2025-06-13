@@ -76,7 +76,7 @@ public static class ObjectDestructiblePatches
         {
             var data = ComponentIndexData.Create(entity.ID, extender.GetIndex(destructible).Value);
 
-            MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, CommonMessageRoutes.ReliableToOtherClients);
         }
     }
 

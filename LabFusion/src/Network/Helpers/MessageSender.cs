@@ -13,7 +13,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+    public static void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
@@ -32,7 +32,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+    public static void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
@@ -52,7 +52,7 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendToServer(NetworkChannel channel, FusionMessage message)
+    public static void SendToServer(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
@@ -90,7 +90,7 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
@@ -126,7 +126,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
@@ -162,7 +162,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
@@ -197,7 +197,7 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastMessageExceptSelf(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;

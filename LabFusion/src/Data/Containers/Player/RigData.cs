@@ -79,7 +79,7 @@ public static class RigData
         // Send body vitals to network
         var data = PlayerRepVitalsData.Create(PlayerIDManager.LocalSmallID, PlayerRefs.Instance.PlayerBodyVitals);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static string GetAvatarBarcode()

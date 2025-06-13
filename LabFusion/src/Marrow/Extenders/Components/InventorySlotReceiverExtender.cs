@@ -77,6 +77,6 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             WeaponID = weaponEntity.ID,
         };
 
-        MessageRelay.RelayModule<InventorySlotInsertMessage, InventorySlotInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
+        MessageRelay.RelayModule<InventorySlotInsertMessage, InventorySlotInsertData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }
 }

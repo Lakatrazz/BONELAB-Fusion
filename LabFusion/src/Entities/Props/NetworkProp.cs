@@ -345,7 +345,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Send pose
         var data = EntityPoseUpdateData.Create(NetworkEntity.ID, EntityPose);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
 
         // Update sent pose
         EntityPose.CopyTo(_sentPose);

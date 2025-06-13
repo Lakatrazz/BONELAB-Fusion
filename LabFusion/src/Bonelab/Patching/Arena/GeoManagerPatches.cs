@@ -32,7 +32,7 @@ public static class GeoManagerPatches
             return false;
         }
 
-        MessageRelay.RelayModule<GeoSelectMessage, GeoSelectData>(new GeoSelectData() { GeoIndex = (byte)index }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<GeoSelectMessage, GeoSelectData>(new GeoSelectData() { GeoIndex = (byte)index }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 

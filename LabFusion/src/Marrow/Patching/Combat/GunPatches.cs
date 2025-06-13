@@ -115,7 +115,7 @@ public static class GunPatches
 
                 var data = GunShotData.Create(ammoCount, gunEntity.ID, (byte)gunExtender.GetIndex(__instance).Value);
 
-                MessageRelay.RelayModule<GunShotMessage, GunShotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+                MessageRelay.RelayModule<GunShotMessage, GunShotData>(data, CommonMessageRoutes.ReliableToOtherClients);
             }
         }
         catch (Exception e)

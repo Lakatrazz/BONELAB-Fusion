@@ -1,5 +1,6 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
@@ -40,6 +41,6 @@ public class EntityUnqueueRequestMessage : NativeMessageHandler
 
         var response = EntityUnqueueResponseData.Create(data.queuedId, allocatedId);
 
-        MessageRelay.RelayNative(response, NativeMessageTag.EntityUnqueueResponse, NetworkChannel.Reliable, RelayType.ToTarget, data.userId);
+        MessageRelay.RelayNative(response, NativeMessageTag.EntityUnqueueResponse, new MessageRoute(data.userId, NetworkChannel.Reliable));
     }
 }

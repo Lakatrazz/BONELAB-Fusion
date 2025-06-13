@@ -80,7 +80,7 @@ public class NetworkConstraint : IEntityExtender
         data.Point1Id = NetworkEntity.ID;
         data.Point2Id = OtherId;
 
-        MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
+        MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }
 
     private void AddDestroySensor()

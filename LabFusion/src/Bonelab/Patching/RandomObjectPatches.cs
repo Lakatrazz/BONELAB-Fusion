@@ -39,7 +39,7 @@ public static class RandomObjectPatches
             // Send the message to sync it
             var data = RandomObjectData.Create(entity.ID, extender.GetIndex(__instance).Value, objectIndex);
 
-            MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         // On any synced RandomObjects, always return false. It's manually applied by the message.

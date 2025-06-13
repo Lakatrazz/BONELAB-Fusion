@@ -21,7 +21,7 @@ public static class ConnectionSender
                 var disconnect = DisconnectMessageData.Create(id.PlatformID, reason);
                 writer.SerializeValue(ref disconnect);
 
-                using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+                using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
                 MessageSender.SendFromServer(id.PlatformID, NetworkChannel.Reliable, message);
             }
         }
@@ -35,7 +35,7 @@ public static class ConnectionSender
             var disconnect = DisconnectMessageData.Create(userId, reason);
             writer.SerializeValue(ref disconnect);
 
-            using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+            using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
         }
     }
@@ -48,7 +48,7 @@ public static class ConnectionSender
             var disconnect = DisconnectMessageData.Create(userId, reason);
             writer.SerializeValue(ref disconnect);
 
-            using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+            using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
             MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
         }
     }
@@ -62,7 +62,7 @@ public static class ConnectionSender
             var data = ConnectionRequestData.Create(PlayerIDManager.LocalPlatformID, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
             data.Serialize(writer);
 
-            using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
+            using NetMessage message = NetMessage.Create(NativeMessageTag.ConnectionRequest, writer, CommonMessageRoutes.None);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
         }
         else
@@ -77,7 +77,7 @@ public static class ConnectionSender
         var response = ConnectionResponseData.Create(id, avatar, stats, false);
         writer.SerializeValue(ref response);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
     }
 
@@ -87,7 +87,7 @@ public static class ConnectionSender
         var response = ConnectionResponseData.Create(id, avatar, stats, true);
         writer.SerializeValue(ref response);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
     }
 }

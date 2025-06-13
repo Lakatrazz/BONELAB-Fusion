@@ -82,7 +82,7 @@ public static class TutorialElevatorPatches
 
         var elevatorEvent = DescentEventHandler.CreateElevatorEvent(type);
 
-        MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevatorEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevatorEvent.Type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

@@ -17,7 +17,7 @@ public static class SteamSocketHandler
         return sendType;
     }
 
-    public static void SendToClient(this SteamSocketManager socketManager, Connection connection, NetworkChannel channel, FusionMessage message)
+    public static void SendToClient(this SteamSocketManager socketManager, Connection connection, NetworkChannel channel, NetMessage message)
     {
         SendType sendType = ConvertToSendType(channel);
         int sizeOfMessage = message.Length;
@@ -28,7 +28,7 @@ public static class SteamSocketHandler
         }
     }
 
-    public static void BroadcastToClients(this SteamSocketManager socketManager, NetworkChannel channel, FusionMessage message)
+    public static void BroadcastToClients(this SteamSocketManager socketManager, NetworkChannel channel, NetMessage message)
     {
         SendType sendType = ConvertToSendType(channel);
 
@@ -46,7 +46,7 @@ public static class SteamSocketHandler
         }
     }
 
-    public static void BroadcastToServer(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastToServer(NetworkChannel channel, NetMessage message)
     {
         try
         {

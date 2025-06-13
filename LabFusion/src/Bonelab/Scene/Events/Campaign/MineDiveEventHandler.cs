@@ -66,7 +66,7 @@ public class MineDiveEventHandler : GamemodeLevelEventHandler
     private static int _cartAmount = 0;
     private static bool _hasCreatedCarts = false;
 
-    protected override void OnPlayerCatchup(PlayerID playerId)
+    protected override void OnPlayerCatchup(PlayerID playerID)
     {
         if (PrimaryMinecart == null)
         {
@@ -78,7 +78,7 @@ public class MineDiveEventHandler : GamemodeLevelEventHandler
             return;
         }
 
-        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
+        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
     }
 
     private static void GetCartReferences()
@@ -168,7 +168,7 @@ public class MineDiveEventHandler : GamemodeLevelEventHandler
 
         CreateExtraCarts(_cartAmount);
 
-        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void CreateExtraCarts(int amount)

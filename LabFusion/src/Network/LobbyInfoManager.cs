@@ -83,7 +83,7 @@ public static class LobbyInfoManager
 
         var data = ServerSettingsData.Create();
 
-        MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     internal static void SendLobbyInfo(ulong longId)
@@ -97,7 +97,7 @@ public static class LobbyInfoManager
         var data = ServerSettingsData.Create();
         writer.SerializeValue(ref data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
         MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
     }
 }

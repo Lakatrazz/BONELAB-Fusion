@@ -70,11 +70,11 @@ public class CrateSpawnerMessage : ModuleMessageHandler
 
         if (target != null)
         {
-            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallID);
+            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, new MessageRoute(target.SmallID, NetworkChannel.Reliable));
         }
         else
         {
-            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToClients);
+            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, CommonMessageRoutes.ReliableToClients);
         }
     }
 }

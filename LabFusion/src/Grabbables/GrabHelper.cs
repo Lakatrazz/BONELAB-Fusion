@@ -177,11 +177,11 @@ public static class GrabHelper
 
             if (target == null)
             {
-                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToOtherClients);
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, CommonMessageRoutes.ReliableToOtherClients);
             }
             else
             {
-                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallID);
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, new MessageRoute(target.SmallID, NetworkChannel.Reliable));
             }
         }
     }
@@ -207,6 +207,6 @@ public static class GrabHelper
 
         var data = PlayerRepReleaseData.Create(PlayerIDManager.LocalSmallID, handedness);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

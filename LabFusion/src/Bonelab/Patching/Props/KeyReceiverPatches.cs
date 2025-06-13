@@ -83,6 +83,6 @@ public static class KeyReceiverPatches
             ReceiverData = ComponentPathData.CreateFromComponent<KeyReceiver, KeyReceiverExtender>(__instance, HashTable, KeyReceiverExtender.Cache),
         };
 
-        MessageRelay.RelayModule<KeySlotMessage, KeySlotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<KeySlotMessage, KeySlotData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

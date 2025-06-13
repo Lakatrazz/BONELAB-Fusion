@@ -78,6 +78,6 @@ public static class FlyingGunPatches
             NoClip = __instance._noClipping,
         };
 
-        MessageRelay.RelayModule<NimbusGunNoClipMessage, NimbusGunNoClipData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<NimbusGunNoClipMessage, NimbusGunNoClipData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

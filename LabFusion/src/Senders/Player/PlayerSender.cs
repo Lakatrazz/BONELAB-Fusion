@@ -76,7 +76,7 @@ public static class PlayerSender
 
         var data = PlayerRepAvatarData.Create(PlayerIDManager.LocalSmallID, stats, barcode);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAvatar, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAvatar, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void SendPlayerVoiceChat(byte[] voiceData)
@@ -88,7 +88,7 @@ public static class PlayerSender
 
         var data = PlayerVoiceChatData.Create(PlayerIDManager.LocalSmallID, voiceData);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerVoiceChat, NetworkChannel.Unreliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerVoiceChat, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
     public static void SendPlayerTeleport(byte target, Vector3 position)
@@ -100,7 +100,7 @@ public static class PlayerSender
 
         var data = PlayerRepTeleportData.Create(target, position);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepTeleport, NetworkChannel.Reliable, RelayType.ToTarget, target);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepTeleport, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerDamage(byte target, Attack attack)
@@ -112,14 +112,14 @@ public static class PlayerSender
     {
         var data = PlayerRepDamageData.Create(PlayerIDManager.LocalSmallID, target, attack, part);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, NetworkChannel.Reliable, RelayType.ToTarget, target);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
     {
         var data = PlayerMetadataRequestData.Create(smallId, key, value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
@@ -132,13 +132,13 @@ public static class PlayerSender
 
         var data = PlayerMetadataResponseData.Create(smallId, key, value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, CommonMessageRoutes.ReliableToClients);
     }
 
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
     {
         var data = PlayerRepActionData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAction, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAction, CommonMessageRoutes.ReliableToClients);
     }
 }

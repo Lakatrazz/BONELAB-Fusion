@@ -42,9 +42,9 @@ public class ModInfoRequestMessage : NativeMessageHandler
         var data = received.ReadData<ModInfoRequestData>();
 
         // Make sure we're the target
-        if (received.Target != PlayerIDManager.LocalSmallID)
+        if (received.Route.Target != PlayerIDManager.LocalSmallID)
         {
-            throw new Exception($"Received a ModInfoRequest, but we were not the desired target of {received.Target.Value}!");
+            throw new Exception($"Received a ModInfoRequest, but we were not the desired target of {received.Route.Target.Value}!");
         }
 
         // Get the crate from the barcode
@@ -85,6 +85,6 @@ public class ModInfoRequestMessage : NativeMessageHandler
 
         var writtenData = ModInfoResponseData.Create(modFile, data.TrackerID);
 
-        MessageRelay.RelayNative(writtenData, NativeMessageTag.ModInfoResponse, NetworkChannel.Reliable, RelayType.ToTarget, received.Sender.Value);
+        MessageRelay.RelayNative(writtenData, NativeMessageTag.ModInfoResponse, new MessageRoute(received.Sender.Value, NetworkChannel.Reliable));
     }
 }

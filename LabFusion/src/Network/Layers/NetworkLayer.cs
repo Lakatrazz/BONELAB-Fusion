@@ -144,7 +144,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendFromServer(byte userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.
@@ -152,21 +152,21 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the dedicated server.
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendToServer(NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendToServer(NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+    public virtual void BroadcastMessage(NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// If this is a server, sends this message back to all users except for the provided id.
@@ -174,7 +174,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
@@ -191,7 +191,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {

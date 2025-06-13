@@ -39,6 +39,6 @@ public static class GameControl_HolodeckPatches
             return;
         }
 
-        MessageRelay.RelayModule<HolodeckEventMessage, HolodeckEventData>(new() { Type = type, SelectionIndex = selectionIndex, ToggleValue = toggleValue }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<HolodeckEventMessage, HolodeckEventData>(new() { Type = type, SelectionIndex = selectionIndex, ToggleValue = toggleValue }, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

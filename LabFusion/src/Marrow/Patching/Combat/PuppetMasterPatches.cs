@@ -46,7 +46,7 @@ public static class PuppetMasterPatches
 
         var data = new NetworkEntityReference(entity);
 
-        MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, CommonMessageRoutes.ReliableToOtherClients);
 
         PuppetMasterExtender.LastKilled = entity;
     }

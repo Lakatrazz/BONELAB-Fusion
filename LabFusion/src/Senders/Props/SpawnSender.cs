@@ -17,7 +17,7 @@ public static class SpawnSender
     /// Sends a catchup sync message for a pool spawned object.
     /// </summary>
     /// <param name="syncable"></param>
-    public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, byte playerId)
+    public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, byte playerID)
     {
         if (!NetworkInfo.IsHost)
         {
@@ -26,6 +26,6 @@ public static class SpawnSender
 
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, NetworkChannel.Reliable, RelayType.ToTarget, playerId);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, new MessageRoute(playerID, NetworkChannel.Reliable));
     }
 }

@@ -40,7 +40,7 @@ public static class ConstraintTrackerPatches
             ConstraintID = constraintEntity.ID,
         };
 
-        MessageRelay.RelayModule<ConstraintDeleteMessage, ConstraintDeleteData>(data, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayModule<ConstraintDeleteMessage, ConstraintDeleteData>(data, CommonMessageRoutes.ReliableToClients);
 
         // Return false, because constraints are deleted server side
         return false;

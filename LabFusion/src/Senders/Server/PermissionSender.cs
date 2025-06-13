@@ -9,7 +9,7 @@ namespace LabFusion.Senders
         {
             var data = PermissionCommandRequestData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, NetworkChannel.Reliable, RelayType.ToServer);
+            MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, CommonMessageRoutes.ReliableToServer);
         }
     }
 }

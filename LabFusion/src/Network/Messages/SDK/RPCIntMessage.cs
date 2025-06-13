@@ -34,7 +34,7 @@ public static class RPCIntSender
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var intData = RPCIntData.Create(pathData, value);
 
-        MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
@@ -51,7 +51,7 @@ public static class RPCIntSender
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCIntData.Create(pathData, rpcInt.GetLatestValue());
 
-        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToTarget, playerID.SmallID);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
     }
 }
 

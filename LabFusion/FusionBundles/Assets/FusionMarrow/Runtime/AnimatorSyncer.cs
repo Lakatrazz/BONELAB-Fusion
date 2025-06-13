@@ -106,7 +106,7 @@ namespace LabFusion.Marrow.Integration
                 NormalizedTime = normalizedTime,
             };
 
-            MessageRelay.RelayModule<AnimationStateMessage, AnimationStateData>(data, NetworkChannel.Unreliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<AnimationStateMessage, AnimationStateData>(data, CommonMessageRoutes.UnreliableToOtherClients);
         }
 #endif
     }

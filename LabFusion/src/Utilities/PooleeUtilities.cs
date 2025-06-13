@@ -49,7 +49,7 @@ public static class PooleeUtilities
                 DespawnEffect = despawnEffect,
             };
 
-            MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, CommonMessageRoutes.ReliableToOtherClients);
         }
         // Send request
         else
@@ -66,20 +66,20 @@ public static class PooleeUtilities
             DespawnEffect = despawnEffect,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
         var data = SpawnRequestData.Create(barcode, serializedTransform, trackerId, spawnEffect);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId, spawnEffect);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, CommonMessageRoutes.ReliableToClients);
     }
 }

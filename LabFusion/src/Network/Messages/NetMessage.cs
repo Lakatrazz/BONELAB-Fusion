@@ -1,49 +1,12 @@
 ﻿using LabFusion.Network.Serialization;
-
 using LabFusion.SDK.Modules;
 using LabFusion.Utilities;
+
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Network;
 
-public enum NetworkChannel : byte
-{
-    Reliable,
-    Unreliable,
-}
-
-public class MessagePrefix : INetSerializable
-{
-    public byte Tag;
-    public RelayType Type;
-    public NetworkChannel Channel;
-    public byte? Sender = null;
-    public byte? Target = null;
-
-    public int? GetSize()
-    {
-        return sizeof(byte) * 7;
-    }
-
-    public void Serialize(INetSerializer serializer)
-    {
-        serializer.SerializeValue(ref Tag);
-        serializer.SerializeValue(ref Type, Precision.OneByte);
-        serializer.SerializeValue(ref Channel, Precision.OneByte);
-
-        if (Type != RelayType.None)
-        {
-            serializer.SerializeValue(ref Sender);
-        }
-
-        if (Type == RelayType.ToTarget)
-        {
-            serializer.SerializeValue(ref Target);
-        }
-    }
-}
-
-public unsafe class FusionMessage : IDisposable
+public unsafe class NetMessage : IDisposable
 {
     private byte* _buffer;
     private int _size;
@@ -66,9 +29,9 @@ public unsafe class FusionMessage : IDisposable
         }
     }
 
-    private static FusionMessage Create(int size)
+    private static NetMessage Create(int size)
     {
-        return new FusionMessage()
+        return new NetMessage()
         {
             _buffer = (byte*)Marshal.AllocHGlobal(size),
             _size = size,
@@ -76,20 +39,18 @@ public unsafe class FusionMessage : IDisposable
         };
     }
 
-    public static FusionMessage Create(byte tag, NetWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static NetMessage Create(byte tag, NetWriter writer, MessageRoute route, byte? sender = null)
     {
-        return Create(tag, writer.Buffer, relayType, channel, sender, target);
+        return Create(tag, writer.Buffer, route, sender);
     }
 
-    public static FusionMessage Create(byte tag, ArraySegment<byte> buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static NetMessage Create(byte tag, ArraySegment<byte> buffer, MessageRoute route, byte? sender = null)
     {
         var prefix = new MessagePrefix()
         {
             Tag = tag,
-            Type = relayType,
-            Channel = channel,
+            Route = route,
             Sender = sender,
-            Target = target,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(int));
@@ -108,15 +69,13 @@ public unsafe class FusionMessage : IDisposable
         return message;
     }
 
-    public static FusionMessage Create(byte tag, ReceivedMessage received)
+    public static NetMessage Create(byte tag, ReceivedMessage received)
     {
         var prefix = new MessagePrefix()
         {
             Tag = tag,
-            Type = received.Type,
-            Channel = received.Channel,
+            Route = received.Route,
             Sender = received.Sender,
-            Target = received.Target,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length + sizeof(int));
@@ -135,22 +94,22 @@ public unsafe class FusionMessage : IDisposable
         return message;
     }
 
-    public static FusionMessage ModuleCreate<TMessage>(NetWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null) where TMessage : ModuleMessageHandler
+    public static NetMessage ModuleCreate<TMessage>(NetWriter writer, MessageRoute route, byte? sender = null) where TMessage : ModuleMessageHandler
     {
-        return ModuleCreate(typeof(TMessage), writer, relayType, channel, sender, target);
+        return ModuleCreate(typeof(TMessage), writer, route, sender);
     }
 
-    public static FusionMessage ModuleCreate<TMessage>(byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null) where TMessage : ModuleMessageHandler
+    public static NetMessage ModuleCreate<TMessage>(byte[] buffer, MessageRoute route, byte? sender = null) where TMessage : ModuleMessageHandler
     {
-        return ModuleCreate(typeof(TMessage), buffer, relayType, channel, sender, target);
+        return ModuleCreate(typeof(TMessage), buffer, route, sender);
     }
 
-    public static FusionMessage ModuleCreate(Type type, NetWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static NetMessage ModuleCreate(Type type, NetWriter writer, MessageRoute route, byte? sender = null)
     {
-        return ModuleCreate(type, writer.Buffer, relayType, channel, sender, target);
+        return ModuleCreate(type, writer.Buffer, route, sender);
     }
 
-    public static FusionMessage ModuleCreate(Type type, ArraySegment<byte> buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static NetMessage ModuleCreate(Type type, ArraySegment<byte> buffer, MessageRoute route, byte? sender = null)
     {
         // Assign the module type
         var tag = ModuleMessageManager.GetHandlerTagByType(type);
@@ -165,10 +124,8 @@ public unsafe class FusionMessage : IDisposable
         var prefix = new MessagePrefix()
         {
             Tag = NativeMessageTag.Module,
-            Type = relayType,
-            Channel = channel,
+            Route = route,
             Sender = sender,
-            Target = target,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(long) + sizeof(int));

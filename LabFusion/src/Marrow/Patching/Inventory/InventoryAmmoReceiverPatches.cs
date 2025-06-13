@@ -96,7 +96,7 @@ public static class InventoryAmmoReceiverPatches
         // Send claim message
         var data = new MagazineClaimData() { OwnerID = PlayerIDManager.LocalSmallID, EntityID = info.Entity.ID, Handedness = handedness };
 
-        MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -146,7 +146,7 @@ public static class InventoryAmmoReceiverPatches
             // Play the ammo release sound effect
             var data = new InventoryAmmoReceiverDropData() { EntityID = PlayerIDManager.LocalID };
 
-            MessageRelay.RelayModule<InventoryAmmoReceiverDropMessage, InventoryAmmoReceiverDropData>(data, NetworkChannel.Reliable, RelayType.ToClients);
+            MessageRelay.RelayModule<InventoryAmmoReceiverDropMessage, InventoryAmmoReceiverDropData>(data, CommonMessageRoutes.ReliableToClients);
         }
 
         return false;

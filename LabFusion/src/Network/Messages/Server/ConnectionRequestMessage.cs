@@ -224,7 +224,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         {
             assignData.Serialize(writer);
 
-            using var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer);
+            using var message = NetMessage.Create(NativeMessageTag.DynamicsAssignment, writer, CommonMessageRoutes.None);
             MessageSender.SendFromServer(data.PlatformID, NetworkChannel.Reliable, message);
         }
 

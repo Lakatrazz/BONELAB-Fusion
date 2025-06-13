@@ -44,7 +44,7 @@ public static class BaseGameControllerPatches
             return false;
         }
 
-        MessageRelay.RelayModule<BaseGameControllerMessage, BaseGameControllerData>(new() { Type = type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<BaseGameControllerMessage, BaseGameControllerData>(new() { Type = type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

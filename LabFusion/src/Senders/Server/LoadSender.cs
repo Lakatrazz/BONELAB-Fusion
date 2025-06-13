@@ -17,7 +17,7 @@ public static class LoadSender
 
         var data = LevelRequestData.Create(PlayerIDManager.LocalSmallID, crate.Barcode.ID, crate.Title);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.LevelRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.LevelRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void SendLevelLoad(string barcode, string loadBarcode, ulong userId)
@@ -37,7 +37,7 @@ public static class LoadSender
 
         writer.SerializeValue(ref data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
+        using var message = NetMessage.Create(NativeMessageTag.SceneLoad, writer, CommonMessageRoutes.None);
         MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
     }
 
@@ -59,6 +59,6 @@ public static class LoadSender
             LoadingScreenBarcode = loadBarcode,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.SceneLoad, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.SceneLoad, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

@@ -143,7 +143,7 @@ public class ConstraintCreateMessage : ModuleMessageHandler
                 data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
                 data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
 
-                MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToClients);
+                MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, CommonMessageRoutes.ReliableToClients);
             }
 
             return;

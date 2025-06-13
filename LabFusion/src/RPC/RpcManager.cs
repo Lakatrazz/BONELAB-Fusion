@@ -99,7 +99,7 @@ public static class RpcManager
             Parameters = __args,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.RPCMethod, rpc.Channel, rpc.RelayType, null);
+        MessageRelay.RelayNative(data, NativeMessageTag.RPCMethod, new MessageRoute(rpc.RelayType, rpc.Channel));
 
         return false;
     }

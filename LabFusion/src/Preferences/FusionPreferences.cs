@@ -23,7 +23,7 @@ public static class FusionPreferences
 
         var data = PlayerSettingsData.Create(PlayerIDManager.LocalSmallID, SerializedPlayerSettings.Create());
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerSettings, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     internal static void OnInitializePreferences()

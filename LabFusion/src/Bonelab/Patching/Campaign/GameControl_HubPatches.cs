@@ -59,7 +59,7 @@ public static class GameControl_HubPatches
             return false;
         }
 
-        MessageRelay.RelayModule<BonelabHubEventMessage, BonelabHubEventData>(new BonelabHubEventData() { Type = type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<BonelabHubEventMessage, BonelabHubEventData>(new BonelabHubEventData() { Type = type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

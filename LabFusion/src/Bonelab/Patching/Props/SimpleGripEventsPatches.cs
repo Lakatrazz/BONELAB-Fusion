@@ -183,6 +183,6 @@ public static class SimpleGripEventsPatches
             Type = type,
         };
 
-        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, CommonMessageRoutes.ReliableToClients);
     }
 }

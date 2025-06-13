@@ -348,7 +348,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             return false;
     }
 
-    public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
         if (IsHost)
         {
@@ -360,12 +360,12 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendToServer(NetworkChannel channel, FusionMessage message)
+    public override void SendToServer(NetworkChannel channel, NetMessage message)
     {
         ProxySocketHandler.BroadcastToServer(channel, message);
     }
 
-    public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
         var id = PlayerIDManager.GetPlayerID(userId);
 
@@ -375,7 +375,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
     {
         if (!IsHost)
         {

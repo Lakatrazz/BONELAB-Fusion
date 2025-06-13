@@ -45,7 +45,7 @@ public static class ChallengeSelectMenuPatches
             return false;
         }
 
-        MessageRelay.RelayModule<ChallengeSelectMessage, ChallengeSelectData>(new ChallengeSelectData() { MenuIndex = (byte)menuIndex, ChallengeNumber = (byte)challengeNumber, Type = type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<ChallengeSelectMessage, ChallengeSelectData>(new ChallengeSelectData() { MenuIndex = (byte)menuIndex, ChallengeNumber = (byte)challengeNumber, Type = type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

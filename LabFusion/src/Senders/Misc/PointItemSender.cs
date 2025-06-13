@@ -14,7 +14,7 @@ public static class PointItemSender
 
         var data = PointItemEquipStateData.Create(PlayerIDManager.LocalSmallID, barcode, isEquipped);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PointItemEquipState, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemEquipState, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void SendPointItemTrigger(string barcode)
@@ -26,7 +26,7 @@ public static class PointItemSender
 
         var data = PointItemTriggerData.Create(PlayerIDManager.LocalSmallID, barcode);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTrigger, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTrigger, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void SendPointItemTrigger(string barcode, string value)
@@ -38,6 +38,6 @@ public static class PointItemSender
 
         var data = PointItemTriggerValueData.Create(PlayerIDManager.LocalSmallID, barcode, value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTriggerValue, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTriggerValue, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

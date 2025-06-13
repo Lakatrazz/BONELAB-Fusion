@@ -211,7 +211,7 @@ public static class NetworkEntityManager
 
         var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID, queuedID);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void TransferOwnership(NetworkEntity entity, PlayerID ownerID)
@@ -243,7 +243,7 @@ public static class NetworkEntityManager
             Entity = new(entity),
         };
 
-        MessageRelay.RelayNative(request, NativeMessageTag.EntityOwnershipRequest, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(request, NativeMessageTag.EntityOwnershipRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void TakeOwnership(NetworkEntity entity)

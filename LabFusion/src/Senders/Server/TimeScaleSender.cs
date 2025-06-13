@@ -15,6 +15,6 @@ public static class TimeScaleSender
 {
     public static void SendSlowMoButton(bool decrease)
     {
-        MessageRelay.RelayNative(new SlowMoButtonMessageData() { Decrease = decrease }, NativeMessageTag.SlowMoButton, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(new SlowMoButtonMessageData() { Decrease = decrease }, NativeMessageTag.SlowMoButton, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

@@ -79,7 +79,7 @@ public static class ArenaMenuControllerPatches
             return false;
         }
 
-        MessageRelay.RelayModule<ArenaMenuMessage, ArenaMenuData>(new ArenaMenuData() { SelectionNumber = selectionNumber, Type = type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<ArenaMenuMessage, ArenaMenuData>(new ArenaMenuData() { SelectionNumber = selectionNumber, Type = type }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

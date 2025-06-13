@@ -6,34 +6,37 @@ namespace LabFusion.Network;
 
 public static class MessageRelay
 {
-    public static void RelayNative<TData>(TData data, byte tag, NetworkChannel channel, RelayType type, byte? target = null) where TData : INetSerializable
+    public static void RelayNative<TData>(TData data, byte tag, MessageRoute route) where TData : INetSerializable
     {
         using var writer = NetWriter.Create(data.GetSize());
 
         data.Serialize(writer);
 
-        byte? sender = type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
+        byte? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
-        using var message = FusionMessage.Create(tag, writer, type, channel, sender, target);
+        using var message = NetMessage.Create(tag, writer, route, sender);
 
-        Relay(message, channel, type, sender, target);
+        Relay(message, route, sender);
     }
 
-    public static void RelayModule<TMessage, TData>(TData data, NetworkChannel channel, RelayType type, byte? target = null) where TMessage : ModuleMessageHandler where TData : INetSerializable
+    public static void RelayModule<TMessage, TData>(TData data, MessageRoute route) where TMessage : ModuleMessageHandler where TData : INetSerializable
     {
         using var writer = NetWriter.Create(data.GetSize());
 
         data.Serialize(writer);
 
-        byte? sender = type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
+        byte? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
-        using var message = FusionMessage.ModuleCreate<TMessage>(writer, type, channel, sender, target);
+        using var message = NetMessage.ModuleCreate<TMessage>(writer, route, sender);
 
-        Relay(message, channel, type, sender, target);
+        Relay(message, route, sender);
     }
 
-    private static void Relay(FusionMessage message, NetworkChannel channel, RelayType type, byte? sender = null, byte? target = null)
+    private static void Relay(NetMessage message, MessageRoute route, byte? sender = null)
     {
+        var type = route.Type;
+        var channel = route.Channel;
+
         switch (type)
         {
             case RelayType.None:
@@ -63,7 +66,20 @@ public static class MessageRelay
             case RelayType.ToTarget:
                 if (NetworkInfo.IsHost)
                 {
-                    MessageSender.SendFromServer(target.Value, channel, message);
+                    MessageSender.SendFromServer(route.Target.Value, channel, message);
+                }
+                else
+                {
+                    MessageSender.SendToServer(channel, message);
+                }
+                break;
+            case RelayType.ToTargets:
+                if (NetworkInfo.IsHost)
+                {
+                    foreach (var target in route.Targets)
+                    {
+                        MessageSender.SendFromServer(target, channel, message);
+                    }
                 }
                 else
                 {

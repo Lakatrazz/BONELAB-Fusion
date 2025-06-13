@@ -95,10 +95,7 @@ public static class ModuleMessageManager
 
                 var payload = new ReceivedMessage()
                 {
-                    Type = received.Type,
-                    Channel = received.Channel,
-                    Sender = received.Sender,
-                    Target = received.Target,
+                    Route = received.Route,
                     Bytes = buffer,
                     IsServerHandled = received.IsServerHandled,
                 };
@@ -130,10 +127,8 @@ public static class ModuleMessageManager
 
                 var payload = new ReceivedMessage()
                 {
-                    Type = received.Type,
-                    Channel = received.Channel,
+                    Route = received.Route,
                     Sender = received.Sender,
-                    Target = received.Target,
                     Bytes = buffer,
                     IsServerHandled = received.IsServerHandled,
                 };

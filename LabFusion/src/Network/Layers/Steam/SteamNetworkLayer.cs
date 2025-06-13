@@ -216,7 +216,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         return userId == PlayerIDManager.LocalPlatformID || new Friend(userId).IsFriend;
     }
 
-    public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
         if (IsHost)
         {
@@ -228,12 +228,12 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendToServer(NetworkChannel channel, FusionMessage message)
+    public override void SendToServer(NetworkChannel channel, NetMessage message)
     {
         SteamSocketHandler.BroadcastToServer(channel, message);
     }
 
-    public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
         var id = PlayerIDManager.GetPlayerID(userId);
 
@@ -243,7 +243,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
     {
         // Make sure this is actually the server
         if (!IsHost)

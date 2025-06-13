@@ -8,24 +8,14 @@ namespace LabFusion.Network;
 public struct ReceivedMessage
 {
     /// <summary>
-    /// The type of relay that this message was sent through.
+    /// The route that this message was sent through, including its relay type, network channel, and targets.
     /// </summary>
-    public RelayType Type { get; set; }
+    public MessageRoute Route { get; set; }
 
     /// <summary>
-    /// The channel this message was sent through.
-    /// </summary>
-    public NetworkChannel Channel { get; set; }
-
-    /// <summary>
-    /// The small id of the message sender. Only valid if <see cref="Type"/> is NOT <see cref="RelayType.None"/>.
+    /// The small id of the message sender. Only valid if the <see cref="MessageRoute.Type"/> is NOT <see cref="RelayType.None"/>.
     /// </summary>
     public byte? Sender { get; set; }
-
-    /// <summary>
-    /// The target receiver of this message. Only valid if <see cref="Type"/> IS <see cref="RelayType.ToTarget"/>.
-    /// </summary>
-    public byte? Target { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.

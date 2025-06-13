@@ -60,7 +60,7 @@ public static class Trial_SpawnerEventsPatches
         {
             var hashData = HashTable.GetDataFromComponent(__instance);
 
-            MessageRelay.RelayModule<TrialSpawnerEventsMessage, TrialSpawnerEventsData>(new() { HashData = hashData }, NetworkChannel.Reliable, RelayType.ToClients);
+            MessageRelay.RelayModule<TrialSpawnerEventsMessage, TrialSpawnerEventsData>(new() { HashData = hashData }, CommonMessageRoutes.ReliableToClients);
         }
 
         return false;

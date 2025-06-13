@@ -63,7 +63,7 @@ public class AmmoSocketExtender : EntityComponentExtender<AmmoSocket>
         {
             var data = new MagazineInsertData() { MagazineID = magEntity.ID, GunID = gunEntity.ID };
 
-            MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
+            MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
         });
     }
 }

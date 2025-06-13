@@ -65,7 +65,7 @@ public static class TimeTrial_GameControllerPatches
             return false;
         }
 
-        MessageRelay.RelayModule<TimeTrialGameControllerMessage, TimeTrialGameControllerData>(new() { Type = type, Value = (byte)value }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<TimeTrialGameControllerMessage, TimeTrialGameControllerData>(new() { Type = type, Value = (byte)value }, CommonMessageRoutes.ReliableToOtherClients);
         return true;
     }
 }

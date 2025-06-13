@@ -83,7 +83,7 @@ public static class AmmoSocketPatches
 
         var data = new MagazineInsertData() { MagazineID = magEntity.ID, GunID = gunEntity.ID };
 
-        MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPatch(nameof(AmmoSocket.OnPlugUnlocked))]
@@ -136,6 +136,6 @@ public static class AmmoSocketPatches
 
         var data = new MagazineEjectData() { PlayerID = PlayerIDManager.LocalSmallID, MagazineID = magEntity.ID, GunID = gunEntity.ID, Handedness = handedness };
 
-        MessageRelay.RelayModule<MagazineEjectMessage, MagazineEjectData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineEjectMessage, MagazineEjectData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

@@ -34,7 +34,7 @@ public static class PropSender
 
         var data = NetworkPropCreateData.Create(networkEntity.OwnerID, hashData, networkEntity.ID);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
+        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, new MessageRoute(playerId.SmallID, NetworkChannel.Reliable));
     }
 
     private struct PropCreationInfo
@@ -125,7 +125,7 @@ public static class PropSender
 
             var data = NetworkPropCreateData.Create(PlayerIDManager.LocalSmallID, hashData, newEntity.ID);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, CommonMessageRoutes.ReliableToOtherClients);
 
             OnFinish();
         }

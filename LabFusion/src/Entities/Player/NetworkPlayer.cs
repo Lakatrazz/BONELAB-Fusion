@@ -712,7 +712,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         var data = PlayerPoseUpdateData.Create(RigPose);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
     private void OnApplyBodyForces(float deltaTime)

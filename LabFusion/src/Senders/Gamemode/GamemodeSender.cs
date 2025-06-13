@@ -9,7 +9,7 @@ public static class GamemodeSender
     {
         var data = GamemodeTriggerResponseData.Create(gamemodeBarcode, name, value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeTriggerResponse, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeTriggerResponse, CommonMessageRoutes.ReliableToClients);
     }
 
     public static void SendGamemodeMetadataSet(string gamemodeBarcode, string key, string value)
@@ -22,7 +22,7 @@ public static class GamemodeSender
 
         var data = GamemodeMetadataSetData.Create(gamemodeBarcode, key, value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataSet, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataSet, CommonMessageRoutes.ReliableToClients);
     }
 
     public static void SendGamemodeMetadataRemove(string gamemodeBarcode, string key)
@@ -35,6 +35,6 @@ public static class GamemodeSender
 
         var data = GamemodeMetadataRemoveData.Create(gamemodeBarcode, key);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataRemove, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataRemove, CommonMessageRoutes.ReliableToClients);
     }
 }

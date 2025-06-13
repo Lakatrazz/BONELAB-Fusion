@@ -66,7 +66,7 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         {
             var data = new NetworkEntityReference(entity);
 
-            MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
+            MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
         }
     }
 }
