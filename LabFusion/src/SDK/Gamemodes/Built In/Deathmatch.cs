@@ -339,6 +339,17 @@ public class Deathmatch : Gamemode
 
         // Reset death status
         _hasDied = false;
+
+        // Apply overrides
+        LocalHealth.MortalityOverride = true;
+        LocalControls.DisableSlowMo = true;
+
+        if (_avatarOverride != null)
+        {
+            LocalAvatar.AvatarOverride = _avatarOverride;
+        }
+
+        OnApplyVitality();
     }
 
     public override void OnLevelReady()
@@ -346,9 +357,6 @@ public class Deathmatch : Gamemode
         ApplyGamemodeSettings();
 
         Playlist.StartPlaylist();
-
-        // Force mortality
-        LocalHealth.MortalityOverride = true;
 
         // Setup ammo
         LocalInventory.SetAmmo(10000);
@@ -359,14 +367,6 @@ public class Deathmatch : Gamemode
 
         // Push nametag updates
         FusionOverrides.ForceUpdateOverrides();
-
-        // Apply vitality and avatar overrides
-        if (_avatarOverride != null)
-        {
-            LocalAvatar.AvatarOverride = _avatarOverride;
-        }
-
-        OnApplyVitality();
     }
 
     private void OnApplyVitality()
@@ -486,6 +486,7 @@ public class Deathmatch : Gamemode
         // Reset overrides
         LocalAvatar.AvatarOverride = null;
         LocalHealth.VitalityOverride = null;
+        LocalControls.DisableSlowMo = false;
     }
 
     public float GetTimeElapsed() => TimeUtilities.TimeSinceStartup - _timeOfStart;

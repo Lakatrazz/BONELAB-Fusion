@@ -131,6 +131,9 @@ public class Juggernaut : Gamemode
 
             AssignTeams();
         }
+
+        LocalHealth.MortalityOverride = true;
+        LocalControls.DisableSlowMo = true;
     }
 
     public override void OnLevelReady()
@@ -138,8 +141,6 @@ public class Juggernaut : Gamemode
         ApplyGamemodeSettings();
 
         Playlist.StartPlaylist();
-
-        LocalHealth.MortalityOverride = true;
 
         GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
         GamemodeHelper.TeleportToSpawnPoint();
@@ -163,6 +164,8 @@ public class Juggernaut : Gamemode
         LocalHealth.MortalityOverride = null;
         LocalHealth.RegenerationOverride = null;
         LocalHealth.VitalityOverride = null;
+
+        LocalControls.DisableSlowMo = false;
 
         GamemodeHelper.ResetSpawnPoints();
     }

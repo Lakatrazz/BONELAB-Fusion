@@ -544,6 +544,17 @@ public class TeamDeathmatch : Gamemode
 
         _timeOfStart = TimeUtilities.TimeSinceStartup;
         _oneMinuteLeft = false;
+
+        // Apply overrides
+        LocalHealth.MortalityOverride = true;
+        LocalControls.DisableSlowMo = true;
+
+        if (_avatarOverride != null)
+        {
+            LocalAvatar.AvatarOverride = _avatarOverride;
+        }
+
+        OnApplyVitality();
     }
 
     public override void OnLevelReady()
@@ -552,22 +563,11 @@ public class TeamDeathmatch : Gamemode
 
         MusicPlaylist.StartPlaylist();
 
-        // Force mortality
-        LocalHealth.MortalityOverride = true;
-
         // Setup ammo
         LocalInventory.SetAmmo(10000);
 
         // Push nametag updates
         FusionOverrides.ForceUpdateOverrides();
-
-        // Apply vitality and avatar overrides
-        if (_avatarOverride != null)
-        {
-            LocalAvatar.AvatarOverride = _avatarOverride;
-        }
-
-        OnApplyVitality();
     }
 
     /// <summary>
@@ -634,6 +634,7 @@ public class TeamDeathmatch : Gamemode
         // Reset overrides
         LocalAvatar.AvatarOverride = null;
         LocalHealth.VitalityOverride = null;
+        LocalControls.DisableSlowMo = false;
     }
 
     public float GetTimeElapsed()
