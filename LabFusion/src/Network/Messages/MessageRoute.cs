@@ -1,9 +1,11 @@
-﻿namespace LabFusion.Network;
+﻿using LabFusion.Network.Serialization;
+
+namespace LabFusion.Network;
 
 /// <summary>
 /// The route for a message, including its relay type, network channel, and target recipients.
 /// </summary>
-public struct MessageRoute
+public struct MessageRoute : INetSerializable
 {
     /// <summary>
     /// The type of relay that this message is sent through.
@@ -66,5 +68,34 @@ public struct MessageRoute
         }
 
         return size;
+    }
+
+    public void Serialize(INetSerializer serializer)
+    {
+        var type = Type;
+        var channel = Channel;
+        byte? target = Target;
+        ArraySegment<byte> targets = Targets;
+
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref channel, Precision.OneByte);
+
+        if (type == RelayType.ToTarget)
+        {
+            serializer.SerializeValue(ref target);
+        }
+
+        if (type == RelayType.ToTargets)
+        {
+            serializer.SerializeValue(ref targets);
+        }
+
+        if (serializer.IsReader)
+        {
+            Type = type;
+            Channel = channel;
+            Target = target;
+            Targets = targets;
+        }
     }
 }

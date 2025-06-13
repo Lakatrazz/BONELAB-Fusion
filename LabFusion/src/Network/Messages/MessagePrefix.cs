@@ -21,39 +21,11 @@ public class MessagePrefix : INetSerializable
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref Tag);
+        serializer.SerializeValue(ref Route);
 
-        var type = Route.Type;
-        var channel = Route.Channel;
-        byte? target = Route.Target;
-        ArraySegment<byte> targets = Route.Targets;
-
-        serializer.SerializeValue(ref type, Precision.OneByte);
-        serializer.SerializeValue(ref channel, Precision.OneByte);
-
-        if (type == RelayType.ToTarget)
-        {
-            serializer.SerializeValue(ref target);
-        }
-
-        if (type == RelayType.ToTargets)
-        {
-            serializer.SerializeValue(ref targets);
-        }
-
-        if (type != RelayType.None)
+        if (Route.Type != RelayType.None)
         {
             serializer.SerializeValue(ref Sender);
-        }
-
-        if (serializer.IsReader)
-        {
-            Route = new MessageRoute()
-            {
-                Type = type,
-                Channel = channel,
-                Target = target,
-                Targets = targets,
-            };
         }
     }
 }
