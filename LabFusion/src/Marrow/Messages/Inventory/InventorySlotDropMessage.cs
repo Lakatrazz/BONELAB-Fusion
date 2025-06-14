@@ -56,13 +56,6 @@ public class InventorySlotDropMessage : ModuleMessageHandler
         var slotReceiver = slotExtender.GetComponent(data.SlotIndex);
         WeaponSlot weaponSlot = null;
 
-        if (slotReceiver != null && slotReceiver._weaponHost != null)
-        {
-            weaponSlot = slotReceiver._slottedWeapon;
-
-            slotReceiver._weaponHost.TryDetach();
-        }
-
         InventorySlotReceiverPatches.IgnorePatches = true;
 
         try

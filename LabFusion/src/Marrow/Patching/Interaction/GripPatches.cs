@@ -6,6 +6,7 @@ using LabFusion.Player;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Scene;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
@@ -48,8 +49,6 @@ public static class GripPatches
     [HarmonyPrefix]
     private static void Awake(Grip __instance)
     {
-        OverrideGripSettings(__instance);
-
         // Only hash grips which don't have an entity (static grips)
         if (HasMarrowEntity(__instance))
         {
@@ -74,17 +73,6 @@ public static class GripPatches
 #endif
     }
 
-    private static void OverrideGripSettings(Grip grip)
-    {
-        if (!NetworkSceneManager.IsLevelNetworked)
-        {
-            return;
-        }
-
-        grip.minBreakForce = float.PositiveInfinity;
-        grip.maxBreakForce = float.PositiveInfinity;
-    }
-
     [HarmonyPatch(nameof(Grip.OnDestroy))]
     [HarmonyPrefix]
     private static void OnDestroy(Grip __instance)
@@ -96,6 +84,11 @@ public static class GripPatches
     [HarmonyPostfix]
     private static void OnAttachedToHand(Grip __instance, Hand hand)
     {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
+
         // Make sure this is the local player
         if (!hand.manager.IsLocalPlayer())
         {
@@ -118,21 +111,46 @@ public static class GripPatches
     [HarmonyPostfix]
     private static void OnDetachedFromHand(Grip __instance, Hand hand)
     {
-        // Make sure this is the local player
-        if (!hand.manager.IsLocalPlayer())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
+        var rigManager = hand.manager;
+
+        if (rigManager.IsLocalPlayer())
+        {
+            OnDetachedFromLocalPlayer(__instance, hand);
+        }
+        else if (NetworkPlayerManager.TryGetPlayer(rigManager, out var networkPlayer))
+        {
+            OnDetachedFromNetworkPlayer(__instance, hand, networkPlayer);
+        }
+    }
+
+    private static void OnDetachedFromLocalPlayer(Grip grip, Hand hand)
+    {
         GrabHelper.SendObjectDetach(hand);
 
         try
         {
-            LocalPlayer.OnRelease?.Invoke(hand, __instance);
+            LocalPlayer.OnRelease?.Invoke(hand, grip);
         }
         catch (Exception e)
         {
             FusionLogger.LogException("running LocalPlayer.OnRelease", e);
+        }
+    }
+
+    private static void OnDetachedFromNetworkPlayer(Grip grip, Hand hand, NetworkPlayer networkPlayer)
+    {
+        try
+        {
+            networkPlayer.Grabber.CheckDetachAndReattach(hand, grip);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("running RigGrabber.CheckDetachAndReattach", e);
         }
     }
 }
