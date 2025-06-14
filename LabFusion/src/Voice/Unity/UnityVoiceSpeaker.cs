@@ -1,147 +1,77 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Player;
-
-using UnityEngine;
-
-using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
 namespace LabFusion.Voice.Unity;
 
+using System;
+
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
-    private readonly Queue<float> _readingQueue = new();
+    public override float Amplitude { get; set; } = 0f;
 
-    private float _amplitude = 0f;
-
-    private bool _clearedAudio = false;
-
-    private bool _isReadyToRead = false;
-
-    public UnityVoiceSpeaker(PlayerId id)
+    public UnityVoiceSpeaker(PlayerID id)
     {
         // Save the id
         _id = id;
-        OnContactUpdated(ContactsList.GetContact(id));
 
         // Hook into contact info changing
         ContactsList.OnContactUpdated += OnContactUpdated;
 
-        // Create the audio source and clip
-        CreateAudioSource();
-
-        Source.clip = AudioClip.Create("UnityVoice", UnityVoice.SampleRate,
-                    1, UnityVoice.SampleRate, true, (PCMReaderCallback)PcmReaderCallback);
-
-        _source.Play();
-
-        // Set the rep's audio source
-        VerifyRep();
-    }
-
-    public override float GetVoiceAmplitude()
-    {
-        return _amplitude;
+        // Update the contact info
+        OnContactUpdated(ContactsList.GetContact(id));
     }
 
     public override void Cleanup()
     {
         // Unhook contact updating
         ContactsList.OnContactUpdated -= OnContactUpdated;
-
-        base.Cleanup();
     }
 
     private void OnContactUpdated(Contact contact)
     {
+        if (contact.id != _id.PlatformID)
+        {
+            return;
+        }
+
         Volume = contact.volume;
-    }
-
-    private void ClearVoiceData()
-    {
-        _readingQueue.Clear();
-    }
-
-    public override void Update()
-    {
-        // Have more than enough data to read
-        if (_readingQueue.Count >= UnityVoice.SampleRate / 5 && !_isReadyToRead)
-        {
-            _isReadyToRead = true;
-        }
-        // Already read through all our data, so wait for another batch
-        else if (_readingQueue.Count <= 0)
-        {
-            _isReadyToRead = false;
-        }
-
-        // Check for voice clearing
-        if (!_clearedAudio && _amplitude <= VoiceVolume.SilencingVolume)
-        {
-            _clearedAudio = true;
-            ClearVoiceData();
-        }
-        else if (_clearedAudio && _amplitude >= VoiceVolume.MinimumVoiceVolume)
-        {
-            _clearedAudio = false;
-        }
     }
 
     public override void OnVoiceDataReceived(byte[] data)
     {
-        if (MicrophoneDisabled)
-        {
-            ClearVoiceData();
-            return;
-        }
+        short[] smallSamples = VoiceConverter.Decode(data);
 
-        VerifyRep();
+        int sampleCount = smallSamples.Length;
 
-        byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
+        float[] samples = new float[sampleCount];
+
+        VoiceConverter.CopySamples(smallSamples, samples, sampleCount);
 
         // Convert the byte array back to a float array and enqueue it
-        float volumeMultiplier = GetVoiceMultiplier();
+        float volume = VoiceVolume.GetVolumeMultiplier() * Volume;
 
-        for (int i = 0; i < decompressed.Length; i += sizeof(float))
+        float logarithmicVolume = volume * volume;
+
+        float amplitude = 0f;
+
+        var sources = VoiceSourceManager.GetVoicesByID(ID.SmallID);
+
+        for (int i = 0; i < sampleCount; i++)
         {
-            float value = BitConverter.ToSingle(decompressed, i) * volumeMultiplier;
+            float sample = samples[i] * logarithmicVolume * VoiceVolume.DefaultSampleMultiplier;
 
-            _readingQueue.Enqueue(value);
-        }
-    }
+            VoiceSourceManager.EnqueueSample(sources, sample);
 
-    private float GetVoiceMultiplier()
-    {
-        float mult = VoiceVolume.GetGlobalVolumeMultiplier();
-
-        // If the audio is 2D, lower the volume
-        if (_source.spatialBlend <= 0f)
-        {
-            mult *= 0.25f;
+            amplitude += Math.Abs(sample);
         }
 
-        return mult;
-    }
-
-    private void PcmReaderCallback(Il2CppStructArray<float> data)
-    {
-        _amplitude = 0f;
-
-        for (int i = 0; i < data.Length; i++)
+        if (sampleCount > 0)
         {
-            float output = 0f;
-
-            if (_readingQueue.Count > 0 && _isReadyToRead)
-            {
-                output = _readingQueue.Dequeue();
-            }
-
-            data[i] = output;
-
-            _amplitude += Math.Abs(output);
+            amplitude /= sampleCount;
         }
 
-        _amplitude /= data.Length;
+        Amplitude = amplitude;
+
+        VoiceSourceManager.SetAmplitude(sources, amplitude);
     }
 }

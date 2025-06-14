@@ -1,27 +1,20 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
-using LabFusion.Exceptions;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class EntityUnqueueResponseData : IFusionSerializable
+public class EntityUnqueueResponseData : INetSerializable
 {
     public const int Size = sizeof(ushort) * 2;
 
     public ushort queuedId;
     public ushort allocatedId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(queuedId);
-        writer.Write(allocatedId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        queuedId = reader.ReadUInt16();
-        allocatedId = reader.ReadUInt16();
+        serializer.SerializeValue(ref queuedId);
+        serializer.SerializeValue(ref allocatedId);
     }
 
     public static EntityUnqueueResponseData Create(ushort queuedId, ushort allocatedId)
@@ -34,28 +27,22 @@ public class EntityUnqueueResponseData : IFusionSerializable
     }
 }
 
-public class EntityUnqueueResponseMessage : FusionMessageHandler
+public class EntityUnqueueResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityUnqueueResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityUnqueueResponseData>();
+        var data = received.ReadData<EntityUnqueueResponseData>();
 
-        // Make sure this isn't handled by the server
-        if (isServerHandled)
-        {
-            FusionLogger.Error($"Entity Unqueue Response was being handled on the server! Queued id was {data.queuedId}, allocated id was {data.allocatedId}.");
-            throw new ExpectedClientException();
-        }
-
-        var (success, entity) = NetworkEntityManager.IdManager.UnqueueEntity(data.queuedId, data.allocatedId);
+        var (success, entity) = NetworkEntityManager.IDManager.UnqueueEntity(data.queuedId, data.allocatedId);
 
 #if DEBUG
         if (success)
         {
-            FusionLogger.Log($"Unqueued Entity with allocated id {entity.Id}.");
+            FusionLogger.Log($"Unqueued Entity with allocated id {entity.ID}.");
         }
 #endif
     }

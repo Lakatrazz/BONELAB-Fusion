@@ -53,7 +53,9 @@ public static class ArtRigPatches
         var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
 
         if (animatorJaw != null)
+        {
             animatorJaw.rotation = __instance.artJaw.rotation;
+        }
     }
 
     [HarmonyPostfix]
@@ -71,7 +73,7 @@ public static class ArtRigPatches
     {
         try
         {
-            DelayUtilities.Delay(() => { Internal_WaitForBarcode(inRig.manager, avatar); }, 2);
+            DelayUtilities.InvokeDelayed(() => { Internal_WaitForBarcode(inRig.manager, avatar); }, 2);
         }
         catch (Exception e)
         {
@@ -96,7 +98,7 @@ public static class ArtRigPatches
         // Is this our local player? If so, sync the avatar change
         if (__instance.IsLocalPlayer())
         {
-            LocalPlayer.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
+            LocalAvatar.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
         else if (NetworkPlayerManager.TryGetPlayer(__instance, out var player))
         {

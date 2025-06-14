@@ -1,11 +1,7 @@
-﻿using LabFusion.Network;
-using LabFusion.Grabbables;
-using LabFusion.Extensions;
+﻿using LabFusion.Grabbables;
 using LabFusion.Entities;
-
-using Il2CppSLZ.Marrow.Interaction;
-
-using UnityEngine;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Marrow;
 
@@ -18,11 +14,10 @@ public class EntityGrabGroupHandler : GrabGroupHandler<SerializedEntityGrab>
 
 public class SerializedEntityGrab : SerializedGrab
 {
-    public new const int Size = SerializedGrab.Size + sizeof(ushort) * 2 + SerializedTransform.Size;
+    public new const int Size = SerializedGrab.Size + sizeof(ushort) * 2;
 
     public ushort index;
     public ushort id;
-    public SerializedTransform relativeHand = default;
 
     public SerializedEntityGrab() { }
 
@@ -32,36 +27,19 @@ public class SerializedEntityGrab : SerializedGrab
         this.id = id;
     }
 
-    public override void WriteDefaultGrip(Hand hand, Grip grip)
+    public override void Serialize(INetSerializer serializer)
     {
-        base.WriteDefaultGrip(hand, grip);
+        base.Serialize(serializer);
 
-        relativeHand = gripPair.GetRelativeHand();
-    }
-
-    public override void Serialize(FusionWriter writer)
-    {
-        base.Serialize(writer);
-
-        writer.Write(index);
-        writer.Write(id);
-        writer.Write(relativeHand);
-    }
-
-    public override void Deserialize(FusionReader reader)
-    {
-        base.Deserialize(reader);
-
-        index = reader.ReadUInt16();
-        id = reader.ReadUInt16();
-        relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
+        serializer.SerializeValue(ref index);
+        serializer.SerializeValue(ref id);
     }
 
     public Grip GetGrip(out NetworkEntity entity)
     {
         entity = null;
 
-        var foundEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(id);
+        var foundEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(id);
 
         if (foundEntity != null)
         {
@@ -81,36 +59,4 @@ public class SerializedEntityGrab : SerializedGrab
     {
         return GetGrip(out _);
     }
-
-    public override void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
-    {
-        // Don't do anything if this isn't grabbed anymore
-        if (!isGrabbed)
-        {
-            return;
-        }
-
-        // Don't grab if the player rig doesn't exist
-        if (!player.HasRig)
-        {
-            return;
-        }
-
-        // Get the hand and its starting values
-        Hand hand = player.RigRefs.GetHand(handedness);
-
-        Transform handTransform = hand.transform;
-        Vector3 position = handTransform.position;
-        Quaternion rotation = handTransform.rotation;
-
-        // Move the hand into its relative position
-        grip.SetRelativeHand(hand, relativeHand);
-
-        // Apply the grab
-        base.RequestGrab(player, handedness, grip);
-
-        // Reset the hand position
-        handTransform.SetPositionAndRotation(position, rotation);
-    }
-
 }

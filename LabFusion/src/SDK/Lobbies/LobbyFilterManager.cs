@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Safety;
 
 namespace LabFusion.SDK.Lobbies;
 
@@ -32,7 +33,7 @@ public static class LobbyFilterManager
         // Friends filter
         var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
         {
-            return NetworkInfo.CurrentNetworkLayer.IsFriend(i.LobbyInfo.LobbyId);
+            return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyId);
         });
 
         AddLobbyFilter(friendsFilter);
@@ -45,7 +46,7 @@ public static class LobbyFilterManager
         OnAddedFilter?.Invoke(filter);
     }
 
-    public static bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info)
+    public static bool CheckOptionalFilters(INetworkLobby lobby, LobbyMetadataInfo info)
     {
         foreach (var filter in LobbyFilters)
         {
@@ -53,6 +54,16 @@ public static class LobbyFilterManager
             {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    public static bool CheckPersistentFilters(INetworkLobby lobby, LobbyMetadataInfo info)
+    {
+        if (GlobalBanManager.IsBanned(info.LobbyInfo))
+        {
+            return false;
         }
 
         return true;

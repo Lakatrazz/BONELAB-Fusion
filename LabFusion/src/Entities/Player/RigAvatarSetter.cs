@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Bonelab;
 using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Extensions;
@@ -19,7 +20,7 @@ public class RigAvatarSetter
 
     private bool _isAvatarDirty = false;
     private SerializedAvatarStats _stats = null;
-    private string _avatarBarcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
+    private string _avatarBarcode = MarrowBarcodes.EmptyBarcode;
 
     public SerializedAvatarStats AvatarStats => _stats;
 
@@ -71,7 +72,7 @@ public class RigAvatarSetter
 
         long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
 
-        var owner = _entity.OwnerId.SmallId;
+        var owner = _entity.OwnerID.SmallID;
 
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
@@ -97,7 +98,7 @@ public class RigAvatarSetter
 
         if (info.result != ModResult.SUCCEEDED)
         {
-            FusionLogger.Warn($"Failed downloading avatar for rig {_entity.Id}!");
+            FusionLogger.Warn($"Failed downloading avatar for rig {_entity.ID}!");
             return;
         }
 
@@ -153,7 +154,7 @@ public class RigAvatarSetter
 
         if (!success)
         {
-            _references.SwapAvatarCrate(BONELABAvatarReferences.PolyBlankBarcode, OnSwapFallback, OnPrepareAvatar);
+            _references.SwapAvatarCrate(BonelabAvatarReferences.PolyBlankBarcode, OnSwapFallback, OnPrepareAvatar);
         }
         else
         {
@@ -174,7 +175,7 @@ public class RigAvatarSetter
             Transform transform = avatar.transform;
 
             // Polyblank should just scale based on the custom avatar height
-            if (barcode == BONELABAvatarReferences.PolyBlankBarcode)
+            if (barcode == BonelabAvatarReferences.PolyBlankBarcode)
             {
                 float newHeight = _stats.height;
                 transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);

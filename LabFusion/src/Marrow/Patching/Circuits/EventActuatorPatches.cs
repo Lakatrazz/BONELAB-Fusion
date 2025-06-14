@@ -9,6 +9,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Messages;
 
 namespace LabFusion.Marrow.Patching;
 
@@ -72,7 +73,7 @@ public static class EventActuatorPatches
 
         void NewCall(float parameter0)
         {
-            if (CrossSceneManager.InUnsyncedScene() || IgnoreOverride)
+            if (!NetworkSceneManager.IsLevelNetworked || IgnoreOverride)
             {
                 RunOriginal(parameter0);
                 return;
@@ -99,7 +100,7 @@ public static class EventActuatorPatches
 
         if (input == null)
         {
-            return CrossSceneManager.IsSceneHost();
+            return NetworkSceneManager.IsLevelHost;
         }
 
         var networkEntity = CircuitHelper.GetNetworkEntity(input);
@@ -109,7 +110,7 @@ public static class EventActuatorPatches
             return networkEntity.IsOwner;
         }
 
-        return CrossSceneManager.IsSceneHost();
+        return NetworkSceneManager.IsLevelHost;
     }
 
     private static void OnInputRose(EventActuator actuator, float f)
@@ -136,11 +137,8 @@ public static class EventActuatorPatches
             return;
         }
 
-        using var writer = FusionWriter.Create(EventActuatorData.Size);
-        var data = EventActuatorData.Create(PlayerIdManager.LocalSmallId, hashData, type, value);
-        writer.Write(data);
+        var data = EventActuatorData.Create(PlayerIDManager.LocalSmallID, hashData, type, value);
 
-        using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayModule<EventActuatorMessage, EventActuatorData>(data, CommonMessageRoutes.ReliableToClients);
     }
 }

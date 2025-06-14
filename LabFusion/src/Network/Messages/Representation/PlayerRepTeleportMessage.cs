@@ -1,31 +1,33 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Scene;
-using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Network;
 
-public class PlayerRepTeleportData : IFusionSerializable
+public class PlayerRepTeleportData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(float) * 3;
 
     public byte teleportedUser;
     public Vector3 position;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(teleportedUser);
-        writer.Write(NetworkTransformManager.EncodePosition(position));
-    }
+        serializer.SerializeValue(ref teleportedUser);
 
-    public void Deserialize(FusionReader reader)
-    {
-        teleportedUser = reader.ReadByte();
-        position = NetworkTransformManager.DecodePosition(reader.ReadVector3());
+        if (serializer.IsReader)
+        {
+            serializer.SerializeValue(ref position);
+            position = NetworkTransformManager.DecodePosition(position);
+        }
+        else
+        {
+            var encodedPosition = NetworkTransformManager.EncodePosition(position);
+            serializer.SerializeValue(ref encodedPosition);
+        }
     }
 
     public static PlayerRepTeleportData Create(byte teleportedUser, Vector3 position)
@@ -39,28 +41,23 @@ public class PlayerRepTeleportData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerRepTeleportMessage : FusionMessageHandler
+public class PlayerRepTeleportMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        // Don't teleport if we're the server
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepTeleportData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PlayerRepTeleportData>();
 
         // Make sure this is us
-        if (data.teleportedUser != PlayerIdManager.LocalSmallId)
+        if (data.teleportedUser != PlayerIDManager.LocalSmallID)
         {
             return;
         }
 
         // Teleport the player
-        FusionPlayer.Teleport(data.position, Vector3Extensions.forward);
+        LocalPlayer.TeleportToPosition(data.position, Vector3Extensions.forward);
     }
 }

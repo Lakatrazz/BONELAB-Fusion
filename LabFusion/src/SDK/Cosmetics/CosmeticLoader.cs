@@ -13,8 +13,8 @@ public static class CosmeticLoader
 {
     public static readonly string[] RequiredTags = new[]
     {
-        "Fusion",
-        "Cosmetic",
+        FusionTags.Fusion,
+        FusionTags.Cosmetic,
     };
 
     public static void OnAssetWarehouseReady()
@@ -92,6 +92,8 @@ public static class CosmeticLoader
 
         var author = crate.Pallet.Author;
 
+        var pallet = crate.Pallet.Title;
+
         var point = (RigPoint)cosmeticRoot.cosmeticPoint.Get();
 
         var price = cosmeticRoot.rawPrice.Get();
@@ -101,15 +103,16 @@ public static class CosmeticLoader
 
         var variables = new CosmeticVariables()
         {
-            title = title,
-            description = description,
-            author = author,
-            tags = tags.ToArray(),
-            barcode = barcode.ID,
-            cosmeticPoint = point,
-            price = price,
-            hiddenInView = hiddenInView,
-            hiddenInShop = hiddenInShop,
+            Title = title,
+            Description = description,
+            Author = author,
+            Category = pallet,
+            Tags = tags.ToArray(),
+            Barcode = barcode.ID,
+            CosmeticPoint = point,
+            Price = price,
+            HiddenInView = hiddenInView,
+            HiddenInShop = hiddenInShop,
         };
 
         var cosmeticItem = new CosmeticItem(variables);

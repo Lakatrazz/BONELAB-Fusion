@@ -1,5 +1,8 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
+
 using LabFusion.Network;
+using LabFusion.Player;
 
 using MelonLoader;
 #endif
@@ -36,6 +39,10 @@ namespace LabFusion.Marrow.Integration
 
             InvokeHolder();
         }
+
+        [HideFromIl2Cpp]
+        public override void CatchupPlayer(PlayerID playerID) => RPCVector3Sender.CatchupValue(this, playerID);
+
 #else
         public Vector3 GetLatestValue()
         {

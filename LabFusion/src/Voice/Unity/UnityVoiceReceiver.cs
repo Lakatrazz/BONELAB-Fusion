@@ -2,14 +2,20 @@
 
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
+using LabFusion.Audio;
+using LabFusion.Player;
 
 using UnityEngine;
 
 namespace LabFusion.Voice.Unity;
 
+using System;
+
 public sealed class UnityVoiceReceiver : IVoiceReceiver
 {
-    private byte[] _uncompressedData = null;
+    private static readonly float[] SampleBuffer = new float[AudioInfo.OutputSampleRate];
+
+    private byte[] _encodedData = null;
 
     private bool _hasVoiceActivity = false;
 
@@ -28,9 +34,9 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         return _amplitude;
     }
 
-    public byte[] GetCompressedVoiceData()
+    public byte[] GetEncodedData()
     {
-        return VoiceCompressor.CompressVoiceData(_uncompressedData);
+        return _encodedData;
     }
 
     public bool HasVoiceActivity()
@@ -45,7 +51,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     private void ClearData()
     {
-        _uncompressedData = null;
+        _encodedData = null;
         _hasVoiceActivity = false;
         _amplitude = 0f;
     }
@@ -72,7 +78,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         if (enabled && !isRecording)
         {
-            _voiceClip = Microphone.Start(microphoneName, true, UnityVoice.ClipLength, UnityVoice.SampleRate);
+            _voiceClip = Microphone.Start(microphoneName, true, UnityVoice.ClipLength, AudioInfo.OutputSampleRate);
         }
         else if (!enabled && isRecording)
         {
@@ -90,19 +96,23 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         if (position < _lastSample)
         {
             _loopedData = true;
-            position = UnityVoice.SampleRate;
+            position = AudioInfo.OutputSampleRate;
         }
 
         int sampleCount = position - _lastSample;
 
-        var audioData = new Il2CppStructArray<float>(sampleCount);
-
-        // Check if we have any samples
-        // If we don't, we don't need to waste the GetData call
-        if (sampleCount > 0)
+        if (sampleCount <= 0)
         {
-            _voiceClip.GetData(audioData, _lastSample);
+            _hasVoiceActivity = false;
+            return;
         }
+
+        var rawData = new Il2CppStructArray<float>(sampleCount);
+
+        _voiceClip.GetData(rawData, _lastSample);
+
+        var pointer = rawData.Pointer;
+        var pointerSize = IntPtr.Size;
 
         if (_loopedData)
         {
@@ -114,28 +124,20 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
             _lastSample = position;
         }
 
-        int elementSize = sizeof(float);
-        byte[] byteArray = new byte[sampleCount * elementSize];
+        float[] samples = new float[sampleCount];
+
+        InteropUtilities.Copy(pointer, pointerSize, sampleCount, samples);
 
         bool isTalking = false;
         _amplitude = 0f;
 
         for (int i = 0; i < sampleCount; i++)
         {
-            float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
-            _amplitude += Mathf.Abs(sample);
+            float sample = samples[i] * VoiceVolume.DefaultSampleMultiplier;
 
-            int elementPosition = i * elementSize;
+            SampleBuffer[i] = sample;
 
-            unsafe
-            {
-                byte* p = (byte*)&sample;
-
-                for (var j = 0; j < elementSize; j++)
-                {
-                    byteArray[j + elementPosition] = *p++;
-                }
-            }
+            _amplitude += Math.Abs(sample);
 
             // Check for talking
             if (isTalking)
@@ -153,18 +155,52 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         CheckTalkingTimeout(ref isTalking);
 
-        _wasTalking = isTalking;
-
-        _uncompressedData = byteArray;
         _hasVoiceActivity = isTalking;
 
         if (!isTalking)
         {
             _amplitude = 0f;
+
+            _encodedData = null;
+        }
+        else
+        {
+            SendToSources(SampleBuffer, sampleCount);
+
+            // Write encoded data
+            short[] smallSamples = new short[sampleCount];
+
+            VoiceConverter.CopySamples(samples, smallSamples, sampleCount);
+
+            _encodedData = VoiceConverter.Encode(smallSamples);
         }
     }
 
-    private bool _wasTalking = false;
+    private static void SendToSources(float[] buffer, int sampleCount)
+    {
+        var sources = VoiceSourceManager.GetVoicesByID(PlayerIDManager.LocalSmallID);
+
+        if (!sources.Any())
+        {
+            return;
+        }
+
+        float volume = VoiceVolume.GetVolumeMultiplier();
+        float logarithmicVolume = volume * volume;
+
+        float amplitude = 0f;
+
+        for (var i = 0; i < sampleCount; i++)
+        {
+            float sample = buffer[i] * logarithmicVolume;
+
+            VoiceSourceManager.EnqueueSample(sources, sample);
+
+            amplitude += Math.Abs(sample);
+        }
+
+        VoiceSourceManager.SetAmplitude(sources, amplitude);
+    }
 
     private void CheckTalkingTimeout(ref bool isTalking)
     {
@@ -183,7 +219,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     public void Disable()
     {
-        _uncompressedData = null;
+        _encodedData = null;
         _hasVoiceActivity = false;
     }
 }

@@ -5,12 +5,12 @@ namespace LabFusion.SDK.Gamemodes;
 
 public static class GamemodeConditionsChecker
 {
-    public static void OnInitializeMelon()
+    internal static void OnInitializeMelon()
     {
         GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
 
-        MultiplayerHooking.OnPlayerJoin += OnPlayerCountChanged;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerCountChanged;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerCountChanged;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerCountChanged;
 
         MultiplayerHooking.OnMainSceneInitialized += AutoCheckConditions;
     }
@@ -20,7 +20,7 @@ public static class GamemodeConditionsChecker
         AutoCheckConditions();
     }
 
-    private static void OnPlayerCountChanged(PlayerId player)
+    private static void OnPlayerCountChanged(PlayerID player)
     {
         AutoCheckConditions();
     }

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Preferences.Server;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
@@ -28,10 +29,10 @@ public static class LobbyInfoManager
     {
         // Hook lobby updates
         MultiplayerHooking.OnMainSceneInitialized += PushLobbyUpdate;
-        MultiplayerHooking.OnPlayerJoin += (_) => { PushLobbyUpdate(); };
-        MultiplayerHooking.OnPlayerLeave += (_) => { PushLobbyUpdate(); };
-        MultiplayerHooking.OnStartServer += PushLobbyUpdate;
-        MultiplayerHooking.OnDisconnect += PushLobbyUpdate;
+        MultiplayerHooking.OnPlayerJoined += (_) => { PushLobbyUpdate(); };
+        MultiplayerHooking.OnPlayerLeft += (_) => { PushLobbyUpdate(); };
+        MultiplayerHooking.OnStartedServer += PushLobbyUpdate;
+        MultiplayerHooking.OnDisconnected += PushLobbyUpdate;
 
         SavedServerSettings.OnSavedServerSettingsChanged += PushLobbyUpdate;
 
@@ -41,7 +42,7 @@ public static class LobbyInfoManager
     public static void PushLobbyUpdate()
     {
         // Make sure we actually have a Network Layer
-        if (NetworkInfo.CurrentNetworkLayer == null)
+        if (NetworkLayerManager.Layer == null)
         {
             LobbyInfo = LobbyInfo.Empty;
             return;
@@ -67,7 +68,7 @@ public static class LobbyInfoManager
         LobbyInfo = info;
 
         // If a server is active, send the info
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             SendLobbyInfo();
         }
@@ -75,31 +76,28 @@ public static class LobbyInfoManager
 
     private static void SendLobbyInfo()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create();
         var data = ServerSettingsData.Create();
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     internal static void SendLobbyInfo(ulong longId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var data = ServerSettingsData.Create();
-        writer.Write(data);
+        writer.SerializeValue(ref data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
         MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
     }
 }

@@ -1,25 +1,20 @@
 ﻿using LabFusion.Entities;
-using LabFusion.Exceptions;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class EntityOwnershipResponseMessage : FusionMessageHandler
+public class EntityOwnershipResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityOwnershipResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+        var data = received.ReadData<EntityPlayerData>();
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityPlayerData>();
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.Entity.ID);
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
-
-        entity?.SetOwner(PlayerIdManager.GetPlayerId(data.playerId));
+        entity?.SetOwner(PlayerIDManager.GetPlayerID(data.PlayerID));
     }
 }

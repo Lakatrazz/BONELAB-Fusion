@@ -5,54 +5,51 @@ namespace LabFusion.Menu;
 
 public static class MenuResources
 {
+    public static bool HasResources => ResourcesTransform != null;
+
+    public static Transform ResourcesTransform { get; private set; } = null;
+
     public static Sprite MenuIconSprite { get; private set; } = null;
 
     public static Dictionary<string, Texture> LevelIconLookup { get; private set; } = null;
     public static Dictionary<string, Texture> AvatarIconLookup { get; private set; } = null;
     public static Dictionary<string, Texture> GamemodeIconLookup { get; private set; } = null;
 
+    public static Dictionary<string, Texture> PointIconLookup { get; private set; } = null;
+    public static Dictionary<string, Texture> NotificationIconLookup { get; private set; } = null;
+    public static Dictionary<string, Texture> LogoIconLookup { get; private set; } = null;
+    public static Dictionary<string, Texture> AchievementIconLookup { get; private set; } = null;
+
     public const string ModsIconTitle = "Mods";
+
+    public const string EmptyIconTitle = "Empty";
 
     public const string SandboxIconTitle = "Sandbox";
 
-    public static Texture GetLevelIcon(string levelTitle)
+    private static Action _onResourcesReadyCallback = null;
+
+    public static Texture GetLevelIcon(string levelTitle) => GetIcon(LevelIconLookup, levelTitle);
+
+    public static Texture GetAvatarIcon(string avatarTitle) => GetIcon(AvatarIconLookup, avatarTitle);
+
+    public static Texture GetGamemodeIcon(string gamemodeTitle) => GetIcon(GamemodeIconLookup, gamemodeTitle);
+
+    public static Texture GetPointIcon(string pointTitle) => GetIcon(PointIconLookup, pointTitle);
+
+    public static Texture GetNotificationIcon(string notificationType) => GetIcon(NotificationIconLookup, notificationType);
+
+    public static Texture GetLogoIcon(string logoTitle) => GetIcon(LogoIconLookup, logoTitle);
+
+    public static Texture GetAchievementIcon(string achievementTitle) => GetIcon(AchievementIconLookup, achievementTitle);
+
+    private static Texture GetIcon(Dictionary<string, Texture> lookup, string key)
     {
-        if (string.IsNullOrWhiteSpace(levelTitle))
+        if (string.IsNullOrWhiteSpace(key))
         {
             return null;
         }
 
-        if (LevelIconLookup.TryGetValue(levelTitle, out var texture))
-        {
-            return texture;
-        }
-
-        return null;
-    }
-
-    public static Texture GetAvatarIcon(string avatarTitle)
-    {
-        if (string.IsNullOrWhiteSpace(avatarTitle))
-        {
-            return null;
-        }
-
-        if (AvatarIconLookup.TryGetValue(avatarTitle, out var texture)) 
-        {
-            return texture; 
-        }
-
-        return null;
-    }
-
-    public static Texture GetGamemodeIcon(string gamemodeTitle)
-    {
-        if (string.IsNullOrWhiteSpace(gamemodeTitle))
-        {
-            return null;
-        }
-
-        if (GamemodeIconLookup.TryGetValue(gamemodeTitle, out var texture))
+        if (lookup.TryGetValue(key, out var texture))
         {
             return texture;
         }
@@ -62,20 +59,48 @@ public static class MenuResources
 
     public static void GetResources(Transform resourcesTransform)
     {
+        ResourcesTransform = resourcesTransform;
+
         // Menu icon
-        var menuIcon = resourcesTransform.Find("Menu Icon");
+        var menuIcon = ResourcesTransform.Find("Menu Icon");
 
         if (menuIcon != null)
         {
             MenuIconSprite = menuIcon.GetComponent<SpriteRenderer>().sprite;
         }
 
-        // Level icons
-        var levelIcons = resourcesTransform.Find("Level Icons");
+        LevelIconLookup = LoadIcons(ResourcesTransform, "Level Icons");
+        AvatarIconLookup = LoadIcons(ResourcesTransform, "Avatar Icons");
+        GamemodeIconLookup = LoadIcons(ResourcesTransform, "Gamemode Icons");
 
-        LevelIconLookup = new();
+        PointIconLookup = LoadIcons(ResourcesTransform, "Point Icons");
+        NotificationIconLookup = LoadIcons(ResourcesTransform, "Notification Icons");
+        LogoIconLookup = LoadIcons(ResourcesTransform, "Logo Icons");
+        AchievementIconLookup = LoadIcons(ResourcesTransform, "Achievement Icons");
 
-        foreach (var icon in levelIcons)
+        _onResourcesReadyCallback?.Invoke();
+        _onResourcesReadyCallback = null;
+    }
+
+    public static void HookResourcesReady(Action callback)
+    {
+        if (HasResources)
+        {
+            callback?.Invoke();
+        }
+        else
+        {
+            _onResourcesReadyCallback += callback;
+        }
+    }
+
+    private static Dictionary<string, Texture> LoadIcons(Transform resources, string name)
+    {
+        var icons = resources.Find(name);
+
+        var lookup = new Dictionary<string, Texture>();
+
+        foreach (var icon in icons)
         {
             var iconTransform = icon.TryCast<Transform>();
 
@@ -91,55 +116,9 @@ public static class MenuResources
                 continue;
             }
 
-            LevelIconLookup.Add(iconTransform.name, image.texture);
+            lookup.Add(iconTransform.name, image.texture);
         }
 
-        // Avatar icons
-        var avatarIcons = resourcesTransform.Find("Avatar Icons");
-
-        AvatarIconLookup = new();
-
-        foreach (var icon in avatarIcons)
-        {
-            var iconTransform = icon.TryCast<Transform>();
-
-            if (iconTransform == null)
-            {
-                continue;
-            }
-
-            var image = iconTransform.GetComponent<RawImage>();
-
-            if (image == null)
-            {
-                continue;
-            }
-
-            AvatarIconLookup.Add(iconTransform.name, image.texture);
-        }
-
-        // Gamemode icons
-        var gamemodeIcons = resourcesTransform.Find("Gamemode Icons");
-
-        GamemodeIconLookup = new();
-
-        foreach (var icon in gamemodeIcons)
-        {
-            var iconTransform = icon.TryCast<Transform>();
-
-            if (iconTransform == null)
-            {
-                continue;
-            }
-
-            var image = iconTransform.GetComponent<RawImage>();
-
-            if (image == null)
-            {
-                continue;
-            }
-
-            GamemodeIconLookup.Add(iconTransform.name, image.texture);
-        }
+        return lookup;
     }
 }

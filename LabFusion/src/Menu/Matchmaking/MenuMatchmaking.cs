@@ -3,6 +3,7 @@ using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Safety;
 using LabFusion.SDK.Lobbies;
 
 using UnityEngine;
@@ -20,6 +21,12 @@ public static class MenuMatchmaking
     public static PageElement SandboxFiltersPageElement { get; private set; }
 
     public static GroupElement SandboxFiltersGroupElement { get; private set; }
+
+    // Page Buttons
+    public static FunctionElement GamemodeOptionElement { get; private set; }
+    public static FunctionElement SandboxOptionElement { get; private set; }
+    public static FunctionElement BrowseOptionElement { get; private set; }
+    public static FunctionElement CodeOptionElement { get; private set; }
 
     // Code
     public static StringElement CodeElement { get; private set; }
@@ -41,6 +48,8 @@ public static class MenuMatchmaking
     public static void PopulateMatchmaking(GameObject matchmakingPage)
     {
         MatchmakingPage = matchmakingPage.GetComponent<MenuPage>();
+
+        MatchmakingPage.OnShown += OnMatchmakingPageShown;
 
         // Get options references
         var optionsTransform = matchmakingPage.transform.Find("page_Options");
@@ -68,49 +77,60 @@ public static class MenuMatchmaking
         PopulateBrowser(browserTransform);
     }
     
+    private static void OnMatchmakingPageShown()
+    {
+        var networkLayer = NetworkLayerManager.Layer;
+
+        bool supportsMatchmaking = networkLayer.Matchmaker != null;
+        
+        GamemodeOptionElement.gameObject.SetActive(supportsMatchmaking);
+        SandboxOptionElement.gameObject.SetActive(supportsMatchmaking);
+        BrowseOptionElement.gameObject.SetActive(supportsMatchmaking);
+    }
+
     private static void PopulateOptions(Transform optionsTransform)
     {
         var grid = optionsTransform.Find("grid_Options");
 
         // Gamemode
-        var gamemodeElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
+        GamemodeOptionElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
 
-        gamemodeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
-        gamemodeElement.Do(() =>
+        GamemodeOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
+        GamemodeOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(1);
         });
 
         // Sandbox
-        var sandboxElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
-        sandboxElement.Do(() =>
+        SandboxOptionElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
+        SandboxOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(2);
 
             RefreshBrowser();
         });
 
-        sandboxElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
+        SandboxOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
 
         // Browse
-        var browseElement = grid.Find("button_Browse").GetComponent<FunctionElement>();
-        browseElement.Do(() =>
+        BrowseOptionElement = grid.Find("button_Browse").GetComponent<FunctionElement>();
+        BrowseOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(4);
 
             RefreshBrowser();
         });
 
-        browseElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Browse";
+        BrowseOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Browse";
 
         // Enter Code
-        var codeElement = grid.Find("button_Code").GetComponent<FunctionElement>();
-        codeElement.Do(() =>
+        CodeOptionElement = grid.Find("button_Code").GetComponent<FunctionElement>();
+        CodeOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(3);
         });
 
-        codeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
+        CodeOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
     }
 
     private static void PopulateCode(Transform codeTransform)
@@ -228,17 +248,17 @@ public static class MenuMatchmaking
 
         _isSearchingLobbies = true;
 
-        NetworkInfo.CurrentNetworkLayer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
+        NetworkLayerManager.Layer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
     }
 
     private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)
     {
-        switch (info.metadata.LobbyInfo.Privacy)
+        switch (info.Metadata.LobbyInfo.Privacy)
         {
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkInfo.CurrentNetworkLayer.IsFriend(info.metadata.LobbyInfo.LobbyId);
+                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyId);
             default:
                 return false;
         }
@@ -246,7 +266,7 @@ public static class MenuMatchmaking
 
     private static bool CheckLobbySearch(IMatchmaker.LobbyInfo info, string query)
     {
-        var metadata = info.metadata;
+        var metadata = info.Metadata;
         var levelName = metadata.LobbyInfo.LevelTitle.ToLower();
         var serverName = metadata.LobbyInfo.LobbyName.ToLower();
         var hostName = metadata.LobbyInfo.LobbyHostName.ToLower();
@@ -277,10 +297,10 @@ public static class MenuMatchmaking
     private static IEnumerable<IMatchmaker.LobbyInfo> SortLobbies(IEnumerable<IMatchmaker.LobbyInfo> lobbies)
     {
         return lobbies
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
-            .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
-            .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
-            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
+            .OrderBy(l => l.Metadata.LobbyInfo.LobbyHostName)
+            .OrderByDescending(l => l.Metadata.LobbyInfo.PlayerCount)
+            .OrderByDescending(l => l.Metadata.LobbyInfo.LobbyVersion)
+            .OrderBy(l => l.Metadata.LobbyInfo.LevelTitle)
             .Where(CheckLobbyVisibility);
     }
 
@@ -312,8 +332,9 @@ public static class MenuMatchmaking
     {
         _isSearchingLobbies = false;
 
-        var sortedLobbies = SortLobbies(info.lobbies)
-            .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
+        var sortedLobbies = SortLobbies(info.Lobbies)
+            .Where(l => LobbyFilterManager.CheckOptionalFilters(l.Lobby, l.Metadata))
+            .Where(l => LobbyFilterManager.CheckPersistentFilters(l.Lobby, l.Metadata));
 
         // Enable buttons
         SearchBarElement.gameObject.SetActive(true);
@@ -345,7 +366,7 @@ public static class MenuMatchmaking
         MatchmakingPage.SelectSubPage(4);
         BrowserPage.SelectSubPage(1);
 
-        ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
+        ApplyServerMetadataToLobby(LobbyPanel, info.Lobby, info.Metadata);
     }
 
     private static void OnShowPlayer(PlayerInfo info)
@@ -361,7 +382,7 @@ public static class MenuMatchmaking
     {
         element.GetReferences();
 
-        var metadata = info.metadata;
+        var metadata = info.Metadata;
 
         element.OnPressed = () =>
         {
@@ -390,8 +411,8 @@ public static class MenuMatchmaking
         element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName);
-        element.HostNameText.text = metadata.LobbyInfo.LobbyHostName;
+        element.ServerNameText.text = ProfanityFilter.Filter(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
+        element.HostNameText.text = ProfanityFilter.Filter(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -490,10 +511,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName);
+        element.ServerNameElement.Value = ProfanityFilter.Filter(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(info.LobbyInfo.LobbyHostName);
+            .WithTitle(ProfanityFilter.Filter(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -502,15 +523,15 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = info.LobbyInfo.LobbyDescription;
+        element.DescriptionElement.Value = ProfanityFilter.Filter(info.LobbyInfo.LobbyDescription);
 
         element.MoreElement
             .Cleared()
             .WithTitle("More...")
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
-        // Apply level icon
         ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle, info.LobbyInfo.LevelModId);
+        ElementIconHelper.SetGamemodeIcon(element, info.LobbyInfo.GamemodeTitle);
 
         // Fill out lists
         // Settings list
@@ -551,6 +572,10 @@ public static class MenuMatchmaking
         generalGroup.AddElement<BoolElement>("Player Constraining")
             .WithInteractability(false)
             .WithValue(info.LobbyInfo.PlayerConstraining);
+
+        generalGroup.AddElement<FloatElement>("Max Avatar Height")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.MaxAvatarHeight);
 
         // Permissions
         var permissionsGroup = settingsPage.AddElement<GroupElement>("Permissions");
@@ -609,14 +634,14 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = info.Username.RemoveRichTextExceptColor();
+        element.UsernameElement.Title = TextFilter.Filter(info.Username);
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = info.Nickname.RemoveRichTextExceptColor();
+        element.NicknameElement.Value = TextFilter.Filter(info.Nickname);
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = string.Empty;
+        element.DescriptionElement.Value = TextFilter.Filter(info.Description);
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         element.PermissionsElement
@@ -626,6 +651,13 @@ public static class MenuMatchmaking
 
         element.PermissionsElement.Value = info.PermissionLevel;
         element.PermissionsElement.EnumType = typeof(PermissionLevel);
+
+        element.PlatformIDElement
+            .WithTitle("Platform ID")
+            .WithColor(Color.red)
+            .WithInteractability(false);
+
+        element.PlatformIDElement.Value = info.LongId.ToString();
 
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
 

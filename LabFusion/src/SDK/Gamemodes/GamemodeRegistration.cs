@@ -34,11 +34,20 @@ public static class GamemodeRegistration
 
         for (var i = 0; i < Gamemodes.Count; i++)
         {
-            var barcode = Gamemodes[i].Barcode;
+            var gamemode = Gamemodes[i];
+
+            // Only get metadata for selected gamemodes
+            // Any other gamemodes are unnecessary
+            if (!gamemode.IsSelected)
+            {
+                continue;
+            }
+
+            var barcode = gamemode.Barcode;
 
             var metadataPairs = new Dictionary<string, string>();
 
-            foreach (var pair in Gamemodes[i].Metadata.LocalDictionary)
+            foreach (var pair in gamemode.Metadata.LocalDictionary)
             {
                 metadataPairs.Add(pair.Key, pair.Value);
             }

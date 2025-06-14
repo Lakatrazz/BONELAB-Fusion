@@ -18,6 +18,10 @@ public static class FusionSpawnableReferences
 
     public static readonly SpawnableCrateReference ProgressBarReference = new("Lakatrazz.FusionContent.Spawnable.ProgressBar");
 
+    public static readonly SpawnableCrateReference HealthBarReference = new("Lakatrazz.FusionContent.Spawnable.HealthBar");
+
+    public static readonly SpawnableCrateReference LivesBarReference = new("Lakatrazz.FusionContent.Spawnable.LivesBar");
+
     public static readonly SpawnableCrateReference NameTagReference = new("Lakatrazz.FusionContent.Spawnable.NameTag");
 
     public static readonly SpawnableCrateReference HeadLayoutReference = new("Lakatrazz.FusionContent.Spawnable.HeadLayout");
@@ -27,4 +31,10 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference IconReference = new("Lakatrazz.FusionContent.Spawnable.Icon");
 
     public static readonly SpawnableCrateReference FusionMenuReference = new("Lakatrazz.FusionContent.Spawnable.FusionMenu");
+
+    public static readonly SpawnableCrateReference DeathExplosionReference = new("Lakatrazz.FusionContent.Spawnable.DeathExplosion");
+
+    public static readonly SpawnableCrateReference LaserCursorReference = new("Lakatrazz.FusionContent.Spawnable.LaserCursor");
+
+    public static readonly SpawnableCrateReference EntangledLineReference = new("Lakatrazz.FusionContent.Spawnable.EntangledLine");
 }

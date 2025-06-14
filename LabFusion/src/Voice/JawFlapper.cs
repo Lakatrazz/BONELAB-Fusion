@@ -1,38 +1,27 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Math;
 
-namespace LabFusion.Voice
+namespace LabFusion.Voice;
+
+public class JawFlapper
 {
-    public class JawFlapper
+    public const float MaxAngle = 40f;
+
+    private float _voiceLoudness = 0f;
+
+    public float GetAngle()
     {
-        private float _voiceLoudness = 0f;
+        return _voiceLoudness * MaxAngle;
+    }
 
-        private const float _sinAmplitude = 5f;
-        private const float _sinOmega = 10f;
+    public void ClearJaw()
+    {
+        _voiceLoudness = 0f;
+    }
 
-        public float GetAngle()
-        {
-            return _voiceLoudness * 20f;
-        }
+    public void UpdateJaw(float amplitude, float deltaTime)
+    {
+        float target = ManagedMathf.Clamp01(amplitude * 2f);
 
-        public void ClearJaw()
-        {
-            _voiceLoudness = 0f;
-        }
-
-        public void UpdateJaw(float amplitude)
-        {
-            // Update the amplitude
-            float target = amplitude;
-
-            // Add affectors
-            target *= 1000f;
-            target = ManagedMathf.Clamp(target, 0f, 2f);
-
-            // Lerp towards the desired value
-            float sin = Math.Abs(_sinAmplitude * ManagedMathf.Sin(_sinOmega * TimeUtilities.TimeSinceStartup));
-            sin = ManagedMathf.Clamp01(sin);
-
-            _voiceLoudness = ManagedMathf.LerpUnclamped(_voiceLoudness * sin, target, TimeUtilities.DeltaTime * 12f);
-        }
+        _voiceLoudness = ManagedMathf.Lerp(_voiceLoudness, target, Smoothing.CalculateDecay(12f, deltaTime));
     }
 }

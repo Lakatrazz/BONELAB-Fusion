@@ -23,12 +23,7 @@ public static class GamemodeListHelper
             gamemodeResult.GamemodeNameText.text = gamemode.Title;
 
             // Logo
-            var logo = gamemode.Logo;
-
-            if (logo == null)
-            {
-                logo = MenuResources.GetGamemodeIcon(MenuResources.ModsIconTitle);
-            }
+            var logo = gamemode.Logo ? gamemode.Logo : MenuResources.GetGamemodeIcon(MenuResources.ModsIconTitle);
 
             gamemodeResult.GamemodeIcon.texture = logo;
 

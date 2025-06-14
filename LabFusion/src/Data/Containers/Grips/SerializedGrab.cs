@@ -1,73 +1,66 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Utilities;
-using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public abstract class SerializedGrab : INetSerializable
 {
-    public abstract class SerializedGrab : IFusionSerializable
+    public const int Size = sizeof(byte) + SerializedTransform.Size;
+
+    public bool isGrabbed;
+    public SerializedTransform targetInBase;
+    public GripPair gripPair;
+
+    public void WriteDefaultGrip(Hand hand, Grip grip)
     {
-        public const int Size = sizeof(byte) + SerializedTransform.Size;
+        // Check if this is actually grabbed
+        isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
 
-        public bool isGrabbed;
-        public SerializedTransform targetInBase;
-        public GripPair gripPair;
+        // Store the target
+        var target = grip.GetTargetInBase(hand);
+        targetInBase = new SerializedTransform(target.position, target.rotation);
 
-#if DEBUG
-        private bool _hasWrittenDefaultGrip = false;
-#endif
+        gripPair = new GripPair(hand, grip);
+    }
 
-        public virtual void WriteDefaultGrip(Hand hand, Grip grip)
+    public virtual int GetSize()
+    {
+        return Size;
+    }
+
+    public virtual void Serialize(INetSerializer serializer)
+    {
+        serializer.SerializeValue(ref isGrabbed);
+        serializer.SerializeValue(ref targetInBase);
+    }
+
+    public abstract Grip GetGrip();
+
+    public void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
+    {
+        // Make sure the grip exists
+        if (grip == null)
         {
-            // Check if this is actually grabbed
-            isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
-
-            // Store the target
-            var target = grip.GetTargetInBase(hand);
-            targetInBase = new SerializedTransform(target.position, target.rotation);
-
-            gripPair = new GripPair(hand, grip);
-
-#if DEBUG
-            _hasWrittenDefaultGrip = true;
-#endif
+            return;
         }
 
-        public virtual int GetSize()
+        // Don't do anything if this isn't grabbed anymore
+        if (!isGrabbed)
         {
-            return Size;
+            return;
         }
 
-        public virtual void Serialize(FusionWriter writer)
+        // Don't grab if the player rig doesn't exist
+        if (!player.HasRig)
         {
-#if DEBUG
-            if (!_hasWrittenDefaultGrip)
-                FusionLogger.Warn("Serializing a grab but the default grip values weren't written!");
-#endif
-
-            writer.Write(isGrabbed);
-            writer.Write(targetInBase);
+            return;
         }
 
-        public virtual void Deserialize(FusionReader reader)
-        {
-            isGrabbed = reader.ReadBoolean();
-            targetInBase = reader.ReadFusionSerializable<SerializedTransform>();
-        }
-
-        public abstract Grip GetGrip();
-
-        public virtual void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
-        {
-            // Don't do anything if this isn't grabbed anymore
-            if (!isGrabbed || grip == null)
-                return;
-
-            player.Grabber.Attach(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
-        }
+        player.Grabber.Attach(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
     }
 }

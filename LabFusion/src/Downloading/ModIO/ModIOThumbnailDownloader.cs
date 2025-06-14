@@ -8,18 +8,46 @@ namespace LabFusion.Downloading.ModIO;
 
 public static class ModIOThumbnailDownloader
 {
+    public static Dictionary<int, Texture> ThumbnailCache { get; } = new();
+
+    public static void ClearCache()
+    {
+        foreach (var texture in ThumbnailCache.Values)
+        {
+            if (texture == null)
+            {
+                continue;
+            }
+
+            UnityEngine.Object.Destroy(texture);
+        }
+
+        ThumbnailCache.Clear();
+    }
+
     public static void GetThumbnail(int modId, Action<Texture> callback)
     {
+        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture))
+        {
+            callback?.Invoke(cachedTexture);
+            return;
+        }
+
+        callback += (texture) =>
+        {
+            ThumbnailCache[modId] = texture;
+        };
+
         ModIOManager.GetMod(modId, OnModReceived);
 
         void OnModReceived(ModCallbackInfo info)
         {
-            if (info.result != ModResult.SUCCEEDED)
+            if (info.Result != ModResult.SUCCEEDED)
             {
                 return;
             }
 
-            var url = info.data.ThumbnailUrl;
+            var url = info.Data.ThumbnailUrl;
 
             GetThumbnail(url, callback);
         }

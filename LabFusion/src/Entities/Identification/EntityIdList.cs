@@ -1,70 +1,70 @@
 ﻿namespace LabFusion.Entities;
 
-public delegate void EntityIdEvent<TEntity>(ushort id, TEntity entity);
+public delegate void EntityIDEvent<TEntity>(ushort id, TEntity entity);
 
-public class EntityIdList<TEntity>
+public class EntityIDList<TEntity>
 {
     private readonly Dictionary<ushort, TEntity> _idsToEntities = new();
-    private readonly Dictionary<TEntity, ushort> _entitiesToIds = new();
+    private readonly Dictionary<TEntity, ushort> _entitiesToIDs = new();
 
-    private readonly HashSet<ushort> _reservedIds = new();
+    private readonly HashSet<ushort> _reservedIDs = new();
 
-    public Dictionary<ushort, TEntity> IdEntityLookup => _idsToEntities;
-    public Dictionary<TEntity, ushort> EntityIdLookup => _entitiesToIds;
+    public Dictionary<ushort, TEntity> IDEntityLookup => _idsToEntities;
+    public Dictionary<TEntity, ushort> EntityIDLookup => _entitiesToIDs;
 
-    public HashSet<ushort> ReservedIds => _reservedIds;
+    public HashSet<ushort> ReservedIDs => _reservedIDs;
 
-    public event EntityIdEvent<TEntity> OnEntityAdded, OnEntityRemoved;
+    public event EntityIDEvent<TEntity> OnEntityAdded, OnEntityRemoved;
 
-    private ushort _lastId = 0;
+    private ushort _lastID = 0;
 
-    public ushort LastId => _lastId;
+    public ushort LastID => _lastID;
 
-    public void ReserveId(ushort id)
+    public void ReserveID(ushort id)
     {
-        if (_reservedIds.Contains(id))
+        if (_reservedIDs.Contains(id))
         {
             return;
         }
 
-        if (_lastId <= id)
+        if (_lastID <= id)
         {
-            _lastId = id;
-            _lastId++;
+            _lastID = id;
+            _lastID++;
         }
 
-        _reservedIds.Add(id);
+        _reservedIDs.Add(id);
     }
 
     public void Unreserve(ushort id)
     {
-        _reservedIds.Remove(id);
+        _reservedIDs.Remove(id);
     }
 
     public bool IsReserved(ushort id)
     {
-        return _reservedIds.Contains(id);
+        return _reservedIDs.Contains(id);
     }
 
-    private bool IsUsedId(ushort id)
+    private bool IsUsedID(ushort id)
     {
-        return IdEntityLookup.ContainsKey(id) || IsReserved(id);
+        return IDEntityLookup.ContainsKey(id) || IsReserved(id);
     }
 
-    public ushort AllocateNewId()
+    public ushort AllocateNewID()
     {
-        _lastId++;
+        _lastID++;
 
         // Check if the id is already being used or reserved
-        if (IsUsedId(LastId))
+        if (IsUsedID(LastID))
         {
-            while (IsUsedId(LastId) && LastId < ushort.MaxValue)
+            while (IsUsedID(LastID) && LastID < ushort.MaxValue)
             {
-                _lastId++;
+                _lastID++;
             }
         }
 
-        return LastId;
+        return LastID;
     }
 
     public bool HasEntity(ushort id)
@@ -85,7 +85,7 @@ public class EntityIdList<TEntity>
     public void AddEntity(ushort id, TEntity entity)
     {
         _idsToEntities.Add(id, entity);
-        _entitiesToIds.Add(entity, id);
+        _entitiesToIDs.Add(entity, id);
 
         OnEntityAdded?.Invoke(id, entity);
     }
@@ -104,12 +104,12 @@ public class EntityIdList<TEntity>
 
     public void RemoveEntity(TEntity entity)
     {
-        if (!_entitiesToIds.ContainsKey(entity))
+        if (!_entitiesToIDs.ContainsKey(entity))
         {
             return;
         }
 
-        var id = _entitiesToIds[entity];
+        var id = _entitiesToIDs[entity];
 
         RemoveEntity(id, entity);
     }
@@ -117,19 +117,19 @@ public class EntityIdList<TEntity>
     private void RemoveEntity(ushort id, TEntity entity)
     {
         _idsToEntities.Remove(id);
-        _entitiesToIds.Remove(entity);
+        _entitiesToIDs.Remove(entity);
 
         OnEntityRemoved?.Invoke(id, entity);
     }
 
-    public void ClearId()
+    public void ClearID()
     {
         // Get highest unused id
-        _lastId = 0;
+        _lastID = 0;
 
-        while (IsUsedId(LastId) && LastId < ushort.MaxValue)
+        while (IsUsedID(LastID) && LastID < ushort.MaxValue)
         {
-            _lastId++;
+            _lastID++;
         }
     }
 
@@ -141,8 +141,8 @@ public class EntityIdList<TEntity>
         }
 
         _idsToEntities.Clear();
-        _entitiesToIds.Clear();
+        _entitiesToIDs.Clear();
 
-        ClearId();
+        ClearID();
     }
 }

@@ -5,27 +5,16 @@ using Il2CppSLZ.Marrow.Pool;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.UI;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public interface IHeadUIElement
-{
-    int Priority { get; }
-
-    Transform Transform { get; }
-
-    bool Visible { get; set; }
-
-    void Spawn(Transform parent);
-
-    void Despawn();
-}
-
 public class RigHeadUI
 {
-    public const float OffsetHeight = 0.23f;
+    public const float OffsetHeight = 0.2f;
 
     private Poolee _layoutPoolee;
     private Transform _layoutTransform;
@@ -52,19 +41,15 @@ public class RigHeadUI
         }
     }
 
-    private readonly HashSet<IHeadUIElement> _elements = new();
+    private readonly HashSet<IPopupLayoutElement> _elements = new();
 
     public void Spawn()
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.HeadLayoutReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.HeadLayoutReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnSpawned);
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnSpawned);
     }
 
     public void Despawn()
@@ -82,7 +67,7 @@ public class RigHeadUI
         DespawnElements();
     }
 
-    public void RegisterElement(IHeadUIElement element)
+    public void RegisterElement(IPopupLayoutElement element)
     {
         bool added = _elements.Add(element);
 
@@ -102,7 +87,7 @@ public class RigHeadUI
         SortElements();
     }
 
-    public void UnregisterElement(IHeadUIElement element)
+    public void UnregisterElement(IPopupLayoutElement element)
     {
         bool removed = _elements.Remove(element);
 
@@ -165,6 +150,11 @@ public class RigHeadUI
 
     public void UpdateScale(RigManager rigManager)
     {
+        if (!Spawned)
+        {
+            return;
+        }
+
         var avatar = rigManager.avatar;
 
         if (!avatar)

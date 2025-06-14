@@ -15,12 +15,12 @@ namespace LabFusion.MonoBehaviours
 
         public void Awake()
         {
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
+            MultiplayerHooking.OnDisconnected += OnDisconnect;
         }
 
         public void OnDestroy()
         {
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
+            MultiplayerHooking.OnDisconnected -= OnDisconnect;
         }
 
         private void OnDisconnect()

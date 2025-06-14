@@ -67,11 +67,15 @@ public abstract class NetworkLobby : INetworkLobby
     {
         // Don't save the key collection
         if (key == LobbyConstants.KeyCollectionKey)
+        {
             return;
+        }
 
         // If it already exists don't add it
         if (!_keyCollection.Contains(key))
+        {
             _keyCollection.Add(key);
+        }
     }
 
     public abstract string GetMetadata(string key);

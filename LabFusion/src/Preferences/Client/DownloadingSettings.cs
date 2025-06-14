@@ -13,6 +13,8 @@ public class DownloadingSettings
 
     public FusionPref<bool> KeepDownloadedMods { get; private set; }
 
+    public FusionPref<bool> NotifyDownloads { get; private set; }
+
     public FusionPref<int> MaxFileSize { get; private set; }
     public FusionPref<int> MaxLevelSize { get; private set; }
 
@@ -25,6 +27,8 @@ public class DownloadingSettings
         DownloadLevels = new FusionPref<bool>(category, "Download Levels", true, PrefUpdateMode.IGNORE);
 
         KeepDownloadedMods = new FusionPref<bool>(category, "Keep Downloaded Mods", false, PrefUpdateMode.IGNORE);
+
+        NotifyDownloads = new FusionPref<bool>(category, "Notify Downloads", true, PrefUpdateMode.IGNORE);
 
         MaxFileSize = new FusionPref<int>(category, "Max File Size", DefaultMaxFileSize, PrefUpdateMode.IGNORE);
         MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);

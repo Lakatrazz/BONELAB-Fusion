@@ -1,65 +1,51 @@
-﻿using LabFusion.Data;
-using LabFusion.Senders;
-using LabFusion.Exceptions;
+﻿using LabFusion.Senders;
 using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class PlayerMetadataRequestData : INetSerializable
 {
-    public class PlayerMetadataRequestData : IFusionSerializable
+    public const int DefaultSize = sizeof(byte);
+
+    public byte smallId;
+    public string key;
+    public string value;
+
+    public static int GetSize(string key, string value)
     {
-        public const int DefaultSize = sizeof(byte);
-
-        public byte smallId;
-        public string key;
-        public string value;
-
-        public static int GetSize(string key, string value)
-        {
-            return DefaultSize + key.GetSize() + value.GetSize();
-        }
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(key);
-            writer.Write(value);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            key = reader.ReadString();
-            value = reader.ReadString();
-        }
-
-        public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
-        {
-            return new PlayerMetadataRequestData()
-            {
-                smallId = smallId,
-                key = key,
-                value = value,
-            };
-        }
+        return DefaultSize + key.GetSize() + value.GetSize();
     }
 
-    public class PlayerMetadataRequestMessage : FusionMessageHandler
+    public void Serialize(INetSerializer serializer)
     {
-        public override byte Tag => NativeMessageTag.PlayerMetadataRequest;
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref key);
+        serializer.SerializeValue(ref value);
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
+    {
+        return new PlayerMetadataRequestData()
         {
-            // This should only ever be handled by the server
-            if (!isServerHandled)
-            {
-                throw new ExpectedServerException();
-            }
+            smallId = smallId,
+            key = key,
+            value = value,
+        };
+    }
+}
 
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();
+public class PlayerMetadataRequestMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.PlayerMetadataRequest;
 
-            // Send the response to all clients
-            PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);
-        }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PlayerMetadataRequestData>();
+
+        // Send the response to all clients
+        PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);
     }
 }

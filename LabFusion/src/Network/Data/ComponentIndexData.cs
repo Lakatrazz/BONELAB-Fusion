@@ -1,37 +1,28 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class ComponentIndexData : INetSerializable
 {
-    public class ComponentIndexData : IFusionSerializable
+    public const int Size = sizeof(ushort) * 2;
+
+    public ushort EntityID;
+    public ushort ComponentIndex;
+
+    public int? GetSize() => Size;
+
+    public void Serialize(INetSerializer serializer)
     {
-        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref ComponentIndex);
+    }
 
-        public byte smallId;
-        public ushort syncId;
-        public byte componentIndex;
-
-        public void Serialize(FusionWriter writer)
+    public static ComponentIndexData Create(ushort entityId, ushort componentIndex)
+    {
+        return new ComponentIndexData()
         {
-            writer.Write(smallId);
-            writer.Write(syncId);
-            writer.Write(componentIndex);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            componentIndex = reader.ReadByte();
-        }
-
-        public static ComponentIndexData Create(byte smallId, ushort syncId, byte componentIndex)
-        {
-            return new ComponentIndexData()
-            {
-                smallId = smallId,
-                syncId = syncId,
-                componentIndex = componentIndex,
-            };
-        }
+            EntityID = entityId,
+            ComponentIndex = componentIndex,
+        };
     }
 }

@@ -15,9 +15,9 @@ public static class PropSender
     /// Sends a catchup sync message for a scene object.
     /// </summary>
     /// <param name="prop"></param>
-    public static void SendCatchupCreation(NetworkProp prop, PlayerId playerId)
+    public static void SendCatchupCreation(NetworkProp prop, PlayerID playerId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -30,14 +30,11 @@ public static class PropSender
             return;
         }
 
-        using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
         var networkEntity = prop.NetworkEntity;
 
-        var data = NetworkPropCreateData.Create(networkEntity.OwnerId, hashData, networkEntity.Id);
-        writer.Write(data);
+        var data = NetworkPropCreateData.Create(networkEntity.OwnerID, hashData, networkEntity.ID);
 
-        using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);
-        MessageSender.SendFromServer(playerId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, new MessageRoute(playerId.SmallID, NetworkChannel.Reliable));
     }
 
     private struct PropCreationInfo
@@ -93,11 +90,17 @@ public static class PropSender
                 return;
             }
 
+            // Make sure the entity was properly hashed before creating a new NetworkProp
+            if (!MarrowEntityHelper.IsHashed(info.marrowEntity))
+            {
+                return;
+            }
+
             // Create entity
             newEntity = new();
             newProp = new(newEntity, info.marrowEntity);
 
-            ushort queuedId = NetworkEntityManager.IdManager.QueueEntity(newEntity);
+            ushort queuedId = NetworkEntityManager.IDManager.QueueEntity(newEntity);
             NetworkEntityManager.RequestUnqueue(queuedId);
 
             newEntity.HookOnRegistered((entity) =>
@@ -120,19 +123,16 @@ public static class PropSender
                 return;
             }
 
-            using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
-            var data = NetworkPropCreateData.Create(PlayerIdManager.LocalSmallId, hashData, newEntity.Id);
-            writer.Write(data);
+            var data = NetworkPropCreateData.Create(PlayerIDManager.LocalSmallID, hashData, newEntity.ID);
 
-            using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, CommonMessageRoutes.ReliableToOtherClients);
 
             OnFinish();
         }
 
         void OnFinish()
         {
-            newEntity.SetOwner(PlayerIdManager.LocalId);
+            newEntity.SetOwner(PlayerIDManager.LocalID);
             info.onFinished?.Invoke(newEntity);
         }
     }

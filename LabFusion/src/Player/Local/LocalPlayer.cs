@@ -6,17 +6,13 @@ using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
-using LabFusion.Marrow.Extensions;
 
-using Avatar = Il2CppSLZ.VRMK.Avatar;
+using UnityEngine;
 
 namespace LabFusion.Player;
 
 public delegate void PlayerGrabDelegate(Hand hand, Grip grip);
-
-public delegate void PlayerAvatarDelegate(Avatar avatar, string barcode);
 
 public static class LocalPlayer
 {
@@ -24,8 +20,6 @@ public static class LocalPlayer
     public static PlayerGrabDelegate? OnRelease { get; set; }
 
     public static Action<RigManager>? OnLocalRigCreated { get; set; }
-
-    public static event PlayerAvatarDelegate? OnAvatarChanged;
 
     public static bool RagdollOnDeath => NetworkInfo.HasServer;
 
@@ -40,7 +34,7 @@ public static class LocalPlayer
         {
             _username = value;
 
-            Metadata.TrySetMetadata(MetadataHelper.UsernameKey, value);
+            Metadata.Username.SetValue(value);
 
             OnUsernameChanged?.InvokeSafe(value, "executing OnUsernameChanged");
         }
@@ -50,45 +44,46 @@ public static class LocalPlayer
 
     public static event Action? OnApplyInitialMetadata;
 
-    public static NetworkMetadata Metadata { get; } = new();
+    public static PlayerMetadata Metadata { get; } = new();
 
     internal static void OnInitializeMelon()
     {
-        Metadata.OnTrySetMetadata += OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+        Metadata.CreateMetadata();
+
+        Metadata.Metadata.OnTrySetMetadata += OnTrySetMetadata;
+        Metadata.Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+
+        LocalAvatar.OnInitializeMelon();
+        LocalHealth.OnInitializeMelon();
+        LocalVision.OnInitializeMelon();
+        LocalControls.OnInitializeMelon();
+    }
+
+    internal static void OnFixedUpdate()
+    {
+        LocalControls.OnFixedUpdate();
     }
 
     private static bool OnTrySetMetadata(string key, string value)
     {
-        Metadata.ForceSetLocalMetadata(key, value);
+        Metadata.Metadata.ForceSetLocalMetadata(key, value);
 
-        var localId = PlayerIdManager.LocalId;
+        var localId = PlayerIDManager.LocalID;
 
-        if (localId != null)
-        {
-            localId.Metadata.TrySetMetadata(key, value);
-        }
+        localId?.Metadata.Metadata.TrySetMetadata(key, value);
 
         return true;
     }
 
     private static bool OnTryRemoveMetadata(string key)
     {
-        Metadata.ForceRemoveLocalMetadata(key);
+        Metadata.Metadata.ForceRemoveLocalMetadata(key);
 
-        var localId = PlayerIdManager.LocalId;
+        var localId = PlayerIDManager.LocalID;
 
-        if (localId != null)
-        {
-            localId.Metadata.TryRemoveMetadata(key);
-        }
+        localId?.Metadata.Metadata.TryRemoveMetadata(key);
 
         return true;
-    }
-
-    internal static void InvokeAvatarChanged(Avatar avatar, string barcode)
-    {
-        OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
     }
 
     internal static void InvokeApplyInitialMetadata()
@@ -107,7 +102,7 @@ public static class LocalPlayer
             return null;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(PlayerIdManager.LocalId, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(PlayerIDManager.LocalID, out var player))
         {
             return player;
         }
@@ -170,11 +165,39 @@ public static class LocalPlayer
 
         var rigManager = RigData.Refs.RigManager;
 
-        var physicsRig = rigManager.physicsRig;
-        var marrowEntity = physicsRig.marrowEntity;
+        TeleportToPosition(rigManager.checkpointPosition, rigManager.checkpointFwd);
+    }
 
-        marrowEntity.ResetPose();
+    /// <summary>
+    /// Teleports the Local Player to a set position.
+    /// </summary>
+    /// <param name="position">The point to teleport to in world space.</param>
+    public static void TeleportToPosition(Vector3 position)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
 
-        marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
+        var rigManager = RigData.Refs.RigManager;
+
+        rigManager.TeleportToPosition(position, true);
+    }
+
+    /// <summary>
+    /// Teleports the Local Player to a set position and forward direction.
+    /// </summary>
+    /// <param name="position">The point to teleport to in world space.</param>
+    /// <param name="forward">The forward direction that the player will face in world space.</param>
+    public static void TeleportToPosition(Vector3 position, Vector3 forward)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+
+        rigManager.TeleportToPosition(position, forward, true);
     }
 }

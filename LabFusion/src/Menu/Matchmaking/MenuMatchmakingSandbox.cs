@@ -36,7 +36,7 @@ public static class MenuMatchmakingSandbox
 
         SearchingLabel.Title = searchingText;
 
-        var matchmaker = NetworkInfo.CurrentNetworkLayer.Matchmaker;
+        var matchmaker = NetworkLayerManager.Layer.Matchmaker;
 
         if (matchmaker != null)
         {
@@ -50,7 +50,7 @@ public static class MenuMatchmakingSandbox
 
     private static bool CheckLobbyValidation(IMatchmaker.LobbyInfo lobby)
     {
-        var lobbyInfo = lobby.metadata.LobbyInfo;
+        var lobbyInfo = lobby.Metadata.LobbyInfo;
 
         // Make sure this lobby is on the right Fusion version
         if (NetworkVerification.CompareVersion(lobbyInfo.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
@@ -65,7 +65,7 @@ public static class MenuMatchmakingSandbox
         }
         
         // Check if we have the lobby's level
-        if (!lobby.metadata.ClientHasLevel)
+        if (!lobby.Metadata.ClientHasLevel)
         {
             return false;
         }
@@ -81,7 +81,7 @@ public static class MenuMatchmakingSandbox
 
     private static void OnLobbiesRequested(IMatchmaker.MatchmakerCallbackInfo info)
     {
-        var sandboxLobbies = info.lobbies
+        var sandboxLobbies = info.Lobbies
             .Where(CheckLobbyValidation);
 
         var validLobbies = MenuMatchmaking.ValidateLobbies(sandboxLobbies);
@@ -96,7 +96,7 @@ public static class MenuMatchmakingSandbox
         // Otherwise, join a random one
         var randomLobby = validLobbies.GetRandom();
 
-        randomLobby.metadata.CreateJoinDelegate(randomLobby.lobby)?.Invoke();
+        randomLobby.Metadata.CreateJoinDelegate(randomLobby.Lobby)?.Invoke();
 
     }
 

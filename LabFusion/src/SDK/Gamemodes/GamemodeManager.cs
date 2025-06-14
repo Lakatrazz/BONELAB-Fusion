@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.UI.Popups;
 using LabFusion.Scene;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
@@ -24,12 +24,16 @@ public static class GamemodeManager
             if (_activeGamemode != null)
             {
                 _activeGamemode.OnGamemodeDeselected();
+
+                _activeGamemode.ClearMetadata();
             }
 
             _activeGamemode = value;
 
             if (value != null)
             {
+                value.ClearMetadata();
+
                 value.OnGamemodeSelected();
             }
 
@@ -53,7 +57,7 @@ public static class GamemodeManager
 
     public static event Action<float> OnStartTimerChanged;
 
-    private static float _startTimer = DefaultTime;
+    private static float _startTimer = DefaultStartTime;
     public static float StartTimer
     {
         get
@@ -71,7 +75,9 @@ public static class GamemodeManager
     private static bool _startTimerActive = false;
     public static bool StartTimerActive => _startTimerActive;
 
-    public const float DefaultTime = 30f;
+    public const float DefaultStartTime = 30f;
+
+    public const string NotificationTag = "Gamemode";
 
     public static void OnInitializeMelon()
     {
@@ -80,14 +86,23 @@ public static class GamemodeManager
         Gamemode.OnReadyKeyChanged += OnReadyKeyChanged;
 
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+        MultiplayerHooking.OnTargetLevelLoaded += OnTargetLevelLoaded;
 
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
+    }
+
+    private static void OnTargetLevelLoaded()
+    {
+        if (IsGamemodeStarted)
+        {
+            ActiveGamemode.OnLevelReady();
+        }
     }
 
     private static void OnMainSceneInitialized()
     {
         // Stop the current gamemode
-        if (NetworkInfo.IsServer && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
+        if (NetworkInfo.IsHost && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
         {
             StopGamemode();
         }
@@ -110,12 +125,15 @@ public static class GamemodeManager
 
     private static void SendGamemodeChangeNotification()
     {
+        Notifier.Cancel(NotificationTag);
+
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
                 Title = "Gamemode Selected",
+                Tag = NotificationTag,
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
                 SaveToMenu = false,
@@ -124,10 +142,11 @@ public static class GamemodeManager
         }
         else
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = "The server is now in Sandbox mode!",
                 Title = "Gamemode Deselected",
+                Tag = NotificationTag,
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
                 SaveToMenu = false,
@@ -141,6 +160,11 @@ public static class GamemodeManager
         if (started)
         {
             gamemode.OnGamemodeStarted();
+
+            if (FusionSceneManager.HasTargetLoaded())
+            {
+                gamemode.OnLevelReady();
+            }
 
             OnGamemodeStarted?.InvokeSafe("executing OnGamemodeStarted");
 
@@ -214,44 +238,63 @@ public static class GamemodeManager
             FusionLogger.Log($"Gamemode {gamemode.Title} is no longer ready!");
 #endif
         }
+
+        gamemode.ClearMetadata();
     }
 
     private static void StartReadyTimer()
     {
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Cancel(NotificationTag);
+
+            Notifier.Send(new Notification()
             {
-                Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
+                Message = $"{ActiveGamemode.Title} is ready! Starting in {GetInitialStartTime()} seconds!",
                 Title = "Gamemode Ready",
+                Tag = NotificationTag,
                 Type = NotificationType.SUCCESS,
                 ShowPopup = true,
+                SaveToMenu = false,
                 PopupLength = 2f,
             });
         }
 
-        StartTimer = DefaultTime;
-
         _startTimerActive = true;
+
+        StartTimer = GetInitialStartTime();
     }
 
     private static void StopReadyTimer()
     {
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Cancel(NotificationTag);
+
+            Notifier.Send(new Notification()
             {
                 Message = $"{ActiveGamemode.Title} is no longer ready.",
                 Title = "Gamemode Unready",
+                Tag = NotificationTag,
                 Type = NotificationType.ERROR,
                 ShowPopup = true,
                 PopupLength = 2f,
             });
         }
 
-        StartTimer = DefaultTime;
-
         _startTimerActive = false;
+
+        StartTimer = GetInitialStartTime();
+    }
+
+    private static float GetInitialStartTime()
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return DefaultStartTime;
+        }
+
+        return LobbyInfoManager.LobbyInfo.TimeBetweenGamemodeRounds;
     }
 
     /// <summary>
@@ -260,7 +303,7 @@ public static class GamemodeManager
     /// <param name="gamemode">The Gamemode to select.</param>
     public static void SelectGamemode(Gamemode gamemode)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -278,7 +321,7 @@ public static class GamemodeManager
     /// </summary>
     public static void DeselectGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -306,7 +349,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StartGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -334,7 +377,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StopGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -352,7 +395,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ValidateReadyConditions()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -379,7 +422,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ReadyGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -397,7 +440,7 @@ public static class GamemodeManager
     /// </summary>
     public static void UnreadyGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -410,18 +453,14 @@ public static class GamemodeManager
         ActiveGamemode.Metadata.TrySetMetadata(GamemodeKeys.ReadyKey, bool.FalseString);
     }
 
-    internal static void Internal_OnFixedUpdate()
+    internal static void OnFixedUpdate()
     {
-        if (ActiveGamemode != null)
-            ActiveGamemode.FixedUpdate();
+        ActiveGamemode?.FixedUpdate();
     }
 
-    internal static void Internal_OnUpdate()
+    internal static void OnUpdate()
     {
-        if (ActiveGamemode != null)
-        {
-            ActiveGamemode.Update();
-        }
+        ActiveGamemode?.Update();
 
         // Countdown timer
         if (!FusionSceneManager.IsLoading() && !IsGamemodeStarted && IsGamemodeReady && _startTimerActive)
@@ -438,10 +477,9 @@ public static class GamemodeManager
         }
     }
 
-    internal static void Internal_OnLateUpdate()
+    internal static void OnLateUpdate()
     {
-        if (ActiveGamemode != null)
-            ActiveGamemode.LateUpdate();
+        ActiveGamemode?.LateUpdate();
     }
 
     /// <summary>

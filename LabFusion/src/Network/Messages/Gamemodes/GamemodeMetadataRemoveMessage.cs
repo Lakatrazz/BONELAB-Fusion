@@ -1,25 +1,20 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class GamemodeMetadataRemoveData : IFusionSerializable
+public class GamemodeMetadataRemoveData : INetSerializable
 {
     public string gamemodeBarcode;
     public string key;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(gamemodeBarcode);
-        writer.Write(key);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        gamemodeBarcode = reader.ReadString();
-        key = reader.ReadString();
+        serializer.SerializeValue(ref gamemodeBarcode);
+        serializer.SerializeValue(ref key);
     }
 
     public static GamemodeMetadataRemoveData Create(string gamemodeBarcode, string key)
@@ -32,19 +27,15 @@ public class GamemodeMetadataRemoveData : IFusionSerializable
     }
 }
 
-public class GamemodeMetadataRemoveMessage : FusionMessageHandler
+public class GamemodeMetadataRemoveMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataRemove;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<GamemodeMetadataRemoveData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<GamemodeMetadataRemoveData>();
 
         if (GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
         {

@@ -1,66 +1,42 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class DespawnRequestData : IFusionSerializable
+public class DespawnRequestData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+    public const int Size = NetworkEntityReference.Size + sizeof(bool);
 
-    public byte despawnerId;
-    public ushort entityId;
+    public NetworkEntityReference Entity;
 
-    public bool despawnEffect;
+    public bool DespawnEffect;
 
-    public void Serialize(FusionWriter writer)
+    public int? GetSize() => Size;
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(despawnerId);
-        writer.Write(entityId);
+        serializer.SerializeValue(ref Entity);
 
-        writer.Write(despawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        despawnerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-
-        despawnEffect = reader.ReadBoolean();
-    }
-
-    public static DespawnRequestData Create(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        return new DespawnRequestData()
-        {
-            despawnerId = despawnerId,
-            entityId = entityId,
-
-            despawnEffect = despawnEffect,
-        };
+        serializer.SerializeValue(ref DespawnEffect);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class DespawnRequestMessage : FusionMessageHandler
+public class DespawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we aren't the server, throw an error
-        if (!isServerHandled)
+        var data = received.ReadData<DespawnRequestData>();
+
+        var response = new DespawnResponseData()
         {
-            throw new ExpectedServerException();
-        }
+            Despawner = new(received.Sender.Value),
+            Entity = data.Entity,
+            DespawnEffect = data.DespawnEffect,
+        };
 
-        using var reader = FusionReader.Create(bytes);
-        var readData = reader.ReadFusionSerializable<DespawnRequestData>();
-
-        using var writer = FusionWriter.Create(DespawnResponseData.Size);
-        var data = DespawnResponseData.Create(readData.despawnerId, readData.entityId, readData.despawnEffect);
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(response, NativeMessageTag.DespawnResponse, CommonMessageRoutes.ReliableToClients);
     }
 }

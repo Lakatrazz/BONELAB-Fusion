@@ -1,42 +1,33 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class EntityPoseUpdateData : IFusionSerializable
+public class EntityPoseUpdateData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte) + sizeof(ushort);
     public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
 
-    public byte ownerId;
     public ushort entityId;
     public EntityPose pose;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(ownerId);
-        writer.Write(entityId);
-        writer.Write(pose);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        ownerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-        pose = reader.ReadFusionSerializable<EntityPose>();
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref pose);
     }
 
     public NetworkEntity GetEntity()
     {
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(entityId);
         return entity;
     }
 
-    public static EntityPoseUpdateData Create(byte ownerId, ushort entityId, EntityPose pose)
+    public static EntityPoseUpdateData Create(ushort entityId, EntityPose pose)
     {
         var data = new EntityPoseUpdateData
         {
-            ownerId = ownerId,
             entityId = entityId,
             pose = pose,
         };
@@ -46,27 +37,19 @@ public class EntityPoseUpdateData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class EntityPoseUpdateMessage : FusionMessageHandler
+public class EntityPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityPoseUpdate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityPoseUpdateData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Unreliable, message);
-        }
+        var data = received.ReadData<EntityPoseUpdateData>();
 
         // Find the network entity
         var entity = data.GetEntity();
 
         // Validate the entity
-        if (entity == null || !entity.IsRegistered || entity.OwnerId == null || entity.OwnerId != data.ownerId)
+        if (entity == null || !entity.IsRegistered || entity.OwnerID == null || entity.OwnerID != received.Sender)
         {
             return;
         }

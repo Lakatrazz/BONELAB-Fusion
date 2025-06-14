@@ -51,7 +51,7 @@ public static class HeadSFXPatches
         // If ragdoll on death is enabled, ragdoll the player
         if (LocalPlayer.RagdollOnDeath)
         {
-            rm.physicsRig.RagdollRig();
+            LocalRagdoll.ToggleRagdoll(true);
         }
 
         // Notify the server about the death beginning
@@ -121,12 +121,14 @@ public static class HealthPatches
     [HarmonyPatch(nameof(Health.Respawn))]
     public static void Respawn(Health __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!__instance._rigManager.IsLocalPlayer())
         {
             return;
         }
 
-        if (!__instance._rigManager.IsLocalPlayer())
+        LocalHealth.InvokeRespawn();
+
+        if (!NetworkInfo.HasServer)
         {
             return;
         }
@@ -138,11 +140,7 @@ public static class HealthPatches
         // Unragdoll after respawning
         if (LocalPlayer.RagdollOnDeath)
         {
-            PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-            __instance._rigManager.physicsRig.UnRagdollRig();
-
-            PhysicsRigPatches.ForceAllowUnragdoll = false;
+            LocalRagdoll.ToggleRagdoll(false);
 
             // Teleport so we don't fling
             LocalPlayer.TeleportToCheckpoint();
@@ -153,9 +151,10 @@ public static class HealthPatches
 [HarmonyPatch(typeof(Player_Health))]
 public static class PlayerHealthPatches
 {
-    [HarmonyPrefix]
+    // Teleport AFTER ApplyKillDamage so that the player teleports properly and not extremely far away
+    [HarmonyPostfix]
     [HarmonyPatch(nameof(Player_Health.ApplyKillDamage))]
-    public static void ApplyKillDamage(Player_Health __instance)
+    public static void ApplyKillDamagePostfix(Player_Health __instance)
     {
         if (!NetworkInfo.HasServer)
         {
@@ -189,7 +188,7 @@ public static class PlayerHealthPatches
             return;
         }
 
-        if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible)
+        if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible && !LocalHealth.MortalityOverride.HasValue)
         {
             LocalRagdoll.Knockout(LobbyInfoManager.LobbyInfo.KnockoutLength);
         }
@@ -201,11 +200,7 @@ public static class PlayerHealthPatches
     {
         if (__instance._rigManager.IsLocalPlayer() && LocalPlayer.RagdollOnDeath)
         {
-            PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-            __instance._rigManager.physicsRig.UnRagdollRig();
-
-            PhysicsRigPatches.ForceAllowUnragdoll = false;
+            LocalRagdoll.ToggleRagdoll(false);
         }
     }
 }

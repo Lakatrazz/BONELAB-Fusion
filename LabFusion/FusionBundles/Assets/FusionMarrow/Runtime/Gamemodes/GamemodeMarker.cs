@@ -11,6 +11,7 @@ using Il2CppInterop.Runtime.Attributes;
 #else
 using SLZ.Marrow;
 using SLZ.Marrow.Utilities;
+using SLZ.Marrow.Warehouse;
 #endif
 
 #if UNITY_EDITOR
@@ -76,15 +77,15 @@ namespace LabFusion.Marrow.Integration
         {
             List<GamemodeMarker> markers = new();
 
+            bool tagIsValid = tag != null;
+            string tagBarcode = tagIsValid ? tag.Barcode.ID : Barcode.EMPTY;
+
             foreach (var marker in Markers)
             {
-                if (tag == null)
-                {
-                    markers.Add(marker);
-                    continue;
-                }
+                bool markerHasTeam = marker.TeamBarcodes != null && marker.TeamBarcodes.Count > 0;
 
-                if (marker.TeamBarcodes == null || marker.TeamBarcodes.Count <= 0)
+                // If filtering for a null tag and the marker has no teams, the marker should be valid
+                if (!tagIsValid && !markerHasTeam) 
                 {
                     markers.Add(marker);
                     continue;
@@ -95,7 +96,7 @@ namespace LabFusion.Marrow.Integration
 
                 foreach (var otherBarcode in teamBarcodes)
                 {
-                    if (otherBarcode == tag.Barcode.ToString()) 
+                    if (otherBarcode == tagBarcode)
                     {
                         valid = true;
                         break;
@@ -112,6 +113,8 @@ namespace LabFusion.Marrow.Integration
             return markers;
         }
 #else
+        public TagList teamTags;
+
         public void AddTeam(string barcode)
         {
         }

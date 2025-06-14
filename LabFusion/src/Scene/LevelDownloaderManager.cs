@@ -7,7 +7,7 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Menu;
-using LabFusion.Patching;
+using LabFusion.Marrow.Patching;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
@@ -18,10 +18,10 @@ public static class LevelDownloaderManager
 {
     public struct LevelDownloadInfo
     {
-        public string levelBarcode;
-        public byte levelHost;
+        public string LevelBarcode;
+        public byte LevelHost;
 
-        public Action onDownloadSucceeded, onDownloadFailed, onDownloadCanceled;
+        public Action OnDownloadSucceeded, OnDownloadFailed, OnDownloadCanceled;
     }
 
     private static bool _initializedDownloadUI = false;
@@ -30,25 +30,22 @@ public static class LevelDownloaderManager
     private static string _downloadingBarcode = null;
     private static LevelDownloadInfo _downloadingInfo;
 
-    private static float _downloadTimer = 0f;
-    private static bool _loadedIntoWaitingScene = false;
-
     public static void OnInitializeMelon()
     {
         MultiplayerHooking.OnUpdate += OnUpdate;
 
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
     }
 
     private static void OnDisconnect()
     {
         // Incase the player gets stuck in purgatory, disable it on disconnect
-        CrossSceneManager.Purgatory = false;
+        NetworkSceneManager.Purgatory = false;
     }
 
     public static void DownloadLevel(LevelDownloadInfo info)
     {
-        _downloadingBarcode = info.levelBarcode;
+        _downloadingBarcode = info.LevelBarcode;
         _downloadingInfo = info;
 
         // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
@@ -57,8 +54,8 @@ public static class LevelDownloaderManager
         // Request the mod id from the host
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
-            target = info.levelHost,
-            barcode = info.levelBarcode,
+            target = info.LevelHost,
+            barcode = info.LevelBarcode,
             beginDownloadCallback = OnDownloadBegin,
             finishDownloadCallback = OnDownloadFinished,
             maxBytes = maxBytes,
@@ -70,44 +67,42 @@ public static class LevelDownloaderManager
     {
         _initializedDownloadUI = false;
         _downloadingLevel = true;
-        _downloadingFile = info.modFile;
+        _downloadingFile = info.ModFile;
 
-        _downloadTimer = 0f;
+        NetworkSceneManager.Purgatory = true;
 
-        _loadedIntoWaitingScene = false;
-
-        CrossSceneManager.Purgatory = true;
+        LoadWaitingScene();
     }
 
     private static void OnDownloadFinished(DownloadCallbackInfo info)
     {
-        CrossSceneManager.Purgatory = false;
+        NetworkSceneManager.Purgatory = false;
 
         _downloadingLevel = false;
         _downloadingFile = new ModIOFile(-1);
 
         if (info.result == ModResult.CANCELED)
         {
-            _downloadingInfo.onDownloadCanceled?.Invoke();
+            _downloadingInfo.OnDownloadCanceled?.Invoke();
             return;
         }
 
         if (info.result == ModResult.FAILED)
         {
-            _downloadingInfo.onDownloadFailed?.Invoke();
+            _downloadingInfo.OnDownloadFailed?.Invoke();
             return;
         }
 
-        _downloadingInfo.onDownloadSucceeded?.Invoke();
+        _downloadingInfo.OnDownloadSucceeded?.Invoke();
     }
 
     private static void LoadWaitingScene()
     {
-        SceneLoadPatch.IgnorePatches = true;
+        SceneStreamerPatches.IgnorePatches = true;
 
         SceneStreamer.Load(new Barcode(FusionLevelReferences.LoadDownloadingReference.Barcode));
 
-        SceneLoadPatch.IgnorePatches = false;
+        SceneStreamerPatches.IgnorePatches = false;
     }
 
     private static void OnUpdate()
@@ -118,16 +113,6 @@ public static class LevelDownloaderManager
         }
 
         float progress = ModIODownloader.CurrentTransaction.Progress;
-
-        // Tick timer
-        _downloadTimer += TimeUtilities.DeltaTime;
-
-        // If it's taken 5 seconds and we aren't halfway, then load into the waiting scene
-        if (!_loadedIntoWaitingScene && _downloadTimer >= 5f && progress < 0.5f)
-        {
-            LoadWaitingScene();
-            _loadedIntoWaitingScene = true;
-        }
 
         var ui = LevelDownloadUI.Instance;
 
@@ -162,9 +147,9 @@ public static class LevelDownloaderManager
 
         ui.LevelIcon.texture = levelIcon;
 
-        if (_downloadingFile.ModId != -1)
+        if (_downloadingFile.ModID != -1)
         {
-            ModIOThumbnailDownloader.GetThumbnail(_downloadingFile.ModId, (texture) =>
+            ModIOThumbnailDownloader.GetThumbnail(_downloadingFile.ModID, (texture) =>
             {
                 ui.LevelIcon.texture = texture;
             });

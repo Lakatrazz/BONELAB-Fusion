@@ -1,61 +1,49 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+﻿using LabFusion.Network.Serialization;
+
 using LabFusion.Player;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class DisconnectMessageData : INetSerializable
 {
-    public class DisconnectMessageData : IFusionSerializable
+    public ulong longId;
+    public string reason;
+
+    public static DisconnectMessageData Create(ulong longId, string reason = "")
     {
-        public ulong longId;
-        public string reason;
-
-        public static DisconnectMessageData Create(ulong longId, string reason = "")
+        return new DisconnectMessageData()
         {
-            return new DisconnectMessageData()
-            {
-                longId = longId,
-                reason = reason,
-            };
-        }
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(longId);
-            writer.Write(reason);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            longId = reader.ReadUInt64();
-            reason = reader.ReadString();
-        }
+            longId = longId,
+            reason = reason,
+        };
     }
 
-    public class DisconnectMessage : FusionMessageHandler
+    public void Serialize(INetSerializer serializer)
     {
-        public override byte Tag => NativeMessageTag.Disconnect;
+        serializer.SerializeValue(ref longId);
+        serializer.SerializeValue(ref reason);
+    }
+}
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+public class DisconnectMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.Disconnect;
+
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<DisconnectMessageData>();
+
+        // If this is our id, disconnect ourselves
+        if (data.longId == PlayerIDManager.LocalPlatformID)
         {
-            // Make sure this message isn't handled by the server
-            if (!isServerHandled)
-            {
-                using var reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<DisconnectMessageData>();
-
-                // If this is our id, disconnect ourselves
-                if (data.longId == PlayerIdManager.LocalLongId)
-                {
-                    NetworkHelper.Disconnect(data.reason);
-                }
-                // Otherwise, disconnect the other person in the lobby
-                else
-                {
-                    InternalServerHelpers.OnUserLeave(data.longId);
-                }
-            }
-            else
-                throw new ExpectedClientException();
+            NetworkHelper.Disconnect(data.reason);
+        }
+        // Otherwise, disconnect the other person in the lobby
+        else
+        {
+            InternalServerHelpers.OnPlayerLeft(data.longId);
         }
     }
 }

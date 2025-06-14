@@ -5,68 +5,38 @@ namespace LabFusion.Entities;
 public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponentExtender where TComponent : Component
 {
     private NetworkEntity _networkEntity = null;
+
+    private TComponent[] _registeredComponents = null;
+    private List<TComponent> _dynamicComponents = new();
     private TComponent[] _components = null;
 
     public NetworkEntity NetworkEntity => _networkEntity;
 
     public TComponent[] Components => _components;
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject parent)
+    public bool TryRegister(NetworkEntity entity, GameObject parent)
     {
-        // Check if the parent even has this component first
-        if (parent.GetComponentInChildren<TComponent>(true) == null)
-        {
-            return false;
-        }
-
-        // Get all valid components from parents
         TComponent[] components = parent.GetComponentsInChildren<TComponent>(true);
 
-        Register(networkEntity, components);
-        return true;
-    }
-
-    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
-    {
-        // Check if the parent even has this component first
-        bool hasComponent = false;
-
-        foreach (var parent in parents)
-        {
-            if (parent.GetComponentInChildren<TComponent>(true) != null)
-            {
-                hasComponent = true;
-                break;
-            }
-        }
-
-        if (!hasComponent)
+        if (components.Length <= 0)
         {
             return false;
         }
 
-        // Get all valid components from parents
-        List<TComponent> components = new();
-
-        foreach (var parent in parents)
-        {
-            components.AddRange(parent.GetComponentsInChildren<TComponent>(true));
-        }
-
-        Register(networkEntity, components.ToArray());
+        Register(entity, components);
         return true;
     }
 
-    public void Register(NetworkEntity networkEntity, TComponent[] components)
+    public void Register(NetworkEntity entity, TComponent[] components)
     {
-        _networkEntity = networkEntity;
-        _components = components;
+        _networkEntity = entity;
+        _registeredComponents = components;
 
-        networkEntity.ConnectExtender(this);
+        entity.ConnectExtender(this);
 
-        networkEntity.OnEntityUnregistered += Unregister;
+        entity.OnEntityUnregistered += Unregister;
 
-        OnRegister(NetworkEntity, Components);
+        ApplyComponents();
     }
 
     public void Unregister()
@@ -77,21 +47,54 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
         }
     }
 
-    public void Unregister(NetworkEntity networkEntity)
+    public void Unregister(NetworkEntity entity)
     {
         if (_networkEntity == null)
         {
             return;
         }
 
-        networkEntity.OnEntityUnregistered -= Unregister;
+        entity.OnEntityUnregistered -= Unregister;
 
-        networkEntity.DisconnectExtender(this);
+        entity.DisconnectExtender(this);
 
         OnUnregister(NetworkEntity, Components);
 
         _networkEntity = null;
+        _registeredComponents = null;
         _components = null;
+        _dynamicComponents = null;
+    }
+
+    public void RegisterDynamics(NetworkEntity entity, GameObject parent)
+    {
+        var dynamicComponents = parent.GetComponentsInChildren<TComponent>(true);
+
+        if (dynamicComponents.Length <= 0)
+        {
+            return;
+        }
+
+        _dynamicComponents.AddRange(dynamicComponents);
+
+        ApplyComponents();
+    }
+
+    public void UnregisterDynamics()
+    {
+        if (_dynamicComponents == null)
+        {
+            return;
+        }
+
+        if (_dynamicComponents.Count <= 0)
+        {
+            return;
+        }
+
+        _dynamicComponents.Clear();
+
+        ApplyComponents();
     }
 
     public ushort? GetIndex(TComponent component)
@@ -115,6 +118,32 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
         return null;
     }
 
-    protected abstract void OnRegister(NetworkEntity networkEntity, TComponent[] components);
-    protected abstract void OnUnregister(NetworkEntity networkEntity, TComponent[] components);
+    private void ApplyComponents()
+    {
+        if (Components != null)
+        {
+            OnUnregister(NetworkEntity, Components);
+            _components = null;
+        }
+
+        int registeredCount = _registeredComponents.Length;
+        int dynamicCount = _dynamicComponents.Count;
+
+        _components = new TComponent[registeredCount + dynamicCount];
+
+        for (var i = 0; i < registeredCount; i++)
+        {
+            _components[i] = _registeredComponents[i];
+        }
+
+        for (var i = 0; i < dynamicCount; i++)
+        {
+            _components[i + registeredCount] = _dynamicComponents[i];
+        }
+
+        OnRegister(NetworkEntity, Components);
+    }
+
+    protected abstract void OnRegister(NetworkEntity entity, TComponent[] components);
+    protected abstract void OnUnregister(NetworkEntity entity, TComponent[] components);
 }

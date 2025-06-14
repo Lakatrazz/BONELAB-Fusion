@@ -3,9 +3,9 @@ using UnityEngine.Rendering.Universal;
 
 using LabFusion.Utilities;
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Entities;
+using LabFusion.MonoBehaviours;
 
 using Il2Cpp;
 
@@ -89,13 +89,16 @@ public static class PlayerRepUtilities
         // However, this means methods on that object will be called, even if we want it to have never existed in the first place.
         // Using regular Destroy may cause weird effects!
 
+        // Add an AntiHasher to prevent this rig's MarrowEntity from being hashed, which would cause strange syncing issues
+        rigManager.gameObject.AddComponent<AntiHasher>();
+
         // Get the controller rig
         var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
 
         // Set the bone tag to the fusion player tag instead of the default player tag
         var entity = rigManager.physicsRig.marrowEntity;
 
-        entity.Tags.Tags.RemoveAll((Il2CppSystem.Predicate<BoneTagReference>)((tag) => tag.Barcode == BONELABBoneTagReferences.PlayerReference.Barcode));
+        entity.Tags.Tags.RemoveAll((Il2CppSystem.Predicate<BoneTagReference>)((tag) => tag.Barcode == MarrowBoneTagReferences.PlayerReference.Barcode));
         
         entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
 
@@ -190,7 +193,7 @@ public static class PlayerRepUtilities
         PersistentAssetCreator.SetupImpactProperties(rigManager);
 
         // Spatialize wind audio
-        DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
+        DelayUtilities.InvokeDelayed(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
     }
 
     private static void Internal_ClearHaptor(Haptor haptor)

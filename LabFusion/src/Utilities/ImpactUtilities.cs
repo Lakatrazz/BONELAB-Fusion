@@ -2,7 +2,7 @@
 
 using LabFusion.Entities;
 using LabFusion.Senders;
-using LabFusion.Syncables;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 
@@ -42,13 +42,7 @@ public static class ImpactUtilities
         // Create a new network entity
         else
         {
-            // Check the blacklist
-            if (!go.IsSyncWhitelisted())
-            {
-                return;
-            }
-
-            DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
+            DelayUtilities.InvokeDelayed(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
         }
     }
 }

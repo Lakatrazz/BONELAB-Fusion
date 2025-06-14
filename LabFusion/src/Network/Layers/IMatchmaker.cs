@@ -4,13 +4,13 @@ public interface IMatchmaker
 {
     public struct MatchmakerCallbackInfo
     {
-        public LobbyInfo[] lobbies;
+        public LobbyInfo[] Lobbies;
     }
 
     public struct LobbyInfo
     {
-        public INetworkLobby lobby;
-        public LobbyMetadataInfo metadata;
+        public INetworkLobby Lobby;
+        public LobbyMetadataInfo Metadata;
     }
 
     void RequestLobbies(Action<MatchmakerCallbackInfo> callback);

@@ -13,7 +13,7 @@ public class MusicPlaylist
     private int _currentTrack = -1;
     public int CurrentTrack => _currentTrack;
 
-    private float _volume = SafeAudio3dPlayer.MusicVolume;
+    private float _volume = LocalAudioPlayer.MusicVolume;
     public float Volume
     {
         get { return _volume; }
@@ -26,9 +26,12 @@ public class MusicPlaylist
     private bool _isActive = false;
     public bool IsActive => _isActive;
 
+    private bool _loadingTrack = false;
+
     public void StartPlaylist()
     {
         _isActive = true;
+        _loadingTrack = false;
 
         NextTrack();
     }
@@ -38,20 +41,30 @@ public class MusicPlaylist
         StopMusic();
 
         _isActive = false;
+        _loadingTrack = false;
     }
 
     private void PlayMusic()
     {
+        _loadingTrack = true;
+
         var currentTrack = GetCurrentTrack();
 
         currentTrack.LoadClip((clip) =>
         {
-            Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
+            _loadingTrack = false;
+
+            if (IsActive)
+            {
+                Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
+            }
         });
     }
 
     private void StopMusic()
     {
+        _loadingTrack = false;
+
         var audio2dManager = Audio2dPlugin.Audio2dManager;
 
         bool noOriginalMusic = audio2dManager._overridenMusicClip == null;
@@ -131,6 +144,12 @@ public class MusicPlaylist
     {
         // Make sure we're currently playing tracks
         if (!IsActive)
+        {
+            return;
+        }
+
+        // Wait for the current track to finish loading
+        if (_loadingTrack)
         {
             return;
         }

@@ -2,9 +2,8 @@
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
-using LabFusion.Data;
 using LabFusion.Extensions;
-
+using LabFusion.Utilities;
 using MelonLoader;
 
 using System.Collections;
@@ -15,13 +14,14 @@ public class RigGrabber
 {
     public class GrabberData
     {
-        public Grip grip;
-        public SimpleTransform? targetInBase = null;
+        public Grip Grip;
+        public SimpleTransform? TargetInBase = null;
     }
 
-    private RigRefs _references = null;
+    private readonly RigRefs _references = null;
 
     private bool _isCulled = false;
+    public bool IsCulled => _isCulled;
 
     private Dictionary<Handedness, GrabberData> _lastGrabs = new();
 
@@ -60,11 +60,11 @@ public class RigGrabber
     {
         _lastGrabs[handedness] = new GrabberData()
         {
-            grip = grip,
-            targetInBase = targetInBase
+            Grip = grip,
+            TargetInBase = targetInBase
         };
 
-        if (_isCulled)
+        if (IsCulled)
         {
             return;
         }
@@ -83,7 +83,9 @@ public class RigGrabber
 
             // Check if the grip can be interacted with
             if (grip.IsInteractionDisabled || (grip.HasHost && grip.Host.IsInteractionDisabled))
+            {
                 return;
+            }
 
             // Attach the hand
             grip.TryAttach(hand, false, targetInBase);
@@ -116,12 +118,47 @@ public class RigGrabber
             return;
         }
 
-        if (data.grip == null)
+        if (data.Grip == null)
         {
             _lastGrabs.Remove(handedness);
             return;
         }
 
-        Attach(handedness, data.grip, data.targetInBase);
+        Attach(handedness, data.Grip, data.TargetInBase);
+    }
+
+    public void CheckDetachAndReattach(Hand hand, Grip grip)
+    {
+        DelayUtilities.InvokeNextFrame(OnNextFrame);
+
+        void OnNextFrame()
+        {
+            if (!ValidateDetach(hand, grip) && hand.AttachedReceiver != grip)
+            {
+                UncullGrip(hand.handedness);
+            }
+        }
+    }
+
+    private bool ValidateDetach(Hand hand, Grip grip)
+    {
+        if (IsCulled)
+        {
+            return true;
+        }
+
+        var handedness = hand.handedness;
+
+        if (!_lastGrabs.TryGetValue(handedness, out var existingGrab))
+        {
+            return true;
+        }
+
+        if (existingGrab.Grip == grip)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

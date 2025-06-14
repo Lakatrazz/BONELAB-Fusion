@@ -78,7 +78,7 @@ public class TeamLogoManager
     /// </summary>
     public void SetDirty()
     {
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (!NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
             {
@@ -111,12 +111,12 @@ public class TeamLogoManager
         }
     }
 
-    private void OnAssignedToTeam(PlayerId player, Team team)
+    private void OnAssignedToTeam(PlayerID player, Team team)
     {
         SetDirty();
     }
 
-    private void OnRemovedFromTeam(PlayerId player, Team team)
+    private void OnRemovedFromTeam(PlayerID player, Team team)
     {
         SetDirty();
     }

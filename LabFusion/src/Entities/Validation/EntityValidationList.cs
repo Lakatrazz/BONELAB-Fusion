@@ -22,7 +22,7 @@ public class EntityValidationList
         _validators.Remove(validator);
     }
 
-    public bool Validate(NetworkEntity entity, PlayerId player)
+    public bool Validate(NetworkEntity entity, PlayerID player)
     {
         foreach (var validator in Validators) 
         {

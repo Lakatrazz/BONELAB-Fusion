@@ -1,7 +1,8 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.UI.Popups;
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -22,6 +23,8 @@ public static class MuteUIHelper
     private static Renderer _indicatorRenderer = null;
 
     private static Camera _headsetCamera = null;
+
+    public const string NotificationTag = "Mute";
 
     public static void OnInitializeMelon()
     {
@@ -117,11 +120,14 @@ public static class MuteUIHelper
             mutedPref.Value = !mutedPref.Value;
             popUpMenu.Deactivate();
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Cancel(NotificationTag);
+
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 SaveToMenu = false,
                 Message = mutedPref.Value ? "Muted" : "Unmuted",
+                Tag = NotificationTag,
             });
         }));
 
@@ -131,15 +137,11 @@ public static class MuteUIHelper
         var openControllerRig = manager.ControllerRig.TryCast<OpenControllerRig>();
         Transform headset = openControllerRig.headset;
 
-        var muteSpawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.MuteIndicatorReference,
-            policyData = null,
-        };
+        var muteSpawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.MuteIndicatorReference);
 
-        AssetSpawner.Register(muteSpawnable);
+        LocalAssetSpawner.Register(muteSpawnable);
 
-        SafeAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             // Store references to the spawned mute icon
             _indicatorPoolee = poolee;

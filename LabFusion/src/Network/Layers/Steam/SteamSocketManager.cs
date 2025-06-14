@@ -40,10 +40,10 @@ public class SteamSocketManager : SocketManager
         ConnectedSteamIds.Remove(pair.Key);
 
         // Make sure the user hasn't previously disconnected
-        if (PlayerIdManager.HasPlayerId(longId))
+        if (PlayerIDManager.HasPlayerID(longId))
         {
             // Update the mod so it knows this user has left
-            InternalServerHelpers.OnUserLeave(pair.Key);
+            InternalServerHelpers.OnPlayerLeft(pair.Key);
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(longId);

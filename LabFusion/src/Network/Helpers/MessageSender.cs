@@ -13,16 +13,16 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+    public static void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
         }
     }
 
@@ -32,18 +32,18 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+    public static void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
             return;
         }
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
         }
     }
 
@@ -52,28 +52,34 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendToServer(NetworkChannel channel, FusionMessage message)
+    public static void SendToServer(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
             return;
         }
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            if (!NetworkInfo.IsServer)
+            if (!NetworkInfo.IsHost)
             {
-                NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
+                NetworkLayerManager.Layer.SendToServer(channel, message);
             }
             else
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = true,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -84,25 +90,31 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
+            NetworkLayerManager.Layer.BroadcastMessage(channel, message);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -114,25 +126,31 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
+            NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!ignoreHost && userId != PlayerIDManager.LocalSmallID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -144,25 +162,31 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
+            NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!ignoreHost && userId != PlayerIDManager.LocalPlatformID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -173,12 +197,12 @@ public static class MessageSender
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastMessageExceptSelf(NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             BroadcastMessageExcept(0, channel, message);
         }

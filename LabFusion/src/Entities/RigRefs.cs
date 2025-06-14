@@ -29,6 +29,7 @@ public class RigRefs
     public TriggerRefProxy Proxy { get; private set; }
 
     public Transform Head { get; private set; }
+    public Transform Mouth { get; private set; }
 
     public Transform Headset { get; private set; }
 
@@ -79,7 +80,7 @@ public class RigRefs
             grip.DisableInteraction();
         }
 
-        DelayUtilities.Delay(Internal_DelayedEnableInteraction, 300);
+        DelayUtilities.InvokeDelayed(Internal_DelayedEnableInteraction, 300);
     }
 
     private void Internal_DelayedEnableInteraction()
@@ -119,6 +120,7 @@ public class RigRefs
         Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
         Head = RigManager.physicsRig.m_head;
+        Mouth = RigManager.physicsRig.headSfx.mouthSrc.transform;
 
         var openControllerRig = ControllerRig.TryCast<OpenControllerRig>();
 

@@ -7,7 +7,9 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Representation;
+using LabFusion.Safety;
 using LabFusion.Scene;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -29,6 +31,7 @@ public static class MenuLocation
     public static BoolElement KnockoutElement { get; private set; }
     public static IntElement KnockoutLengthElement { get; private set; }
     public static BoolElement PlayerConstrainingElement { get; private set; }
+    public static FloatElement MaxAvatarHeightElement { get; private set; }
 
     public static EnumElement DevToolsElement { get; private set; }
     public static EnumElement ConstrainerElement { get; private set; }
@@ -39,9 +42,9 @@ public static class MenuLocation
 
     public static void OnInitializeMelon()
     {
-        MultiplayerHooking.OnStartServer += OnConnect;
-        MultiplayerHooking.OnJoinServer += OnConnect;
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnStartedServer += OnConnect;
+        MultiplayerHooking.OnJoinedServer += OnConnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         LocalPlayer.OnUsernameChanged += OnUsernameChanged;
@@ -74,7 +77,7 @@ public static class MenuLocation
             .WithTitle("Create Server")
             .Do(NetworkHelper.StartServer);
 
-        UpdateLevelIcon(element);
+        UpdateLobbyIcons(element);
 
         OnServerSettingsChanged();
     }
@@ -86,14 +89,15 @@ public static class MenuLocation
             .WithTitle("Disconnect")
             .Do(() => { NetworkHelper.Disconnect(); });
 
-        UpdateLevelIcon(element);
+        UpdateLobbyIcons(element);
 
         OnServerSettingsChanged();
     }
 
-    private static void UpdateLevelIcon(LobbyElement element)
+    private static void UpdateLobbyIcons(LobbyElement element)
     {
-        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModId(FusionSceneManager.Level.Pallet));
+        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModID(FusionSceneManager.Level.Pallet));
+        ElementIconHelper.SetGamemodeIcon(element, GamemodeManager.ActiveGamemode?.Title);
     }
 
     private static void OnServerSettingsChanged()
@@ -132,7 +136,7 @@ public static class MenuLocation
 
     private static void ApplyLobbyInfoToLobby(LobbyElement element, LobbyInfo info)
     {
-        bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
+        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -142,7 +146,7 @@ public static class MenuLocation
         element.ServerVersionElement
             .WithTitle($"v{FusionMod.Version}");
 
-        var playerCount = PlayerIdManager.PlayerCount;
+        var playerCount = PlayerIDManager.PlayerCount;
 
         element.PlayersElement
             .Cleared()
@@ -169,7 +173,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle(LocalPlayer.Username);
+            .WithTitle(info.LobbyHostName);
 
         element.DescriptionElement
             .Cleared()
@@ -222,11 +226,23 @@ public static class MenuLocation
             .WithTitle("Knockout")
             .WithValue(info.Knockout);
 
+        KnockoutLengthElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Knockout Length")
+            .WithValue(info.KnockoutLength);
+
         PlayerConstrainingElement
             .Cleared()
             .WithInteractability(ownsSettings)
             .WithTitle("Player Constraining")
             .WithValue(info.PlayerConstraining);
+
+        MaxAvatarHeightElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Max Avatar Height")
+            .WithValue(info.MaxAvatarHeight);
 
         // Permissions
         DevToolsElement
@@ -281,7 +297,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+        element.CodeGrid.SetActive(NetworkInfo.IsHost);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -289,7 +305,7 @@ public static class MenuLocation
 
     private static void ApplyServerSettingsToLobby(LobbyElement element)
     {
-        bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
+        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -299,7 +315,7 @@ public static class MenuLocation
         element.ServerVersionElement
             .WithTitle($"v{FusionMod.Version}");
 
-        var playerCount = PlayerIdManager.PlayerCount;
+        var playerCount = PlayerIDManager.PlayerCount;
 
         element.PlayersElement
             .Cleared()
@@ -383,8 +399,8 @@ public static class MenuLocation
             .Cleared()
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.KnockoutLength)
-            .WithLimits(10, 300)
-            .WithIncrement(10)
+            .WithLimits(5, 300)
+            .WithIncrement(5)
             .WithTitle("Knockout Length");
 
         PlayerConstrainingElement
@@ -392,6 +408,14 @@ public static class MenuLocation
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.PlayerConstraining)
             .WithTitle("Player Constraining");
+
+        MaxAvatarHeightElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.MaxAvatarHeight)
+            .WithLimits(2f, 30f)
+            .WithIncrement(1f)
+            .WithTitle("Max Avatar Height");
 
         // Permissions
         DevToolsElement
@@ -452,7 +476,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+        element.CodeGrid.SetActive(NetworkInfo.IsHost);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -466,7 +490,7 @@ public static class MenuLocation
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             MetadataHelper.TryGetDisplayName(player, out var name);
 
@@ -485,13 +509,8 @@ public static class MenuLocation
             };
 
             // Apply icon
-            var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
-            var modId = -1;
-
-            if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
-            {
-                modId = rawModId;
-            }
+            var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+            var modId = player.Metadata.AvatarModID.GetValue();
 
             if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
             {
@@ -534,7 +553,7 @@ public static class MenuLocation
         }
     }
 
-    private static void OnShowPlayer(PlayerId player)
+    private static void OnShowPlayer(PlayerID player)
     {
         if (!player.IsValid)
         {
@@ -592,37 +611,32 @@ public static class MenuLocation
         element.PermissionsElement.gameObject.SetActive(false);
     }
 
-    private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
+    private static void ApplyPlayerToElement(PlayerElement element, PlayerID player)
     {
         // Apply name and description
-        var username = player.Metadata.GetMetadata(MetadataHelper.UsernameKey);
+        var username = TextFilter.Filter(player.Metadata.Username.GetValue());
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = player.Metadata.GetMetadata(MetadataHelper.NicknameKey);
+        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.Nickname.GetValue());
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = player.Metadata.GetMetadata(MetadataHelper.DescriptionKey);
+        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.Description.GetValue());
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         // Apply icon
-        var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
-        var modId = -1;
-
-        if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
-        {
-            modId = rawModId;
-        }
+        var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+        var modId = player.Metadata.AvatarModID.GetValue();
 
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);
 
         // Get permissions
-        FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
+        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID, out var selfLevel, out _);
 
-        FusionPermissions.FetchPermissionLevel(player.LongId, out var level, out Color color);
+        FusionPermissions.FetchPermissionLevel(player.PlatformID, out var level, out Color color);
 
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
@@ -638,6 +652,8 @@ public static class MenuLocation
                 .WithTitle("Volume")
                 .WithIncrement(0.1f)
                 .WithLimits(0f, 2f);
+
+            volumeElement.gameObject.SetActive(true);
 
             volumeElement.Value = ContactsList.GetContact(player).volume;
             volumeElement.OnValueChanged += (v) =>
@@ -659,58 +675,88 @@ public static class MenuLocation
 
         permissionsElement.OnValueChanged += (v) =>
         {
-            FusionPermissions.TrySetPermission(player.LongId, username, (PermissionLevel)v);
+            FusionPermissions.TrySetPermission(player.PlatformID, username, (PermissionLevel)v);
         };
 
-        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsServer;
+        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsHost;
+
+        // Platform ID element
+        var platformIDElement = element.PlatformIDElement
+            .Cleared()
+            .WithTitle("Platform ID")
+            .WithColor(Color.red)
+            .WithInteractability(false);
+
+        platformIDElement.Value = player.PlatformID.ToString();
 
         // Actions
         element.ActionsElement.Clear();
         var actionsPage = element.ActionsElement.AddPage();
 
-        if (!player.IsMe && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
+        AddModerationGroup(activeLobbyInfo, actionsPage, player, selfLevel, level);
+    }
+
+    private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerID player, PermissionLevel selfLevel, PermissionLevel level)
+    {
+        if (player.IsMe)
         {
-            var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
+            return;
+        }
 
-            // Kick button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Kicking))
-            {
-                moderationGroup.AddElement<FunctionElement>("Kick")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
-                    });
-            }
+        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || NetworkInfo.IsHost;
+        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || NetworkInfo.IsHost;
 
-            // Ban button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Banning))
-            {
-                moderationGroup.AddElement<FunctionElement>("Ban")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
-                    });
-            }
+        if (!sufficientPerms && !higherPerms)
+        {
+            return;
+        }
 
-            // Teleport buttons
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
-            {
-                moderationGroup.AddElement<FunctionElement>("Teleport To Them")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
-                    });
+        GroupElement moderationGroup = null;
 
-                moderationGroup.AddElement<FunctionElement>("Teleport To Us")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, player);
-                    });
-            }
+        // Kick button
+        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Kicking))
+        {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
+            moderationGroup.AddElement<FunctionElement>("Kick")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
+                });
+        }
+
+        // Ban button
+        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Banning))
+        {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
+            moderationGroup.AddElement<FunctionElement>("Ban")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
+                });
+        }
+
+        // Teleport buttons
+        if (FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Teleportation))
+        {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
+            moderationGroup.AddElement<FunctionElement>("Teleport To Them")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
+                });
+
+            moderationGroup.AddElement<FunctionElement>("Teleport To Me")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, player);
+                });
         }
     }
 
@@ -765,6 +811,8 @@ public static class MenuLocation
 
         PlayerConstrainingElement = generalGroup.AddElement<BoolElement>("Player Constraining");
 
+        MaxAvatarHeightElement = generalGroup.AddElement<FloatElement>("Max Avatar Height");
+
         // Permissions
         var permissionGroup = element.AddElement<GroupElement>("Permissions");
 
@@ -781,9 +829,23 @@ public static class MenuLocation
         var cleanupGroup = element.AddElement<GroupElement>("Cleanup");
 
         var despawnAllElement = cleanupGroup.AddElement<FunctionElement>("Despawn All")
+            .Do(() => PooleeUtilities.DespawnAll());
+        var playersGroup = element.AddElement<GroupElement>("Players");
+
+        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID, out var selfLevel, out _);
+        var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
+
+        var teleportAllElement = playersGroup.AddElement<FunctionElement>("Teleport All")
             .Do(() =>
             {
-                PooleeUtilities.DespawnAll();
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
+                {
+                    foreach (var playerId in PlayerIDManager.PlayerIDs)
+                    {
+                        if (playerId != PlayerIDManager.LocalSmallID)
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId);
+                    }
+                }
             });
     }
 }

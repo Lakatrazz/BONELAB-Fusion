@@ -1,47 +1,43 @@
 ﻿using LabFusion.Network;
 using LabFusion.Player;
 
-namespace LabFusion.Senders
+namespace LabFusion.Senders;
+
+public static class PointItemSender
 {
-    public static class PointItemSender
+    public static void SendPointItemEquip(string barcode, bool isEquipped)
     {
-        public static void SendPointItemEquip(string barcode, bool isEquipped)
+        if (!NetworkInfo.HasServer)
         {
-            if (!NetworkInfo.HasServer)
-                return;
-
-            using var writer = FusionWriter.Create();
-            var data = PointItemEquipStateData.Create(PlayerIdManager.LocalSmallId, barcode, isEquipped);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.PointItemEquipState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            return;
         }
 
-        public static void SendPointItemTrigger(string barcode)
+        var data = PointItemEquipStateData.Create(PlayerIDManager.LocalSmallID, barcode, isEquipped);
+
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemEquipState, CommonMessageRoutes.ReliableToOtherClients);
+    }
+
+    public static void SendPointItemTrigger(string barcode)
+    {
+        if (!NetworkInfo.HasServer)
         {
-            if (!NetworkInfo.HasServer)
-                return;
-
-            using var writer = FusionWriter.Create();
-            var data = PointItemTriggerData.Create(PlayerIdManager.LocalSmallId, barcode);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.PointItemTrigger, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            return;
         }
 
-        public static void SendPointItemTrigger(string barcode, string value)
+        var data = PointItemTriggerData.Create(PlayerIDManager.LocalSmallID, barcode);
+
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTrigger, CommonMessageRoutes.ReliableToOtherClients);
+    }
+
+    public static void SendPointItemTrigger(string barcode, string value)
+    {
+        if (!NetworkInfo.HasServer)
         {
-            if (!NetworkInfo.HasServer)
-                return;
-
-            using var writer = FusionWriter.Create(PointItemTriggerValueData.GetSize(barcode, value));
-            var data = PointItemTriggerValueData.Create(PlayerIdManager.LocalSmallId, barcode, value);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.PointItemTriggerValue, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            return;
         }
+
+        var data = PointItemTriggerValueData.Create(PlayerIDManager.LocalSmallID, barcode, value);
+
+        MessageRelay.RelayNative(data, NativeMessageTag.PointItemTriggerValue, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

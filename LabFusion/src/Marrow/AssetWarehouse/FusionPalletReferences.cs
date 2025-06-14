@@ -15,7 +15,7 @@ public static class FusionPalletReferences
 
     public static readonly PalletReference FusionCosmeticsReference = new("Lakatrazz.FusionCosmetics");
 
-    public static readonly Version MinimumContentVersion = new(1, 2, 0);
+    public static readonly Version MinimumContentVersion = new(1, 3, 0);
 
     public static PalletStatus ValidatePallet(PalletReference palletReference, Version minimumVersion)
     {

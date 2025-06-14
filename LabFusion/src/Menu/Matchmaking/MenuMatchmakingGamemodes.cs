@@ -2,7 +2,7 @@
 using LabFusion.Menu.Gamemodes;
 using LabFusion.Network;
 using LabFusion.SDK.Gamemodes;
-
+using LabFusion.SDK.Lobbies;
 using UnityEngine;
 
 namespace LabFusion.Menu;
@@ -15,6 +15,8 @@ public static class MenuMatchmakingGamemodes
 
     public static FunctionElement FindServerElement { get; private set; }
     public static FunctionElement CreateServerElement { get; private set; }
+
+    public static LabelElement DescriptionLabel { get; private set; }
 
     public static LabelElement SearchingLabel { get; private set; }
 
@@ -52,7 +54,7 @@ public static class MenuMatchmakingGamemodes
 
         SearchingLabel.Title = searchingText;
 
-       var matchmaker = NetworkInfo.CurrentNetworkLayer.Matchmaker;
+       var matchmaker = NetworkLayerManager.Layer.Matchmaker;
 
         if (matchmaker != null)
         {
@@ -73,8 +75,9 @@ public static class MenuMatchmakingGamemodes
             gamemodeBarcode = SelectedGamemode.Barcode;
         }
 
-        var gamemodeLobbies = info.lobbies
-            .Where((lobby) => lobby.metadata.LobbyInfo.GamemodeBarcode == gamemodeBarcode);
+        var gamemodeLobbies = info.Lobbies
+            .Where(l => l.Metadata.LobbyInfo.GamemodeBarcode == gamemodeBarcode)
+            .Where(l => LobbyFilterManager.CheckPersistentFilters(l.Lobby, l.Metadata));
 
         bool foundLobbies = MenuMatchmaking.LoadLobbiesIntoBrowser(gamemodeLobbies);
 
@@ -115,6 +118,9 @@ public static class MenuMatchmakingGamemodes
             .WithTitle("Create Server")
             .Do(CreateGamemodeServer);
 
+        DescriptionLabel = queryLayout.Find("label_Description").GetComponent<LabelElement>()
+            .WithTitle("No description...");
+
         // Searching page
         var searchingPage = gamemodesTransform.Find("page_Searching");
 
@@ -140,7 +146,15 @@ public static class MenuMatchmakingGamemodes
     {
         bool visible = SelectedGamemode != null;
         FindServerElement.gameObject.SetActive(visible);
-        CreateServerElement.gameObject.SetActive(visible);
+        CreateServerElement.gameObject.SetActive(visible && !NetworkInfo.IsHost);
+        DescriptionLabel.gameObject.SetActive(visible);
+
+        if (visible)
+        {
+            string description = !string.IsNullOrWhiteSpace(SelectedGamemode.Description) ? SelectedGamemode.Description : "No description...";
+
+            DescriptionLabel.Title = description;
+        }
     }
 
     public static void RefreshGamemodes()

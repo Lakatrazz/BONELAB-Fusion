@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -9,45 +10,45 @@ public static class ConnectionSender
 {
     public static void SendDisconnectToAll(string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
-            foreach (var id in PlayerIdManager.PlayerIds)
+            foreach (var id in PlayerIDManager.PlayerIDs)
             {
                 if (id.IsMe)
                     continue;
 
-                using FusionWriter writer = FusionWriter.Create();
-                var disconnect = DisconnectMessageData.Create(id.LongId, reason);
-                writer.Write(disconnect);
+                using var writer = NetWriter.Create();
+                var disconnect = DisconnectMessageData.Create(id.PlatformID, reason);
+                writer.SerializeValue(ref disconnect);
 
-                using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
-                MessageSender.SendFromServer(id.LongId, NetworkChannel.Reliable, message);
+                using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
+                MessageSender.SendFromServer(id.PlatformID, NetworkChannel.Reliable, message);
             }
         }
     }
 
     public static void SendDisconnect(ulong userId, string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
-            using FusionWriter writer = FusionWriter.Create();
+            using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);
-            writer.Write(disconnect);
+            writer.SerializeValue(ref disconnect);
 
-            using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+            using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
         }
     }
 
     public static void SendConnectionDeny(ulong userId, string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
-            using FusionWriter writer = FusionWriter.Create();
+            using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);
-            writer.Write(disconnect);
+            writer.SerializeValue(ref disconnect);
 
-            using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+            using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
             MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
         }
     }
@@ -56,11 +57,12 @@ public static class ConnectionSender
     {
         if (NetworkInfo.HasServer)
         {
-            using FusionWriter writer = FusionWriter.Create();
-            var data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
-            writer.Write(data);
+            using var writer = NetWriter.Create();
 
-            using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
+            var data = ConnectionRequestData.Create(PlayerIDManager.LocalPlatformID, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
+            data.Serialize(writer);
+
+            using NetMessage message = NetMessage.Create(NativeMessageTag.ConnectionRequest, writer, CommonMessageRoutes.None);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
         }
         else
@@ -69,23 +71,23 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendPlayerCatchup(ulong newUser, PlayerId id, string avatar, SerializedAvatarStats stats)
+    public static void SendPlayerCatchup(ulong newUser, PlayerID id, string avatar, SerializedAvatarStats stats)
     {
-        using FusionWriter writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, false);
-        writer.Write(response);
+        writer.SerializeValue(ref response);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
     }
 
-    public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)
+    public static void SendPlayerJoin(PlayerID id, string avatar, SerializedAvatarStats stats)
     {
-        using FusionWriter writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, true);
-        writer.Write(response);
+        writer.SerializeValue(ref response);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
     }
 }

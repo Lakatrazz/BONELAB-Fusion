@@ -4,8 +4,6 @@ namespace LabFusion.Voice.Unity;
 
 public static class UnityVoice
 {
-    public const int SampleRate = 16000;
-
     public const int ClipLength = 1;
 
     private static bool _hasMicrophones = false;

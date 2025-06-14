@@ -64,7 +64,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         networkEntity.OnEntityUnregistered += OnPropUnregistered;
     }
 
-    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId player)
+    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
         OnReregisterUpdates();
     }
@@ -191,8 +191,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         OnReregisterUpdates();
 
-        _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
-        _destroySensor.Hook(OnSensorDestroyed);
+        AddDestroySensor();
 
         // Cull the entity if it needs to be
         OnEntityCull(MarrowEntity.IsCulled);
@@ -205,6 +204,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             _globalSleepOffset = 0;
         }
+
+        // Invoke ready callback
+        _onReadyCallback?.InvokeSafe("executing NetworkProp.OnReadyCallback");
+        _onReadyCallback = null;
     }
 
     private void OnPropUnregistered(NetworkEntity entity)
@@ -218,7 +221,23 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _networkEntity = null;
         _marrowEntity = null;
 
+        RemoveDestroySensor();
+
         OnUnregisterUpdates();
+    }
+
+    private void AddDestroySensor()
+    {
+        _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
+        _destroySensor.Hook(OnSensorDestroyed);
+    }
+
+    private void RemoveDestroySensor()
+    {
+        if (_destroySensor != null)
+        {
+            GameObject.Destroy(_destroySensor);
+        }
     }
 
     private void OnSensorDestroyed()
@@ -226,10 +245,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         if (NetworkEntity != null && NetworkEntity.IsRegistered)
         {
 #if DEBUG
-            FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.Id} after the GameObject was destroyed.");
+            FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.ID} after the GameObject was destroyed.");
 #endif
 
-            NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+            NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
         }
 
         _destroySensor = null;
@@ -324,12 +343,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Send pose
-        using var writer = FusionWriter.Create();
-        var data = EntityPoseUpdateData.Create(PlayerIdManager.LocalSmallId, NetworkEntity.Id, EntityPose);
-        writer.Write(data);
+        var data = EntityPoseUpdateData.Create(NetworkEntity.ID, EntityPose);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityPoseUpdate, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
 
         // Update sent pose
         EntityPose.CopyTo(_sentPose);
@@ -450,5 +466,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         NetworkEntityManager.UpdateManager.Unregister(this);
         NetworkEntityManager.FixedUpdateManager.Unregister(this);
+    }
+
+    private Action _onReadyCallback = null;
+
+    public void HookOnReady(Action callback)
+    {
+        if (MarrowEntity != null && NetworkEntity.IsRegistered)
+        {
+            callback();
+        }
+        else
+        {
+            _onReadyCallback += callback;
+        }
     }
 }

@@ -8,10 +8,20 @@ namespace LabFusion.Menu;
 
 public static class MenuLogIn
 {
-    private static int _lastLayerIndex = 0;
+    public static FunctionElement ChangeLayerElement { get; private set; } = null;
+
+    private static int _lastLayerIndex = -1;
+
+    private static void OnLogInPageShown()
+    {
+        ChangeLayerElement.gameObject.SetActive(NetworkLayer.SupportedLayers.Count > 1);
+    }
 
     public static void PopulateLogIn(GameObject logInGameObject)
     {
+        var logInPage = logInGameObject.GetComponent<MenuPage>();
+        logInPage.OnShown += OnLogInPageShown;
+
         // Layer Panel
         var layerPanel = logInGameObject.transform.Find("panel_Layer");
 
@@ -20,8 +30,8 @@ public static class MenuLogIn
         var targetLayerLabel = layoutOptions.Find("label_TargetLayer").GetComponent<LabelElement>()
             .WithTitle($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}");
 
-        var cycleLayerElement = layoutOptions.Find("button_CycleLayer").GetComponent<FunctionElement>()
-            .WithTitle("Cycle")
+        ChangeLayerElement = layoutOptions.Find("button_CycleLayer").GetComponent<FunctionElement>()
+            .WithTitle("Change Layer")
             .Do(() =>
             {
                 int count = NetworkLayer.SupportedLayers.Count;
@@ -75,5 +85,7 @@ public static class MenuLogIn
 
         successPanel.Find("label_Success").GetComponent<LabelElement>()
             .WithTitle("Connection Succeeded");
+
+        OnLogInPageShown();
     }
 }

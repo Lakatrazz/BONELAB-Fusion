@@ -23,7 +23,10 @@ public struct AudioReference
 
     public readonly bool HasClip()
     {
-        return MonoDisc != null && MonoDisc.Barcode.ID != Barcode.EMPTY;
+        bool hasMonoDisc = MonoDisc != null && MonoDisc.IsValid();
+        bool hasAudioClip = ClipOverride != null;
+
+        return hasMonoDisc || hasAudioClip;
     }
 
     public readonly void LoadClip(Action<AudioClip> loadCallback)
@@ -43,6 +46,16 @@ public struct AudioReference
         for (var i = 0; i < discs.Length; i++)
         {
             references[i] = new AudioReference(discs[i]);
+        }
+        return references;
+    }
+
+    public static AudioReference[] CreateReferences(AudioClip[] clips)
+    {
+        var references = new AudioReference[clips.Length];
+        for (var i = 0; i < clips.Length; i++)
+        {
+            references[i] = new AudioReference(clips[i]);
         }
         return references;
     }

@@ -1,68 +1,59 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
+using LabFusion.Player;
+using LabFusion.Preferences;
+using LabFusion.Senders;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class SlowMoButtonMessageData : INetSerializable
 {
-    public class SlowMoButtonMessageData : IFusionSerializable
+    public int? GetSize() => sizeof(byte);
+
+    public bool Decrease;
+
+    public void Serialize(INetSerializer serializer)
     {
-        public const int Size = sizeof(byte) * 2;
+        serializer.SerializeValue(ref Decrease);
+    }
+}
 
-        public byte smallId;
-        public bool isDecrease;
+[Net.SkipHandleWhileLoading]
+public class SlowMoButtonMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.SlowMoButton;
 
-        public static SlowMoButtonMessageData Create(byte smallId, bool isDecrease)
+    protected override bool OnPreRelayMessage(ReceivedMessage received)
+    {
+        var mode = CommonPreferences.SlowMoMode;
+
+        return mode switch
         {
-            return new SlowMoButtonMessageData()
-            {
-                smallId = smallId,
-                isDecrease = isDecrease
-            };
-        }
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(isDecrease);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            isDecrease = reader.ReadBoolean();
-        }
+            TimeScaleMode.DISABLED => false,
+            TimeScaleMode.LOW_GRAVITY => false,
+            TimeScaleMode.CLIENT_SIDE => false,
+            TimeScaleMode.HOST_ONLY => received.Sender == PlayerIDManager.HostSmallID,
+            _ => true,
+        };
     }
 
-    [Net.SkipHandleWhileLoading]
-    public class SlowMoButtonMessage : FusionMessageHandler
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        public override byte Tag => NativeMessageTag.SlowMoButton;
+        var data = received.ReadData<SlowMoButtonMessageData>();
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        TimeManagerPatches.IgnorePatches = true;
+
+        if (data.Decrease)
         {
-            using var reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>();
-            if (isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else
-            {
-                TimeManagerPatches.IgnorePatches = true;
-
-                if (data.isDecrease)
-                {
-                    TimeManager.DECREASE_TIMESCALE();
-                }
-                else
-                {
-                    TimeManager.TOGGLE_TIMESCALE();
-                }
-
-                TimeManagerPatches.IgnorePatches = false;
-            }
+            TimeManager.DECREASE_TIMESCALE();
         }
+        else
+        {
+            TimeManager.TOGGLE_TIMESCALE();
+        }
+
+        TimeManagerPatches.IgnorePatches = false;
     }
 }

@@ -39,7 +39,7 @@ public class ProxyNetworkLobby : NetworkLobby
 
     public override Action CreateJoinDelegate(ulong lobbyId)
     {
-        if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer)
+        if (NetworkLayerManager.Layer is ProxyNetworkLayer proxyLayer)
         {
             return () => proxyLayer.JoinServer(lobbyId);
         }

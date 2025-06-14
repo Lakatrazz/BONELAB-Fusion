@@ -3,19 +3,15 @@ using System;
 using UltEvents;
 
 using UnityEditor;
+using UnityEditor.UIElements;
 
-using UnityEngine;
-using UnityEngine.TextCore.Text;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Marrow.Integration
 {
     [CustomEditor(typeof(GamemodeMusicSettings))]
     public class GamemodeMusicSettingsEditor : Editor
     {
-        public const string LavaGangBarcode = "Lakatrazz.FusionContent.BoneTag.TeamLavaGang";
-
-        public const string SabrelakeBarcode = "Lakatrazz.FusionContent.BoneTag.TeamSabrelake";
-
         private SerializedProperty _teamOverridesProperty;
         private SerializedProperty _songOverridesProperty;
 
@@ -33,110 +29,64 @@ namespace LabFusion.Marrow.Integration
             _tieSongOverrideProperty = serializedObject.FindProperty(nameof(GamemodeMusicSettings.tieSongOverride));
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
+            var root = new VisualElement();
+
             var musicSettings = target as GamemodeMusicSettings;
 
-            var lifeCycleEvent = musicSettings.GetComponent<LifeCycleEvents>();
-
-            if (lifeCycleEvent != null)
+            if (!musicSettings.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                OverrideLifeCycleEvent(musicSettings, lifeCycleEvent);
+                var warnBox = new HelpBox("If you want to change the music settings, please add" +
+                    " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
+                root.Add(warnBox);
 
-                EditorGUILayout.HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("If you want to change the music settings, please add" +
-                    " a LifeCycleEvents to this GameObject!", MessageType.Warning);
-
-                if (GUILayout.Button("Add LifeCycleEvents"))
+                var addLifeCycleEventsButton = new Button(() =>
                 {
                     Undo.AddComponent<LifeCycleEvents>(musicSettings.gameObject);
-                }
+                })
+                {
+                    text = "Add LifeCycleEvents"
+                };
+                root.Add(addLifeCycleEventsButton);
+
+                return root;
             }
+
+            var teamOverrides = new PropertyField(_teamOverridesProperty);
+            root.Add(teamOverrides);
+
+            var songOverrides = new PropertyField(_songOverridesProperty);
+            root.Add(songOverrides);
+
+            var victorySongOverride = new PropertyField(_victorySongOverrideProperty);
+            root.Add(victorySongOverride);
+
+            var failureSongOverride = new PropertyField(_failureSongOverrideProperty);
+            root.Add(failureSongOverride);
+
+            var tieSongOverride = new PropertyField(_tieSongOverrideProperty);
+            root.Add(tieSongOverride);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
+    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
+
+            root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
+            {
+                OverrideLifeCycleEvent(musicSettings, lifeCycleEvent);
+            }, TrickleDown.TrickleDown);
+
+            return root;
         }
 
         private void OverrideLifeCycleEvent(GamemodeMusicSettings musicSettings, LifeCycleEvents lifeCycleEvent)
         {
-            // Make sure the awake event is properly set up
-            if (lifeCycleEvent.AwakeEvent == null)
-            {
-                lifeCycleEvent.AwakeEvent = new UltEvent();
+            var ultEvent = new UltEvent();
 
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            ApplyToUltEvent(musicSettings, ultEvent);
 
-            var awakeEvent = lifeCycleEvent.AwakeEvent;
-
-            EditorGUI.BeginChangeCheck();
-
-            EditorGUILayout.LabelField("Teams", EditorStyles.whiteLargeLabel);
-
-            GUILayout.Space(5);
-
-            EditorGUILayout.PropertyField(_teamOverridesProperty);
-
-            if (!HasBarcode(musicSettings, LavaGangBarcode) && GUILayout.Button("Add LavaGang Override"))
-            {
-                musicSettings.teamOverrides.Add(new GamemodeMusicSettings.TeamOverride()
-                {
-                    teamBarcode = LavaGangBarcode,
-                });
-
-                EditorUtility.SetDirty(musicSettings);
-
-                ApplyChanges();
-            }
-
-            if (!HasBarcode(musicSettings, SabrelakeBarcode) && GUILayout.Button("Add Sabrelake Override"))
-            {
-                musicSettings.teamOverrides.Add(new GamemodeMusicSettings.TeamOverride()
-                {
-                    teamBarcode = SabrelakeBarcode,
-                });
-
-                EditorUtility.SetDirty(musicSettings);
-
-                ApplyChanges();
-            }
-
-            if (musicSettings.teamOverrides.Count > 0 && GUILayout.Button("Clear Overrides"))
-            {
-                musicSettings.teamOverrides.Clear();
-
-                EditorUtility.SetDirty(musicSettings);
-
-                ApplyChanges();
-            }
-
-            GUILayout.Space(5);
-
-            EditorGUILayout.LabelField("General", EditorStyles.whiteLargeLabel);
-
-            GUILayout.Space(5);
-
-            EditorGUILayout.PropertyField(_songOverridesProperty);
-
-            EditorGUILayout.PropertyField(_victorySongOverrideProperty);
-            EditorGUILayout.PropertyField(_failureSongOverrideProperty);
-            EditorGUILayout.PropertyField(_tieSongOverrideProperty);
-
-            // Override the life cycle event value
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-
-                ApplyChanges();
-            }
-
-            void ApplyChanges()
-            {
-                ApplyToUltEvent(musicSettings, awakeEvent);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            lifeCycleEvent.AwakeEvent = ultEvent;
         }
 
         private void ApplyToUltEvent(GamemodeMusicSettings musicSettings, UltEvent ultEvent)
@@ -148,19 +98,6 @@ namespace LabFusion.Marrow.Integration
             ApplyIndividualSongs(musicSettings, ultEvent);
         }
 
-        private bool HasBarcode(GamemodeMusicSettings musicSettings, string barcode)
-        {
-            foreach (var teamOverride in musicSettings.teamOverrides)
-            {
-                if (teamOverride.teamBarcode == barcode)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private void ApplyTeamOverrides(GamemodeMusicSettings musicSettings, UltEvent ultEvent)
         {
             Action<string, string> setVictorySongAction = musicSettings.SetVictorySong;
@@ -168,20 +105,20 @@ namespace LabFusion.Marrow.Integration
 
             foreach (var teamOverride in musicSettings.teamOverrides)
             {
-                if (!string.IsNullOrWhiteSpace(teamOverride.victorySongOverride))
+                if (teamOverride.victorySongOverride.IsValid())
                 {
                     var nameCall = ultEvent.AddPersistentCall(setVictorySongAction);
 
-                    nameCall.PersistentArguments[0].String = teamOverride.teamBarcode;
-                    nameCall.PersistentArguments[1].String = teamOverride.victorySongOverride;
+                    nameCall.PersistentArguments[0].String = teamOverride.teamTag.Barcode.ID;
+                    nameCall.PersistentArguments[1].String = teamOverride.victorySongOverride.Barcode.ID;
                 }
 
-                if (!string.IsNullOrWhiteSpace(teamOverride.failureSongOverride))
+                if (teamOverride.failureSongOverride.IsValid())
                 {
                     var logoCall = ultEvent.AddPersistentCall(setFailureSongAction);
 
-                    logoCall.PersistentArguments[0].String = teamOverride.teamBarcode;
-                    logoCall.PersistentArguments[1].String = teamOverride.failureSongOverride;
+                    logoCall.PersistentArguments[0].String = teamOverride.teamTag.Barcode.ID;
+                    logoCall.PersistentArguments[1].String = teamOverride.failureSongOverride.Barcode.ID;
                 }
             }
         }
@@ -192,11 +129,11 @@ namespace LabFusion.Marrow.Integration
 
             foreach (var songOverride in musicSettings.songOverrides)
             {
-                if (!string.IsNullOrWhiteSpace(songOverride))
+                if (songOverride.IsValid())
                 {
                     var songCall = ultEvent.AddPersistentCall(addSongAction);
 
-                    songCall.PersistentArguments[0].String = songOverride;
+                    songCall.PersistentArguments[0].String = songOverride.Barcode.ID;
                 }
             }
         }
@@ -207,25 +144,25 @@ namespace LabFusion.Marrow.Integration
             Action<string> setFailureSongAction = musicSettings.SetFailureSong;
             Action<string> setTieSongAction = musicSettings.SetTieSong;
 
-            if (!string.IsNullOrWhiteSpace(musicSettings.victorySongOverride))
+            if (musicSettings.victorySongOverride.IsValid())
             {
                 var songCall = ultEvent.AddPersistentCall(setVictorySongAction);
 
-                songCall.PersistentArguments[0].String = musicSettings.victorySongOverride;
+                songCall.PersistentArguments[0].String = musicSettings.victorySongOverride.Barcode.ID;
             }
 
-            if (!string.IsNullOrWhiteSpace(musicSettings.failureSongOverride))
+            if (musicSettings.failureSongOverride.IsValid())
             {
                 var songCall = ultEvent.AddPersistentCall(setFailureSongAction);
 
-                songCall.PersistentArguments[0].String = musicSettings.failureSongOverride;
+                songCall.PersistentArguments[0].String = musicSettings.failureSongOverride.Barcode.ID;
             }
 
-            if (!string.IsNullOrWhiteSpace(musicSettings.tieSongOverride))
+            if (musicSettings.tieSongOverride.IsValid())
             {
                 var songCall = ultEvent.AddPersistentCall(setTieSongAction);
 
-                songCall.PersistentArguments[0].String = musicSettings.tieSongOverride;
+                songCall.PersistentArguments[0].String = musicSettings.tieSongOverride.Barcode.ID;
             }
         }
     }

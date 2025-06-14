@@ -9,18 +9,18 @@ namespace LabFusion.Entities;
 
 public static class EntityComponentManager
 {
-    public static void RegisterComponentsFromAssembly(Assembly targetAssembly)
+    public static void LoadComponents(Assembly assembly)
     {
-        if (targetAssembly == null)
+        if (assembly == null)
         {
             throw new NullReferenceException("Can't register from a null assembly!");
         }
 
 #if DEBUG
-        FusionLogger.Log($"Populating EntityComponentExtender list from {targetAssembly.GetName().Name}!");
+        FusionLogger.Log($"Populating EntityComponentExtender list from {assembly.GetName().Name}!");
 #endif
 
-        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(targetAssembly, RegisterComponent);
+        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(assembly, RegisterComponent);
     }
 
     public static void RegisterComponent<T>() where T : IEntityComponentExtender => RegisterComponent(typeof(T));
@@ -42,7 +42,7 @@ public static class EntityComponentManager
 #endif
     }
 
-    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject parent)
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity entity, GameObject parent)
     {
         var set = new HashSet<IEntityComponentExtender>();
 
@@ -52,7 +52,7 @@ public static class EntityComponentManager
 
             var instance = factory();
 
-            if (instance.TryRegister(networkEntity, parent))
+            if (instance.TryRegister(entity, parent))
             {
                 set.Add(instance);
             }
@@ -61,17 +61,25 @@ public static class EntityComponentManager
         return set;
     }
 
-    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents)
+    public static HashSet<IEntityComponentExtender> ApplyDynamicComponents(NetworkEntity entity, GameObject parent)
     {
         var set = new HashSet<IEntityComponentExtender>();
 
         for (var i = 0; i < _lastExtenderIndex; i++)
         {
+            var type = ExtenderTypes[i];
+
+            if (entity.GetExtender(type) is IEntityComponentExtender extender)
+            {
+                extender.RegisterDynamics(entity, parent);
+                continue;
+            }
+
             var factory = ExtenderFactories[i];
 
             var instance = factory();
 
-            if (instance.TryRegister(networkEntity, parents))
+            if (instance.TryRegister(entity, parent))
             {
                 set.Add(instance);
             }

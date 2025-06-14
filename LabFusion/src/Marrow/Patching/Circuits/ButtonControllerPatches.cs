@@ -5,6 +5,7 @@ using Il2CppSLZ.Marrow.Circuits;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 
 using UnityEngine;
 
@@ -47,12 +48,9 @@ public static class ButtonControllerPatches
         if (extender.Charged != controller._charged)
         {
             // Send button message
-            using var writer = FusionWriter.Create(ButtonChargeData.Size);
-            var data = ButtonChargeData.Create(PlayerIdManager.LocalSmallId, extender.NetworkEntity.Id, controller._charged);
-            writer.Write(data);
+            var data = ButtonChargeData.Create(PlayerIDManager.LocalSmallID, extender.NetworkEntity.ID, controller._charged);
 
-            using var message = FusionMessage.ModuleCreate<ButtonChargeMessage>(writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayModule<ButtonChargeMessage, ButtonChargeData>(data, CommonMessageRoutes.ReliableToOtherClients);
 
             // Update the extender state
             extender.Charged = controller._charged;

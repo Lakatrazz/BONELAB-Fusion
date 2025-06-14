@@ -20,9 +20,9 @@ public static class NetworkPlayerManager
     public static void OnInitializeManager()
     {
         // Reserve all player ids
-        for (var i = PlayerIdManager.MinPlayerId; i <= PlayerIdManager.MaxPlayerId; i++)
+        for (var i = PlayerIDManager.MinPlayerID; i <= PlayerIDManager.MaxPlayerID; i++)
         {
-            NetworkEntityManager.IdManager.RegisteredEntities.ReserveId((ushort)i);
+            NetworkEntityManager.IDManager.RegisteredEntities.ReserveID((ushort)i);
         }
     }
 
@@ -51,16 +51,16 @@ public static class NetworkPlayerManager
         return NetworkPlayer.RigCache.ContainsSource(rigManager);
     }
 
-    public static bool HasPlayer(byte playerId)
+    public static bool HasPlayer(byte playerID)
     {
-        return NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(playerId);
+        return NetworkEntityManager.IDManager.RegisteredEntities.HasEntity(playerID);
     }
 
-    public static bool TryGetPlayer(byte playerId, out NetworkPlayer player)
+    public static bool TryGetPlayer(byte playerID, out NetworkPlayer player)
     {
         player = null;
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerID);
 
         if (entity == null)
         {
@@ -91,15 +91,15 @@ public static class NetworkPlayerManager
 
     public static NetworkPlayer CreateLocalPlayer()
     {
-        return CreateNetworkPlayer(PlayerIdManager.LocalId);
+        return CreateNetworkPlayer(PlayerIDManager.LocalID);
     }
 
-    public static NetworkPlayer CreateNetworkPlayer(PlayerId playerId)
+    public static NetworkPlayer CreateNetworkPlayer(PlayerID playerId)
     {
         NetworkEntity networkEntity = new();
         NetworkPlayer networkPlayer = new(networkEntity, playerId);
 
-        NetworkEntityManager.IdManager.RegisterEntity(playerId.SmallId, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity(playerId.SmallID, networkEntity);
 
         return networkPlayer;
     }

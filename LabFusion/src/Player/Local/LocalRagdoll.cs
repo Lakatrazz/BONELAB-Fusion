@@ -46,26 +46,71 @@ public static class LocalRagdoll
         }
     }
 
-    public static void Knockout(float length)
+    /// <summary>
+    /// Ragdolls or unragdolls the player.
+    /// </summary>
+    /// <param name="ragdolled"></param>
+    public static void ToggleRagdoll(bool ragdolled)
     {
         if (!RigData.HasPlayer)
         {
             return;
         }
 
-        MelonCoroutines.Start(KnockoutCoroutine(RigData.Refs.RigManager, length));
+        PhysicsRigPatches.ForceAllowUnragdoll = true;
+
+        var physicsRig = RigData.Refs.RigManager.physicsRig;
+
+        if (ragdolled)
+        {
+            physicsRig.ShutdownRig();
+            physicsRig.RagdollRig();
+        }
+        else
+        {
+            physicsRig.TurnOnRig();
+            physicsRig.UnRagdollRig();
+        }
+
+        PhysicsRigPatches.ForceAllowUnragdoll = false;
     }
 
-    private static IEnumerator KnockoutCoroutine(RigManager rigManager, float length)
+    /// <summary>
+    /// Knocks out the player for a certain amount of time. This will ragdoll the player and cause their vision to go black.
+    /// </summary>
+    /// <param name="length"></param>
+    public static void Knockout(float length) => Knockout(length, true);
+
+    /// <summary>
+    /// Knocks out the player for a certain amount of time. This will ragdoll the player and, if blind is true, cause their vision to go black.
+    /// </summary>
+    /// <param name="length"></param>
+    /// <param name="blind"></param>
+    public static void Knockout(float length, bool blind)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        if (KnockedOut)
+        {
+            return;
+        }
+
+        MelonCoroutines.Start(KnockoutCoroutine(RigData.Refs.RigManager, length, blind));
+    }
+
+    private static IEnumerator KnockoutCoroutine(RigManager rigManager, float length, bool blind)
     {
         // Release all grips
         LocalPlayer.ReleaseGrips();
 
         // Ragdoll the rig
-        rigManager.physicsRig.RagdollRig();
+        ToggleRagdoll(true);
 
         // Blind the player
-        LocalVision.Blind = true;
+        LocalVision.Blind = blind;
         LocalVision.BlindColor = Color.black;
 
         _knockedOut = true;
@@ -73,7 +118,7 @@ public static class LocalRagdoll
         // Wait a certain amount of time to wake up
         float elapsed = 0f;
 
-        float eyeLength = 10f;
+        float eyeLength = Mathf.Min(10f, length);
 
         while (elapsed <= length)
         {
@@ -102,10 +147,6 @@ public static class LocalRagdoll
         rigManager.health.SetFullHealth();
 
         // Unragdoll the rig
-        PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-        rigManager.physicsRig.UnRagdollRig();
-
-        PhysicsRigPatches.ForceAllowUnragdoll = false;
+        ToggleRagdoll(false);
     }
 }

@@ -3,11 +3,11 @@ using LabFusion.Senders;
 
 namespace LabFusion.Utilities;
 
-public delegate bool UserAccessEvent(PlayerId playerId, out string reason);
+public delegate bool UserAccessEvent(PlayerID playerId, out string reason);
 public delegate void ServerEvent();
 public delegate void UpdateEvent();
-public delegate void PlayerUpdate(PlayerId playerId);
-public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
+public delegate void PlayerUpdate(PlayerID playerId);
+public delegate void PlayerAction(PlayerID playerId, PlayerActionType type, PlayerID otherPlayer = null);
 
 /// <summary>
 /// Hooks for getting events from the server, players, etc.
@@ -19,12 +19,11 @@ public static class MultiplayerHooking
     public static event UserAccessEvent OnShouldAllowConnection;
 
     // Server hooks
-    public static event ServerEvent OnStartServer, OnJoinServer, OnDisconnect;
-    public static event PlayerUpdate OnPlayerJoin, OnPlayerLeave;
+    public static event ServerEvent OnStartedServer, OnJoinedServer, OnDisconnected;
+    public static event PlayerUpdate OnPlayerJoined, OnPlayerLeft;
     public static event PlayerAction OnPlayerAction;
-    public static event PlayerUpdate OnPlayerCatchup;
 
-    internal static bool Internal_OnShouldAllowConnection(PlayerId playerId, out string reason)
+    internal static bool CheckShouldAllowConnection(PlayerID playerId, out string reason)
     {
         reason = "";
 
@@ -42,19 +41,17 @@ public static class MultiplayerHooking
         return true;
     }
 
-    internal static void Internal_OnStartServer() => OnStartServer.InvokeSafe("executing OnStartServer hook");
+    internal static void InvokeOnStartedServer() => OnStartedServer.InvokeSafe("executing OnStartedServer hook");
 
-    internal static void Internal_OnJoinServer() => OnJoinServer.InvokeSafe("executing OnJoinServer hook");
+    internal static void InvokeOnJoinedServer() => OnJoinedServer.InvokeSafe("executing OnJoinedServer hook");
 
-    internal static void Internal_OnDisconnect() => OnDisconnect.InvokeSafe("executing OnDisconnect hook");
+    internal static void InvokeOnDisconnected() => OnDisconnected.InvokeSafe("executing OnDisconnected hook");
 
-    internal static void Internal_OnPlayerJoin(PlayerId id) => OnPlayerJoin.InvokeSafe(id, "executing OnPlayerJoin hook");
+    internal static void InvokeOnPlayerJoined(PlayerID id) => OnPlayerJoined.InvokeSafe(id, "executing OnPlayerJoined hook");
 
-    internal static void Internal_OnPlayerLeave(PlayerId id) => OnPlayerLeave.InvokeSafe(id, "executing OnPlayerLeave hook");
+    internal static void InvokeOnPlayerLeft(PlayerID id) => OnPlayerLeft.InvokeSafe(id, "executing OnPlayerLeft hook");
 
-    internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type, PlayerId otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
-
-    internal static void Internal_OnPlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
+    internal static void InvokeOnPlayerAction(PlayerID id, PlayerActionType type, PlayerID otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
 
     // Unity hooks
     /// <summary>
@@ -62,11 +59,12 @@ public static class MultiplayerHooking
     /// </summary>
     public static event UpdateEvent OnUpdate, OnFixedUpdate, OnLateUpdate;
 
-    public static event UpdateEvent OnMainSceneInitialized, OnLoadingBegin;
+    public static event UpdateEvent OnMainSceneInitialized, OnLoadingBegin, OnTargetLevelLoaded;
 
-    internal static void Internal_OnUpdate() => OnUpdate?.Invoke();
-    internal static void Internal_OnFixedUpdate() => OnFixedUpdate?.Invoke();
-    internal static void Internal_OnLateUpdate() => OnLateUpdate?.Invoke();
-    internal static void Internal_OnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe("executing OnMainSceneInitialized hook");
-    internal static void Internal_OnLoadingBegin() => OnLoadingBegin.InvokeSafe("executing OnLoadingBegin hook");
+    internal static void InvokeOnUpdate() => OnUpdate?.Invoke();
+    internal static void InvokeOnFixedUpdate() => OnFixedUpdate?.Invoke();
+    internal static void InvokeOnLateUpdate() => OnLateUpdate?.Invoke();
+    internal static void InvokeOnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe("executing OnMainSceneInitialized hook");
+    internal static void InvokeOnLoadingBegin() => OnLoadingBegin.InvokeSafe("executing OnLoadingBegin hook");
+    internal static void InvokeTargetLevelLoaded() => OnTargetLevelLoaded.InvokeSafe("executing OnTargetLevelLoaded hook");
 }

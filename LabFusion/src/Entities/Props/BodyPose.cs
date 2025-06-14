@@ -1,12 +1,14 @@
 ﻿using LabFusion.Data;
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class BodyPose : IFusionSerializable
+public class BodyPose : INetSerializable
 {
+    public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size + SerializedSmallVector3.Size * 2;
+
     public Vector3 position = Vector3.zero;
     public Quaternion rotation = Quaternion.identity;
 
@@ -16,6 +18,14 @@ public class BodyPose : IFusionSerializable
     private Vector3 _positionPrediction = Vector3.zero;
 
     public Vector3 PredictedPosition => position + _positionPrediction;
+
+    public void ReadFrom(Rigidbody rigidbody)
+    {
+        position = rigidbody.position;
+        rotation = rigidbody.rotation;
+        velocity = rigidbody.velocity;
+        angularVelocity = rigidbody.angularVelocity;
+    }
 
     public void CopyTo(BodyPose target)
     {
@@ -37,19 +47,32 @@ public class BodyPose : IFusionSerializable
         _positionPrediction += velocity * deltaTime;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(SerializedShortVector3.Compress(position));
-        writer.Write(SerializedSmallQuaternion.Compress(rotation));
-        writer.Write(SerializedSmallVector3.Compress(velocity));
-        writer.Write(SerializedSmallVector3.Compress(angularVelocity));
-    }
+        SerializedShortVector3 position = null;
+        SerializedSmallQuaternion rotation = null;
+        SerializedSmallVector3 velocity = null;
+        SerializedSmallVector3 angularVelocity = null;
 
-    public void Deserialize(FusionReader reader)
-    {
-        position = reader.ReadFusionSerializable<SerializedShortVector3>().Expand();
-        rotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>().Expand();
-        velocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
-        angularVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
+        if (!serializer.IsReader)
+        {
+            position = SerializedShortVector3.Compress(this.position);
+            rotation = SerializedSmallQuaternion.Compress(this.rotation);
+            velocity = SerializedSmallVector3.Compress(this.velocity);
+            angularVelocity = SerializedSmallVector3.Compress(this.angularVelocity);
+        }
+
+        serializer.SerializeValue(ref position);
+        serializer.SerializeValue(ref rotation);
+        serializer.SerializeValue(ref velocity);
+        serializer.SerializeValue(ref angularVelocity);
+
+        if (serializer.IsReader)
+        {
+            this.position = position.Expand();
+            this.rotation = rotation.Expand();
+            this.velocity = velocity.Expand();
+            this.angularVelocity = angularVelocity.Expand();
+        }
     }
 }

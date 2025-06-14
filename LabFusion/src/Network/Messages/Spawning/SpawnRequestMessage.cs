@@ -1,89 +1,98 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Exceptions;
+using LabFusion.Marrow;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
+using LabFusion.Safety;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class SpawnRequestData : IFusionSerializable
+public class SpawnRequestData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + SerializedTransform.Size;
+    public int? GetSize() => Barcode.GetSize() + SerializedTransform.Size + sizeof(uint) + sizeof(bool);
 
-    public byte owner;
-    public string barcode;
-    public SerializedTransform serializedTransform;
+    public string Barcode;
+    public SerializedTransform SerializedTransform;
 
-    public uint trackerId;
+    public uint TrackerId;
 
-    public bool spawnEffect;
+    public bool SpawnEffect;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(owner);
-        writer.Write(barcode);
-        writer.Write(serializedTransform);
-
-        writer.Write(trackerId);
-
-        writer.Write(spawnEffect);
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref SerializedTransform);
+        serializer.SerializeValue(ref TrackerId);
+        serializer.SerializeValue(ref SpawnEffect);
     }
 
-    public void Deserialize(FusionReader reader)
-    {
-        owner = reader.ReadByte();
-        barcode = reader.ReadString();
-        serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
-
-        trackerId = reader.ReadUInt32();
-
-        spawnEffect = reader.ReadBoolean();
-    }
-
-    public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
+    public static SpawnRequestData Create(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
         return new SpawnRequestData()
         {
-            owner = owner,
-            barcode = barcode,
-            serializedTransform = serializedTransform,
+            Barcode = barcode,
+            SerializedTransform = serializedTransform,
 
-            trackerId = trackerId,
+            TrackerId = trackerId,
 
-            spawnEffect = spawnEffect,
+            SpawnEffect = spawnEffect,
         };
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class SpawnRequestMessage : FusionMessageHandler
+public class SpawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<SpawnRequestData>();
+    public const int MaxSpawnsPerSecond = 15;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<SpawnRequestData>();
 
         // Check for spawnable blacklist
-        if (ModBlacklist.IsBlacklisted(data.barcode))
+        if (ModBlacklist.IsBlacklisted(data.Barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(data.Barcode))
         {
 #if DEBUG
-            FusionLogger.Warn($"Blocking server spawn of spawnable {data.barcode} because it is blacklisted!");
+            FusionLogger.Warn($"Blocking server spawn of spawnable {data.Barcode} because it is blacklisted!");
 #endif
 
             return;
         }
 
-        var playerId = PlayerIdManager.GetPlayerId(data.owner);
+        // Check for singleplayer only tag
+        if (CrateFilterer.HasTags<SpawnableCrate>(new(data.Barcode), FusionTags.SingleplayerOnly))
+        {
+#if DEBUG
+            FusionLogger.Warn($"Blocking server spawn of spawnable {data.Barcode} because it is tagged Singleplayer Only!");
+#endif
 
-        var entityId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
+            return;
+        }
 
-        PooleeUtilities.SendSpawn(data.owner, data.barcode, entityId, data.serializedTransform, data.trackerId, data.spawnEffect);
+        // If the player isn't hosting a level, limit the amount of spawns per second
+        if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.Sender.Value)))
+        {
+            var activity = LimitedActivityManager.GetTracker(nameof(SpawnRequestMessage)).GetActivity(received.Sender.Value);
+
+            activity.Increment();
+
+            if (activity.Counter > MaxSpawnsPerSecond)
+            {
+                FusionLogger.Warn($"Blocking Player {received.Sender.Value}'s spawn of {data.Barcode} because they have tried to spawn {activity.Counter} entities in one second!");
+                return;
+            }
+        }
+
+        var entityId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
+
+        PooleeUtilities.SendSpawn(received.Sender.Value, data.Barcode, entityId, data.SerializedTransform, data.TrackerId, data.SpawnEffect);
     }
 }

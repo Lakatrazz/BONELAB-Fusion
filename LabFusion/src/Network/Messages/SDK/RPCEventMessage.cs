@@ -1,125 +1,75 @@
-﻿using LabFusion.Entities;
-using LabFusion.Marrow.Integration;
+﻿using LabFusion.Marrow.Integration;
+using LabFusion.Scene;
+using LabFusion.SDK.Extenders;
 
 namespace LabFusion.Network;
 
 public static class RPCEventSender
 {
+    private static RelayType ConvertRPCRelayType(RPCEvent.RPCRelayType relayType)
+    {
+        return relayType switch
+        {
+            RPCEvent.RPCRelayType.ToClients => RelayType.ToClients,
+            RPCEvent.RPCRelayType.ToOtherClients => RelayType.ToOtherClients,
+            _ => RelayType.ToServer,
+        };
+    }
+
+    private static NetworkChannel ConvertRPCChannel(RPCEvent.RPCChannel channel)
+    {
+        return channel switch
+        {
+            RPCEvent.RPCChannel.Reliable => NetworkChannel.Reliable,
+            _ => NetworkChannel.Unreliable,
+        };
+    }
+
     public static bool Invoke(RPCEvent rpcEvent) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        var target = (RPCEvent.RPCTarget)rpcEvent.Target;
+        var relayType = ConvertRPCRelayType(rpcEvent.RelayType);
 
-        // If the target is to clients, but we aren't the server, we can't send the message
-        if (target == RPCEvent.RPCTarget.Clients && !NetworkInfo.IsServer)
-        {
-            return false;
-        }
+        var channel = ConvertRPCChannel(rpcEvent.Channel);
 
-        var channel = (RPCEvent.RPCChannel)rpcEvent.Channel;
-
-        // Convert to network channel
-        var networkChannel = channel == RPCEvent.RPCChannel.Reliable ? NetworkChannel.Reliable : NetworkChannel.Unreliable;
-
-        // Get the rpc event
-        var hashData = RPCEvent.HashTable.GetDataFromComponent(rpcEvent);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCEventExtender.Cache.TryGet(rpcEvent, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcEvent.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCEventExtender>();
-
-            entityId = entity.Id;
-            componentIndex = extender.GetIndex(rpcEvent).Value;
         }
-        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
-        var data = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var data = ComponentPathData.CreateFromComponent<RPCEvent, RPCEventExtender>(rpcEvent, RPCEvent.HashTable, RPCEventExtender.Cache);
 
-        writer.Write(data);
+        MessageRelay.RelayNative(data, NativeMessageTag.RPCEvent, new MessageRoute(relayType, channel));
 
-        using var message = FusionMessage.Create(NativeMessageTag.RPCEvent, writer);
-
-        switch (target)
-        {
-            case RPCEvent.RPCTarget.Server:
-                MessageSender.SendToServer(networkChannel, message);
-                return true;
-            case RPCEvent.RPCTarget.Clients:
-                MessageSender.BroadcastMessage(networkChannel, message);
-                return true;
-        }
-
-        // Target wasn't valid?
-        return false;
+        return true;
     }
 }
 
-public class RPCEventMessage : FusionMessageHandler
+[Net.DelayWhileTargetLoading]
+public class RPCEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCEvent;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ComponentPathData>();
+        var data = received.ReadData<ComponentPathData>();
 
-        // Entity object
-        if (data.hasNetworkEntity)
+        if (data.TryGetComponent<RPCEvent, RPCEventExtender>(RPCEvent.HashTable, out var rpcEvent))
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCEventExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcEvent = extender.GetComponent(data.componentIndex);
-
-            if (rpcEvent == null)
-            {
-                return;
-            }
-
-            OnFoundRPCEvent(rpcEvent);
-        }
-        // Scene object
-        else
-        {
-            var rpcEvent = RPCEvent.HashTable.GetComponentFromData(data.hashData);
-
-            if (rpcEvent == null)
-            {
-                return;
-            }
-
             OnFoundRPCEvent(rpcEvent);
         }
     }

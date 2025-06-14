@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-
 #if MELONLOADER
 using Il2CppInterop.Runtime.InteropTypes.Fields;
+using Il2CppInterop.Runtime.Attributes;
 
 using Il2CppUltEvents;
 
 using LabFusion.Data;
+using LabFusion.Network;
+using LabFusion.Player;
 
 using MelonLoader;
 #else
@@ -42,6 +42,9 @@ namespace LabFusion.Marrow.Integration
 
         public UltEventHolder OnVariableChangedHolder => onVariableChangedHolder.Get();
 
+        [HideFromIl2Cpp]
+        public bool HasNetworkEntity { get; set; } = false;
+
         private void Awake()
         {
             _requiresOwnershipCached = requiresOwnership.Get();
@@ -49,17 +52,35 @@ namespace LabFusion.Marrow.Integration
             var hash = GameObjectHasher.GetHierarchyHash(gameObject);
 
             HashTable.AddComponent(hash, this);
+
+            CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
+        }
+
+        [HideFromIl2Cpp]
+        private void OnPlayerServerCatchup(PlayerID playerID)
+        {
+            if (HasNetworkEntity)
+            {
+                return;
+            }
+
+            CatchupPlayer(playerID);
         }
 
         private void OnDestroy()
         {
             HashTable.RemoveComponent(this);
+
+            CatchupManager.OnPlayerServerCatchup -= OnPlayerServerCatchup;
         }
 
         public void InvokeHolder()
         {
             OnVariableChangedHolder?.Invoke();
         }
+
+        [HideFromIl2Cpp]
+        public virtual void CatchupPlayer(PlayerID playerID) { }
 #else
         public bool requiresOwnership = false;
 

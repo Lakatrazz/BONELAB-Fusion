@@ -1,10 +1,10 @@
 ﻿using LabFusion.Network;
-using LabFusion.Patching;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Marrow;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
+using LabFusion.Marrow.Patching;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -16,8 +16,8 @@ public static partial class FusionSceneManager
     internal static void Internal_OnInitializeMelon()
     {
         // Hook into events
-        MultiplayerHooking.OnStartServer += Internal_OnCleanup;
-        MultiplayerHooking.OnDisconnect += Internal_OnCleanup;
+        MultiplayerHooking.OnStartedServer += Internal_OnCleanup;
+        MultiplayerHooking.OnDisconnected += Internal_OnCleanup;
 
         // Prepare level downloading
         LevelDownloaderManager.OnInitializeMelon();
@@ -58,14 +58,15 @@ public static partial class FusionSceneManager
             if (!_wasLoading)
             {
                 LoadSender.SendLoadingState(true);
+                LocalPlayer.Metadata.LevelBarcode.SetValue(Barcode);
 
                 // Send level load
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     LoadSender.SendLevelLoad(Barcode, LoadBarcode);
                 }
 
-                MultiplayerHooking.Internal_OnLoadingBegin();
+                MultiplayerHooking.InvokeOnLoadingBegin();
             }
         }
         else if (_prevLevelBarcode == null)
@@ -76,6 +77,7 @@ public static partial class FusionSceneManager
             _prevLevelBarcode = Barcode;
 
             LoadSender.SendLoadingState(!HasTargetLoaded());
+            LocalPlayer.Metadata.LevelBarcode.SetValue(Barcode);
 
             // Invoke the level load hook
             _onLevelLoad?.Invoke();
@@ -86,6 +88,8 @@ public static partial class FusionSceneManager
             {
                 _onTargetLevelLoad?.Invoke();
                 _onTargetLevelLoad = null;
+
+                MultiplayerHooking.InvokeTargetLevelLoaded();
             }
         }
 
@@ -148,11 +152,11 @@ public static partial class FusionSceneManager
                 {
                     LevelDownloaderManager.DownloadLevel(new LevelDownloaderManager.LevelDownloadInfo()
                     {
-                        levelBarcode = _targetServerScene,
-                        levelHost = PlayerIdManager.HostSmallId,
-                        onDownloadSucceeded = OnDownloadSucceeded,
-                        onDownloadFailed = OnDownloadFailed,
-                        onDownloadCanceled = OnDownloadCanceled,
+                        LevelBarcode = _targetServerScene,
+                        LevelHost = PlayerIDManager.HostSmallID,
+                        OnDownloadSucceeded = OnDownloadSucceeded,
+                        OnDownloadFailed = OnDownloadFailed,
+                        OnDownloadCanceled = OnDownloadCanceled,
                     });
 
                     _hasStartedDownloadingTarget = true;
@@ -189,11 +193,11 @@ public static partial class FusionSceneManager
 
     public static void LoadTargetScene()
     {
-        SceneLoadPatch.IgnorePatches = true;
+        SceneStreamerPatches.IgnorePatches = true;
 
         SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
 
-        SceneLoadPatch.IgnorePatches = false;
+        SceneStreamerPatches.IgnorePatches = false;
 
         _hasStartedLoadingTarget = true;
     }

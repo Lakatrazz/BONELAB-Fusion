@@ -1,130 +1,92 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
-using LabFusion.Marrow.Integration;
+﻿using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Scene;
+using LabFusion.SDK.Extenders;
 
 namespace LabFusion.Network;
 
 public static class RPCBoolSender
 {
-    public static bool SetValue(RPCBool rpcBool, bool value) 
+    public static bool SetValue(RPCBool rpcBool, bool value)
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcBool);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCVariableExtender.Cache.TryGet(rpcBool, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcBool.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.Id;
-            componentIndex = extender.GetIndex(rpcBool).Value;
         }
-        else if (rpcBool.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcBool.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
-        var intData = RPCBoolData.Create(pathData, value);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcBool, RPCVariable.HashTable, RPCVariableExtender.Cache);
+        var boolData = RPCBoolData.Create(pathData, value);
 
-        writer.Write(intData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCBool, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCBool, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
+
+    public static void CatchupValue(RPCBool rpcBool, PlayerID playerID)
+    {
+        // Make sure we are the level host
+        if (!NetworkSceneManager.IsLevelHost)
+        {
+            return;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcBool, RPCVariable.HashTable, RPCVariableExtender.Cache);
+        var boolData = RPCBoolData.Create(pathData, rpcBool.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCBool, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
+    }
 }
 
-public class RPCBoolData : IFusionSerializable
+[Net.SkipHandleWhileLoading]
+public class RPCBoolData : INetSerializable
 {
-    public ComponentPathData pathData;
-    public bool value;
+    public ComponentPathData PathData;
+    public bool Value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadBoolean();
+        serializer.SerializeValue(ref PathData);
+        serializer.SerializeValue(ref Value);
     }
 
     public static RPCBoolData Create(ComponentPathData pathData, bool value)
     {
         return new RPCBoolData()
         {
-            pathData = pathData,
-            value = value,
+            PathData = pathData,
+            Value = value,
         };
     }
 }
 
 
-public class RPCBoolMessage : FusionMessageHandler
+public class RPCBoolMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCBool;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
+        var data = received.ReadData<RPCBoolData>();
+
+        if (data.PathData.TryGetComponent<RPCVariable, RPCVariableExtender>(RPCVariable.HashTable, out var rpcVariable))
         {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCBool, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCBoolData>();
-
-        // Entity object
-        if (data.pathData.hasNetworkEntity)
-        {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
             var rpcBool = rpcVariable.TryCast<RPCBool>();
 
             if (rpcBool == null)
@@ -132,26 +94,7 @@ public class RPCBoolMessage : FusionMessageHandler
                 return;
             }
 
-            OnFoundRPCBool(rpcBool, data.value);
-        }
-        // Scene object
-        else
-        {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
-            var rpcBool = rpcVariable.TryCast<RPCBool>();
-
-            if (rpcBool == null)
-            {
-                return;
-            }
-
-            OnFoundRPCBool(rpcBool, data.value);
+            OnFoundRPCBool(rpcBool, data.Value);
         }
     }
 

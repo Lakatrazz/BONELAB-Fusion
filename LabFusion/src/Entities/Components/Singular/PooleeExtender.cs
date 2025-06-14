@@ -8,12 +8,12 @@ public class PooleeExtender : EntityComponentParentExtender<Poolee>
 {
     public static readonly FusionComponentCache<Poolee, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, Poolee component)
+    protected override void OnRegister(NetworkEntity entity, Poolee component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Poolee component)
+    protected override void OnUnregister(NetworkEntity entity, Poolee component)
     {
         Cache.Remove(component);
     }

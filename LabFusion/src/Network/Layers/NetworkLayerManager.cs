@@ -1,12 +1,22 @@
-﻿using LabFusion.Preferences.Client;
-
-namespace LabFusion.Network;
+﻿namespace LabFusion.Network;
 
 public static class NetworkLayerManager
 {
+    /// <summary>
+    /// The active network transport layer.
+    /// </summary>
     public static NetworkLayer Layer { get; private set; } = null;
 
+    /// <summary>
+    /// Returns if there is an active network layer.
+    /// </summary>
+    public static bool HasLayer => Layer != null;
+
     private static bool _loggedIn = false;
+
+    /// <summary>
+    /// Returns if the user is logged into the active network layer.
+    /// </summary>
     public static bool LoggedIn
     {
         get
@@ -21,9 +31,12 @@ public static class NetworkLayerManager
         }
     }
 
+    /// <summary>
+    /// Invoked when the user logs in or out of the active network layer.
+    /// </summary>
     public static event Action<bool> OnLoggedInChanged;
 
-    public static void OnInitializeMelon()
+    internal static void OnInitializeMelon()
     {
         NetworkLayer.OnLoggedInEvent += OnLoggedIn;
         NetworkLayer.OnLoggedOutEvent += OnLoggedOut;

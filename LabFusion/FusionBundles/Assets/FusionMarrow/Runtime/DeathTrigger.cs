@@ -2,10 +2,11 @@
 using MelonLoader;
 
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow;
 
 using LabFusion.Network;
 using LabFusion.Entities;
+using LabFusion.Utilities;
+using LabFusion.RPC;
 #endif
 
 using UnityEngine;
@@ -20,6 +21,17 @@ namespace LabFusion.Marrow.Integration
     public class DeathTrigger : MonoBehaviour
     {
 #if MELONLOADER
+        public DeathTrigger(IntPtr intPtr) : base(intPtr) { }
+
+        public static event Action OnKillPlayer;
+
+        public static bool? KillDamageOverride { get; set; } = null;
+
+        private void Awake()
+        {
+            gameObject.layer = (int)MarrowLayers.EntityTrigger;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!NetworkInfo.HasServer)
@@ -27,42 +39,78 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            var attachedRigidbody = other.attachedRigidbody;
+            var tracker = Tracker.Cache.Get(other.gameObject);
 
-            if (attachedRigidbody == null)
+            if (tracker == null)
             {
                 return;
             }
 
-            var marrowBody = MarrowBody.Cache.Get(attachedRigidbody.gameObject);
+            var marrowEntity = tracker.Entity;
 
-            if (marrowBody == null)
+            if (marrowEntity == null)
             {
                 return;
             }
-
-            var marrowEntity = marrowBody.Entity;
 
             if (!IMarrowEntityExtender.Cache.TryGet(marrowEntity, out var networkEntity))
             {
                 return;
             }
 
+            OnNetworkEntityEnter(networkEntity);
+        }
+
+        private static void OnNetworkEntityEnter(NetworkEntity networkEntity)
+        {
+            var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+            if (networkPlayer != null)
+            {
+                OnNetworkPlayerEnter(networkEntity, networkPlayer);
+                return;
+            }
+
+            var networkProp = networkEntity.GetExtender<NetworkProp>();
+
+            if (networkProp != null)
+            {
+                OnNetworkPropEnter(networkEntity);
+                return;
+            }
+        }
+
+        private static void OnNetworkPlayerEnter(NetworkEntity networkEntity, NetworkPlayer networkPlayer)
+        {
+            // Only kill if this is the Local Player
             if (!networkEntity.IsOwner)
             {
                 return;
             }
 
-            var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+            var health = networkPlayer.RigRefs.Health;
 
-            if (networkEntity == null)
+            if (!KillDamageOverride.HasValue || KillDamageOverride.Value == true)
+            {
+                health.ApplyKillDamage();
+            }
+
+            OnKillPlayer?.InvokeSafe("executing OnKillPlayer hook");
+        }
+
+        private static void OnNetworkPropEnter(NetworkEntity networkEntity)
+        {
+            // Only despawn triggered props if this is the host
+            if (!NetworkInfo.IsHost)
             {
                 return;
             }
 
-            var health = networkPlayer.RigRefs.RigManager.health.TryCast<Player_Health>();
-
-            health.ApplyKillDamage();
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityID = networkEntity.ID,
+                DespawnEffect = true,
+            });
         }
 #endif
     }

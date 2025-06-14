@@ -2,7 +2,7 @@
 using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Entities;
-using LabFusion.Marrow;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
@@ -45,7 +45,7 @@ public static class PlayerDamageReceiverPatches
                 // Were we hit by another player?
                 if (NetworkPlayerManager.TryGetPlayer(attacker, out var player) && !player.NetworkEntity.IsOwner)
                 {
-                    FusionPlayer.LastAttacker = player.PlayerId;
+                    FusionPlayer.LastAttacker = player.PlayerID;
 
                     // Only allow manual damage
                     attack.damage = 0f;
@@ -67,9 +67,9 @@ public static class PlayerDamageReceiverPatches
                 }
 
                 // Send the damage over the network
-                PlayerSender.SendPlayerDamage(player.PlayerId, attack, __instance.bodyPart);
+                PlayerSender.SendPlayerDamage(player.PlayerID, attack, __instance.bodyPart);
 
-                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, player.PlayerId);
+                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, player.PlayerID);
             }
         }
 

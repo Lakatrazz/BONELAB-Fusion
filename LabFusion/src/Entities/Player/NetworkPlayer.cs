@@ -1,10 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
@@ -12,7 +9,8 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences;
 using LabFusion.Voice;
-using LabFusion.Marrow.Extensions;
+using LabFusion.Math;
+using LabFusion.Extensions;
 
 using MelonLoader;
 
@@ -28,11 +26,14 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public static readonly HashSet<NetworkPlayer> Players = new();
 
+    /// <summary>
+    /// Invoked when a NetworkPlayer's RigManager is created. This is also invoked for the Local Player's RigManager.
+    /// </summary>
     public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
 
     private NetworkEntity _networkEntity = null;
 
-    private PlayerId _playerId = null;
+    private PlayerID _playerID = null;
 
     private string _username = "No Name";
 
@@ -41,7 +42,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private MarrowEntity _marrowEntity = null;
     public MarrowEntity MarrowEntity => _marrowEntity;
 
-    public PlayerId PlayerId => _playerId;
+    public PlayerID PlayerID => _playerID;
 
     public string Username => _username;
 
@@ -77,8 +78,17 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigAvatarSetter _avatarSetter = null;
     public RigAvatarSetter AvatarSetter => _avatarSetter;
 
-    private bool _isRagdollDirty = false;
-    private bool _ragdollState = false;
+    private RigHealthBar _healthBar = null;
+    public RigHealthBar HealthBar => _healthBar;
+
+    private RigLivesBar _livesBar = null;
+    public RigLivesBar LivesBar => _livesBar;
+
+    private RigVoiceSource _voiceSource = null;
+    public RigVoiceSource VoiceSource => _voiceSource;
+
+    private bool _isPhysicsRigDirty = false;
+    private Queue<PhysicsRigStateData> _physicsRigStates = new();
 
     private bool _isSettingsDirty = false;
     private bool _isServerDirty = false;
@@ -89,42 +99,102 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private PDController _pelvisPDController = null;
 
-    // Voice chat integration
-    private float _maxMicrophoneDistance = 30f;
+    private bool _isCulled = false;
 
-    private IVoiceSpeaker _speaker = null;
-    private AudioSource _voiceSource = null;
-    private bool _hasVoice = false;
+    /// <summary>
+    /// Returns True if this NetworkPlayer is hidden due to being zone culled.
+    /// </summary>
+    public bool IsCulled
+    {
+        get
+        {
+            return _isCulled;
+        }
+        private set
+        {
+            _isCulled = value;
 
-    private bool _spatialized = false;
+            OnApplyVisiblity();
+        }
+    }
 
-    private readonly JawFlapper _flapper = new();
+    private bool _forceHide = false;
+
+    /// <summary>
+    /// Can be changed to forcefully hide this NetworkPlayer's rig.
+    /// </summary>
+    public bool ForceHide
+    {
+        get
+        {
+            return _forceHide;
+        }
+        set
+        {
+            _forceHide = value;
+
+            OnApplyVisiblity();
+        }
+    }
+
+    /// <summary>
+    /// Returns True if this NetworkPlayer is hidden.
+    /// </summary>
+    public bool IsHidden
+    {
+        get
+        {
+            if (ForceHide)
+            {
+                return true;
+            }
+
+            return IsCulled;
+        }
+    }
+
+    /// <summary>
+    /// Callback invoked when the <see cref="IsHidden"/> property changes.
+    /// </summary>
+    public event Action<bool> OnHiddenChanged;
 
     /// <summary>
     /// The distance of this PlayerRep's head to the local player's head (squared).
     /// </summary>
     public float DistanceSqr { get; private set; }
 
-    /// <summary>
-    /// Whether or not the player's microphone logic is disabled.
-    /// </summary>
-    public bool MicrophoneDisabled { get; private set; }
+    private readonly JawFlapper _jawFlapper = new();
+    public JawFlapper JawFlapper => _jawFlapper;
 
-    public JawFlapper JawFlapper => _flapper;
-
-    public NetworkPlayer(NetworkEntity networkEntity, PlayerId playerId)
+    public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerId)
     {
         _networkEntity = networkEntity;
-        _playerId = playerId;
+        _playerID = playerId;
 
         _pelvisPDController = new();
+
         _puppet = new();
-        _nametag = new();
+
+        _nametag = new()
+        {
+            CrownVisible = playerId.IsHost,
+        };
+
         _headUI = new();
 
         _icon = new()
         {
-            Visible = false
+            Visible = false,
+        };
+
+        _healthBar = new()
+        {
+            Visible = false,
+        };
+
+        _livesBar = new()
+        {
+            Visible = false,
         };
 
         _avatarSetter = new(networkEntity);
@@ -134,6 +204,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         HeadUI.RegisterElement(_nametag);
         HeadUI.RegisterElement(_avatarSetter.ProgressBar);
         HeadUI.RegisterElement(_icon);
+        HeadUI.RegisterElement(_healthBar);
+        HeadUI.RegisterElement(_livesBar);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
@@ -165,7 +237,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+        while (FusionSceneManager.IsDelayedLoading() || PlayerID.Metadata.Loading.GetValue())
         {
             if (FusionSceneManager.IsLoading())
             {
@@ -176,7 +248,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Make sure the rep still exists
-        if (PlayerId == null || !PlayerId.IsValid)
+        if (PlayerID == null || !PlayerID.IsValid)
         {
             yield break;
         }
@@ -186,47 +258,14 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     internal void Internal_OnAvatarChanged(string barcode)
     {
-        if (!FusionAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
+        if (!LocalAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
+        {
             AvatarSetter.SetAvatarDirty();
-    }
-
-    public void PlayPullCordEffects()
-    {
-        if (!HasRig)
-            return;
-
-        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
-        pullCord.PlayAvatarParticleEffects();
-
-        pullCord._map3.PlayAtPoint(pullCord.switchAvatar, pullCord.transform.position, null, pullCord.switchVolume, 1f, new(0f), 1f, 1f);
-    }
-
-    public void SetBallEnabled(bool isEnabled)
-    {
-        if (!HasRig)
-        {
-            return;
-        }
-
-        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
-
-        // If the ball should be enabled, make the distance required infinity so it always shows
-        if (isEnabled)
-        {
-            pullCord.handShowDist = float.PositiveInfinity;
-        }
-        // If it should be disabled, make the distance zero so that it disables itself
-        else
-        {
-            pullCord.handShowDist = 0f;
         }
     }
 
     private void OnPuppetCreated(RigManager rigManager)
     {
-        // Disable the bodylog
-        SetBallEnabled(false);
-
         // Spawn the head ui
         _headUI.Spawn();
 
@@ -234,10 +273,14 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarkDirty();
 
         // Rename the rig to match our ID
-        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallId})";
+        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerID.SmallID})";
 
         // Hook into the rig
-        OnFoundRigManager(rigManager);
+        // Wait one frame so that the rig is properly initialized
+        DelayUtilities.InvokeNextFrame(() =>
+        {
+            OnFoundRigManager(rigManager);
+        });
     }
 
     public void MarkDirty()
@@ -247,13 +290,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _isSettingsDirty = true;
         _isServerDirty = true;
 
-        _isRagdollDirty = true;
-        _ragdollState = false;
+        _isPhysicsRigDirty = true;
+        _physicsRigStates.Clear();
     }
 
     private void OnLevelLoad()
     {
-        if (CrossSceneManager.Purgatory)
+        if (NetworkSceneManager.Purgatory)
         {
             return;
         }
@@ -289,12 +332,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void HookPlayer()
     {
         // Lock the entity's owner to the player id
-        NetworkEntity.SetOwner(PlayerId);
+        NetworkEntity.SetOwner(PlayerID);
         NetworkEntity.LockOwner();
 
         // Hook into the player's events
-        PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
-        PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
+        PlayerID.Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
+        PlayerID.OnDestroyedEvent += OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged += OnServerSettingsChanged;
@@ -302,7 +345,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Find the rig for the current scene, and hook into scene loads
         FindRigManager();
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoad;
-        CrossSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
+        NetworkSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
     }
 
     private void UnhookPlayer()
@@ -311,8 +354,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.UnlockOwner();
 
         // Unhook from the player's events
-        PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
-        PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
+        PlayerID.Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
+        PlayerID.OnDestroyedEvent -= OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged -= OnServerSettingsChanged;
@@ -326,7 +369,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Unhook from scene loading events
         DestroyPuppet();
         MultiplayerHooking.OnMainSceneInitialized -= OnLevelLoad;
-        CrossSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
+        NetworkSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
     }
 
     private void DestroyPuppet()
@@ -350,7 +393,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnMetadataChanged()
     {
         // Read display name
-        if (PlayerId.TryGetDisplayName(out var name))
+        if (PlayerID.TryGetDisplayName(out var name))
         {
             _username = name;
         }
@@ -369,10 +412,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         OnMetadataChanged();
     }
 
-    public void SetRagdoll(bool isRagdolled)
+    public void EnqueuePhysicsRigState(PhysicsRigStateData data)
     {
-        _ragdollState = isRagdolled;
-        _isRagdollDirty = true;
+        _physicsRigStates.Enqueue(data);
+        _isPhysicsRigDirty = true;
     }
 
     public void SetSettings(SerializedPlayerSettings settings)
@@ -387,86 +430,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             _nametag.UpdateText();
 
-            _headUI.UpdateScale(RigRefs.RigManager);
-        }
+            HeadUI.UpdateScale(RigRefs.RigManager);
 
-        UpdateVoiceSourceSettings();
-    }
-
-    public void InsertVoiceSource(IVoiceSpeaker speaker, AudioSource source)
-    {
-        _speaker = speaker;
-        _voiceSource = source;
-        _hasVoice = true;
-    }
-
-    private void OnUpdateVoiceSource()
-    {
-        if (!_hasVoice)
-        {
-            return;
-        }
-
-        // Modify the source settings
-        var rm = RigRefs.RigManager;
-        if (HasRig)
-        {
-            var mouthSource = rm.physicsRig.headSfx.mouthSrc;
-            _voiceSource.transform.position = mouthSource.transform.position;
-
-            if (!_spatialized)
-            {
-                UpdateVoiceSourceSettings();
-                _spatialized = true;
-            }
-
-            MicrophoneDisabled = DistanceSqr > (_maxMicrophoneDistance * _maxMicrophoneDistance) * 1.2f;
-        }
-        else
-        {
-            _voiceSource.spatialBlend = 0f;
-            _voiceSource.minDistance = 0f;
-            _voiceSource.maxDistance = 30f;
-            _voiceSource.reverbZoneMix = 0f;
-            _voiceSource.dopplerLevel = 0.5f;
-
-            _spatialized = false;
-            MicrophoneDisabled = false;
-        }
-
-        // Update the jaw movement
-        if (MicrophoneDisabled)
-        {
-            JawFlapper.ClearJaw();
-        }
-        else
-        {
-            JawFlapper.UpdateJaw(_speaker.GetVoiceAmplitude());
-        }
-    }
-
-    private void UpdateVoiceSourceSettings()
-    {
-        if (_voiceSource == null)
-            return;
-
-        var rm = RigRefs.RigManager;
-        if (HasRig && rm._avatar)
-        {
-            float heightMult = rm._avatar.height / 1.76f;
-
-            _voiceSource.spatialBlend = 1f;
-            _voiceSource.reverbZoneMix = 0.1f;
-
-            _maxMicrophoneDistance = 30f * heightMult;
-
-            _voiceSource.SetRealisticRolloff(0.5f, _maxMicrophoneDistance);
-
-            // Set the mixer
-            if (_voiceSource.outputAudioMixerGroup == null)
-            {
-                _voiceSource.outputAudioMixerGroup = Audio3dManager.npcVocals;
-            }
+            VoiceSource?.SetVoiceRange(RigRefs.RigManager.avatar.height);
         }
     }
 
@@ -479,7 +445,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Unregister the entity
-        NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
+        NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
     }
 
     private void OnPlayerRegistered(NetworkEntity entity)
@@ -499,7 +465,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
 #if DEBUG
-        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallId}.");
+        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerID.SmallID}.");
 #endif
 
         Players.Remove(this);
@@ -509,7 +475,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         entity.DisconnectExtender(this);
 
         _networkEntity = null;
-        _playerId = null;
+        _playerID = null;
+
+        VoiceSource?.DestroyVoiceSource();
+        _voiceSource = null;
 
         OnUnregisterUpdates();
     }
@@ -519,10 +488,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         switch (hand.handedness)
         {
             case Handedness.LEFT:
-                RigPose.physicsLeftHand?.CopyTo(hand, hand.Controller);
+                RigPose.LeftController?.CopyTo(hand.Controller);
                 break;
             case Handedness.RIGHT:
-                RigPose.physicsRightHand?.CopyTo(hand, hand.Controller);
+                RigPose.RightController?.CopyTo(hand.Controller);
                 break;
         }
     }
@@ -534,20 +503,27 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
+        var remapRig = RigSkeleton.remapRig;
+
+        // SLZ doesn't clamp this by default, so it can create large values that make your rig go insanely fast
+        // Usually occurs after getting your legs stuck in the ground
+        remapRig._crouchSpeedLimit = ManagedMathf.Clamp01(remapRig._crouchSpeedLimit);
+
         if (NetworkEntity.IsOwner)
         {
             OnOwnedUpdate();
 
-            JawFlapper.UpdateJaw(VoiceInfo.VoiceAmplitude);
+            JawFlapper.UpdateJaw(VoiceInfo.VoiceAmplitude, deltaTime);
         }
         else
         {
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
-            OnUpdateVoiceSource();
+            VoiceSource?.UpdateVoiceSource(DistanceSqr, deltaTime);
 
-            RigSkeleton.remapRig._feetOffset = RigPose.feetOffset;
+            remapRig._crouchTarget = RigPose.CrouchTarget;
+            remapRig._feetOffset = RigPose.FeetOffset;
         }
     }
 
@@ -560,7 +536,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         if (!NetworkEntity.IsOwner)
         {
-            OnApplyPelvisForces(deltaTime);
+            OnApplyBodyForces(deltaTime);
         }
     }
 
@@ -584,21 +560,17 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Resolve avatar changes
         AvatarSetter.Resolve(RigRefs);
 
-        // Toggle ragdoll mode
-        if (_isRagdollDirty)
+        // Apply physics rig states
+        if (_isPhysicsRigDirty)
         {
             var physicsRig = rm.physicsRig;
 
-            if (_ragdollState)
+            while (_physicsRigStates.Count > 0)
             {
-                physicsRig.RagdollRig();
-            }
-            else
-            {
-                physicsRig.UnRagdollRig();
+                _physicsRigStates.Dequeue().Apply(physicsRig);
             }
 
-            _isRagdollDirty = false;
+            _isPhysicsRigDirty = false;
         }
 
         // Update settings
@@ -651,7 +623,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerId);
+        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerID);
     }
 
     public void OnEntityCull(bool isInactive)
@@ -661,7 +633,29 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        if (isInactive)
+        IsCulled = isInactive;
+    }
+
+    private void OnApplyVisiblity()
+    {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        bool hidden = IsHidden;
+
+        if (HasRig)
+        {
+            ApplyHidden(hidden);
+        }
+
+        OnHiddenChanged?.InvokeSafe(hidden, "executing NetworkPlayer.OnHiddenChanged");
+    }
+
+    private void ApplyHidden(bool hidden)
+    {
+        if (hidden)
         {
             OnCullExtras();
             OnUnregisterUpdates();
@@ -674,7 +668,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             TeleportToPose();
         }
 
-        Grabber.OnEntityCull(isInactive);
+        Grabber.OnEntityCull(hidden);
     }
 
     private void OnReregisterUpdates()
@@ -701,17 +695,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        // Reset the MarrowEntity's pose
-        MarrowEntity.ResetPose();
+        // Find the target centerOfPressure position and teleport
+        var targetPelvis = RigPose.PelvisPose.PredictedPosition;
+        var offset = targetPelvis - RigSkeleton.physicsPelvis.transform.position;
+        var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
 
-        // Get teleport position
-        var pos = RigPose.pelvisPose.PredictedPosition;
-
-        // Get offset
-        var offset = pos - RigSkeleton.physicsPelvis.transform.position;
-
-        // Apply offset to the marrow entity
-        MarrowEntity.transform.position += offset;
+        RigRefs.RigManager.TeleportToPosition(newPosition, true);
 
         // Reset PD controller
         _pelvisPDController.Reset();
@@ -721,24 +710,21 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         RigPose.ReadSkeleton(RigSkeleton);
 
-        using var writer = FusionWriter.Create(PlayerPoseUpdateData.Size);
-        var data = PlayerPoseUpdateData.Create(PlayerId, RigPose);
-        writer.Write(data);
+        var data = PlayerPoseUpdateData.Create(RigPose);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerPoseUpdate, writer);
-        MessageSender.SendToServer(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
-    private void OnApplyPelvisForces(float deltaTime)
+    private void OnApplyBodyForces(float deltaTime)
     {
         if (!ReceivedPose)
         {
             return;
         }
 
-        var pelvisPose = RigPose.pelvisPose;
+        var pelvisPose = RigPose.PelvisPose;
 
-        // Stop pelvis
+        // Stop bodies
         if (pelvisPose == null)
         {
             _pelvisPDController.Reset();
@@ -755,8 +741,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         var pelvis = RigSkeleton.physicsPelvis;
-        Vector3 pelvisPosition = pelvis.position;
-        Quaternion pelvisRotation = pelvis.rotation;
+        var pelvisPosition = pelvis.position;
+        var pelvisRotation = pelvis.rotation;
 
         // Move position with prediction
         pelvisPose.PredictPosition(deltaTime);
@@ -772,8 +758,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Apply forces
         pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
 
-        // We only want to apply angular force when ragdolled
-        if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+        // Only apply angular force when the pelvis is free
+        if (!rigManager.physicsRig.ballLocoEnabled)
         {
             pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
         }
@@ -801,20 +787,30 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Update the playspace rotation
-        RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
+        RigSkeleton.trackedPlayspace.rotation = RigPose.TrackedPlayspace.Expand();
+
+        // Update the health
+        HealthBar.Health = pose.Health;
+        HealthBar.MaxHealth = pose.MaxHealth;
+
+        RigSkeleton.health.curr_Health = pose.Health;
+        RigSkeleton.health.max_Health = pose.MaxHealth;
     }
 
     public void OnOverrideControllerRig()
     {
         if (!ReceivedPose)
         {
+            RigRefs.RigManager.remapHeptaRig.inWeight = 0f;
             return;
         }
+
+        RigRefs.RigManager.remapHeptaRig.inWeight = 1f;
 
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
             var trackedPoint = RigSkeleton.trackedPoints[i];
-            var posePoint = RigPose.trackedPoints[i];
+            var posePoint = RigPose.TrackedPoints[i];
 
             trackedPoint.SetLocalPositionAndRotation(posePoint.position, posePoint.rotation);
         }
@@ -824,6 +820,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _pose = null;
         _receivedPose = false;
+
+        NetworkEntity?.ClearDataCaughtUpPlayers();
+
+        UnregisterComponents();
     }
 
     private void OnFoundRigManager(RigManager rigManager)
@@ -854,10 +854,23 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             // Match the current cull state
             OnEntityCull(MarrowEntity.IsCulled);
+
+            // Create voice source
+            _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
+            _voiceSource.CreateVoiceSource(PlayerID.SmallID);
         }
 
         // Run events
         OnNetworkRigCreated?.InvokeSafe(this, rigManager, "executing OnNetworkRigCreated hook");
+
+        _onReadyCallback?.InvokeSafe("executing NetworkPlayer.OnReadyCallback");
+        _onReadyCallback = null;
+
+        // If this isn't us, then catch up any data
+        if (!NetworkEntity.IsOwner)
+        {
+            CatchupManager.RequestEntityDataCatchup(new(NetworkEntity));
+        }
     }
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;
@@ -884,10 +897,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnAvatarSwapped()
     {
-        RegisterComponents();
+        RegisterDynamicComponents();
     }
 
-    private HashSet<IEntityComponentExtender> _componentExtenders = null;
+    private HashSet<IEntityComponentExtender> _registeredComponentExtenders = null;
+    private HashSet<IEntityComponentExtender> _dynamicComponentExtenders = null;
 
     private void RegisterComponents()
     {
@@ -897,32 +911,73 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         var physicsRig = RigRefs.RigManager.physicsRig;
-        var avatar = RigRefs.RigManager.avatar;
 
-        var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
+        _registeredComponentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, physicsRig.gameObject);
 
-        RegisterComponents(parents);
+        RegisterDynamicComponents();
     }
 
-    private void RegisterComponents(GameObject[] parents)
+    private void RegisterDynamicComponents()
     {
-        UnregisterComponents();
-
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents);
-    }
-
-    private void UnregisterComponents()
-    {
-        if (_componentExtenders == null)
+        if (!HasRig)
         {
             return;
         }
 
-        foreach (var extender in _componentExtenders)
+        UnregisterDynamicComponents();
+
+        var avatar = RigRefs.RigManager.avatar;
+
+        _dynamicComponentExtenders = EntityComponentManager.ApplyDynamicComponents(NetworkEntity, avatar.gameObject);
+    }
+
+    private void UnregisterComponents()
+    {
+        UnregisterDynamicComponents();
+
+        if (_registeredComponentExtenders != null)
         {
-            extender.Unregister();
+            foreach (var extender in _registeredComponentExtenders)
+            {
+                extender.Unregister();
+            }
+
+            _registeredComponentExtenders.Clear();
+        }
+    }
+
+    private void UnregisterDynamicComponents()
+    {
+        if (_registeredComponentExtenders != null)
+        {
+            foreach (var extender in _registeredComponentExtenders)
+            {
+                extender.UnregisterDynamics();
+            }
         }
 
-        _componentExtenders.Clear();
+        if (_dynamicComponentExtenders != null)
+        {
+            foreach (var extender in _dynamicComponentExtenders)
+            {
+                extender.Unregister();
+            }
+
+            _dynamicComponentExtenders.Clear();
+        }
+    }
+
+    private Action _onReadyCallback = null;
+
+    public void HookOnReady(Action callback)
+    {
+        if (HasRig)
+        {
+            callback();
+        }
+        else
+        {
+            _onReadyCallback += callback;
+        }
     }
 }

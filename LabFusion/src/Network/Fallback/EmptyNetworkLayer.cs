@@ -9,6 +9,8 @@ public class EmptyNetworkLayer : NetworkLayer
 {
     public override string Title => "Empty";
 
+    public override string Platform => "Empty";
+
     public override void Disconnect(string reason = "") { }
 
     public override void StartServer() { }

@@ -1,6 +1,9 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.SDK.Extenders;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -9,122 +12,86 @@ public static class RPCStringSender
     public static bool SetValue(RPCString rpcString, string value) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcString);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCVariableExtender.Cache.TryGet(rpcString, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcString.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.Id;
-            componentIndex = extender.GetIndex(rpcString).Value;
         }
-        else if (rpcString.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcString.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcString, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var stringData = RPCStringData.Create(pathData, value);
 
-        writer.Write(stringData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCString, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(stringData, NativeMessageTag.RPCString, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
+
+    public static void CatchupValue(RPCString rpcString, PlayerID playerID)
+    {
+        // Make sure we are the level host
+        if (!NetworkSceneManager.IsLevelHost)
+        {
+            return;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcString, RPCVariable.HashTable, RPCVariableExtender.Cache);
+        var boolData = RPCStringData.Create(pathData, rpcString.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCString, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
+    }
 }
 
-public class RPCStringData : IFusionSerializable
+public class RPCStringData : INetSerializable
 {
-    public ComponentPathData pathData;
-    public string value;
+    public ComponentPathData PathData;
+    public string Value;
 
-    public void Serialize(FusionWriter writer)
+    public int? GetSize()
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
+        return ComponentPathData.Size + Value.GetSize();
     }
 
-    public void Deserialize(FusionReader reader)
+    public void Serialize(INetSerializer serializer)
     {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadString();
+        serializer.SerializeValue(ref PathData);
+        serializer.SerializeValue(ref Value);
     }
 
     public static RPCStringData Create(ComponentPathData pathData, string value)
     {
         return new RPCStringData()
         {
-            pathData = pathData,
-            value = value,
+            PathData = pathData,
+            Value = value,
         };
     }
 }
 
-
-public class RPCStringMessage : FusionMessageHandler
+[Net.SkipHandleWhileLoading]
+public class RPCStringMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCString;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
+        var data = received.ReadData<RPCStringData>();
+
+        if (data.PathData.TryGetComponent<RPCVariable, RPCVariableExtender>(RPCVariable.HashTable, out var rpcVariable))
         {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCString, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCStringData>();
-
-        // Entity object
-        if (data.pathData.hasNetworkEntity)
-        {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
             var rpcString = rpcVariable.TryCast<RPCString>();
 
             if (rpcString == null)
@@ -132,26 +99,7 @@ public class RPCStringMessage : FusionMessageHandler
                 return;
             }
 
-            OnFoundRPCString(rpcString, data.value);
-        }
-        // Scene object
-        else
-        {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
-            var rpcString = rpcVariable.TryCast<RPCString>();
-
-            if (rpcString == null)
-            {
-                return;
-            }
-
-            OnFoundRPCString(rpcString, data.value);
+            OnFoundRPCString(rpcString, data.Value);
         }
     }
 

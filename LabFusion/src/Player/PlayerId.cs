@@ -1,25 +1,33 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
-using LabFusion.SDK.Metadata;
+﻿using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
 namespace LabFusion.Player;
 
-public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
+public class PlayerID : INetSerializable, IEquatable<PlayerID>
 {
-    public bool IsMe => LongId == PlayerIdManager.LocalLongId;
+    /// <summary>
+    /// Invoked when any PlayerId's metadata changes. Passes in the PlayerId, key, and value.
+    /// </summary>
+    public static event Action<PlayerID, string, string> OnMetadataChangedEvent, OnMetadataRemovedEvent;
+
+    public bool IsMe => PlatformID == PlayerIDManager.LocalPlatformID;
     public bool IsValid => _isValid;
     private bool _isValid = false;
 
-    public bool IsHost => SmallId == PlayerIdManager.LocalSmallId;
+    public bool IsHost => SmallID == PlayerIDManager.HostSmallID;
 
-    public ulong LongId { get; private set; }
-    public byte SmallId { get; private set; }
+    public ulong PlatformID { get; private set; }
+    public byte SmallID { get; private set; }
 
-    private readonly NetworkMetadata _metadata = new();
-    public NetworkMetadata Metadata => _metadata;
+    private readonly PlayerMetadata _metadata = new();
+
+    /// <summary>
+    /// This Player's metadata. Only use this for getting metadata. To set your metadata, use <see cref="LocalPlayer.Metadata"/>.
+    /// </summary>
+    public PlayerMetadata Metadata => _metadata;
 
     private Action _onDestroyedEvent = null;
     public event Action OnDestroyedEvent
@@ -41,24 +49,26 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         }
     }
 
-    private List<string> _internalEquippedItems = new List<string>();
-    public List<string> EquippedItems => _internalEquippedItems;
+    private List<string> _equippedItems = new();
+    public List<string> EquippedItems => _equippedItems;
 
-    public PlayerId() 
+    public PlayerID() 
     {
         _isValid = false;
     }
 
-    public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
+    public PlayerID(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
     {
-        LongId = longId;
-        SmallId = smallId;
+        Metadata.CreateMetadata();
 
-        _internalEquippedItems = equippedItems;
+        PlatformID = longId;
+        SmallID = smallId;
+
+        _equippedItems = equippedItems;
 
         foreach (var pair in metadata)
         {
-            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
         OnAfterCreateId();
@@ -73,14 +83,26 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     private void HookMetadata()
     {
-        Metadata.OnTrySetMetadata += OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+        Metadata.Metadata.OnTrySetMetadata += OnTrySetMetadata;
+        Metadata.Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+
+        Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
+        Metadata.Metadata.OnMetadataRemoved += OnMetadataRemoved;
     }
 
     private void UnhookMetadata()
     {
-        Metadata.OnTrySetMetadata -= OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
+        Metadata.DestroyMetadata();
+    }
+
+    private void OnMetadataChanged(string key, string value)
+    {
+        OnMetadataChangedEvent?.InvokeSafe(this, key, value, "executing OnMetadataChangedEvent");
+    }
+
+    private void OnMetadataRemoved(string key, string value)
+    {
+        OnMetadataRemovedEvent?.InvokeSafe(this, key, value, "executing OnMetadataRemovedEvent");
     }
 
     private bool OnTrySetMetadata(string key, string value)
@@ -90,7 +112,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             return false;
         }
 
-        PlayerSender.SendPlayerMetadataRequest(SmallId, key, value);
+        PlayerSender.SendPlayerMetadataRequest(SmallID, key, value);
         return true;
     }
 
@@ -102,22 +124,22 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     private bool HasMetadataPermissions()
     {
-        return NetworkInfo.IsServer || IsMe;
+        return NetworkInfo.IsHost || IsMe;
     }
 
-    public bool Equals(PlayerId other)
+    public bool Equals(PlayerID other)
     {
         if (other == null)
         {
             return false;
         }
 
-        return SmallId == other.SmallId;
+        return SmallID == other.SmallID;
     }
 
     public override bool Equals(object obj)
     {
-        if (obj is not PlayerId other)
+        if (obj is not PlayerID other)
         {
             return false;
         }
@@ -127,14 +149,14 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     public override int GetHashCode()
     {
-        return SmallId.GetHashCode();
+        return SmallID.GetHashCode();
     }
 
-    public static implicit operator byte(PlayerId id) => id.SmallId;
+    public static implicit operator byte(PlayerID id) => id.SmallID;
 
-    public static implicit operator ulong(PlayerId id) => id.LongId;
+    public static implicit operator ulong(PlayerID id) => id.PlatformID;
 
-    public static bool IsNullOrInvalid(PlayerId id)
+    public static bool IsNullOrInvalid(PlayerID id)
     {
         return id == null || !id.IsValid;
     }
@@ -147,27 +169,27 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             return EquippedItems.Contains(item.Barcode);
     }
 
-    internal void Internal_ForceSetEquipped(string barcode, bool value)
+    internal void ForceSetEquipped(string barcode, bool value)
     {
         // Remove/add to the list
-        if (value && !_internalEquippedItems.Contains(barcode))
+        if (value && !_equippedItems.Contains(barcode))
         {
-            _internalEquippedItems.Add(barcode);
+            _equippedItems.Add(barcode);
         }
-        else if (!value && _internalEquippedItems.Contains(barcode))
+        else if (!value && _equippedItems.Contains(barcode))
         {
-            _internalEquippedItems.Remove(barcode);
+            _equippedItems.Remove(barcode);
         }
 
         // Invoke the events on the item
-        PointItemManager.Internal_OnEquipChange(this, barcode, value);
+        PointItemManager.OnEquipChanged(this, barcode, value);
     }
 
     public void Insert()
     {
-        if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId))
+        if (PlayerIDManager.PlayerIDs.Any((id) => id.SmallID == SmallID))
         {
-            var list = PlayerIdManager.PlayerIds.Where((id) => id.SmallId == SmallId).ToList();
+            var list = PlayerIDManager.PlayerIDs.Where((id) => id.SmallID == SmallID).ToList();
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -175,7 +197,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             }
         }
 
-        PlayerIdManager.PlayerIds.Add(this);
+        PlayerIDManager.InsertPlayerID(this);
     }
 
     public void Cleanup()
@@ -186,11 +208,11 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             return;
         }
 
-        PlayerIdManager.PlayerIds.Remove(this);
+        PlayerIDManager.RemovePlayerID(this);
 
-        if (PlayerIdManager.LocalId == this)
+        if (PlayerIDManager.LocalID == this)
         {
-            PlayerIdManager.RemoveLocalId();
+            PlayerIDManager.RemoveLocalID();
         }
 
         _isValid = false;
@@ -201,37 +223,42 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         UnhookMetadata();
     }
 
-    public void Serialize(FusionWriter writer)
+    public int? GetSize() => sizeof(ulong) + sizeof(byte) + Metadata.Metadata.LocalDictionary.GetSize() + EquippedItems.GetSize();
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(LongId);
-        writer.Write(SmallId);
-
-        // Write the player metadata
-        writer.Write(Metadata.LocalDictionary);
-
-        writer.Write(_internalEquippedItems);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        LongId = reader.ReadUInt64();
-        SmallId = reader.ReadByte();
-
-        // Read the player metadata
-        var metadata = reader.ReadStringDictionary();
-        foreach (var pair in metadata)
+        if (serializer.IsReader)
         {
-            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            Metadata.CreateMetadata();
         }
 
-        // Read equipped items
-        var equippedItems = reader.ReadStrings();
+        var platformID = PlatformID;
+        var smallID = SmallID;
+        var metadata = Metadata.Metadata.LocalDictionary;
+        var equippedItems = _equippedItems.ToArray();
 
-        foreach (var item in equippedItems)
+        serializer.SerializeValue(ref platformID);
+        serializer.SerializeValue(ref smallID);
+
+        serializer.SerializeValue(ref metadata);
+        serializer.SerializeValue(ref equippedItems);
+
+        if (serializer.IsReader)
         {
-            Internal_ForceSetEquipped(item, true);
-        }
+            PlatformID = platformID;
+            SmallID = smallID;
 
-        OnAfterCreateId();
+            foreach (var pair in metadata)
+            {
+                Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            }
+
+            foreach (var item in equippedItems)
+            {
+                ForceSetEquipped(item, true);
+            }
+
+            OnAfterCreateId();
+        }
     }
 }

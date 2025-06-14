@@ -6,7 +6,7 @@ namespace LabFusion.Network.Proxy;
 
 public static class ProxySocketHandler
 {
-    public static void BroadcastToClients(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastToClients(NetworkChannel channel, NetMessage message)
     {
         MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToClients : MessageTypes.UnreliableBroadcastToClients;
         NetDataWriter writer = ProxyNetworkLayer.NewWriter(type);
@@ -15,7 +15,7 @@ public static class ProxySocketHandler
         ProxyNetworkLayer.Instance.SendToProxyServer(writer);
     }
 
-    public static void BroadcastToServer(NetworkChannel channel, FusionMessage message)
+    public static void BroadcastToServer(NetworkChannel channel, NetMessage message)
     {
         try
         {
@@ -35,7 +35,13 @@ public static class ProxySocketHandler
     {
         try
         {
-            FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message), isServerHandled);
+            var readableMessage = new ReadableMessage()
+            {
+                Buffer = new ReadOnlySpan<byte>(message),
+                IsServerHandled = isServerHandled,
+            };
+
+            NativeMessageHandler.ReadMessage(readableMessage);
         }
         catch (Exception e)
         {

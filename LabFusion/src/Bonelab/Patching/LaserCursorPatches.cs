@@ -15,7 +15,7 @@ public static class LaserCursorPatches
     [HarmonyPatch(nameof(LaserCursor.Initialize))]
     public static void Initialize(LaserCursor __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }

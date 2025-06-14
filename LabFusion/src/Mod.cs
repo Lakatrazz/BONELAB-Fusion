@@ -21,6 +21,10 @@ using LabFusion.SDK.Modules;
 using LabFusion.Bonelab;
 using LabFusion.Representation;
 using LabFusion.Player;
+using LabFusion.SDK;
+using LabFusion.RPC;
+using LabFusion.UI.Popups;
+using LabFusion.Safety;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -44,10 +48,10 @@ public struct FusionVersion
     public const string VersionString = "0.0.0";
 #else
     public const byte VersionMajor = 1;
-    public const byte VersionMinor = 9;
-    public const short VersionPatch = 3;
+    public const byte VersionMinor = 10;
+    public const short VersionPatch = 0;
 
-    public const string VersionString = "1.9.3";
+    public const string VersionString = "1.10.0";
 #endif
 }
 
@@ -87,53 +91,50 @@ public class FusionMod : MelonMod
         SteamAPILoader.OnLoadSteamAPI();
 
         // Initialize data and hooks
-        ByteRetriever.PopulateInitial();
         PDController.OnInitializeMelon();
         PointItemManager.HookEvents();
+        RpcManager.OnInitialize();
     }
 
     public override void OnInitializeMelon()
     {
         // Pull files
         FusionFileLoader.OnInitializeMelon();
-
-        // Load assetbundles
-        FusionBundleLoader.OnBundleLoad();
+        ListLoader.OnInitializeMelon();
 
         // Initialize player
-        FusionPlayer.OnInitializeMelon();
         LocalPlayer.OnInitializeMelon();
-        LocalVision.OnInitializeMelon();
+        VoiceSourceManager.OnInitializeMelon();
 
         // Register base modules
         InitializeBaseModules();
 
         // Register our base handlers
-        LevelDataHandler.OnInitializeMelon();
-        FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
+        NativeMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
         GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
         PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
+        RpcManager.LoadRpcs(FusionAssembly);
 
-        EntityComponentManager.RegisterComponentsFromAssembly(FusionAssembly);
+        EntityComponentManager.LoadComponents(FusionAssembly);
 
         LobbyFilterManager.LoadBuiltInFilters();
 
         NetworkEntityManager.OnInitializeManager();
         NetworkPlayerManager.OnInitializeManager();
 
-        FusionPopupManager.OnInitializeMelon();
+        PopupManager.OnInitializeMelon();
 
         GamemodeManager.OnInitializeMelon();
         GamemodeConditionsChecker.OnInitializeMelon();
+        GamemodeRoundManager.OnInitializeMelon();
 
         // Hook into asset warehouse
         var onReady = () =>
         {
             CosmeticLoader.OnAssetWarehouseReady();
-            ScannableEvents.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
 
@@ -148,6 +149,8 @@ public class FusionMod : MelonMod
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
+        MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
+        NetworkSceneManager.OnInitializeMelon();
 
         // Initialize the networking manager
         NetworkLayerManager.OnInitializeMelon();
@@ -159,6 +162,7 @@ public class FusionMod : MelonMod
 
     private static void InitializeBaseModules()
     {
+        ModuleManager.RegisterModule<SDKModule>();
         ModuleManager.RegisterModule<MarrowModule>();
         ModuleManager.RegisterModule<BonelabModule>();
     }
@@ -174,7 +178,7 @@ public class FusionMod : MelonMod
 
         if (!_hasAutoUpdater)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 SaveToMenu = false,
                 ShowPopup = true,
@@ -196,9 +200,6 @@ public class FusionMod : MelonMod
 
         // Unhook assembly loads
         PointItemManager.UnhookEvents();
-
-        // Unload assetbundles
-        FusionBundleLoader.OnBundleUnloaded();
 
         // Undo game changes
         PlayerAdditionsHelper.OnDeinitializeMelon();
@@ -228,7 +229,7 @@ public class FusionMod : MelonMod
         ConstrainerUtilities.OnMainSceneInitialized();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnMainSceneInitialized();
+        MultiplayerHooking.InvokeOnMainSceneInitialized();
 
         FusionPlayer.OnMainSceneInitialized();
     }
@@ -249,6 +250,11 @@ public class FusionMod : MelonMod
         MenuCreator.CreateMenu();
     }
 
+    private void OnLoadingBegin()
+    {
+        ModIOThumbnailDownloader.ClearCache();
+    }
+
     public override void OnUpdate()
     {
         // Reset byte counts
@@ -265,7 +271,7 @@ public class FusionMod : MelonMod
         FusionSceneManager.Internal_UpdateScene();
 
         // Update popups
-        FusionPopupManager.OnUpdate();
+        PopupManager.OnUpdate();
 
         // Update network players
         float deltaTime = TimeUtilities.DeltaTime;
@@ -291,20 +297,20 @@ public class FusionMod : MelonMod
         InternalLayerHelpers.OnUpdateLayer();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnUpdate();
+        MultiplayerHooking.InvokeOnUpdate();
 
         // Update gamemodes
-        GamemodeManager.Internal_OnUpdate();
+        GamemodeManager.OnUpdate();
 
         // Update delayed events at the very end of the frame
-        DelayUtilities.Internal_OnUpdate();
+        DelayUtilities.OnProcessDelays();
     }
 
     public override void OnFixedUpdate()
     {
         TimeUtilities.OnEarlyFixedUpdate();
 
-        PhysicsUtilities.OnUpdateTimescale();
+        LocalPlayer.OnFixedUpdate();
 
         PDController.OnFixedUpdate();
 
@@ -315,10 +321,10 @@ public class FusionMod : MelonMod
         NetworkEntityManager.OnFixedUpdate(deltaTime);
 
         // Update hooks
-        MultiplayerHooking.Internal_OnFixedUpdate();
+        MultiplayerHooking.InvokeOnFixedUpdate();
 
         // Update gamemodes
-        GamemodeManager.Internal_OnFixedUpdate();
+        GamemodeManager.OnFixedUpdate();
     }
 
     public override void OnLateUpdate()
@@ -332,9 +338,9 @@ public class FusionMod : MelonMod
         InternalLayerHelpers.OnLateUpdateLayer();
 
         // Late update hooks
-        MultiplayerHooking.Internal_OnLateUpdate();
+        MultiplayerHooking.InvokeOnLateUpdate();
 
         // Late update gamemodes
-        GamemodeManager.Internal_OnLateUpdate();
+        GamemodeManager.OnLateUpdate();
     }
 }

@@ -5,17 +5,21 @@ using Il2CppTMPro;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.UI;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class RigNameTag : IHeadUIElement
+public class RigNameTag : IPopupLayoutElement
 {
-    private Transform _nametagTransform;
-    private Poolee _nametagPoolee;
-    private TextMeshProUGUI _nametagText;
+    private Transform _nametagTransform = null;
+    private Poolee _nametagPoolee = null;
+    private TextMeshProUGUI _nametagText = null;
+
+    private GameObject _crownGameObject = null;
 
     public TextMeshProUGUI Text => _nametagText;
 
@@ -77,6 +81,26 @@ public class RigNameTag : IHeadUIElement
         }
     }
 
+    private bool _crownVisible = false;
+    public bool CrownVisible
+    {
+        get
+        {
+            return _crownVisible;
+        }
+        set
+        {
+            _crownVisible = value;
+
+            if (_crownGameObject == null)
+            {
+                return;
+            }
+
+            _crownGameObject.SetActive(value);
+        }
+    }
+
     public Transform Transform => _nametagTransform;
 
     public void UpdateText()
@@ -95,15 +119,11 @@ public class RigNameTag : IHeadUIElement
 
     public void Spawn(Transform parent)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.NameTagReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.NameTagReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _nametagPoolee = poolee;
             _nametagText = poolee.GetComponentInChildren<TextMeshProUGUI>();
@@ -115,6 +135,8 @@ public class RigNameTag : IHeadUIElement
             poolee.gameObject.SetActive(Visible);
 
             _nametagText.font = PersistentAssetCreator.Font;
+
+            GetIcons(_nametagText.transform);
 
             UpdateText();
         });
@@ -132,5 +154,24 @@ public class RigNameTag : IHeadUIElement
         _nametagPoolee = null;
         _nametagText = null;
         _nametagTransform = null;
+    }
+
+    private void GetIcons(Transform textTransform)
+    {
+        var icons = textTransform.Find("Icons");
+
+        if (icons == null)
+        {
+            return;
+        }
+
+        var crownTransform = icons.Find("Crown");
+
+        if (crownTransform != null)
+        {
+            _crownGameObject = crownTransform.gameObject;
+
+            _crownGameObject.SetActive(CrownVisible);
+        }
     }
 }

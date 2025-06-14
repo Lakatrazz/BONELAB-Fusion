@@ -11,8 +11,8 @@ namespace LabFusion.Entities;
 
 public static class NetworkEntityManager
 {
-    private static readonly EntityIdManager<NetworkEntity> _idManager = new();
-    public static EntityIdManager<NetworkEntity> IdManager => _idManager;
+    private static readonly EntityIDManager<NetworkEntity> _idManager = new();
+    public static EntityIDManager<NetworkEntity> IDManager => _idManager;
 
     private static readonly EntityUpdateList<IEntityUpdatable> _updateManager = new();
     public static EntityUpdateList<IEntityUpdatable> UpdateManager => _updateManager;
@@ -26,27 +26,33 @@ public static class NetworkEntityManager
     private static readonly EntityValidationList _ownershipTransferValidators = new();
     public static EntityValidationList OwnershipTransferValidators => _ownershipTransferValidators;
 
+    private static readonly Dictionary<ushort, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
+
     public static void OnInitializeManager()
     {
-        MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
+        CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
+        IDManager.OnEntityRegistered += OnEntityRegistered;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
     public static void OnCleanupIds()
     {
-        IdManager.RegisteredEntities.ClearId();
-        IdManager.QueuedEntities.ClearId();
+        IDManager.RegisteredEntities.ClearID();
+        IDManager.QueuedEntities.ClearID();
+
+        _entityRegisteredCallbacks.Clear();
     }
 
     public static void OnCleanupEntities()
     {
         // Clear registered entities
-        var registeredEntities = IdManager.RegisteredEntities.EntityIdLookup.Keys.ToList();
+        var registeredEntities = IDManager.RegisteredEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in registeredEntities)
         {
             try
             {
-                IdManager.UnregisterEntity(entity);
+                IDManager.UnregisterEntity(entity);
             }
             catch (Exception e)
             {
@@ -54,10 +60,10 @@ public static class NetworkEntityManager
             }
         }
 
-        IdManager.RegisteredEntities.Clear();
+        IDManager.RegisteredEntities.Clear();
 
         // Clear queued entities
-        var queuedEntities = IdManager.QueuedEntities.EntityIdLookup.Keys.ToList();
+        var queuedEntities = IDManager.QueuedEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in queuedEntities)
         {
@@ -71,19 +77,51 @@ public static class NetworkEntityManager
             }
         }
 
-        IdManager.QueuedEntities.Clear();
+        IDManager.QueuedEntities.Clear();
+
+        _entityRegisteredCallbacks.Clear();
     }
 
-    private static void OnPlayerCatchup(PlayerId playerId)
+    private static void OnEntityRegistered(NetworkEntity entity)
     {
-        MelonCoroutines.Start(SendCatchupCoroutine(playerId));
+        var id = entity.ID;
+
+        if (_entityRegisteredCallbacks.TryGetValue(id, out var callbacks))
+        {
+            foreach (var callback in callbacks)
+            {
+                try
+                {
+                    callback(entity);
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("executing NetworkEntityManager.EntityRegisteredCallback", e);
+                }
+            }
+
+            _entityRegisteredCallbacks.Remove(id);
+        }
     }
 
-    private static IEnumerator SendCatchupCoroutine(PlayerId playerId)
+    private static void OnPlayerLeft(PlayerID playerID)
     {
-        var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
+        foreach (var entity in IDManager.RegisteredEntities.IDEntityLookup.Values)
+        {
+            entity.OnPlayerLeft(playerID);
+        }
+    }
 
-        while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerId.IsValid)
+    private static void OnPlayerServerCatchup(PlayerID playerID)
+    {
+        MelonCoroutines.Start(SendCreationCatchupCoroutine(playerID));
+    }
+
+    private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerID)
+    {
+        var catchupQueue = new Queue<NetworkEntity>(IDManager.RegisteredEntities.IDEntityLookup.Values);
+
+        while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerID.IsValid)
         {
             var entity = catchupQueue.Dequeue();
 
@@ -92,7 +130,7 @@ public static class NetworkEntityManager
                 continue;
             }
 
-            bool sent = SendCatchup(entity, playerId);
+            bool sent = SendCreationCatchup(entity, playerID);
 
             if (!sent)
             {
@@ -105,15 +143,15 @@ public static class NetworkEntityManager
         }
     }
 
-    private static bool SendCatchup(NetworkEntity entity, PlayerId playerId)
+    private static bool SendCreationCatchup(NetworkEntity entity, PlayerID playerId)
     {
         try
         {
-            return entity.InvokeCatchup(playerId);
+            return entity.InvokeCreationCatchup(playerId);
         }
         catch (Exception e)
         {
-            FusionLogger.LogException("sending catchup for NetworkEntity", e);
+            FusionLogger.LogException("sending creation catchup for NetworkEntity", e);
         }
 
         return false;
@@ -164,27 +202,24 @@ public static class NetworkEntityManager
         }
     }
 
-    public static void RequestUnqueue(ushort queuedId)
+    public static void RequestUnqueue(ushort queuedID)
     {
         if (!NetworkInfo.HasServer)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create(EntityUnqueueRequestData.Size);
-        var data = EntityUnqueueRequestData.Create(PlayerIdManager.LocalSmallId, queuedId);
-        writer.Write(data);
+        var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID, queuedID);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityUnqueueRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, CommonMessageRoutes.ReliableToServer);
     }
 
-    public static void TransferOwnership(NetworkEntity entity, PlayerId ownerId)
+    public static void TransferOwnership(NetworkEntity entity, PlayerID ownerID)
     {
-        if (!OwnershipTransferValidators.Validate(entity, ownerId))
+        if (!OwnershipTransferValidators.Validate(entity, ownerID))
         {
 #if DEBUG
-            FusionLogger.Log($"Prevented ownership transfer for NetworkEntity at id {entity.Id} due to failed validation!");
+            FusionLogger.Log($"Prevented ownership transfer for NetworkEntity at ID {entity.ID} due to failed validation!");
 #endif
 
             return;
@@ -192,26 +227,52 @@ public static class NetworkEntityManager
 
         if (entity.IsOwnerLocked)
         {
-            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but ownership was locked!");
+            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at ID {entity.ID}, but ownership was locked!");
             return;
         }
 
         if (!entity.IsRegistered)
         {
-            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but it wasn't registered!");
+            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at ID {entity.ID}, but it wasn't registered!");
             return;
         }
 
-        using var writer = FusionWriter.Create(EntityPlayerData.Size);
-        var request = EntityPlayerData.Create(ownerId.SmallId, entity.Id);
-        writer.Write(request);
+        var request = new EntityPlayerData()
+        {
+            PlayerID = ownerID.SmallID,
+            Entity = new(entity),
+        };
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityOwnershipRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(request, NativeMessageTag.EntityOwnershipRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void TakeOwnership(NetworkEntity entity)
     {
-        TransferOwnership(entity, PlayerIdManager.LocalId);
+        // Don't allow taking ownership while interaction is disabled
+        if (LocalControls.DisableInteraction)
+        {
+            return;
+        }
+
+        TransferOwnership(entity, PlayerIDManager.LocalID);
+    }
+
+    public static void HookEntityRegistered(ushort id, NetworkEntityDelegate callback)
+    {
+        var entity = IDManager.RegisteredEntities.GetEntity(id);
+
+        if (entity != null)
+        {
+            callback(entity);
+        }
+        else
+        {
+            if (!_entityRegisteredCallbacks.ContainsKey(id))
+            {
+                _entityRegisteredCallbacks[id] = new();
+            }
+
+            _entityRegisteredCallbacks[id].Add(callback);
+        }
     }
 }

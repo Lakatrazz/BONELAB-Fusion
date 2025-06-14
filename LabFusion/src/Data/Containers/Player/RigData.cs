@@ -5,10 +5,9 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Bonelab;
-
-using CommonBarcodes = LabFusion.Utilities.CommonBarcodes;
 
 namespace LabFusion.Data;
 
@@ -17,7 +16,7 @@ public static class RigData
     public static RigRefs Refs { get; private set; } = new RigRefs();
     public static bool HasPlayer => Refs.IsValid;
 
-    public static string RigAvatarId { get; internal set; } = CommonBarcodes.INVALID_AVATAR_BARCODE;
+    public static string RigAvatarId { get; internal set; } = MarrowBarcodes.EmptyBarcode;
     public static SerializedAvatarStats RigAvatarStats { get; internal set; } = null;
 
     public static Vector3 RigSpawn { get; private set; }
@@ -33,11 +32,19 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = PlayerRefs.Instance.PlayerRigManager;
+        var playerRefs = PlayerRefs.Instance;
+
+        if (playerRefs == null)
+        {
+            FusionLogger.Error("PlayerRefs does not exist, cannot get the player's RigManager!");
+            return;
+        }
+
+        var manager = playerRefs.PlayerRigManager;
 
         if (manager == null)
         {
-            FusionLogger.Error("Failed to find the Player's RigManager!");
+            FusionLogger.Error("Failed to get the player's RigManager!");
             return;
         }
 
@@ -57,7 +64,7 @@ public static class RigData
         // Update avatar
         if (manager._avatar != null)
         {
-            LocalPlayer.InvokeAvatarChanged(manager._avatar, manager.AvatarCrate.Barcode.ID);
+            LocalAvatar.InvokeAvatarChanged(manager._avatar, manager.AvatarCrate.Barcode.ID);
         }
     }
 
@@ -70,12 +77,9 @@ public static class RigData
         }
 
         // Send body vitals to network
-        using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
-        var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, PlayerRefs.Instance.PlayerBodyVitals);
-        writer.Write(data);
+        var data = PlayerRepVitalsData.Create(PlayerIDManager.LocalSmallID, PlayerRefs.Instance.PlayerBodyVitals);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static string GetAvatarBarcode()
@@ -87,6 +91,6 @@ public static class RigData
             return rm.AvatarCrate.Barcode.ID;
         }
 
-        return CommonBarcodes.INVALID_AVATAR_BARCODE;
+        return MarrowBarcodes.EmptyBarcode;
     }
 }

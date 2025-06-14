@@ -107,12 +107,6 @@
 
   <ItemGroup>
     <None Remove="dependencies\BoneLib.dll" />
-    <None Remove="dependencies\resources\bundles\Android\achievement_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\Android\content_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\Android\item_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
-    <None Remove="dependencies\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
     <None Remove="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <None Remove="dependencies\resources\text\credits\raw_credits_01.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
@@ -139,6 +133,11 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\ButtonGroup.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\DropdownButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Bits.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Bits\BitCatalogElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Bits\BitMartElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Bits\BitResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Bits\BitWelcomeElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\BoolElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\ButtonElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\DropdownElement.cs.meta" />
@@ -146,6 +145,12 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FloatElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FunctionElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GamemodeResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\GamemodeResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelQueueResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelRotationResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\General.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\BoolElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\ButtonElement.cs.meta" />
@@ -156,12 +161,18 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\GroupElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\IntElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\LabelElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\PageArrowsElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\PageElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\StringElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\ValueElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GroupElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\IntElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LabelElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Lobbies.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Lobbies\LobbyElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Lobbies\LobbyResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Lobbies\PlayerElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Lobbies\PlayerResultElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LobbyElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LobbyResultElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\MenuElement.cs.meta" />
@@ -192,6 +203,7 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\StringButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Scene.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Scene\LevelDownloadUI.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\UIPanel.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Editor.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime.meta" />
@@ -253,6 +265,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\AnimatorSyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\AvatarCosmeticPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
@@ -260,9 +273,12 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Desyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\CelebrationEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\OwnershipEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\PlayerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeCrateSpawner.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeDropper.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeDropperSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMarker.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMusicSettings.cs" />
@@ -275,15 +291,10 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCFloat.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCInt.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCVariable.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\VoiceProxy.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\achievement_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\content_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\Android\item_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
-    <EmbeddedResource Include="dependencies\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
     <EmbeddedResource Include="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_02.txt" />
@@ -416,10 +427,18 @@
     <Reference Include="UnityEngine.UIModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Data\Containers\Levels\" />
+    <Folder Include="src\Data\Interfaces\" />
   </ItemGroup>
 
 </Project>

@@ -1,30 +1,40 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
+﻿using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Downloading.ModIO;
 
-public class SerializedModIOFile : IFusionSerializable
+public class SerializedModIOFile : INetSerializable
 {
     public static readonly SerializedModIOFile Default = new(null);
 
-    public ModIOFile File { get; private set; }
+    public int? GetSize() => sizeof(int) * 2 + sizeof(bool) + Platform.GetSize();
 
-    public bool HasFile { get; private set; }
+    public ModIOFile File;
 
-    public void Serialize(FusionWriter writer)
+    public bool HasFile;
+
+    public string Platform;
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(File.ModId);
-        writer.Write(HasFile);
-    }
+        int modID = File.ModID;
+        int? fileID = File.FileID;
 
-    public void Deserialize(FusionReader reader)
-    {
-        File = new ModIOFile(
-            reader.ReadInt32(),
-            null
-        );
+        serializer.SerializeValue(ref modID);
+        serializer.SerializeValue(ref fileID);
 
-        HasFile = reader.ReadBoolean();
+        serializer.SerializeValue(ref HasFile);
+        serializer.SerializeValue(ref Platform);
+
+        if (serializer.IsReader)
+        {
+            if (Platform != ModIOManager.GetActivePlatform())
+            {
+                fileID = null;
+            }
+
+            File = new ModIOFile(modID, fileID);
+        }
     }
 
     public SerializedModIOFile() { }
@@ -37,5 +47,7 @@ public class SerializedModIOFile : IFusionSerializable
         {
             this.File = file.Value;
         }
+
+        Platform = ModIOManager.GetActivePlatform();
     }
 }

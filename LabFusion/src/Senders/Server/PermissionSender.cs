@@ -7,12 +7,9 @@ namespace LabFusion.Senders
     {
         public static void SendPermissionRequest(PermissionCommandType type, byte? otherPlayer = null)
         {
-            using FusionWriter writer = FusionWriter.Create();
-            var data = PermissionCommandRequestData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
-            writer.Write(data);
+            var data = PermissionCommandRequestData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PermissionCommandRequest, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, CommonMessageRoutes.ReliableToServer);
         }
     }
 }

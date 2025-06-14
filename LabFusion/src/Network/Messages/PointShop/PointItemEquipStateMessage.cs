@@ -1,60 +1,46 @@
-﻿using LabFusion.Data;
-using LabFusion.SDK.Points;
+﻿using LabFusion.SDK.Points;
 using LabFusion.Player;
+using LabFusion.Network.Serialization;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class PointItemEquipStateData : INetSerializable
 {
-    public class PointItemEquipStateData : IFusionSerializable
+    public byte smallId;
+    public string barcode;
+    public bool isEquipped;
+
+    public void Serialize(INetSerializer serializer)
     {
-        public byte smallId;
-        public string barcode;
-        public bool isEquipped;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(barcode);
-            writer.Write(isEquipped);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            barcode = reader.ReadString();
-            isEquipped = reader.ReadBoolean();
-        }
-
-        public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)
-        {
-            return new PointItemEquipStateData()
-            {
-                smallId = smallId,
-                barcode = barcode,
-                isEquipped = isEquipped,
-            };
-        }
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref isEquipped);
     }
 
-    public class PointItemEquipStateMessage : FusionMessageHandler
+    public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)
     {
-        public override byte Tag => NativeMessageTag.PointItemEquipState;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new PointItemEquipStateData()
         {
-            using var reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
-            // Send message to other clients if server
-            if (isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else if (PointItemManager.TryGetPointItem(data.barcode, out var item))
-            {
-                var id = PlayerIdManager.GetPlayerId(data.smallId);
+            smallId = smallId,
+            barcode = barcode,
+            isEquipped = isEquipped,
+        };
+    }
+}
 
-                id.Internal_ForceSetEquipped(data.barcode, data.isEquipped);
-            }
+public class PointItemEquipStateMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.PointItemEquipState;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PointItemEquipStateData>();
+
+        if (PointItemManager.TryGetPointItem(data.barcode, out var item))
+        {
+            var id = PlayerIDManager.GetPlayerID(data.smallId);
+
+            id.ForceSetEquipped(data.barcode, data.isEquipped);
         }
     }
 }

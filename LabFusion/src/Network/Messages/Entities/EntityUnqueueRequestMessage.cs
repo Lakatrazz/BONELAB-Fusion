@@ -1,26 +1,20 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
-using LabFusion.Exceptions;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class EntityUnqueueRequestData : IFusionSerializable
+public class EntityUnqueueRequestData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
     public byte userId;
     public ushort queuedId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(userId);
-        writer.Write(queuedId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        userId = reader.ReadByte();
-        queuedId = reader.ReadUInt16();
+        serializer.SerializeValue(ref userId);
+        serializer.SerializeValue(ref queuedId);
     }
 
     public static EntityUnqueueRequestData Create(byte userId, ushort queuedId)
@@ -33,28 +27,20 @@ public class EntityUnqueueRequestData : IFusionSerializable
     }
 }
 
-public class EntityUnqueueRequestMessage : FusionMessageHandler
+public class EntityUnqueueRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityUnqueueRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+        var data = received.ReadData<EntityUnqueueRequestData>();
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityUnqueueRequestData>();
+        var allocatedId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
 
-        using var writer = FusionWriter.Create(EntityUnqueueResponseData.Size);
-
-        var allocatedId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
         var response = EntityUnqueueResponseData.Create(data.queuedId, allocatedId);
 
-        writer.Write(response);
-
-        using var message = FusionMessage.Create(NativeMessageTag.EntityUnqueueResponse, writer);
-        MessageSender.SendFromServer(data.userId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(response, NativeMessageTag.EntityUnqueueResponse, new MessageRoute(data.userId, NetworkChannel.Reliable));
     }
 }

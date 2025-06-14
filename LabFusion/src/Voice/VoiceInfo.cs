@@ -1,6 +1,6 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
+﻿using LabFusion.Network;
 using LabFusion.Preferences.Client;
+using LabFusion.Scene;
 
 namespace LabFusion.Voice;
 
@@ -9,7 +9,7 @@ public static class VoiceInfo
     /// <summary>
     /// The current voice manager. Can be null. Contains information about player voice chat.
     /// </summary>
-    public static IVoiceManager VoiceManager => NetworkInfo.CurrentNetworkLayer?.VoiceManager;
+    public static IVoiceManager VoiceManager => NetworkLayerManager.Layer?.VoiceManager;
 
     /// <summary>
     /// Returns if the voice manager supports speaking.
@@ -42,27 +42,32 @@ public static class VoiceInfo
     public static bool HasVoiceActivity => (VoiceManager?.GetReceiver()?.HasVoiceActivity()).GetValueOrDefault();
 
     /// <summary>
-    /// Returns if the player can't speak (muted, deafened, or dying).
+    /// Returns if the player can't speak.
     /// </summary>
     public static bool IsMuted
     {
         get
         {
-            bool isDying = false;
-
-            if (RigData.HasPlayer)
-            {
-                isDying = RigData.Refs.Health.deathIsImminent;
-            }
-
-            return ClientSettings.VoiceChat.Muted.Value || isDying || IsDeafened;
+            return ClientSettings.VoiceChat.Muted.Value || IsDeafened;
         }
     }
 
     /// <summary>
     /// Returns if voice chat is currently disabled, either via deafening or the server setting.
     /// </summary>
-    public static bool IsDeafened => ClientSettings.VoiceChat.Deafened.Value || !ServerVoiceEnabled;
+    public static bool IsDeafened
+    {
+        get
+        {
+            // Disable voice in loading screens
+            if (FusionSceneManager.IsLoading())
+            {
+                return true;
+            }
+
+            return ClientSettings.VoiceChat.Deafened.Value || !ServerVoiceEnabled;
+        }
+    }
 
     /// <summary>
     /// Returns if voice chat is enabled on the server's end.

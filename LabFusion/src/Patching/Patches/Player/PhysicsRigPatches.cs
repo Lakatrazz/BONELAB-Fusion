@@ -6,49 +6,59 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.VRMK;
 
 namespace LabFusion.Patching;
 
 [HarmonyPatch(typeof(PhysicsRig))]
 public static class PhysicsRigPatches
 {
-    public static bool ForceAllowUnragdoll = false;
+    public static bool ForceAllowUnragdoll { get; set; } = false;
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(PhysicsRig.SetAvatar))]
+    public static void SetAvatarPostfix(PhysicsRig __instance, Avatar avatar)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (__instance._impactProperties == null)
+        {
+            return;
+        }
+
+        // PhysicsRig sets surfaceData but not cachedSurfaceData
+        // Why are these even separate variables? WHO KNOWS!
+        foreach (var properties in __instance._impactProperties)
+        {
+            properties._cachedSurfaceData = properties.surfaceData;
+        }
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
-    public static bool RagdollRig(PhysicsRig __instance)
+    public static void RagdollRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
-            return true;
+            return;
         }
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
-            writer.Write(data);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, true);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
-
-        // If not already shutdown, shutdown the rig
-        // This is required for patch 4 ragdolling
-        // Strangely, the bodyState system doesn't appear to properly call this
-        if (!__instance.shutdown)
-        {
-            __instance.ShutdownRig();
-        }
-
-        return true;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.UnRagdollRig))]
     public static bool UnRagdollRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -61,28 +71,36 @@ public static class PhysicsRigPatches
                 return false;
             }
 
-            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
-            writer.Write(data);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, false);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-        }
-
-        // Unshutdown the rig if needed
-        if (__instance.shutdown)
-        {
-            __instance.TurnOnRig();
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         return true;
     }
 
     [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.ShutdownRig))]
+    public static void ShutdownRig(PhysicsRig __instance)
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
+
+        if (__instance.manager.IsLocalPlayer())
+        {
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, true);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+        }
+    }
+
+    [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.TurnOnRig))]
     public static bool TurnOnRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -98,6 +116,44 @@ public static class PhysicsRigPatches
             return false;
         }
 
+        var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, false);
+
+        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+
         return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.PhysicalLegs))]
+    public static void PhysicalLegs(PhysicsRig __instance)
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
+
+        if (__instance.manager.IsLocalPlayer())
+        {
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, true);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.KinematicLegs))]
+    public static void KinematicLegs(PhysicsRig __instance)
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return;
+        }
+
+        if (__instance.manager.IsLocalPlayer())
+        {
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, false);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+        }
     }
 }

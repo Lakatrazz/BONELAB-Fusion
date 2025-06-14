@@ -6,7 +6,9 @@ using Il2CppSLZ.Marrow.Pool;
 using Il2CppTMPro;
 
 using LabFusion.Marrow;
+using LabFusion.UI;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Pool;
 
 using MelonLoader;
 
@@ -15,7 +17,7 @@ using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigProgressBar : IHeadUIElement, IProgress<float>
+public class RigProgressBar : IPopupLayoutElement, IProgress<float>
 {
     private const string _visibilityParameterName = "Visible";
 
@@ -80,15 +82,11 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
 
     public void Spawn(Transform parent)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.ProgressBarReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.ProgressBarReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _poolee = poolee;
             _animator = poolee.GetComponent<Animator>();

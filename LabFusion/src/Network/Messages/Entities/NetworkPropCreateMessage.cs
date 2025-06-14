@@ -1,78 +1,51 @@
 ﻿using LabFusion.Data;
-using LabFusion.Syncables;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Player;
 using LabFusion.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class NetworkPropCreateData : IFusionSerializable
+public class NetworkPropCreateData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort);
+    public const int Size = sizeof(byte) + ComponentHashData.Size + sizeof(ushort);
 
-    public byte ownerId;
-    public ComponentHashData hashData;
-    public ushort entityId;
+    public byte OwnerID;
+    public ComponentHashData HashData;
+    public ushort EntityID;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(ownerId);
-        writer.Write(hashData);
-        writer.Write(entityId);
+        serializer.SerializeValue(ref OwnerID);
+        serializer.SerializeValue(ref HashData);
+        serializer.SerializeValue(ref EntityID);
     }
 
-    public void Deserialize(FusionReader reader)
-    {
-        ownerId = reader.ReadByte();
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
-        entityId = reader.ReadUInt16();
-    }
-
-    public static NetworkPropCreateData Create(byte ownerId, ComponentHashData hashData, ushort entityId)
+    public static NetworkPropCreateData Create(byte ownerID, ComponentHashData hashData, ushort entityID)
     {
         return new NetworkPropCreateData()
         {
-            ownerId = ownerId,
-            hashData = hashData,
-            entityId = entityId,
+            OwnerID = ownerID,
+            HashData = hashData,
+            EntityID = entityID,
         };
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class NetworkPropCreateMessage : FusionMessageHandler
+public class NetworkPropCreateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.NetworkPropCreate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<NetworkPropCreateData>();
+        var data = received.ReadData<NetworkPropCreateData>();
 
-        var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.hashData);
-
-        // If this is handled by the server, broadcast the prop creation
-        if (isServerHandled)
-        {
-            if (marrowEntity != null && !marrowEntity.gameObject.IsSyncWhitelisted())
-            {
-                return;
-            }
-
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.HashData);
 
         // Make sure the marrow entity exists
         if (marrowEntity == null)
-        {
-            return;
-        }
-
-        // Check if its blacklisted
-        if (!marrowEntity.gameObject.IsSyncWhitelisted())
         {
             return;
         }
@@ -88,15 +61,19 @@ public class NetworkPropCreateMessage : FusionMessageHandler
         NetworkProp networkProp = new(networkEntity, marrowEntity);
 
         // Register the entity with the sent id
-        NetworkEntityManager.IdManager.RegisterEntity(data.entityId, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity(data.EntityID, networkEntity);
 
         // Set the owner to the received owner id
-        networkEntity.SetOwner(PlayerIdManager.GetPlayerId(data.ownerId));
+        var ownerId = PlayerIDManager.GetPlayerID(data.OwnerID);
 
-        // Insert catchup hook for future users
-        networkEntity.OnEntityCatchup += (entity, player) =>
+        networkEntity.SetOwner(ownerId);
+
+        // Insert creation catchup hook for future users
+        networkEntity.OnEntityCreationCatchup += (entity, player) =>
         {
             PropSender.SendCatchupCreation(networkProp, player);
         };
+
+        CatchupManager.RequestEntityDataCatchup(new(networkEntity));
     }
 }

@@ -12,22 +12,29 @@ public static class NetworkAssetSpawner
 {
     public struct SpawnCallbackInfo
     {
-        public GameObject spawned;
+        public GameObject Spawned;
 
-        public NetworkEntity entity;
+        public NetworkEntity Entity;
     }
 
     public struct SpawnRequestInfo
     {
-        public Spawnable spawnable;
+        public Spawnable Spawnable;
 
-        public Vector3 position;
+        public Vector3 Position;
 
-        public Quaternion rotation;
+        public Quaternion Rotation;
 
-        public Action<SpawnCallbackInfo> spawnCallback;
+        public Action<SpawnCallbackInfo> SpawnCallback;
 
-        public bool spawnEffect;
+        public bool SpawnEffect;
+    }
+
+    public struct DespawnRequestInfo
+    {
+        public ushort EntityID;
+
+        public bool DespawnEffect;
     }
 
     private static uint _lastTrackedSpawnable = 0;
@@ -47,11 +54,16 @@ public static class NetworkAssetSpawner
     {
         uint trackerId = _lastTrackedSpawnable++;
 
-        if (info.spawnCallback != null)
+        if (info.SpawnCallback != null)
         {
-            _callbackQueue.Add(trackerId, info.spawnCallback);
+            _callbackQueue.Add(trackerId, info.SpawnCallback);
         }
 
-        PooleeUtilities.RequestSpawn(info.spawnable.crateRef.Barcode.ID, new SerializedTransform(info.position, info.rotation), trackerId, info.spawnEffect);
+        PooleeUtilities.RequestSpawn(info.Spawnable.crateRef.Barcode.ID, new SerializedTransform(info.Position, info.Rotation), trackerId, info.SpawnEffect);
+    }
+
+    public static void Despawn(DespawnRequestInfo info)
+    {
+        PooleeUtilities.RequestDespawn(info.EntityID, info.DespawnEffect);
     }
 }

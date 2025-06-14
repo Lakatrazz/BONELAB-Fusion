@@ -55,19 +55,21 @@ public static class UIMachineUtilities
 
         var tagQuery = new TagQuery
         {
-            BoneTag = BONELABBoneTagReferences.PlayerReference,
+            BoneTag = MarrowBoneTagReferences.PlayerReference,
         };
 
         zoneEvent.activatorTags.Tags.Add(tagQuery);
 
         zoneEvent.onZoneEnter.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(true);
-            FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn.Asset);
+
+            LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOnReference), canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         zoneEvent.onZoneExit.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
             canvas.SetActive(false);
-            FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff.Asset);
+
+            LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UITurnOffReference), canvas.transform.position, LocalAudioPlayer.SFXSettings);
         }));
 
         trigger.SetActive(true);

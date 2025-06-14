@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
 
-public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
+public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 {
-    private readonly EntityIdList<TEntity> _registeredEntities = new();
+    private readonly EntityIDList<TEntity> _registeredEntities = new();
 
-    private readonly EntityIdList<TEntity> _queuedEntities = new();
+    private readonly EntityIDList<TEntity> _queuedEntities = new();
 
-    public EntityIdList<TEntity> RegisteredEntities => _registeredEntities;
+    public EntityIDList<TEntity> RegisteredEntities => _registeredEntities;
 
-    public EntityIdList<TEntity> QueuedEntities => _queuedEntities;
+    public EntityIDList<TEntity> QueuedEntities => _queuedEntities;
+
+    public event Action<TEntity> OnEntityRegistered, OnEntityUnregistered;
 
     public void RegisterEntity(ushort id, TEntity entity)
     {
         RegisteredEntities.AddEntity(id, entity);
         entity.Register(id);
+
+        OnEntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
     public void UnregisterEntity(ushort id)
@@ -37,6 +34,8 @@ public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
         RegisteredEntities.RemoveEntity(id);
 
         entity.Unregister();
+
+        OnEntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
     }
 
     public void UnregisterEntity(TEntity entity)
@@ -50,13 +49,13 @@ public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
         // Unregister the entity
         if (entity.IsRegistered)
         {
-            UnregisterEntity(entity.Id);
+            UnregisterEntity(entity.ID);
         }
     }
 
     public ushort QueueEntity(TEntity entity)
     {
-        var id = QueuedEntities.AllocateNewId();
+        var id = QueuedEntities.AllocateNewID();
 
         QueuedEntities.AddEntity(id, entity);
         entity.Queue(id);

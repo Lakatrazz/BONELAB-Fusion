@@ -7,6 +7,7 @@ using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.Senders;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
@@ -20,7 +21,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(Seat))]
 public static class SeatPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Seat.OnTriggerStay))]
@@ -47,6 +48,7 @@ public static class SeatPatches
     {
         if (IgnorePatches)
         {
+            IgnorePatches = false;
             return true;
         }
 
@@ -106,18 +108,21 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
-        var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(__instance).Value, true);
-        writer.Write(data);
+        var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, true);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Seat.DeRegister))]
     public static void DeRegister(Seat __instance)
     {
+        if (IgnorePatches)
+        {
+            IgnorePatches = false;
+            return;
+        }
+
         if (!NetworkInfo.HasServer)
         {
             return;
@@ -137,11 +142,8 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
-        var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(__instance).Value, false);
-        writer.Write(data);
+        var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, false);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu.Data;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -48,6 +49,11 @@ public abstract class Gamemode
     public abstract string Author { get; }
 
     /// <summary>
+    /// A short description of the Gamemode. Defaults to null.
+    /// </summary>
+    public virtual string Description => null;
+
+    /// <summary>
     /// A unique string that identifies the Gamemode. Defaults to "Author.Title".
     /// </summary>
     public virtual string Barcode => $"{Author}.{Title}";
@@ -84,7 +90,8 @@ public abstract class Gamemode
     internal void GamemodeRegistered()
     {
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
-        MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoinedCallback;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeftCallback;
 
         // Metadata
         Metadata.OnTrySetMetadata += OnTrySetMetadata;
@@ -104,7 +111,6 @@ public abstract class Gamemode
     internal void GamemodeUnregistered()
     {
         MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
-        MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
         // Metadata
         Metadata.OnTrySetMetadata -= OnTrySetMetadata;
@@ -136,7 +142,7 @@ public abstract class Gamemode
     private bool OnTrySetMetadata(string key, string value)
     {
         // We can only change metadata as the server!
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return false;
         }
@@ -148,7 +154,7 @@ public abstract class Gamemode
     private bool OnTryRemoveMetadata(string key)
     {
         // We can only remove metadata as the server!
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return false;
         }
@@ -157,21 +163,85 @@ public abstract class Gamemode
         return true;
     }
 
+    /// <summary>
+    /// Invoked when this Gamemode is selected for the server.
+    /// </summary>
     public virtual void OnGamemodeSelected() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode is deselected for the server.
+    /// </summary>
     public virtual void OnGamemodeDeselected() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode starts.
+    /// </summary>
     public virtual void OnGamemodeStarted() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode stops.
+    /// </summary>
     public virtual void OnGamemodeStopped() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode meets all ready conditions.
+    /// </summary>
     public virtual void OnGamemodeReady() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode no longer meets its ready conditions.
+    /// </summary>
     public virtual void OnGamemodeUnready() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode is registered.
+    /// </summary>
     public virtual void OnGamemodeRegistered() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode is unregistered.
+    /// </summary>
     public virtual void OnGamemodeUnregistered() { }
 
     public virtual void OnMainSceneInitialized() { }
 
-    public virtual void OnLoadingBegin() { }
+    /// <summary>
+    /// Invoked after the Gamemode starts if a level is not loading.
+    /// While the Gamemode is started, this will be invoked every time the player loads into the server's target level.
+    /// </summary>
+    public virtual void OnLevelReady() { }
+
+    /// <summary>
+    /// Invoked if a new Player joins while the Gamemode is already started.
+    /// </summary>
+    /// <param name="playerId"></param>
+    protected virtual void OnPlayerJoined(PlayerID playerId) { }
+
+    /// <summary>
+    /// Invoked if a Player leaves while the Gamemode is still active.
+    /// </summary>
+    /// <param name="playerId"></param>
+    protected virtual void OnPlayerLeft(PlayerID playerId) { }
+
+    private void OnPlayerJoinedCallback(PlayerID playerId)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        OnPlayerJoined(playerId);
+    }
+
+    private void OnPlayerLeftCallback(PlayerID playerId)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        OnPlayerLeft(playerId);
+    }
 
     public virtual GroupElementData CreateSettingsGroup()
     {
@@ -251,4 +321,16 @@ public abstract class Gamemode
     protected virtual void OnMetadataChanged(string key, string value) { }
 
     protected virtual void OnMetadataRemoved(string key, string value) { }
+
+    /// <summary>
+    /// Clears all of the Gamemode's non persistent metadata locally. Does not remove it from the server. This should only be used when the Gamemode is finished.
+    /// </summary>
+    public void ClearMetadata() => Metadata.ClearLocalMetadataExcept(GamemodeKeys.PersistentKeys);
+
+    /// <summary>
+    /// Checks if a player can be attacked by the local player.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>True if the player can be attacked, False otherwise.</returns>
+    public virtual bool CanAttack(PlayerID player) => true;
 }

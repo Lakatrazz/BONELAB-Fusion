@@ -2,7 +2,7 @@
 
 namespace LabFusion.Utilities
 {
-    public delegate bool UserOverride(PlayerId id);
+    public delegate bool UserOverride(PlayerID id);
 
     public static class FusionOverrides
     {
@@ -25,7 +25,7 @@ namespace LabFusion.Utilities
 
         public static event Action OnOverridesChanged;
 
-        public static bool ValidateNametag(PlayerId id)
+        public static bool ValidateNametag(PlayerID id)
         {
             if (_onValidateNametag == null)
                 return true;

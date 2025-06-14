@@ -5,11 +5,11 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
-using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.UI.Popups;
+using LabFusion.Menu;
 
 using UnityEngine;
-using LabFusion.Menu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -17,8 +17,8 @@ public class Entangled : Gamemode
 {
     public class EntangledTether
     {
-        public PlayerId player1;
-        public PlayerId player2;
+        public PlayerID player1;
+        public PlayerID player2;
 
         public Rigidbody selfPelvis;
         public Rigidbody otherPelvis;
@@ -26,14 +26,17 @@ public class Entangled : Gamemode
 
         public GameObject lineInstance;
 
-        public EntangledTether(PlayerId player1, PlayerId player2)
+        public EntangledTether(PlayerID player1, PlayerID player2)
         {
             this.player1 = player1;
             this.player2 = player2;
 
-            lineInstance = GameObject.Instantiate(FusionContentLoader.EntangledLinePrefab.Asset);
-            GameObject.DontDestroyOnLoad(lineInstance);
-            lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            FusionSpawnableReferences.EntangledLineReference.Crate.LoadAsset((Action<GameObject>)((prefab) =>
+            {
+                lineInstance = GameObject.Instantiate(prefab);
+                GameObject.DontDestroyOnLoad(lineInstance);
+                lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            }));
         }
 
         public void Dispose()
@@ -51,7 +54,7 @@ public class Entangled : Gamemode
 
         public bool IsValid()
         {
-            return !PlayerId.IsNullOrInvalid(player1) && !PlayerId.IsNullOrInvalid(player2);
+            return !PlayerID.IsNullOrInvalid(player1) && !PlayerID.IsNullOrInvalid(player2);
         }
 
         public void OnUpdate()
@@ -120,6 +123,9 @@ public class Entangled : Gamemode
     // Set info for the gamemode
     public override string Title => "Entangled";
     public override string Author => FusionMod.ModAuthor;
+    public override string Description =>
+        "Get tethered to a random player! " +
+        "No objectives except to mess around!";
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     // Set parameters for the gamemode
@@ -138,54 +144,25 @@ public class Entangled : Gamemode
     private readonly MusicPlaylist _playlist = new();
     public MusicPlaylist Playlist => _playlist;
 
-    protected PlayerId _partner = null;
+    protected PlayerID _partner = null;
     protected List<EntangledTether> _tethers = new List<EntangledTether>();
-
-    private bool _hasOverridenValues = false;
 
     public override void OnGamemodeRegistered()
     {
         Instance = this;
-
-        // Add hooks
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
 
         SetDefaultValues();
     }
 
     public override void OnMainSceneInitialized()
     {
-        if (!_hasOverridenValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _hasOverridenValues = false;
-        }
+        SetDefaultValues();
     }
 
     public void SetDefaultValues()
     {
         var song = new AudioReference(FusionMonoDiscReferences.GeoGrpFellDownTheStairsReference);
         Playlist.SetPlaylist(song);
-    }
-
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
-        {
-            if (!_hasOverridenValues)
-                SetDefaultValues();
-
-            _hasOverridenValues = true;
-        }
-    }
-
-    public override void OnLoadingBegin()
-    {
-        _hasOverridenValues = false;
     }
 
     public override void OnGamemodeUnregistered()
@@ -202,10 +179,6 @@ public class Entangled : Gamemode
         }
 
         _tethers.Clear();
-
-        // Remove hooks
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
     }
 
     protected override void OnUpdate()
@@ -226,13 +199,8 @@ public class Entangled : Gamemode
         }
     }
 
-    protected void OnPlayerJoin(PlayerId id)
+    protected override void OnPlayerJoined(PlayerID id)
     {
-        if (!IsStarted)
-        {
-            return;
-        }
-
         var unassignedPlayers = GetUnassignedPlayers();
 
         if (unassignedPlayers.Count > 0)
@@ -243,7 +211,7 @@ public class Entangled : Gamemode
             AssignPartners(id, null);
     }
 
-    protected void OnPlayerLeave(PlayerId id)
+    protected override void OnPlayerLeft(PlayerID id)
     {
         RemovePartners(id);
     }
@@ -255,7 +223,7 @@ public class Entangled : Gamemode
         Playlist.StartPlaylist();
 
         // Recursively assign players until there are no more pairs left
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var unassignedPlayers = GetUnassignedPlayers();
 
@@ -288,7 +256,7 @@ public class Entangled : Gamemode
         Playlist.StopPlaylist();
 
         // Send notification of gamemode stop
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Entangled Finish",
             Message = $"The gamemode has ended!",
@@ -298,9 +266,9 @@ public class Entangled : Gamemode
         });
 
         // Remove all player partnerships
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
-            foreach (var player in PlayerIdManager.PlayerIds)
+            foreach (var player in PlayerIDManager.PlayerIDs)
             {
                 RemovePartners(player);
             }
@@ -317,11 +285,11 @@ public class Entangled : Gamemode
         _tethers.Clear();
     }
 
-    protected List<PlayerId> GetUnassignedPlayers()
+    protected List<PlayerID> GetUnassignedPlayers()
     {
-        List<PlayerId> unassignedPlayers = new List<PlayerId>();
+        List<PlayerID> unassignedPlayers = new List<PlayerID>();
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (GetPartner(player) == null)
                 unassignedPlayers.Add(player);
@@ -330,7 +298,7 @@ public class Entangled : Gamemode
         return unassignedPlayers;
     }
 
-    protected void AssignPartners(PlayerId player1, PlayerId player2)
+    protected void AssignPartners(PlayerID player1, PlayerID player2)
     {
         // Check if the second player is null
         if (player2 == null)
@@ -340,8 +308,8 @@ public class Entangled : Gamemode
         }
 
         // Set partners both ways
-        Metadata.TrySetMetadata(GetPartnerKey(player1), player2.LongId.ToString());
-        Metadata.TrySetMetadata(GetPartnerKey(player2), player1.LongId.ToString());
+        Metadata.TrySetMetadata(GetPartnerKey(player1), player2.PlatformID.ToString());
+        Metadata.TrySetMetadata(GetPartnerKey(player2), player1.PlatformID.ToString());
 
         // Teleport the first player to the second
         if (NetworkPlayerManager.TryGetPlayer(player2, out var rep) && rep.HasRig)
@@ -350,7 +318,7 @@ public class Entangled : Gamemode
         }
     }
 
-    protected void RemovePartners(PlayerId player1)
+    protected void RemovePartners(PlayerID player1)
     {
         var player2 = GetPartner(player1);
 
@@ -360,26 +328,26 @@ public class Entangled : Gamemode
             Metadata.TryRemoveMetadata(GetPartnerKey(player2));
     }
 
-    protected string GetPartnerKey(PlayerId id)
+    protected string GetPartnerKey(PlayerID id)
     {
-        return $"{PlayerPartnerKey}.{id.LongId}";
+        return $"{PlayerPartnerKey}.{id.PlatformID}";
     }
 
-    protected PlayerId GetPartner(PlayerId id)
+    protected PlayerID GetPartner(PlayerID id)
     {
         if (Metadata.TryGetMetadata(GetPartnerKey(id), out var value) && ulong.TryParse(value, out var other))
         {
-            return PlayerIdManager.GetPlayerId(other);
+            return PlayerIDManager.GetPlayerID(other);
         }
 
         return null;
     }
 
-    protected void OnReceivePartner(PlayerId id)
+    protected void OnReceivePartner(PlayerID id)
     {
         if (id == null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Entangled Partner Assignment",
                 Message = $"You have no assigned partner! Wait for a new person to join the lobby!",
@@ -390,7 +358,7 @@ public class Entangled : Gamemode
 
             _partner = null;
 
-            EntangledTether localTether = GetTether(PlayerIdManager.LocalId);
+            EntangledTether localTether = GetTether(PlayerIDManager.LocalID);
 
             if (localTether != null)
             {
@@ -402,11 +370,11 @@ public class Entangled : Gamemode
         }
 
         _partner = id;
-        _tethers.Add(new EntangledTether(PlayerIdManager.LocalId, id));
+        _tethers.Add(new EntangledTether(PlayerIDManager.LocalID, id));
 
         id.TryGetDisplayName(out var name);
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Entangled Partner Assignment",
             Message = $"Your partner is: {name}",
@@ -419,7 +387,7 @@ public class Entangled : Gamemode
     protected override void OnMetadataChanged(string key, string value)
     {
         // Check if we are being assigned a partner
-        if (GetPartnerKey(PlayerIdManager.LocalId) == key)
+        if (GetPartnerKey(PlayerIDManager.LocalID) == key)
         {
             if (value == "-1")
             {
@@ -427,7 +395,7 @@ public class Entangled : Gamemode
             }
             else if (ulong.TryParse(value, out var partnerId))
             {
-                OnReceivePartner(PlayerIdManager.GetPlayerId(partnerId));
+                OnReceivePartner(PlayerIDManager.GetPlayerID(partnerId));
             }
         }
         else if (value != "-1" && key.StartsWith(PlayerPartnerKey))
@@ -436,17 +404,17 @@ public class Entangled : Gamemode
 
             if (id != null && ulong.TryParse(value, out var partnerId))
             {
-                _tethers.Add(new EntangledTether(id, PlayerIdManager.GetPlayerId(partnerId)));
+                _tethers.Add(new EntangledTether(id, PlayerIDManager.GetPlayerID(partnerId)));
             }
         }
     }
 
     protected override void OnMetadataRemoved(string key, string value)
     {
-        if (GetPartnerKey(PlayerIdManager.LocalId) == key)
+        if (GetPartnerKey(PlayerIDManager.LocalID) == key)
         {
             _partner = null;
-            var localTether = GetTether(PlayerIdManager.LocalId);
+            var localTether = GetTether(PlayerIDManager.LocalID);
 
             if (localTether != null)
             {
@@ -471,9 +439,9 @@ public class Entangled : Gamemode
         }
     }
 
-    protected PlayerId GetPlayerId(string partnerKey)
+    protected PlayerID GetPlayerId(string partnerKey)
     {
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
             if (GetPartnerKey(id) == partnerKey)
             {
@@ -484,7 +452,7 @@ public class Entangled : Gamemode
         return null;
     }
 
-    protected EntangledTether GetTether(PlayerId id)
+    protected EntangledTether GetTether(PlayerID id)
     {
         foreach (var tether in _tethers)
         {

@@ -1,51 +1,63 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+﻿using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
+
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Modules;
 
 namespace LabFusion.Network;
 
-public class DynamicsAssignData : IFusionSerializable
+public class DynamicsAssignData : INetSerializable
 {
-    public string[] moduleHandlerNames;
-    public Dictionary<string, Dictionary<string, string>> gamemodeMetadatas;
+    public Dictionary<string, Dictionary<string, string>> GamemodeMetadatas;
 
-    public void Serialize(FusionWriter writer)
+    public int? GetSize()
     {
-        // Write module names
-        writer.Write(moduleHandlerNames);
+        int size = 0;
 
-        // Write the length of metadata
-        int length = gamemodeMetadatas.Count;
-        writer.Write(length);
-
-        // Write all metadata
-        foreach (var pair in gamemodeMetadatas)
+        size += sizeof(int);
+        foreach (var metadata in GamemodeMetadatas)
         {
-            var barcode = pair.Key;
-            var metadata = pair.Value;
+            size += metadata.Key.GetSize();
 
-            writer.Write(barcode);
-            writer.Write(metadata);
+            size += metadata.Value.GetSize();
         }
+
+        return size;
     }
 
-    public void Deserialize(FusionReader reader)
+    public void Serialize(INetSerializer serializer)
     {
-        // Read the module and gamemode names
-        moduleHandlerNames = reader.ReadStrings();
-
-        // Read the length of metadata
-        int length = reader.ReadInt32();
-
-        // Read all active metadata info
-        gamemodeMetadatas = new Dictionary<string, Dictionary<string, string>>();
-        for (var i = 0; i < length; i++)
+        if (serializer.IsReader)
         {
-            var barcode = reader.ReadString();
-            var metadata = reader.ReadStringDictionary();
+            int length = 0;
+            serializer.SerializeValue(ref length);
 
-            gamemodeMetadatas.Add(barcode, metadata);
+            GamemodeMetadatas = new(length);
+
+            for (var i = 0; i < length; i++)
+            {
+                string barcode = null;
+                Dictionary<string, string> metadata = null;
+
+                serializer.SerializeValue(ref barcode);
+                serializer.SerializeValue(ref metadata);
+
+                GamemodeMetadatas.Add(barcode, metadata);
+            }
+        }
+        else
+        {
+            int length = GamemodeMetadatas.Count;
+            serializer.SerializeValue(ref length);
+
+            foreach (var pair in GamemodeMetadatas)
+            {
+                var barcode = pair.Key;
+                var metadata = pair.Value;
+
+                serializer.SerializeValue(ref barcode);
+                serializer.SerializeValue(ref metadata);
+            }
         }
     }
 
@@ -53,30 +65,22 @@ public class DynamicsAssignData : IFusionSerializable
     {
         return new DynamicsAssignData()
         {
-            moduleHandlerNames = ModuleMessageHandler.GetExistingTypeNames(),
-            gamemodeMetadatas = GamemodeRegistration.GetExistingMetadata(),
+            GamemodeMetadatas = GamemodeRegistration.GetExistingMetadata(),
         };
     }
 }
 
-public class DynamicsAssignMessage : FusionMessageHandler
+public class DynamicsAssignMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DynamicsAssignment;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (NetworkInfo.IsServer || isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<DynamicsAssignData>();
-
-        // Modules
-        ModuleMessageHandler.PopulateHandlerTable(data.moduleHandlerNames);
+        var data = received.ReadData<DynamicsAssignData>();
 
         // Gamemodes
-        GamemodeRegistration.PopulateGamemodeMetadatas(data.gamemodeMetadatas);
+        GamemodeRegistration.PopulateGamemodeMetadatas(data.GamemodeMetadatas);
     }
 }

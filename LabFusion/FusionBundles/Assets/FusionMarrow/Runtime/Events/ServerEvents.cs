@@ -9,6 +9,7 @@ using Il2CppInterop.Runtime.InteropTypes.Fields;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Player;
 #else
 using UltEvents;
 #endif
@@ -29,9 +30,9 @@ namespace LabFusion.Marrow.Integration
 
         private void Awake()
         {
-            MultiplayerHooking.OnJoinServer += OnServerJoined;
-            MultiplayerHooking.OnStartServer += OnServerJoined;
-            MultiplayerHooking.OnDisconnect += OnServerLeft;
+            MultiplayerHooking.OnJoinedServer += OnServerJoined;
+            MultiplayerHooking.OnStartedServer += OnServerJoined;
+            MultiplayerHooking.OnDisconnected += OnServerLeft;
             
             // If we're already in a server, invoke the UltEvent
             if (HasServer())
@@ -42,9 +43,9 @@ namespace LabFusion.Marrow.Integration
 
         private void OnDestroy()
         {
-            MultiplayerHooking.OnJoinServer -= OnServerJoined;
-            MultiplayerHooking.OnStartServer -= OnServerJoined;
-            MultiplayerHooking.OnDisconnect -= OnServerLeft;
+            MultiplayerHooking.OnJoinedServer -= OnServerJoined;
+            MultiplayerHooking.OnStartedServer -= OnServerJoined;
+            MultiplayerHooking.OnDisconnected -= OnServerLeft;
         }
 
         private void OnServerJoined()
@@ -59,12 +60,27 @@ namespace LabFusion.Marrow.Integration
 
         public bool IsHost()
         {
-            return NetworkInfo.IsServer;
+            return NetworkInfo.IsHost;
         }
 
         public bool HasServer()
         {
             return NetworkInfo.HasServer;
+        }
+
+        public string GetServerName()
+        {
+            if (!NetworkInfo.HasServer)
+            {
+                return null;
+            }
+
+            return LobbyInfoManager.LobbyInfo.LobbyName;
+        }
+
+        public int GetPlayerCount()
+        {
+            return PlayerIDManager.PlayerCount;
         }
 #else
         public UltEventHolder onServerJoinedHolder;
@@ -79,6 +95,16 @@ namespace LabFusion.Marrow.Integration
         public bool HasServer()
         {
             return false;
+        }
+
+        public string GetServerName()
+        {
+            return null;
+        }
+
+        public int GetPlayerCount()
+        {
+            return 0;
         }
 #endif
     }

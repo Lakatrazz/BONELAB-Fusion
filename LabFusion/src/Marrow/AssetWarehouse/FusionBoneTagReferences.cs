@@ -9,4 +9,6 @@ public static class FusionBoneTagReferences
     public static readonly BoneTagReference TeamLavaGangReference = new("Lakatrazz.FusionContent.BoneTag.TeamLavaGang");
 
     public static readonly BoneTagReference TeamSabrelakeReference = new("Lakatrazz.FusionContent.BoneTag.TeamSabrelake");
+
+    public static readonly BoneTagReference SpectatorReference = new("Lakatrazz.FusionContent.BoneTag.Spectator");
 }

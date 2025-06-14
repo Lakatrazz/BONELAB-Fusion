@@ -2,10 +2,11 @@
 using LabFusion.Entities;
 
 using Il2CppSLZ.Bonelab;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class SerializedBodyVitals : IFusionSerializable
+public class SerializedBodyVitals : INetSerializable
 {
     public const int Size = sizeof(float) * 9 + sizeof(byte) * 5 + sizeof(int) * 2;
 
@@ -49,44 +50,24 @@ public class SerializedBodyVitals : IFusionSerializable
         loco_Direction = vitals.loco_Direction;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(height);
-        writer.Write((byte)measurement);
-        writer.Write(chest);
-        writer.Write(underbust);
-        writer.Write(waist);
-        writer.Write(hips);
-        writer.Write(wingspan);
+        serializer.SerializeValue(ref height);
+        serializer.SerializeValue(ref measurement, Precision.OneByte);
+        serializer.SerializeValue(ref chest);
+        serializer.SerializeValue(ref underbust);
+        serializer.SerializeValue(ref waist);
+        serializer.SerializeValue(ref hips);
+        serializer.SerializeValue(ref wingspan);
 
-        writer.Write(bodyLogFlipped);
-        writer.Write(bodyLogEnabled);
-        writer.Write(hasBodyLog);
+        serializer.SerializeValue(ref bodyLogFlipped);
+        serializer.SerializeValue(ref bodyLogEnabled);
+        serializer.SerializeValue(ref hasBodyLog);
 
-        writer.Write(isRightHanded);
+        serializer.SerializeValue(ref isRightHanded);
 
-        writer.Write(loco_CurveMode);
-        writer.Write(loco_Direction);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        height = reader.ReadSingle();
-        measurement = (BodyVitals.MeasurementState)reader.ReadByte();
-        chest = reader.ReadSingle();
-        underbust = reader.ReadSingle();
-        waist = reader.ReadSingle();
-        hips = reader.ReadSingle();
-        wingspan = reader.ReadSingle();
-
-        bodyLogFlipped = reader.ReadBoolean();
-        bodyLogEnabled = reader.ReadBoolean();
-        hasBodyLog = reader.ReadBoolean();
-
-        isRightHanded = reader.ReadBoolean();
-
-        loco_CurveMode = reader.ReadInt32();
-        loco_Direction = reader.ReadInt32();
+        serializer.SerializeValue(ref loco_CurveMode);
+        serializer.SerializeValue(ref loco_Direction);
     }
 
     public void CopyTo(BodyVitals vitals)
@@ -113,23 +94,17 @@ public class SerializedBodyVitals : IFusionSerializable
     }
 }
 
-public class PlayerRepVitalsData : IFusionSerializable
+public class PlayerRepVitalsData : INetSerializable
 {
     public const int Size = SerializedBodyVitals.Size + sizeof(byte);
 
     public byte smallId;
     public SerializedBodyVitals bodyVitals;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(bodyVitals);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        bodyVitals = reader.ReadFusionSerializable<SerializedBodyVitals>();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref bodyVitals);
     }
 
     public static PlayerRepVitalsData Create(byte smallId, BodyVitals vitals)
@@ -142,24 +117,17 @@ public class PlayerRepVitalsData : IFusionSerializable
     }
 }
 
-public class PlayerRepVitalsMessage : FusionMessageHandler
+public class PlayerRepVitalsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepVitals;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepVitalsData>();
+        var data = received.ReadData<PlayerRepVitalsData>();
 
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
             player.AvatarSetter.SetVitals(data.bodyVitals);
-        }
-
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }
 }

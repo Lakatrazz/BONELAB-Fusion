@@ -4,21 +4,23 @@ namespace LabFusion.SDK.Cosmetics;
 
 public struct CosmeticVariables
 {
-    public string title;
+    public string Title;
 
-    public string description;
+    public string Description;
 
-    public string author;
+    public string Author;
 
-    public string[] tags;
+    public string Category;
 
-    public string barcode;
+    public string[] Tags;
 
-    public int price;
+    public string Barcode;
 
-    public RigPoint cosmeticPoint;
+    public int Price;
 
-    public bool hiddenInView;
+    public RigPoint CosmeticPoint;
 
-    public bool hiddenInShop;
+    public bool HiddenInView;
+
+    public bool HiddenInShop;
 }

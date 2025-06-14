@@ -1,6 +1,8 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.SDK.Extenders;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -9,122 +11,81 @@ public static class RPCFloatSender
     public static bool SetValue(RPCFloat rpcFloat, float value) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcFloat);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCVariableExtender.Cache.TryGet(rpcFloat, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcFloat.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.Id;
-            componentIndex = extender.GetIndex(rpcFloat).Value;
         }
-        else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcFloat, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var floatData = RPCFloatData.Create(pathData, value);
 
-        writer.Write(floatData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCFloat, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(floatData, NativeMessageTag.RPCFloat, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
+
+    public static void CatchupValue(RPCFloat rpcFloat, PlayerID playerID)
+    {
+        // Make sure we are the level host
+        if (!NetworkSceneManager.IsLevelHost)
+        {
+            return;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcFloat, RPCVariable.HashTable, RPCVariableExtender.Cache);
+        var boolData = RPCFloatData.Create(pathData, rpcFloat.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCFloat, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
+    }
 }
 
-public class RPCFloatData : IFusionSerializable
+public class RPCFloatData : INetSerializable
 {
-    public ComponentPathData pathData;
-    public float value;
+    public ComponentPathData PathData;
+    public float Value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadSingle();
+        serializer.SerializeValue(ref PathData);
+        serializer.SerializeValue(ref Value);
     }
 
     public static RPCFloatData Create(ComponentPathData pathData, float value)
     {
         return new RPCFloatData()
         {
-            pathData = pathData,
-            value = value,
+            PathData = pathData,
+            Value = value,
         };
     }
 }
 
-
-public class RPCFloatMessage : FusionMessageHandler
+[Net.SkipHandleWhileLoading]
+public class RPCFloatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCFloat;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
+        var data = received.ReadData<RPCFloatData>();
+
+        if (data.PathData.TryGetComponent<RPCVariable, RPCVariableExtender>(RPCVariable.HashTable, out var rpcVariable))
         {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCFloat, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCFloatData>();
-
-        // Entity object
-        if (data.pathData.hasNetworkEntity)
-        {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
             var rpcFloat = rpcVariable.TryCast<RPCFloat>();
 
             if (rpcFloat == null)
@@ -132,26 +93,7 @@ public class RPCFloatMessage : FusionMessageHandler
                 return;
             }
 
-            OnFoundRPCFloat(rpcFloat, data.value);
-        }
-        // Scene object
-        else
-        {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
-            var rpcFloat = rpcVariable.TryCast<RPCFloat>();
-
-            if (rpcFloat == null)
-            {
-                return;
-            }
-
-            OnFoundRPCFloat(rpcFloat, data.value);
+            OnFoundRPCFloat(rpcFloat, data.Value);
         }
     }
 

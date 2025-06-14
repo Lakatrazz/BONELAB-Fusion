@@ -3,9 +3,7 @@ using LabFusion.Grabbables;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Interaction;
-
-using UnityEngine;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
@@ -16,10 +14,9 @@ public class WorldGrabGroupHandler : GrabGroupHandler<SerializedWorldGrab>
 
 public class SerializedWorldGrab : SerializedGrab
 {
-    public new const int Size = SerializedGrab.Size + sizeof(byte) + SerializedTransform.Size;
+    public new const int Size = SerializedGrab.Size + sizeof(byte);
 
     public byte grabberId;
-    public SerializedTransform worldHand = default;
 
     public SerializedWorldGrab() { }
 
@@ -33,27 +30,11 @@ public class SerializedWorldGrab : SerializedGrab
         return Size;
     }
 
-    public override void WriteDefaultGrip(Hand hand, Grip grip)
+    public override void Serialize(INetSerializer serializer)
     {
-        base.WriteDefaultGrip(hand, grip);
+        base.Serialize(serializer);
 
-        worldHand = new SerializedTransform(hand.transform);
-    }
-
-    public override void Serialize(FusionWriter writer)
-    {
-        base.Serialize(writer);
-
-        writer.Write(grabberId);
-        writer.Write(worldHand);
-    }
-
-    public override void Deserialize(FusionReader reader)
-    {
-        base.Deserialize(reader);
-
-        grabberId = reader.ReadByte();
-        worldHand = reader.ReadFusionSerializable<SerializedTransform>();
+        serializer.SerializeValue(ref grabberId);
     }
 
     public override Grip GetGrip()
@@ -65,28 +46,5 @@ public class SerializedWorldGrab : SerializedGrab
         }
 
         return null;
-    }
-
-    public override void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
-    {
-        // Don't do anything if this isn't grabbed anymore
-        if (!isGrabbed)
-            return;
-
-        // Get the hand and its starting values
-        Hand hand = player.RigRefs.GetHand(handedness);
-
-        Transform handTransform = hand.transform;
-        Vector3 position = handTransform.position;
-        Quaternion rotation = handTransform.rotation;
-
-        // Move the hand into its world position
-        handTransform.SetPositionAndRotation(worldHand.position, worldHand.rotation);
-
-        // Apply the grab
-        base.RequestGrab(player, handedness, grip);
-
-        // Reset the hand position
-        handTransform.SetPositionAndRotation(position, rotation);
     }
 }

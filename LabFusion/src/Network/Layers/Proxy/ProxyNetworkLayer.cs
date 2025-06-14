@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using LabFusion.UI.Popups;
 
 using MelonLoader;
 
@@ -25,7 +26,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override string Title => "Proxy";
 
-    public override bool IsServer => _isServerActive;
+    public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
 
     public override bool RequiresValidId => false;
@@ -33,7 +34,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public SteamId SteamId;
 
     private INetworkLobby _currentLobby;
-    public override INetworkLobby CurrentLobby => _currentLobby;
+    public override INetworkLobby Lobby => _currentLobby;
 
     private IVoiceManager _voiceManager;
     public override IVoiceManager VoiceManager => _voiceManager;
@@ -139,7 +140,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                         break;
                     }
 
-                    PlayerIdManager.SetLongId(SteamId.Value);
+                    PlayerIDManager.SetLongID(SteamId.Value);
                     NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
                     writer.Put(SteamId.Value);
                     SendToProxyServer(writer);
@@ -157,10 +158,10 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 break;
             case (ulong)MessageTypes.OnDisconnected:
                 ulong longId = dataReader.GetULong();
-                if (PlayerIdManager.HasPlayerId(longId))
+                if (PlayerIDManager.HasPlayerID(longId))
                 {
                     // Update the mod so it knows this user has left
-                    InternalServerHelpers.OnUserLeave(longId);
+                    InternalServerHelpers.OnPlayerLeft(longId);
 
                     // Send disconnect notif to everyone
                     ConnectionSender.SendDisconnect(longId);
@@ -311,7 +312,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         if (serverConnection == null)
         {
             FusionLogger.Warn("Attempting to send data to a null server peer! Is the proxy active?");
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 SaveToMenu = false,
                 ShowPopup = true,
@@ -347,9 +348,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             return false;
     }
 
-    public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
-        if (IsServer)
+        if (IsHost)
         {
             ProxySocketHandler.BroadcastToClients(channel, message);
         }
@@ -359,24 +360,24 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendToServer(NetworkChannel channel, FusionMessage message)
+    public override void SendToServer(NetworkChannel channel, NetMessage message)
     {
         ProxySocketHandler.BroadcastToServer(channel, message);
     }
 
-    public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
-        var id = PlayerIdManager.GetPlayerId(userId);
+        var id = PlayerIDManager.GetPlayerID(userId);
 
         if (id != null)
         {
-            SendFromServer(id.LongId, channel, message);
+            SendFromServer(id.PlatformID, channel, message);
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
     {
-        if (!IsServer)
+        if (!IsHost)
         {
             return;
         }
@@ -458,9 +459,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
         Matchmaker.RequestLobbies((info) =>
         {
-            foreach (var lobby in info.lobbies)
+            foreach (var lobby in info.Lobbies)
             {
-                var lobbyCode = lobby.metadata.LobbyInfo.LobbyCode;
+                var lobbyCode = lobby.Metadata.LobbyInfo.LobbyCode;
                 var inputCode = code;
 
 #if DEBUG
@@ -471,7 +472,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 // Makes it easier to input
                 if (lobbyCode.ToLower() == code.ToLower())
                 {
-                    JoinServer(lobby.metadata.LobbyInfo.LobbyId);
+                    JoinServer(lobby.Metadata.LobbyInfo.LobbyId);
                     break;
                 }
             }
@@ -481,16 +482,16 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     private void HookSteamEvents()
     {
         // Add server hooks
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
         _currentLobby = new ProxyNetworkLobby();
     }
 
-    private void OnPlayerJoin(PlayerId id)
+    private void OnPlayerJoin(PlayerID id)
     {
         if (!id.IsMe)
             _voiceManager.GetSpeaker(id);
@@ -498,7 +499,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         OnUpdateLobby();
     }
 
-    private void OnPlayerLeave(PlayerId id)
+    private void OnPlayerLeave(PlayerID id)
     {
         _voiceManager.RemoveSpeaker(id);
     }
@@ -511,9 +512,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     private void UnHookSteamEvents()
     {
         // Remove server hooks
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        MultiplayerHooking.OnDisconnect -= OnDisconnect;
+        MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
+        MultiplayerHooking.OnDisconnected -= OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
     }
@@ -521,7 +522,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public void OnUpdateLobby()
     {
         // Make sure the lobby exists
-        if (CurrentLobby == null)
+        if (Lobby == null)
         {
 #if DEBUG
             FusionLogger.Warn("Tried updating the proxy lobby, but it was null!");
@@ -530,7 +531,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
 
         // Write active info about the lobby
-        LobbyMetadataHelper.WriteInfo(CurrentLobby);
+        LobbyMetadataHelper.WriteInfo(Lobby);
 
         // Request Steam Friends
         NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);

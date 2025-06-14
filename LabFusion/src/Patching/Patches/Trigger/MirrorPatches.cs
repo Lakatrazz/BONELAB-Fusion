@@ -79,7 +79,7 @@ public static class MirrorPatches
                     type = PointItemPayloadType.MIRROR,
                     rigManager = rigManager,
                     mirror = __instance,
-                    playerId = PlayerIdManager.LocalId,
+                    playerId = PlayerIDManager.LocalID,
                 }, true);
             }
         }
@@ -91,13 +91,13 @@ public static class MirrorPatches
     {
         // Check if we have a identifier
         RigManager rig = null;
-        PlayerId playerId;
+        PlayerID playerId;
 
         // If we do, get the rig manager and id
         var identifier = __instance.GetComponent<MirrorIdentifier>();
         if (identifier != null)
         {
-            playerId = PlayerIdManager.GetPlayerId(identifier.id);
+            playerId = PlayerIDManager.GetPlayerID(identifier.id);
 
             if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
             {
@@ -114,11 +114,11 @@ public static class MirrorPatches
                 return true;
             }
 
-            byte targetId = player.PlayerId.SmallId;
+            byte targetId = player.PlayerID.SmallID;
 
             // Add identifiers
             identifier = __instance.gameObject.AddComponent<MirrorIdentifier>();
-            byte localId = PlayerIdManager.LocalSmallId;
+            byte localId = PlayerIDManager.LocalSmallID;
             identifier.id = localId;
 
             Transform root = new GameObject("Fusion Mirror Root").transform;
@@ -158,7 +158,7 @@ public static class MirrorPatches
                 return false;
             }
 
-            playerId = PlayerIdManager.GetPlayerId(identifier.id);
+            playerId = PlayerIDManager.GetPlayerID(identifier.id);
 
             if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
             {
@@ -217,13 +217,13 @@ public static class MirrorPatches
     {
         // Check if we have a identifier
         RigManager rig = null;
-        PlayerId playerId = null;
+        PlayerID playerId = null;
 
         // If we do, get the rig manager and id
         var identifier = __instance.GetComponent<MirrorIdentifier>();
         if (identifier != null)
         {
-            playerId = PlayerIdManager.GetPlayerId(identifier.id);
+            playerId = PlayerIDManager.GetPlayerID(identifier.id);
 
             if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
                 rig = references.RigManager;
@@ -267,7 +267,7 @@ public static class MirrorPatches
                     type = PointItemPayloadType.MIRROR,
                     rigManager = rigManager,
                     mirror = __instance,
-                    playerId = PlayerIdManager.LocalId,
+                    playerId = PlayerIDManager.LocalID,
                 }, false);
             }
         }

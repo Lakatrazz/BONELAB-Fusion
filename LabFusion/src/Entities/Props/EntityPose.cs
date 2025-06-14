@@ -1,9 +1,8 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
+﻿using LabFusion.Network.Serialization;
 
 namespace LabFusion.Entities;
 
-public class EntityPose : IFusionSerializable   
+public class EntityPose : INetSerializable   
 {
     public BodyPose[] bodies;
 
@@ -32,7 +31,19 @@ public class EntityPose : IFusionSerializable
         }
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
+    {
+        if (serializer is NetWriter writer)
+        {
+            Serialize(writer);
+        }
+        else if (serializer is NetReader reader)
+        {
+            Deserialize(reader);
+        }
+    }
+
+    public void Serialize(NetWriter writer)
     {
         byte length = (byte)bodies.Length;
 
@@ -40,11 +51,11 @@ public class EntityPose : IFusionSerializable
 
         for (var i = 0; i < length; i++)
         {
-            writer.Write(bodies[i]);
+            writer.SerializeValue(ref bodies[i]);
         }
     }
 
-    public void Deserialize(FusionReader reader)
+    public void Deserialize(NetReader reader)
     {
         byte length = reader.ReadByte();
 
@@ -52,7 +63,7 @@ public class EntityPose : IFusionSerializable
 
         for (var i = 0; i < length; i++)
         {
-            bodies[i] = reader.ReadFusionSerializable<BodyPose>();
+            reader.SerializeValue(ref bodies[i]);
         }
     }
 }

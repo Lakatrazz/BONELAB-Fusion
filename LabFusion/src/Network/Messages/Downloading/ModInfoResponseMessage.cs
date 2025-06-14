@@ -1,78 +1,55 @@
-﻿using LabFusion.Data;
-using LabFusion.Downloading.ModIO;
+﻿using LabFusion.Downloading.ModIO;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.RPC;
 
 namespace LabFusion.Network;
 
-public class ModInfoResponseData : IFusionSerializable
+public class ModInfoResponseData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(uint);
 
-    public byte target;
+    public SerializedModIOFile ModFile;
 
-    public SerializedModIOFile modFile;
+    public uint TrackerID;
 
-    public uint trackerId;
-
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(target);
-
-        writer.Write(modFile);
-
-        writer.Write(trackerId);
+        serializer.SerializeValue(ref ModFile);
+        serializer.SerializeValue(ref TrackerID);
     }
 
-    public void Deserialize(FusionReader reader)
-    {
-        target = reader.ReadByte();
-
-        modFile = reader.ReadFusionSerializable<SerializedModIOFile>();
-
-        trackerId = reader.ReadUInt32();
-    }
-
-    public static ModInfoResponseData Create(byte target, SerializedModIOFile modFile, uint trackerId)
+    public static ModInfoResponseData Create(SerializedModIOFile modFile, uint trackerID)
     {
         return new ModInfoResponseData()
         {
-            target = target,
-            modFile = modFile,
-            trackerId = trackerId,
+            ModFile = modFile,
+            TrackerID = trackerID,
         };
     }
 }
 
-public class ModInfoResponseMessage : FusionMessageHandler
+public class ModInfoResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ModInfoResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Read request
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ModInfoResponseData>();
-
-        // If we're the server, send to the desired recipient
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.SendFromServer(data.target, NetworkChannel.Reliable, message);
-            return;
-        }
+        var data = received.ReadData<ModInfoResponseData>();
 
         // Make sure we're the target
-        if (data.target != PlayerIdManager.LocalSmallId)
+        if (received.Route.Target != PlayerIDManager.LocalSmallID)
         {
-            throw new Exception($"Received a ModInfoResponse, but we were not the desired target of {data.target}!");
+            throw new Exception($"Received a ModInfoResponse, but we were not the desired target of {received.Route.Target.Value}!");
         }
 
         // Run the callback
-        NetworkModRequester.OnResponseReceived(data.trackerId, new NetworkModRequester.ModCallbackInfo()
+        NetworkModRequester.OnResponseReceived(data.TrackerID, new NetworkModRequester.ModCallbackInfo()
         {
-            modFile = data.modFile.File,
-            hasFile = data.modFile.HasFile,
-        });
+            ModFile = data.ModFile.File,
+            HasFile = data.ModFile.HasFile,
+            Platform = data.ModFile.Platform,
+        });;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Data;
 
@@ -22,7 +21,7 @@ public class BanList
 
 public static class BanManager
 {
-    private const string _fileName = "bans.json";
+    public const string FileName = "bans.json";
 
     public static BanList BanList { get; private set; } = new();
 
@@ -30,23 +29,17 @@ public static class BanManager
     {
         BanList = new();
 
-        var filePath = PersistentData.GetPath(_fileName);
+        var deserializedList = DataSaver.ReadJsonFromFile<BanList>(FileName);
 
-        if (File.Exists(filePath))
+        if (deserializedList != null)
         {
-            var json = File.ReadAllText(filePath);
-
-            BanList = JsonSerializer.Deserialize<BanList>(json);
+            BanList = deserializedList;
         }
     }
 
     private static void WriteFile()
     {
-        var filePath = PersistentData.GetPath(_fileName);
-
-        var json = JsonSerializer.Serialize(BanList);
-
-        File.WriteAllText(filePath, json);
+        DataSaver.WriteJsonToFile(FileName, BanList);
     }
 
     public static void Ban(PlayerInfo playerInfo, string reason)

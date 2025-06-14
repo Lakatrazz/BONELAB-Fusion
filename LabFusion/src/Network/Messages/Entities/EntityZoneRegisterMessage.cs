@@ -2,64 +2,28 @@
 
 using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Zones;
+using LabFusion.Network.Serialization;
 
 using MelonLoader;
 
 namespace LabFusion.Network;
 
-public class EntityZoneRegisterData : IFusionSerializable
-{
-    public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int);
-
-    public byte ownerId;
-    public ushort entityId;
-
-    public void Serialize(FusionWriter writer)
-    {
-        writer.Write(ownerId);
-        writer.Write(entityId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        ownerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-    }
-
-    public static EntityZoneRegisterData Create(byte ownerId, ushort entityId)
-    {
-        return new EntityZoneRegisterData()
-        {
-            ownerId = ownerId,
-            entityId = entityId,
-        };
-    }
-}
-
-public class EntityZoneRegisterMessage : FusionMessageHandler
+public class EntityZoneRegisterMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityZoneRegister;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityZoneRegisterData>();
+        var data = received.ReadData<NetworkEntityReference>();
 
-        // Send message to other clients if server
-        if (isServerHandled)
+        if (!data.TryGetEntity(out var entity))
         {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
             return;
         }
 
-        // Get entity
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
-
-        if (entity == null)
+        if (received.Sender != entity.OwnerID.SmallID)
         {
             return;
         }

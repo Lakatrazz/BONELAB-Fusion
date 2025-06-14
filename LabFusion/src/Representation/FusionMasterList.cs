@@ -35,18 +35,15 @@ public static class FusionMasterList
         new(76561198222917852, "Mr.Gaming"),
         new(76561198096586464, "brwok"),
         new(76561198143565238, "Riggle"),
-        new(76561198233973112, "Alfie"),
+        new(76561198233973112, "Alfie", false),
         new(76561198061847729, "zz0000"),
         new(76561198837064193, "172", false),
-
-        // Fusion frequenters
-        new(76561198060337335, "Camobiwon"),
-        new(76561198381184399, "Puma"),
+        new(76561198147092613, "Eli", false),
     };
 
     public static FusionMasterResult VerifyPlayer(ulong id, string name)
     {
-        if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer)
+        if (NetworkLayerManager.Layer is SteamNetworkLayer)
         {
             return VerifyPlayer(_steamPlayers, id, name);
         }

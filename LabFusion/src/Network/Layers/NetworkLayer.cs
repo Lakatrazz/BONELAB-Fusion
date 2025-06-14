@@ -45,17 +45,22 @@ public abstract class NetworkLayer
     }
 
     /// <summary>
-    /// The Title of this NetworkLayer. Used for saving preferences.
+    /// The Title of this NetworkLayer to be displayed.
     /// </summary>
     public virtual string Title => Type.AssemblyQualifiedName;
 
     /// <summary>
-    /// Returns true if this layer is hosting a server.
+    /// The Platform of this NetworkLayer. Necessary for validating platform ID related things such as bans.
     /// </summary>
-    public virtual bool IsServer => false;
+    public abstract string Platform { get; }
 
     /// <summary>
-    /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
+    /// Returns true if this layer is hosting a server.
+    /// </summary>
+    public virtual bool IsHost => false;
+
+    /// <summary>
+    /// Returns true if this layer is a client inside of a server. This also returns true for the host.
     /// </summary>
     public virtual bool IsClient => false;
 
@@ -65,9 +70,9 @@ public abstract class NetworkLayer
     public virtual bool ServerCanSendToHost => true;
 
     /// <summary>
-    /// Returns the current active lobby.
+    /// Returns the active lobby.
     /// </summary>
-    public virtual INetworkLobby CurrentLobby => null;
+    public virtual INetworkLobby Lobby => null;
 
     /// <summary>
     /// Returns the used voice manager.
@@ -139,7 +144,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendFromServer(byte userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.
@@ -147,21 +152,21 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the dedicated server.
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendToServer(NetworkChannel channel, FusionMessage message) { }
+    public virtual void SendToServer(NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
     /// </summary>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+    public virtual void BroadcastMessage(NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// If this is a server, sends this message back to all users except for the provided id.
@@ -169,13 +174,13 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
-            if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
+            if (id.SmallID != userId && (id.SmallID != 0 || !ignoreHost))
             {
-                SendFromServer(id.SmallId, channel, message);
+                SendFromServer(id.SmallID, channel, message);
             }
         }
     }
@@ -186,13 +191,13 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
-            if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
+            if (id.PlatformID != userId && (id.SmallID != 0 || !ignoreHost))
             {
-                SendFromServer(id.SmallId, channel, message);
+                SendFromServer(id.SmallID, channel, message);
             }
         }
     }
@@ -219,7 +224,7 @@ public abstract class NetworkLayer
 
     public virtual void OnLateUpdateLayer() { }
 
-    public virtual void OnUserJoin(PlayerId id) { }
+    public virtual void OnUserJoin(PlayerID id) { }
 
     public virtual string GetServerCode()
     {

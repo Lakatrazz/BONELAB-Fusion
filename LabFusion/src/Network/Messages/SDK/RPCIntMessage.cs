@@ -1,6 +1,9 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.SDK.Extenders;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -9,122 +12,81 @@ public static class RPCIntSender
     public static bool SetValue(RPCInt rpcInt, int value) 
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return false;
         }
 
-        // Get the rpc event
-        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcInt);
-
-        var hasNetworkEntity = false;
-        ushort entityId = 0;
-        ushort componentIndex = 0;
-
+        // Check for ownership
         if (RPCVariableExtender.Cache.TryGet(rpcInt, out var entity))
         {
-            // If we need ownership, make sure we have it
             if (rpcInt.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }
-
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            entityId = entity.Id;
-            componentIndex = extender.GetIndex(rpcInt).Value;
         }
-        else if (rpcInt.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcInt.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
-        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var intData = RPCIntData.Create(pathData, value);
 
-        writer.Write(intData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCInt, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, CommonMessageRoutes.ReliableToClients);
 
         return true;
     }
+
+    public static void CatchupValue(RPCInt rpcInt, PlayerID playerID)
+    {
+        // Make sure we are the level host
+        if (!NetworkSceneManager.IsLevelHost)
+        {
+            return;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcInt, RPCVariable.HashTable, RPCVariableExtender.Cache);
+        var boolData = RPCIntData.Create(pathData, rpcInt.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
+    }
 }
 
-public class RPCIntData : IFusionSerializable
+public class RPCIntData : INetSerializable
 {
-    public ComponentPathData pathData;
-    public int value;
+    public ComponentPathData PathData;
+    public int Value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadInt32();
+        serializer.SerializeValue(ref PathData);
+        serializer.SerializeValue(ref Value);
     }
 
     public static RPCIntData Create(ComponentPathData pathData, int value)
     {
         return new RPCIntData()
         {
-            pathData = pathData,
-            value = value,
+            PathData = pathData,
+            Value = value,
         };
     }
 }
 
-
-public class RPCIntMessage : FusionMessageHandler
+[Net.SkipHandleWhileLoading]
+public class RPCIntMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCInt;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
+        var data = received.ReadData<RPCIntData>();
+
+        if (data.PathData.TryGetComponent<RPCVariable, RPCVariableExtender>(RPCVariable.HashTable, out var rpcVariable))
         {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCInt, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCIntData>();
-
-        // Entity object
-        if (data.pathData.hasNetworkEntity)
-        {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<RPCVariableExtender>();
-
-            if (extender == null)
-            {
-                return;
-            }
-
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
             var rpcInt = rpcVariable.TryCast<RPCInt>();
 
             if (rpcInt == null)
@@ -132,26 +94,7 @@ public class RPCIntMessage : FusionMessageHandler
                 return;
             }
 
-            OnFoundRPCInt(rpcInt, data.value);
-        }
-        // Scene object
-        else
-        {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
-
-            if (rpcVariable == null)
-            {
-                return;
-            }
-
-            var rpcInt = rpcVariable.TryCast<RPCInt>();
-
-            if (rpcInt == null)
-            {
-                return;
-            }
-
-            OnFoundRPCInt(rpcInt, data.value);
+            OnFoundRPCInt(rpcInt, data.Value);
         }
     }
 

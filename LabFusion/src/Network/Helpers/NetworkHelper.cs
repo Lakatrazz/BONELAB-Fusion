@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Senders;
-using LabFusion.Utilities;
 using LabFusion.Representation;
+using LabFusion.UI.Popups;
 
 namespace LabFusion.Network;
 
@@ -16,7 +16,7 @@ public static class NetworkHelper
     /// </summary>
     public static void StartServer()
     {
-        NetworkInfo.CurrentNetworkLayer?.StartServer();
+        NetworkLayerManager.Layer?.StartServer();
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class NetworkHelper
     /// </summary>
     public static void Disconnect(string reason = "")
     {
-        NetworkInfo.CurrentNetworkLayer?.Disconnect(reason);
+        NetworkLayerManager.Layer?.Disconnect(reason);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public static class NetworkHelper
     /// <param name="code"></param>
     public static void JoinServerByCode(string code)
     {
-        NetworkInfo.CurrentNetworkLayer?.JoinServerByCode(code);
+        NetworkLayerManager.Layer?.JoinServerByCode(code);
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public static class NetworkHelper
     /// </summary>
     public static void RefreshServerCode()
     {
-        NetworkInfo.CurrentNetworkLayer.RefreshServerCode();
+        NetworkLayerManager.Layer.RefreshServerCode();
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ public static class NetworkHelper
     /// <returns></returns>
     public static bool IsFriend(ulong userId)
     {
-        if (NetworkInfo.CurrentNetworkLayer != null)
-            return NetworkInfo.CurrentNetworkLayer.IsFriend(userId);
+        if (NetworkLayerManager.Layer != null)
+            return NetworkLayerManager.Layer.IsFriend(userId);
 
         return false;
     }
@@ -77,7 +77,7 @@ public static class NetworkHelper
     /// Kicks a user from the game.
     /// </summary>
     /// <param name="id"></param>
-    public static void KickUser(PlayerId id)
+    public static void KickUser(PlayerID id)
     {
         // Don't kick blessed users
         if (FusionBlessings.IsBlessed(id))
@@ -85,7 +85,7 @@ public static class NetworkHelper
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Kick User",
 
@@ -106,7 +106,7 @@ public static class NetworkHelper
     /// Bans a user from the game.
     /// </summary>
     /// <param name="id"></param>
-    public static void BanUser(PlayerId id)
+    public static void BanUser(PlayerID id)
     {
         // Don't ban blessed users
         if (FusionBlessings.IsBlessed(id))
@@ -114,7 +114,7 @@ public static class NetworkHelper
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Ban User",
 

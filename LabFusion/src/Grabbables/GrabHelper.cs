@@ -1,10 +1,10 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Syncables;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Patching;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow;
 
@@ -45,7 +45,7 @@ public static class GrabHelper
         }
 
         // Get base values for the message
-        byte smallId = PlayerIdManager.LocalSmallId;
+        byte smallId = PlayerIDManager.LocalSmallID;
 
         // Do we already have a synced object?
         if (GripExtender.Cache.TryGet(grip, out var entity))
@@ -63,17 +63,17 @@ public static class GrabHelper
         }
     }
 
-    public static void SendObjectAttach(Hand hand, Grip grip)
+    public static void SendObjectAttach(Hand hand, Grip grip, PlayerID target = null)
     {
         if (!NetworkInfo.HasServer)
         {
             return;
         }
 
-        Internal_ObjectAttach(hand, grip);
+        Internal_ObjectAttach(hand, grip, target);
     }
 
-    internal static void Internal_ObjectAttach(Hand hand, Grip grip)
+    internal static void Internal_ObjectAttach(Hand hand, Grip grip, PlayerID target = null)
     {
         if (!NetworkInfo.HasServer)
         {
@@ -83,7 +83,7 @@ public static class GrabHelper
         var handedness = hand.handedness;
 
         // Get base values for the message
-        byte smallId = PlayerIdManager.LocalSmallId;
+        byte smallId = PlayerIDManager.LocalSmallID;
         GrabGroup group = GrabGroup.UNKNOWN;
         SerializedGrab serializedGrab = null;
 
@@ -137,23 +137,17 @@ public static class GrabHelper
                 {
                     var gripExtender = entity.GetExtender<GripExtender>();
 
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.Id);
+                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.ID);
                     OnFinish();
                 });
             }
             else
             {
-                // Make sure the GameObject is whitelisted before syncing
-                if (!marrowEntity.gameObject.IsSyncWhitelisted())
-                {
-                    return;
-                }
-
                 // Invoked when the NetworkProp is finished being created
                 void OnEntityFinish(NetworkProp prop)
                 {
                     var gripExtender = prop.NetworkEntity.GetExtender<GripExtender>();
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, prop.NetworkEntity.Id);
+                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, prop.NetworkEntity.ID);
 
                     OnFinish();
                 }
@@ -179,12 +173,16 @@ public static class GrabHelper
             // Write the default grip values
             serializedGrab.WriteDefaultGrip(hand, grip);
 
-            using var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize());
             var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            if (target == null)
+            {
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, CommonMessageRoutes.ReliableToOtherClients);
+            }
+            else
+            {
+                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, new MessageRoute(target.SmallID, NetworkChannel.Reliable));
+            }
         }
     }
 
@@ -207,11 +205,8 @@ public static class GrabHelper
             return;
         }
 
-        using var writer = FusionWriter.Create(PlayerRepReleaseData.Size);
-        var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
-        writer.Write(data);
+        var data = PlayerRepReleaseData.Create(PlayerIDManager.LocalSmallID, handedness);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

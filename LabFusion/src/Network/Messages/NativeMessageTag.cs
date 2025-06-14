@@ -15,7 +15,7 @@ public static class NativeMessageTag
         PlayerPoseUpdate = 4,
         PlayerRepAvatar = 5,
         PlayerRepVitals = 6,
-        PlayerRepRagdoll = 7,
+        PhysicsRigState = 7,
         PlayerRepSeat = 8,
 
         PlayerRepGrab = 9,
@@ -39,72 +39,19 @@ public static class NativeMessageTag
         DespawnRequest = 22,
         DespawnResponse = 23,
 
-        InventorySlotInsert = 24,
-        InventorySlotDrop = 25,
-        InventoryAmmoReceiverDrop = 26,
-
-        MagazineInsert = 27,
-        MagazineEject = 28,
-
-        GunShot = 29,
-
-        PuppetMasterKill = 30,
-
-        ObjectDestructibleDestroy = 32,
-
-        ArenaTransition = 33,
-        ChallengeSelect = 34,
-        ArenaMenu = 35,
-        GeoSelect = 36,
-
-        DescentNoose = 37,
-        DescentElevator = 38,
-
-        MagmaGateEvent = 40,
-
-        DescentIntro = 41,
-
-        BodyLogEffect = 42,
-
-        BonelabHubEvent = 43,
-
         PlayerSettings = 44,
         ServerSettings = 45,
 
-        KartRaceEvent = 46,
-
-        KeySlot = 48,
-
-        NimbusGunNoclip = 49,
-
         PlayerRepAction = 50,
 
-        ConstrainerMode = 51,
-        ConstraintCreate = 52,
-        ConstraintDelete = 53,
-
-        BoardGenerator = 54,
-
-        HomeEvent = 55,
-
-        CrateSpawner = 56,
-
-        TimeScale = 57,
         SlowMoButton = 58,
 
         PlayerMetadataRequest = 59,
         PlayerMetadataResponse = 60,
 
-        TrialSpawnerEvents = 61,
-
         LevelRequest = 62,
 
-        BodyLogToggle = 63,
-
         PlayerRepDamage = 64,
-
-        TimeTrial_GameController = 65,
-        BaseGameController = 66,
 
         PlayerVoiceChat = 67,
 
@@ -112,17 +59,10 @@ public static class NativeMessageTag
 
         PlayerRepTeleport = 69,
 
-        HolodeckEvent = 71,
-
-        SpawnGunSelect = 72,
-
-        MineDiveCart = 73,
-
-        MagazineClaim = 76,
-
-        // Mod downloading
         ModInfoRequest = 77,
         ModInfoResponse = 78,
+
+        EntityDataRequest = 79,
 
         // SDK messages
         // Module setup
@@ -145,5 +85,6 @@ public static class NativeMessageTag
         RPCFloat = 211,
         RPCBool = 212,
         RPCString = 213,
-        RPCVector3 = 214;
+        RPCVector3 = 214,
+        RPCMethod = 215;
 }

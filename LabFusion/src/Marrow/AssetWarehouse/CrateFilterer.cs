@@ -6,7 +6,7 @@ namespace LabFusion.Marrow;
 
 public static class CrateFilterer
 {
-    public static int GetModId(Pallet pallet)
+    public static int GetModID(Pallet pallet)
     {
         // Get the mod info
         var manifest = GetManifest(pallet);
@@ -43,6 +43,11 @@ public static class CrateFilterer
 
     public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
+        if (barcode == null)
+        {
+            return false;
+        }
+
         var warehouse = AssetWarehouse.Instance;
 
         if (!warehouse._crateRegistry.ContainsKey(barcode))
@@ -55,6 +60,11 @@ public static class CrateFilterer
 
     public static TCrate GetCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
+        if (barcode == null)
+        {
+            return null;
+        }
+
         var warehouse = AssetWarehouse.Instance;
 
         if (!warehouse._crateRegistry.ContainsKey(barcode))
@@ -118,5 +128,17 @@ public static class CrateFilterer
         }
 
         return true;
+    }
+
+    public static bool HasTags<TCrate>(Barcode barcode, params string[] tags) where TCrate : Crate
+    {
+        var crate = GetCrate<TCrate>(barcode);
+
+        if (crate == null)
+        {
+            return false;
+        }
+
+        return HasTags(crate, tags);
     }
 }

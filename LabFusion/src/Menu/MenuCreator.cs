@@ -9,6 +9,8 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -93,7 +95,7 @@ public static class MenuCreator
         {
             default:
             case FusionPalletReferences.PalletStatus.MISSING:
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Missing Fusion Content",
                     Message = "The Fusion Content mod is missing! Beginning download...",
@@ -106,7 +108,7 @@ public static class MenuCreator
                 DownloadContent();
                 return false;
             case FusionPalletReferences.PalletStatus.OUTDATED:
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Outdated Fusion Content",
                     Message = "The installed Fusion Content mod is outdated! Updating...",
@@ -139,7 +141,7 @@ public static class MenuCreator
 
             if (info.result != ModResult.SUCCEEDED)
             {
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Download Failed",
                     Message = "The Fusion Content failed to install! Make sure you are logged into mod.io in VoidG114 or BONELAB Hub!",
@@ -167,17 +169,17 @@ public static class MenuCreator
         // Make sure the page has been spawned properly
         if (_menuPageIndex < 0)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Open Menu",
-                Message = "The Fusion menu does not exist!",
+                Message = "The Fusion menu does not exist! Please reinstall the Fusion Content mod.io mod!",
                 Type = NotificationType.ERROR,
                 SaveToMenu = false,
                 ShowPopup = true,
-                PopupLength = 4f,
+                PopupLength = 6f,
             });
 
-            FusionLogger.Error("Tried opening the menu, but it doesn't exist!");
+            FusionLogger.Error("Tried opening the menu, but it doesn't exist! Please reinstall the Fusion Content mod.io mod!");
             return;
         }
 
@@ -204,15 +206,11 @@ public static class MenuCreator
         }
 
         // Register and spawn the menu spawnable
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.FusionMenuReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.FusionMenuReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnMenuSpawned);
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, OnMenuSpawned);
     }
 
     private static void OnMenuSpawned(Poolee poolee)
@@ -262,7 +260,7 @@ public static class MenuCreator
 
     private static void OnBackArrowPressed()
     {
-        var selectedPage = MenuPage.SelectedPage;
+        var selectedPage = MenuPageHelper.RootPage.RootCurrentPage;
 
         GoBack(selectedPage);
     }
@@ -275,13 +273,15 @@ public static class MenuCreator
         {
             var upperParent = parent.Parent;
 
-            upperParent.SelectSubPage(parent);
-
             // Edge case fix
             // Could be avoided if I designed MenuPages better with FieldInjection but I do not care enough
-            if (upperParent.SubPages.Count <= 1 && upperParent.Parent != null)
+            if ((upperParent.SubPages.Count <= 1 || parent.SubPages.IndexOf(parent.CurrentPage) == parent.DefaultPageIndex) && upperParent.Parent != null)
             {
                 upperParent.Parent.SelectSubPage(upperParent);
+            }
+            else
+            {
+                upperParent.SelectSubPage(parent);
             }
 
             return;

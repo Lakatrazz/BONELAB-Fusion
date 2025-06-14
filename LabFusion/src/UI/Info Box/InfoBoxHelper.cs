@@ -1,32 +1,24 @@
 ﻿using UnityEngine;
 
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Pool;
-
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
 
-namespace LabFusion.UI
+namespace LabFusion.UI;
+
+public static class InfoBoxHelper
 {
-    public static class InfoBoxHelper
+    public static void CompleteInfoBoard(GameObject gameObject)
     {
-        public static void CompleteInfoBoard(GameObject gameObject)
-        {
-            // Currently just needs to add the InfoBox script
-            gameObject.AddComponent<InfoBox>();
-        }
+        // Currently just needs to add the InfoBox script
+        gameObject.AddComponent<InfoBox>();
+    }
 
-        public static void SpawnInfoBoard(Vector3 position, Quaternion rotation)
-        {
-            var spawnable = new Spawnable()
-            {
-                crateRef = FusionSpawnableReferences.InfoBoardReference,
-                policyData = null,
-            };
+    public static void SpawnInfoBoard(Vector3 position, Quaternion rotation)
+    {
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.InfoBoardReference);
 
-            AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-            SafeAssetSpawner.Spawn(spawnable, position, rotation);
-        }
+        LocalAssetSpawner.Spawn(spawnable, position, rotation);
     }
 }

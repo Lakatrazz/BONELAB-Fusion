@@ -1,10 +1,11 @@
 ﻿using LabFusion.MonoBehaviours;
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 
 using Il2CppSLZ.Marrow;
+
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using UnityEngine;
 
@@ -15,9 +16,9 @@ public static class PlayerAdditionsHelper
     public static void OnInitializeMelon()
     {
         // Hook multiplayer events
-        MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnJoinedServer += () => { OnEnterServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnStartedServer += () => { OnEnterServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnDisconnected += () => { OnExitServer(RigData.Refs.RigManager); };
         LocalPlayer.OnLocalRigCreated += (rig) =>
         {
             if (NetworkInfo.HasServer)
@@ -73,9 +74,6 @@ public static class PlayerAdditionsHelper
         // Head and feet
         physRig.feet.gameObject.AddComponent<CollisionSyncer>();
         physRig.m_head.gameObject.AddComponent<CollisionSyncer>();
-
-        // Apply mortality
-        FusionPlayer.ResetMortality();
     }
 
     public static void OnExitServer(RigManager manager)
@@ -89,6 +87,8 @@ public static class PlayerAdditionsHelper
         MuteUIHelper.OnDestroyMuteUI();
 
         // Remove impact properties
+        manager.physicsRig._impactProperties = new Il2CppReferenceArray<ImpactProperties>(0);
+
         var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
 
         foreach (var properties in impactProperties)

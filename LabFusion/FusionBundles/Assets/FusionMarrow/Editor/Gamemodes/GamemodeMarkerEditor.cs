@@ -3,7 +3,9 @@ using System;
 using UltEvents;
 
 using UnityEditor;
-using UnityEngine;
+using UnityEditor.UIElements;
+
+using UnityEngine.UIElements;
 
 namespace LabFusion.Marrow.Integration
 {
@@ -12,99 +14,68 @@ namespace LabFusion.Marrow.Integration
     {
         public const string AddTeamMethodName = nameof(GamemodeMarker.AddTeam);
 
-        public const string LavaGangBarcode = "Lakatrazz.FusionContent.BoneTag.TeamLavaGang";
+        private SerializedProperty _teamTagsProperty;
 
-        public const string SabrelakeBarcode = "Lakatrazz.FusionContent.BoneTag.TeamSabrelake";
-
-        public override void OnInspectorGUI()
+        private void OnEnable()
         {
-            base.OnInspectorGUI();
+            _teamTagsProperty = serializedObject.FindProperty(nameof(GamemodeMarker.teamTags));
+        }
+
+        public override VisualElement CreateInspectorGUI()
+        {
+            var root = new VisualElement();
 
             var gamemodeMarker = target as GamemodeMarker;
 
-            var lifeCycleEvent = gamemodeMarker.GetComponent<LifeCycleEvents>();
-
-            if (lifeCycleEvent != null)
+            if (!gamemodeMarker.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                OverrideLifeCycleEvent(gamemodeMarker, lifeCycleEvent);
+                var warnBox = new HelpBox("If you want to set a specific Team for this Gamemode Marker, please add" +
+                    " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
+                root.Add(warnBox);
 
-                EditorGUILayout.HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for this marker." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("If you want to set a specific Team for this Gamemode Marker, please add" +
-                    " a LifeCycleEvents to this GameObject!", MessageType.Warning);
-
-                if (GUILayout.Button("Add LifeCycleEvents"))
+                var addLifeCycleEventsButton = new Button(() =>
                 {
                     Undo.AddComponent<LifeCycleEvents>(gamemodeMarker.gameObject);
-                }
+                })
+                {
+                    text = "Add LifeCycleEvents"
+                };
+                root.Add(addLifeCycleEventsButton);
+
+                return root;
             }
+
+            var tag = new PropertyField(_teamTagsProperty);
+            root.Add(tag);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for this marker." +
+    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
+
+            root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
+            {
+                OverrideLifeCycleEvent(gamemodeMarker, lifeCycleEvent);
+            });
+
+            return root;
         }
 
         private void OverrideLifeCycleEvent(GamemodeMarker gamemodeMarker, LifeCycleEvents lifeCycleEvent)
         {
-            // Make sure the awake event is properly set up
-            if (lifeCycleEvent.AwakeEvent == null)
-            {
-                lifeCycleEvent.AwakeEvent = new UltEvent();
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
-
-            var awakeEvent = lifeCycleEvent.AwakeEvent;
+            var ultEvent = new UltEvent();
 
             Action<string> addTeamAction = gamemodeMarker.AddTeam;
 
-            // Add a persistent call
-            if (awakeEvent.PersistentCallsList == null || awakeEvent.PersistentCallsList.Count != 1)
+            ultEvent.Clear();
+
+            foreach (var tag in gamemodeMarker.teamTags.Tags)
             {
-                awakeEvent.Clear();
+                var addTeamCall = ultEvent.AddPersistentCall(addTeamAction);
 
-                awakeEvent.AddPersistentCall(addTeamAction);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
+                addTeamCall.PersistentArguments[0].String = tag.Barcode.ID;
             }
 
-            var firstCall = awakeEvent.PersistentCallsList[0];
-
-            // First call isn't AddTeam, change it
-            if (firstCall.MethodName != AddTeamMethodName)
-            {
-                firstCall.SetMethod(addTeamAction);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
-
-            var barcode = firstCall.PersistentArguments[0].String;
-
-            EditorGUI.BeginChangeCheck();
-
-            barcode = EditorGUILayout.TextField("Team Tag", barcode);
-
-            if (barcode != LavaGangBarcode && GUILayout.Button("Set Team LavaGang"))
-            {
-                barcode = LavaGangBarcode;
-            }
-
-            if (barcode != SabrelakeBarcode && GUILayout.Button("Set Team Sabrelake"))
-            {
-                barcode = SabrelakeBarcode;
-            }
-
-            if (!string.IsNullOrWhiteSpace(barcode) && GUILayout.Button("Clear Team"))
-            {
-                barcode = null;
-            }
-
-            // Override the life cycle event value
-            if (EditorGUI.EndChangeCheck())
-            {
-                firstCall.SetArguments(barcode);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            lifeCycleEvent.AwakeEvent = ultEvent;
         }
     }
 }

@@ -13,8 +13,8 @@ public interface IVoiceManager
 
     string[] InputDevices { get; }
 
-    IVoiceSpeaker GetSpeaker(PlayerId id);
-    void RemoveSpeaker(PlayerId id);
+    IVoiceSpeaker GetSpeaker(PlayerID id);
+    void RemoveSpeaker(PlayerID id);
 
     IVoiceReceiver GetReceiver();
 
@@ -56,7 +56,7 @@ public abstract class VoiceManager : IVoiceManager
         ClearManager();
     }
 
-    protected bool TryGetSpeaker(PlayerId id, out IVoiceSpeaker speaker)
+    protected bool TryGetSpeaker(PlayerID id, out IVoiceSpeaker speaker)
     {
         speaker = null;
 
@@ -74,11 +74,11 @@ public abstract class VoiceManager : IVoiceManager
         return false;
     }
 
-    protected abstract IVoiceSpeaker OnCreateSpeaker(PlayerId id);
+    protected abstract IVoiceSpeaker OnCreateSpeaker(PlayerID id);
 
     protected abstract IVoiceReceiver OnCreateReceiverOrDefault();
 
-    public IVoiceSpeaker GetSpeaker(PlayerId id)
+    public IVoiceSpeaker GetSpeaker(PlayerID id)
     {
         if (TryGetSpeaker(id, out var handler))
             return handler;
@@ -133,11 +133,11 @@ public abstract class VoiceManager : IVoiceManager
 
         if (_receiver.HasVoiceActivity())
         {
-            PlayerSender.SendPlayerVoiceChat(_receiver.GetCompressedVoiceData());
+            PlayerSender.SendPlayerVoiceChat(_receiver.GetEncodedData());
         }
     }
 
-    public void RemoveSpeaker(PlayerId id)
+    public void RemoveSpeaker(PlayerID id)
     {
         IVoiceSpeaker playerHandler = null;
 

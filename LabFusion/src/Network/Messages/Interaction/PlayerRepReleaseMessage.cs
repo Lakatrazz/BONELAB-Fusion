@@ -2,26 +2,21 @@
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerRepReleaseData : IFusionSerializable
+public class PlayerRepReleaseData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
     public byte smallId;
     public Handedness handedness;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)handedness);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        handedness = (Handedness)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
     }
 
     public NetworkPlayer GetPlayer()
@@ -44,22 +39,14 @@ public class PlayerRepReleaseData : IFusionSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
-public class PlayerRepReleaseMessage : FusionMessageHandler
+[Net.SkipHandleWhileLoading]
+public class PlayerRepReleaseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepRelease;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepReleaseData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-        }
+        var data = received.ReadData<PlayerRepReleaseData>();
 
         var player = data.GetPlayer();
 

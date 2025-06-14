@@ -350,13 +350,13 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-# Fusion build results
+# Fusion Build Results
 LabFusion/FusionBundles/Assets/AssetBundles/
 [Bb]uilt[Pp]allets
 
-# Fusion staging
+# Fusion Staging
 Staging/Thunderstore/Mods
 Staging/Thunderstore/Plugins
 
-# Fusion dependencies
-[Bb]one[Ll]ib.dll
+# Auto Generated
+LabFusion/FusionBundles/Assets/AddressableAssetsData

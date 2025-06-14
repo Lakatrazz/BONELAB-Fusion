@@ -1,4 +1,5 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Marrow;
 
 using MelonLoader;
 
@@ -13,8 +14,6 @@ namespace LabFusion.UI
     [RegisterTypeInIl2Cpp]
     public sealed class FusionUITrigger : MonoBehaviour
     {
-        public const float InteractionVolume = 0.4f;
-
         public FusionUITrigger(IntPtr intPtr) : base(intPtr) { }
 
         public Button button;
@@ -28,14 +27,23 @@ namespace LabFusion.UI
             {
                 eventID = EventTriggerType.PointerClick
             };
-            click.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm.Asset, InteractionVolume); button.onClick?.Invoke(); }));
+            click.callback.AddListener((UnityAction<BaseEventData>)((eventData) =>
+            { 
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UIConfirmReference), transform.position, LocalAudioPlayer.SFXSettings);
+
+                button.onClick?.Invoke(); 
+            }));
 
             // Hovering
             EventTrigger.Entry hover = new()
             {
                 eventID = EventTriggerType.PointerEnter
             };
-            hover.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UISelect.Asset, InteractionVolume); }));
+
+            hover.callback.AddListener((UnityAction<BaseEventData>)((eventData) => 
+            { 
+                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.UISelectReference), transform.position, LocalAudioPlayer.SFXSettings);
+            }));
 
 
             eventTrigger.delegates.Add(click);

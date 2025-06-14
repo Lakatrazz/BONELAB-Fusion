@@ -1,44 +1,31 @@
 ﻿using LabFusion.Bonelab.Extenders;
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network;
-
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
-namespace LabFusion.Bonelab;
+namespace LabFusion.Bonelab.Messages;
 
-public class RandomObjectData : IFusionSerializable
+public class RandomObjectData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 3;
-
-    public byte smallId;
 
     public ushort entityId;
     public ushort componentIndex;
 
     public ushort objectIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(entityId);
-        writer.Write(componentIndex);
-        writer.Write(objectIndex);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref componentIndex);
+        serializer.SerializeValue(ref objectIndex);
     }
 
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-        componentIndex = reader.ReadUInt16();
-        objectIndex = reader.ReadUInt16();
-    }
-
-    public static RandomObjectData Create(byte smallId, ushort entityId, ushort componentIndex, ushort objectIndex)
+    public static RandomObjectData Create(ushort entityId, ushort componentIndex, ushort objectIndex)
     {
         return new RandomObjectData()
         {
-            smallId = smallId,
             entityId = entityId,
             componentIndex = componentIndex,
             objectIndex = objectIndex,
@@ -48,22 +35,12 @@ public class RandomObjectData : IFusionSerializable
 
 public class RandomObjectMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-
-        var data = reader.ReadFusionSerializable<RandomObjectData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<RandomObjectMessage>(bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var data = received.ReadData<RandomObjectData>();
 
         // Right now only syncs RandomObject on individual objects (props, avatars, etc). No scene syncing yet.
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {

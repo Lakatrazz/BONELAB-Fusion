@@ -8,17 +8,17 @@ namespace LabFusion.Entities;
 
 public class ConstrainerExtender : EntityComponentExtender<Constrainer>
 {
-    public static FusionComponentCache<Constrainer, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Constrainer, NetworkEntity> Cache = new();
 
     private Grip.HandDelegate _onAttachDelegate = null;
 
     private Poolee _poolee = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Constrainer component)
+    protected override void OnRegister(NetworkEntity entity, Constrainer component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
-        if (CrossSceneManager.IsSceneHost())
+        if (NetworkSceneManager.IsLevelHost)
         {
             _poolee = Poolee.Cache.Get(component.gameObject);
 
@@ -28,7 +28,7 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Constrainer component)
+    protected override void OnUnregister(NetworkEntity entity, Constrainer component)
     {
         Cache.Remove(component);
 
@@ -55,7 +55,7 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
             return;
         }
 
-        if (FusionDevTools.DespawnConstrainer(player.PlayerId))
+        if (FusionDevTools.DespawnConstrainer(player.PlayerID))
         {
             _poolee.Despawn();
         }

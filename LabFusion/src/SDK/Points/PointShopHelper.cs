@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
 
 using UnityEngine;
 
@@ -9,22 +10,12 @@ namespace LabFusion.SDK.Points;
 
 public static class PointShopHelper
 {
-    public static void CompleteBitMart(GameObject gameObject)
-    {
-        // Currently just needs to add the PointShop script
-        gameObject.AddComponent<PointShop>();
-    }
-
     public static void SpawnBitMart(Vector3 position, Quaternion rotation)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.BitMartReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.BitMartReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, position, rotation);
+        LocalAssetSpawner.Spawn(spawnable, position, rotation);
     }
 }

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Health Bar.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Spawnable.HealthBar
+  _title: Health Bar
+  _description: An entity's health bar.
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Popup
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 610bd0d8ad6b9e240b639492b5e7ddd2
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: 6314f27e9c618f141a910f508dd7f9be
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

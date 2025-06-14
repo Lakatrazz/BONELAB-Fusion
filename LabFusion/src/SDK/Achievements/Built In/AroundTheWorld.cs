@@ -3,54 +3,49 @@ using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 
-using UnityEngine;
+namespace LabFusion.SDK.Achievements;
 
-namespace LabFusion.SDK.Achievements
+public class AroundTheWorld : Achievement
 {
-    public class AroundTheWorld : Achievement
+    public override string Title => "Around The World";
+
+    public override string Description => "Play 10 different levels in one multiplayer session.";
+
+    public override int BitReward => 700;
+
+    private readonly List<string> _levels = new();
+
+    protected override void OnRegister()
     {
-        public override string Title => "Around The World";
+        MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
+    }
 
-        public override string Description => "Play 10 different levels in one multiplayer session.";
+    protected override void OnUnregister()
+    {
+        MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
+        MultiplayerHooking.OnDisconnected -= OnDisconnect;
+    }
 
-        public override int BitReward => 700;
-
-        public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(AroundTheWorld)).Preview;
-
-        private readonly List<string> _levels = new();
-
-        protected override void OnRegister()
+    private void OnMainSceneInitialized()
+    {
+        // Make sure we have a server and this level hasn't already been visited
+        if (NetworkInfo.HasServer && PlayerIDManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
         {
-            MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
-        }
+            _levels.Add(FusionSceneManager.Barcode);
 
-        protected override void OnUnregister()
-        {
-            MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
-        }
-
-        private void OnMainSceneInitialized()
-        {
-            // Make sure we have a server and this level hasn't already been visited
-            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
+            // If we have over 10 unique levels, reward the achievement
+            if (_levels.Count >= 10)
             {
-                _levels.Add(FusionSceneManager.Barcode);
-
-                // If we have over 10 unique levels, reward the achievement
-                if (_levels.Count >= 10)
-                {
-                    IncrementTask();
-                    _levels.Clear();
-                }
+                IncrementTask();
+                _levels.Clear();
             }
         }
+    }
 
-        private void OnDisconnect()
-        {
-            // Clear our visited levels
-            _levels.Clear();
-        }
+    private void OnDisconnect()
+    {
+        // Clear our visited levels
+        _levels.Clear();
     }
 }

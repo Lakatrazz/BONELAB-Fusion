@@ -3,7 +3,6 @@ using Il2CppSLZ.Marrow.Combat;
 
 using LabFusion.Data;
 using LabFusion.Exceptions;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 
@@ -71,14 +70,13 @@ public static class PlayerSender
     public static void SendPlayerAvatar(SerializedAvatarStats stats, string barcode)
     {
         if (!NetworkInfo.HasServer)
+        {
             return;
+        }
 
-        using FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize + barcode.GetSize());
-        PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode);
-        writer.Write(data);
+        var data = PlayerRepAvatarData.Create(PlayerIDManager.LocalSmallID, stats, barcode);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAvatar, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void SendPlayerVoiceChat(byte[] voiceData)
@@ -88,27 +86,21 @@ public static class PlayerSender
             return;
         }
 
-        using var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length);
-        using var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData);
-        writer.Write(data);
+        var data = PlayerVoiceChatData.Create(PlayerIDManager.LocalSmallID, voiceData);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerVoiceChat, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
     public static void SendPlayerTeleport(byte target, Vector3 position)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create(PlayerRepTeleportData.Size);
         var data = PlayerRepTeleportData.Create(target, position);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTeleport, writer);
-        MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepTeleport, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerDamage(byte target, Attack attack)
@@ -118,47 +110,35 @@ public static class PlayerSender
 
     public static void SendPlayerDamage(byte target, Attack attack, PlayerDamageReceiver.BodyPart part)
     {
-        using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
-        var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, attack, part);
-        writer.Write(data);
+        var data = PlayerRepDamageData.Create(PlayerIDManager.LocalSmallID, target, attack, part);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
     {
-        using var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value));
         var data = PlayerMetadataRequestData.Create(smallId, key, value);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
     {
         // Make sure this is the server
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             throw new ExpectedServerException();
         }
 
-        using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
         var data = PlayerMetadataResponseData.Create(smallId, key, value);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, CommonMessageRoutes.ReliableToClients);
     }
 
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
     {
-        using var writer = FusionWriter.Create(PlayerRepActionData.Size);
-        var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
-        writer.Write(data);
+        var data = PlayerRepActionData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAction, CommonMessageRoutes.ReliableToClients);
     }
 }

@@ -7,9 +7,11 @@ using LabFusion.Entities;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class PlayerRepGrabData : IFusionSerializable
+public class PlayerRepGrabData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3;
 
@@ -18,24 +20,13 @@ public class PlayerRepGrabData : IFusionSerializable
     public GrabGroup group;
     public SerializedGrab serializedGrab;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
+        serializer.SerializeValue(ref group, Precision.OneByte);
 
-        writer.Write((byte)handedness);
-        writer.Write((byte)group);
-
-        writer.Write(serializedGrab);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-
-        handedness = (Handedness)reader.ReadByte();
-        group = (GrabGroup)reader.ReadByte();
-
-        GrabGroupHandler.ReadGrab(ref serializedGrab, reader, group);
+        GrabGroupHandler.SerializeGrab(ref serializedGrab, serializer, group);
     }
 
     public Grip GetGrip()
@@ -65,27 +56,19 @@ public class PlayerRepGrabData : IFusionSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
-public class PlayerRepGrabMessage : FusionMessageHandler
+[Net.SkipHandleWhileLoading]
+public class PlayerRepGrabMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepGrab;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
+        var data = received.ReadData<PlayerRepGrabData>();
 
         // Make sure this isn't us
-        if (data.smallId == PlayerIdManager.LocalSmallId)
+        if (data.smallId == PlayerIDManager.LocalSmallID)
         {
             return;
-        }
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
 
         // Apply grab

@@ -1,69 +1,57 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Exceptions;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class ConnectionResponseData : IFusionSerializable
+public class ConnectionResponseData : INetSerializable
 {
-    public PlayerId playerId = null;
-    public string avatarBarcode = null;
-    public SerializedAvatarStats avatarStats = null;
-    public bool isInitialJoin = false;
+    public PlayerID PlayerID = null;
+    public string AvatarBarcode = null;
+    public SerializedAvatarStats AvatarStats = null;
+    public bool IsInitialJoin = false;
 
-    public void Serialize(FusionWriter writer)
+    public int? GetSize() => PlayerID.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + sizeof(bool);
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(playerId);
-        writer.Write(avatarBarcode);
-        writer.Write(avatarStats);
-        writer.Write(isInitialJoin);
+        serializer.SerializeValue(ref PlayerID);
+        serializer.SerializeValue(ref AvatarBarcode);
+        serializer.SerializeValue(ref AvatarStats);
+        serializer.SerializeValue(ref IsInitialJoin);
     }
 
-    public void Deserialize(FusionReader reader)
-    {
-        playerId = reader.ReadFusionSerializable<PlayerId>();
-        avatarBarcode = reader.ReadString();
-        avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
-        isInitialJoin = reader.ReadBoolean();
-    }
-
-    public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
+    public static ConnectionResponseData Create(PlayerID id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
     {
         return new ConnectionResponseData()
         {
-            playerId = id,
-            avatarBarcode = avatarBarcode,
-            avatarStats = stats,
-            isInitialJoin = isInitialJoin,
+            PlayerID = id,
+            AvatarBarcode = avatarBarcode,
+            AvatarStats = stats,
+            IsInitialJoin = isInitialJoin,
         };
     }
 }
 
-public class ConnectionResponseMessage : FusionMessageHandler
+public class ConnectionResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-
-        // This should only ever be handled client side!
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
-
-        var data = reader.ReadFusionSerializable<ConnectionResponseData>();
+        var data = received.ReadData<ConnectionResponseData>();
 
         // Insert the id into our list
-        data.playerId.Insert();
+        data.PlayerID.Insert();
 
         // Check the id to see if its our own
         // If it is, just update our self reference
-        if (data.playerId.LongId == PlayerIdManager.LocalLongId)
+        if (data.PlayerID.PlatformID == PlayerIDManager.LocalPlatformID)
         {
-            PlayerIdManager.ApplyLocalId();
+            PlayerIDManager.ApplyLocalID();
 
             NetworkPlayerManager.CreateLocalPlayer();
 
@@ -72,10 +60,10 @@ public class ConnectionResponseMessage : FusionMessageHandler
         // Otherwise, create a network player
         else
         {
-            InternalServerHelpers.OnUserJoin(data.playerId, data.isInitialJoin);
+            InternalServerHelpers.OnPlayerJoined(data.PlayerID, data.IsInitialJoin);
 
-            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.playerId);
-            networkPlayer.AvatarSetter.SwapAvatar(data.avatarStats, data.avatarBarcode);
+            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
+            networkPlayer.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
         }
 
         // Update our vitals to everyone
@@ -83,5 +71,18 @@ public class ConnectionResponseMessage : FusionMessageHandler
         {
             RigData.OnSendVitals();
         }
+
+        // Send catchup messages now that the user is registered
+        if (NetworkInfo.IsHost)
+        {
+            CatchupPlayer(data.PlayerID);
+        }
+    }
+
+    private static void CatchupPlayer(PlayerID player)
+    {
+        // SERVER CATCHUP
+        // Catchup hooked events
+        CatchupManager.InvokePlayerServerCatchup(player);
     }
 }

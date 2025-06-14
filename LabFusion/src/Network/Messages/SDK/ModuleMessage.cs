@@ -2,12 +2,17 @@
 
 namespace LabFusion.Network;
 
-public class ModuleMessage : FusionMessageHandler
+public class ModuleMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.Module;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override bool OnPreRelayMessage(ReceivedMessage received)
     {
-        ModuleMessageHandler.ReadMessage(bytes, isServerHandled);
+        return ModuleMessageManager.PreRelayMessage(received);
+    }
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        ModuleMessageManager.ReadMessage(received);
     }
 }

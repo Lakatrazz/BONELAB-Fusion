@@ -1,11 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class PlayerMetadataResponseData : IFusionSerializable
+public class PlayerMetadataResponseData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte);
 
@@ -18,18 +17,11 @@ public class PlayerMetadataResponseData : IFusionSerializable
         return DefaultSize + key.GetSize() + value.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(key);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        key = reader.ReadString();
-        value = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref key);
+        serializer.SerializeValue(ref value);
     }
 
     public static PlayerMetadataResponseData Create(byte smallId, string key, string value)
@@ -43,24 +35,18 @@ public class PlayerMetadataResponseData : IFusionSerializable
     }
 }
 
-public class PlayerMetadataResponseMessage : FusionMessageHandler
+public class PlayerMetadataResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerMetadataResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+        var data = received.ReadData<PlayerMetadataResponseData>();
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>();
-        var playerId = PlayerIdManager.GetPlayerId(data.smallId);
+        var playerId = PlayerIDManager.GetPlayerID(data.smallId);
 
-        if (playerId != null)
-        {
-            playerId.Metadata.ForceSetLocalMetadata(data.key, data.value);
-        }
+        playerId?.Metadata.Metadata.ForceSetLocalMetadata(data.key, data.value);
     }
 }

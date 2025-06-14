@@ -1,9 +1,7 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Representation;
-using LabFusion.Preferences.Server;
 using LabFusion.Senders;
-using LabFusion.Exceptions;
 
 namespace LabFusion.Network;
 
@@ -13,27 +11,20 @@ public enum PermissionCommandType
     KICK = 1,
     BAN = 2,
     TELEPORT_TO_THEM = 3,
-    TELEPORT_TO_US = 4,
+    TELEPORT_TO_ME = 4,
 }
 
-public class PermissionCommandRequestData : IFusionSerializable
+public class PermissionCommandRequestData : INetSerializable
 {
     public byte smallId;
     public PermissionCommandType type;
     public byte? otherPlayer;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-        writer.Write(otherPlayer);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (PermissionCommandType)reader.ReadByte();
-        otherPlayer = reader.ReadByteNullable();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref otherPlayer);
     }
 
     public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
@@ -47,36 +38,31 @@ public class PermissionCommandRequestData : IFusionSerializable
     }
 }
 
-public class PermissionCommandRequestMessage : FusionMessageHandler
+public class PermissionCommandRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PermissionCommandRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        // This should only ever be handled by the server
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PermissionCommandRequestData>();
 
         // Get the user
-        PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);
+        PlayerID playerId = PlayerIDManager.GetPlayerID(data.smallId);
 
         // Check for spoofing
-        if (NetworkInfo.IsSpoofed(playerId.LongId))
+        if (NetworkInfo.IsSpoofed(playerId.PlatformID))
         {
             return;
         }
 
         // Get the user's permissions
-        PlayerId otherPlayer = null;
+        PlayerID otherPlayer = null;
 
         if (data.otherPlayer.HasValue)
         {
-            otherPlayer = PlayerIdManager.GetPlayerId(data.otherPlayer.Value);
+            otherPlayer = PlayerIDManager.GetPlayerID(data.otherPlayer.Value);
         }
 
         FusionPermissions.FetchPermissionLevel(playerId, out var level, out _);
@@ -116,7 +102,7 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
                         PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
                 }
                 break;
-            case PermissionCommandType.TELEPORT_TO_US:
+            case PermissionCommandType.TELEPORT_TO_ME:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     PlayerRepUtilities.TryGetReferences(playerId, out var references);

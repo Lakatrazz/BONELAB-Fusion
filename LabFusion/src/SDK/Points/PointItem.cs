@@ -8,6 +8,8 @@ using Il2CppSLZ.Marrow;
 
 namespace LabFusion.SDK.Points;
 
+using System;
+
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class CompiledPointItemAttribute : Attribute { }
 
@@ -23,7 +25,7 @@ public struct PointItemPayload
     public PointItemPayloadType type;
     public RigManager rigManager;
     public Mirror mirror;
-    public PlayerId playerId;
+    public PlayerID playerId;
 }
 
 public sealed class PointItemUpgrade
@@ -53,56 +55,84 @@ public sealed class PointItemUpgrade
 
 public abstract class PointItem
 {
-    // The title of the item
+    /// <summary>
+    /// The display title of this item.
+    /// </summary>
     public abstract string Title { get; }
 
-    // The author of the item
+    /// <summary>
+    /// The author of this item.
+    /// </summary>
     public abstract string Author { get; }
 
-    // The tags of the item. The first tag is shown in the shop after the price. (Optional)
+    /// <summary>
+    /// The category that this item is contained in.
+    /// </summary>
+    public virtual string Category => "Fusion Content";
+
+    /// <summary>
+    /// The tags of the item. The first tag is shown in the shop after the price. (Optional)
+    /// </summary>
     public virtual string[] Tags => null;
 
-    // The upgrades of the item. UpgradeLevel of -1 is no upgrades, 0 is first upgrade. (Optional)
+    /// <summary>
+    /// The upgrades of the item. UpgradeLevel of -1 is no upgrades, 0 is first upgrade. (Optional)
+    /// </summary>
     public virtual PointItemUpgrade[] Upgrades => null;
 
-    // The version of the item
+    /// <summary>
+    /// The version of the item.
+    /// </summary>
     public virtual string Version => "1.0.0";
 
-    // The description of the item
+    /// <summary>
+    /// The description of the item.
+    /// </summary>
     public abstract string Description { get; }
 
-    // The barcode pointing to the item
+    /// <summary>
+    /// The barcode pointing to the item. This is also used for save data, so it should never change.
+    /// </summary>
     public virtual string Barcode => $"{Author}.{Title}.Item";
 
-    // Should this item be hidden in the point shop?
+    /// <summary>
+    /// Should this item be hidden in the point shop?
+    /// </summary>
     public virtual bool Redacted => false;
 
-    // The price of the item in bits (currency)
+    /// <summary>
+    /// The amount of points required to purchase this item.
+    /// </summary>
     public abstract int Price { get; }
 
-    // The adjusted price based on the economy. This cannot be overriden.
-    public int AdjustedPrice => BitEconomy.ConvertPrice(Price);
-
-    // The active target price, whether it be for the next upgrade or for the regular purchase.
-    public int ActivePrice
+    /// <summary>
+    /// The current price. If not purchased, this is the regular price. Otherwise, it is the next upgrade's price.
+    /// </summary>
+    public int CurrentPrice
     {
         get
         {
             if (IsUnlocked)
             {
                 if (NextUpgrade != null)
-                    return BitEconomy.ConvertPrice(NextUpgrade.Price);
+                {
+                    return NextUpgrade.Price;
+                }
 
                 if (CurrentUpgrade != null)
-                    return BitEconomy.ConvertPrice(CurrentUpgrade.Price);
+                {
+                    return CurrentUpgrade.Price;
+                }
             }
 
-            return AdjustedPrice;
+            return Price;
         }
     }
 
-    // The active target description, whether it be for the next upgrade or for the regular purchase.
-    public string ActiveDescription
+    /// <summary>
+    /// The current description. If not purchased, this is the regular description. Otherwise, it is the next upgrade's description.
+    /// </summary>
+    public string CurrentDescription
     {
         get
         {
@@ -119,8 +149,10 @@ public abstract class PointItem
         }
     }
 
-    // Can the item be equipped?
-    public virtual bool CanEquip => true;
+    /// <summary>
+    /// Can this item be equipped?
+    /// </summary>
+    public virtual bool Equippable => true;
 
     // Hook implementations
     public virtual bool ImplementUpdate => false;
@@ -131,10 +163,10 @@ public abstract class PointItem
     {
         get
         {
-            if (Upgrades == null || UpgradeLevel <= -1)
+            if (Upgrades == null || CurrentUpgradeIndex <= -1)
                 return null;
 
-            return Upgrades[UpgradeLevel];
+            return Upgrades[CurrentUpgradeIndex];
         }
     }
 
@@ -145,13 +177,15 @@ public abstract class PointItem
             if (IsMaxUpgrade)
                 return null;
 
-            return Upgrades[UpgradeLevel + 1];
+            return Upgrades[CurrentUpgradeIndex + 1];
         }
     }
 
-    public bool IsMaxUpgrade => UpgradeLevel >= UpgradeCount - 1;
+    public bool IsMaxUpgrade => CurrentUpgradeIndex >= UpgradeCount - 1;
 
-    public int UpgradeLevel
+    public bool HasUpgrades => UpgradeCount > 0;
+
+    public int CurrentUpgradeIndex
     {
         get
         {
@@ -176,10 +210,13 @@ public abstract class PointItem
     public virtual bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
 
     public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
-
+    
+    /// <summary>
+    /// The main tag of this item. Either the first tag from <see cref="Tags"/>, or Misc if there are no tags.
+    /// </summary>
     public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
 
-    public RarityLevel Rarity => PointItemManager.CalculateLevel(ActivePrice);
+    public RarityLevel Rarity => PointItemManager.CalculateLevel(CurrentPrice);
 
     public abstract void LoadPreviewIcon(Action<Texture2D> onLoaded);
 
@@ -227,13 +264,13 @@ public abstract class PointItem
 
     public void Trigger()
     {
-        PointItemManager.Internal_OnTriggerItem(PlayerIdManager.LocalId, Barcode);
+        PointItemManager.Internal_OnTriggerItem(PlayerIDManager.LocalID, Barcode);
         PointItemSender.SendPointItemTrigger(Barcode);
     }
 
     public void Trigger(string value)
     {
-        PointItemManager.Internal_OnTriggerItem(PlayerIdManager.LocalId, Barcode, value);
+        PointItemManager.Internal_OnTriggerItem(PlayerIDManager.LocalID, Barcode, value);
         PointItemSender.SendPointItemTrigger(Barcode, value);
     }
 

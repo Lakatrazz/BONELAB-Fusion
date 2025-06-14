@@ -18,6 +18,7 @@ public static class ZoneCullManagerPatches
         typeof(int),
         typeof(MarrowEntity)
     })]
+
     public static void Register(int cullerId, MarrowEntity entity)
     {
         if (!NetworkInfo.HasServer)
@@ -32,13 +33,10 @@ public static class ZoneCullManagerPatches
         {
             return;
         }
-        
-        // Send message to move entity's active culler
-        using var writer = FusionWriter.Create(EntityZoneRegisterData.Size);
-        var data = EntityZoneRegisterData.Create(networkEntity.OwnerId, networkEntity.Id);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityZoneRegister, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        // Send message to move entity's active culler
+        var data = new NetworkEntityReference(networkEntity.ID);
+
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityZoneRegister, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

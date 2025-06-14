@@ -1,8 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
-using LabFusion.Network;
-using LabFusion.Patching;
+using LabFusion.Marrow.Patching;
 
 namespace LabFusion.Marrow;
 
@@ -17,4 +16,6 @@ public static class MarrowEntityHelper
     {
         return MarrowEntityPatches.HashTable.GetDataFromComponent(entity);
     }
+
+    public static bool IsHashed(MarrowEntity entity) => MarrowEntityPatches.HashTable.IsHashed(entity);
 }

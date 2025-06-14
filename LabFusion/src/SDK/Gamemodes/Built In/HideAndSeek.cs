@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Bonelab;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -11,6 +12,7 @@ using LabFusion.Player;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using MelonLoader;
 
@@ -26,6 +28,11 @@ public class HideAndSeek : Gamemode
 
     public override string Author => FusionMod.ModAuthor;
 
+    public override string Description =>
+        "Seekers are picked at random, while the rest of the players must hide! " +
+        "After a 30 second countdown, the seekers must grab other players to turn them into seekers! " +
+        "Once everyone becomes a seeker, the seekers win; however, if the time runs out before then, the hiders win!";
+
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public static class Defaults
@@ -34,19 +41,19 @@ public class HideAndSeek : Gamemode
 
         public const int SeekerBitReward = 50;
 
-        public const int HiderBitReward = 100;
+        public const int HiderBitReward = 20;
 
         public const int TimeLimit = 10;
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
-            BONELABMonoDiscReferences.TheRecurringDreamReference,
-            BONELABMonoDiscReferences.HeavyStepsReference,
-            BONELABMonoDiscReferences.StankFaceReference,
-            BONELABMonoDiscReferences.AlexInWonderlandReference,
-            BONELABMonoDiscReferences.ItDoBeGroovinReference,
+            BonelabMonoDiscReferences.TheRecurringDreamReference,
+            BonelabMonoDiscReferences.HeavyStepsReference,
+            BonelabMonoDiscReferences.StankFaceReference,
+            BonelabMonoDiscReferences.AlexInWonderlandReference,
+            BonelabMonoDiscReferences.ItDoBeGroovinReference,
 
-            BONELABMonoDiscReferences.ConcreteCryptReference, // concrete crypt
+            BonelabMonoDiscReferences.ConcreteCryptReference, // concrete crypt
         };
     }
 
@@ -80,6 +87,9 @@ public class HideAndSeek : Gamemode
 
     public float ElapsedSeconds => _elapsedTime;
     public int ElapsedMinutes => Mathf.FloorToInt(ElapsedSeconds / 60f);
+
+    public override bool DisableDevTools => true;
+    public override bool DisableSpawnGun => true;
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -151,6 +161,8 @@ public class HideAndSeek : Gamemode
 
         TeamManager.Unregister();
 
+        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+
         TagEvent.UnregisterEvent();
         TagEvent = null;
 
@@ -164,14 +176,14 @@ public class HideAndSeek : Gamemode
         HiderVictoryEvent = null;
     }
 
-    protected bool OnValidateNametag(PlayerId id)
+    protected bool OnValidateNametag(PlayerID id)
     {
         if (!IsStarted)
         {
             return true;
         }
 
-        return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
+        return TeamManager.IsTeammate(id);
     }
 
     private void OnTagTriggered(string value)
@@ -182,14 +194,14 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        var playerId = PlayerIdManager.GetPlayerId(userId);
+        var playerId = PlayerIDManager.GetPlayerID(userId);
 
         if (playerId == null)
         {
             return;
         }
 
-        if (NetworkInfo.IsServer && HiderTeam.HasPlayer(playerId))
+        if (NetworkInfo.IsHost && HiderTeam.HasPlayer(playerId))
         {
             // If this was the last player, end the game
             if (HiderTeam.PlayerCount <= 1)
@@ -206,7 +218,7 @@ public class HideAndSeek : Gamemode
         // Were we tagged? Give a notification
         if (playerId.IsMe && !_hasBeenTagged)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Tagged",
@@ -223,7 +235,7 @@ public class HideAndSeek : Gamemode
         {
             playerId.TryGetDisplayName(out var name);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = $"{name} Tagged",
@@ -233,7 +245,7 @@ public class HideAndSeek : Gamemode
             });
 
             // Check bit reward
-            if (_tagRewards.Remove(playerId.LongId))
+            if (_tagRewards.Remove(playerId.PlatformID))
             {
                 PointItemManager.RewardBits(Defaults.SeekerBitReward);
             }
@@ -242,7 +254,7 @@ public class HideAndSeek : Gamemode
 
     private void OnOneMinuteLeft()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Hide And Seek Timer",
             Message = "One minute left!",
@@ -253,7 +265,7 @@ public class HideAndSeek : Gamemode
 
     private void OnSeekerVictory()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Seekers Won",
@@ -265,7 +277,7 @@ public class HideAndSeek : Gamemode
 
     private void OnHiderVictory()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Hiders Won",
@@ -285,7 +297,7 @@ public class HideAndSeek : Gamemode
         }
     }
 
-    private void OnAssignedToTeam(PlayerId player, Team team)
+    private void OnAssignedToTeam(PlayerID player, Team team)
     {
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
@@ -302,7 +314,7 @@ public class HideAndSeek : Gamemode
 
         if (team == HiderTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Hider",
@@ -314,7 +326,7 @@ public class HideAndSeek : Gamemode
 
         if (team == SeekerTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Seeker",
@@ -331,14 +343,14 @@ public class HideAndSeek : Gamemode
 
     private static void TeleportToHost()
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             return;
         }
 
-        var host = PlayerIdManager.GetHostId();
+        var host = PlayerIDManager.GetHostID();
 
-        if (!NetworkPlayerManager.TryGetPlayer(host.SmallId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(host.SmallID, out var player))
         {
             return;
         }
@@ -347,7 +359,7 @@ public class HideAndSeek : Gamemode
         {
             var feetPosition = player.RigRefs.RigManager.physicsRig.feet.transform.position;
 
-            FusionPlayer.Teleport(feetPosition, Vector3.forward, true);
+            LocalPlayer.TeleportToPosition(feetPosition, Vector3.forward);
         }
     }
 
@@ -357,7 +369,7 @@ public class HideAndSeek : Gamemode
         LocalVision.BlindColor = Color.black;
 
         // Lock movement so we can't move while vision is dark
-        LocalControls.LockMovement();
+        LocalControls.LockedMovement = true;
 
         float notificationWait = 0f;
 
@@ -401,7 +413,7 @@ public class HideAndSeek : Gamemode
                     case 3:
                     case 2:
                     case 1:
-                        FusionNotifier.Send(new FusionNotification()
+                        Notifier.Send(new Notification()
                         {
                             ShowPopup = true,
                             Title = "Countdown",
@@ -431,11 +443,11 @@ public class HideAndSeek : Gamemode
             yield return null;
         }
 
-        LocalControls.UnlockMovement();
+        LocalControls.LockedMovement = false;
 
         LocalVision.Blind = false;
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Countdown Over",
@@ -464,8 +476,9 @@ public class HideAndSeek : Gamemode
         Playlist.StartPlaylist();
 
         LocalPlayer.OnGrab += OnLocalPlayerGrab;
+        LocalControls.DisableSlowMo = true;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             AssignTeams();
         }
@@ -490,8 +503,9 @@ public class HideAndSeek : Gamemode
         Playlist.StopPlaylist();
 
         LocalPlayer.OnGrab -= OnLocalPlayerGrab;
+        LocalControls.DisableSlowMo = false;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ClearTeams();
         }
@@ -522,7 +536,7 @@ public class HideAndSeek : Gamemode
         }
 
         // Check for one minute left
-        if (NetworkInfo.IsServer && !_oneMinuteLeft && (TimeLimit - ElapsedMinutes) == 1)
+        if (NetworkInfo.IsHost && !_oneMinuteLeft && (TimeLimit - ElapsedMinutes) == 1)
         {
             OneMinuteLeftEvent.TryInvoke();
             _oneMinuteLeft = true;
@@ -550,7 +564,7 @@ public class HideAndSeek : Gamemode
     private void AssignTeams()
     {
         // Shuffle the players for randomness
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIDs);
         players.Shuffle();
 
         // Assign seekers
@@ -579,7 +593,7 @@ public class HideAndSeek : Gamemode
     private void OnLocalPlayerGrab(Hand hand, Grip grip)
     {
         // If we aren't a seeker, ignore
-        if (!SeekerTeam.HasPlayer(PlayerIdManager.LocalId))
+        if (!SeekerTeam.HasPlayer(PlayerIDManager.LocalID))
         {
             return;
         }
@@ -596,9 +610,9 @@ public class HideAndSeek : Gamemode
         }
 
         // Check if they're a hider, and if they are, tag them
-        if (HiderTeam.HasPlayer(player.PlayerId))
+        if (HiderTeam.HasPlayer(player.PlayerID))
         {
-            var longId = player.PlayerId.LongId;
+            var longId = player.PlayerID.PlatformID;
 
             _tagRewards.Add(longId);
 

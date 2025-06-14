@@ -21,12 +21,9 @@ public static class FusionPreferences
             return;
         }
 
-        using var writer = FusionWriter.Create(PlayerSettingsData.Size);
-        var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
-        writer.Write(data);
+        var data = PlayerSettingsData.Create(PlayerIDManager.LocalSmallID, SerializedPlayerSettings.Create());
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerSettings, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     internal static void OnInitializePreferences()

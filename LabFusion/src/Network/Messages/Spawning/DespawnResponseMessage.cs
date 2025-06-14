@@ -1,115 +1,81 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Marrow.Patching;
 
-using MelonLoader;
-
-using System.Collections;
 using Il2CppSLZ.Marrow.VFX;
 
 namespace LabFusion.Network;
 
-public class DespawnResponseData : IFusionSerializable
+public class DespawnResponseData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+    public const int Size = PlayerReference.Size + NetworkEntityReference.Size + sizeof(bool);
 
-    public byte despawnerId;
-    public ushort entityId;
+    public PlayerReference Despawner;
 
-    public bool despawnEffect;
+    public NetworkEntityReference Entity;
 
-    public void Serialize(FusionWriter writer)
+    public bool DespawnEffect;
+
+    public int? GetSize() => Size;
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(despawnerId);
-        writer.Write(entityId);
+        serializer.SerializeValue(ref Despawner);
+        serializer.SerializeValue(ref Entity);
 
-        writer.Write(despawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        despawnerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-
-        despawnEffect = reader.ReadBoolean();
-    }
-
-    public static DespawnResponseData Create(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        return new DespawnResponseData()
-        {
-            despawnerId = despawnerId,
-            entityId = entityId,
-
-            despawnEffect = despawnEffect,
-        };
+        serializer.SerializeValue(ref DespawnEffect);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class DespawnResponseMessage : FusionMessageHandler
+public class DespawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Despawn the poolee if it exists
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<DespawnResponseData>();
+        var data = received.ReadData<DespawnResponseData>();
 
-        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.despawnerId, data.entityId, data.despawnEffect));
-    }
-
-    private static IEnumerator Internal_WaitForValidDespawn(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        // Delay at most 300 frames until this entity exists
-        int i = 0;
-        while (!NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(entityId))
+        if (!data.Entity.TryGetEntity(out var entity))
         {
-            yield return null;
-
-            i++;
-
-            if (i >= 300)
-            {
-                yield break;
-            }
+            return;
         }
 
-        // Get the entity from the valid id
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(entityId);
-
-        if (entity == null)
+        // Don't allow the despawning of players
+        if (entity.GetExtender<NetworkPlayer>() != null)
         {
-            yield break;
+            return;
         }
 
         var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
         if (pooleeExtender == null)
         {
-            yield break;
+            return;
         }
 
-        PooleeUtilities.CanDespawn = true;
+        PooleeDespawnPatch.IgnorePatch = true;
 
         var poolee = pooleeExtender.Component;
 
 #if DEBUG
-        FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
+        FusionLogger.Log($"Unregistering entity at ID {entity.ID} after despawning.");
 #endif
 
         var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
 
-        if (marrowEntity != null && despawnEffect)
+        if (marrowEntity != null && data.DespawnEffect)
         {
             SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
         }
 
         poolee.Despawn();
 
-        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        NetworkEntityManager.IDManager.UnregisterEntity(entity);
 
-        PooleeUtilities.CanDespawn = false;
+        PooleeDespawnPatch.IgnorePatch = false;
     }
 }

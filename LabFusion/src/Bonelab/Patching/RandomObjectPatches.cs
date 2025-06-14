@@ -4,7 +4,7 @@ using Il2CppSLZ.Bonelab;
 
 using LabFusion.Bonelab.Extenders;
 using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.Bonelab.Messages;
 
 using Random = UnityEngine.Random;
 
@@ -13,6 +13,8 @@ namespace LabFusion.Bonelab.Patching;
 [HarmonyPatch(typeof(RandomObject))]
 public static class RandomObjectPatches
 {
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(RandomObject.Randomizer))]
     public static bool RandomizerPrefix(RandomObject __instance)
     {
         if (!NetworkInfo.HasServer)
@@ -30,17 +32,14 @@ public static class RandomObjectPatches
         var extender = entity.GetExtender<RandomObjectExtender>();
 
         // If we're the server, manually determine an object from the list and sync it
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ushort objectIndex = (ushort)Random.Range(0, __instance.Objects.Count);
 
             // Send the message to sync it
-            using var writer = FusionWriter.Create(RandomObjectData.Size);
-            var data = RandomObjectData.Create(PlayerIdManager.LocalSmallId, entity.Id, extender.GetIndex(__instance).Value, objectIndex);
-            writer.Write(data);
+            var data = RandomObjectData.Create(entity.ID, extender.GetIndex(__instance).Value, objectIndex);
 
-            using var message = FusionMessage.ModuleCreate<RandomObjectMessage>(writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         // On any synced RandomObjects, always return false. It's manually applied by the message.

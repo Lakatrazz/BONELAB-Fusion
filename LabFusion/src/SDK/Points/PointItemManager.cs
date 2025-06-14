@@ -4,6 +4,7 @@ using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.UI.Popups;
 
 using System.Reflection;
 
@@ -12,6 +13,8 @@ using UnityEngine;
 using Il2CppSLZ.Marrow;
 
 namespace LabFusion.SDK.Points;
+
+using System;
 
 // Terraria rarity levels
 public enum RarityLevel
@@ -36,8 +39,6 @@ public enum SortMode
     PRICE,
     NAME,
     TAG,
-    AUTHOR,
-    RARITY,
     EQUIPPED,
     UNEQUIPPED,
     LAST_SORT,
@@ -122,6 +123,26 @@ public static class PointItemManager
         };
     }
 
+    public static string ParsePrice(int price, bool unlocked = false)
+    {
+        if (unlocked)
+        {
+            return "Bought";
+        }
+
+        if (price <= 0)
+        {
+            return "Free";
+        }
+
+        if (price > BitEconomy.PricelessValue)
+        {
+            return "Priceless";
+        }
+
+        return $"{price} Bits";
+    }
+
     internal static void HookEvents()
     {
         LocalPlayer.OnLocalRigCreated += OnLocalRigCreated;
@@ -144,7 +165,7 @@ public static class PointItemManager
                 {
                     type = PointItemPayloadType.SELF,
                     rigManager = rigManager,
-                    playerId = PlayerIdManager.LocalId,
+                    playerId = PlayerIDManager.LocalID,
                 }, true);
             }
         }
@@ -159,13 +180,13 @@ public static class PointItemManager
 
         foreach (var item in LoadedItems)
         {
-            if (player.PlayerId.EquippedItems.Contains(item.Barcode))
+            if (player.PlayerID.EquippedItems.Contains(item.Barcode))
             {
                 item.OnUpdateObjects(new PointItemPayload()
                 {
                     type = PointItemPayloadType.PLAYER_REP,
                     rigManager = rigManager,
-                    playerId = player.PlayerId,
+                    playerId = player.PlayerID,
                 }, true);
             }
         }
@@ -211,13 +232,13 @@ public static class PointItemManager
 
         if (item.IsEquipped)
         {
-            Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, true);
+            OnEquipChanged(PlayerIDManager.LocalID, item.Barcode, true);
         }
     }
 
     public static bool TryGetPointItem(string barcode, out PointItem item)
     {
-        if (barcode == null)
+        if (string.IsNullOrWhiteSpace(barcode))
         {
             item = null;
             return false;
@@ -247,7 +268,7 @@ public static class PointItemManager
 
         if (popup)
         {
-            FusionBitPopup.Send(bits);
+            BitPopup.Send(bits);
         }
 
         OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
@@ -269,7 +290,7 @@ public static class PointItemManager
 
         if (popup)
         {
-            FusionBitPopup.Send(-bits);
+            BitPopup.Send(-bits);
         }
 
         OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
@@ -289,7 +310,7 @@ public static class PointItemManager
             return false;
         }
 
-        int price = item.ActivePrice;
+        int price = item.CurrentPrice;
         int bits = GetBitCount();
 
         if (price < 0)
@@ -314,7 +335,7 @@ public static class PointItemManager
             return false;
         }
 
-        int price = item.AdjustedPrice;
+        int price = item.Price;
         int bits = GetBitCount();
 
         if (price < 0)
@@ -336,7 +357,7 @@ public static class PointItemManager
         return true;
     }
 
-    internal static void Internal_OnEquipChange(PlayerId id, string barcode, bool isEquipped)
+    internal static void OnEquipChanged(PlayerID id, string barcode, bool isEquipped)
     {
         if (!TryGetPointItem(barcode, out var item))
         {
@@ -349,11 +370,21 @@ public static class PointItemManager
 
         if (id == null || id.IsMe)
         {
+            if (!RigData.HasPlayer)
+            {
+                return;
+            }
+
             manager = RigData.Refs.RigManager;
             type = PointItemPayloadType.SELF;
         }
         else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
         {
+            if (!rep.HasRig)
+            {
+                return;
+            }
+
             manager = rep.RigRefs.RigManager;
             type = PointItemPayloadType.PLAYER_REP;
         }
@@ -375,7 +406,7 @@ public static class PointItemManager
         }
     }
 
-    internal static void Internal_OnTriggerItem(PlayerId id, string barcode, string value = null)
+    internal static void Internal_OnTriggerItem(PlayerID id, string barcode, string value = null)
     {
         if (!TryGetPointItem(barcode, out var item))
         {
@@ -422,7 +453,7 @@ public static class PointItemManager
             return;
         }
 
-        Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, isEquipped);
+        OnEquipChanged(PlayerIDManager.LocalID, item.Barcode, isEquipped);
         PointSaveManager.SetEquipped(item.Barcode, isEquipped);
         PointItemSender.SendPointItemEquip(item.Barcode, isEquipped);
     }
@@ -489,16 +520,13 @@ public static class PointItemManager
         switch (sort)
         {
             case SortMode.PRICE:
-                items.Sort((x, y) => x.AdjustedPrice - y.AdjustedPrice);
+                items.Sort((x, y) => x.Price - y.Price);
                 break;
             case SortMode.TAG:
                 items.Sort((x, y) => x.MainTag.CompareTo(y.MainTag));
                 break;
             case SortMode.NAME:
                 items.Sort((x, y) => x.Title.CompareTo(y.Title));
-                break;
-            case SortMode.AUTHOR:
-                items.Sort((x, y) => x.Author.CompareTo(y.Author));
                 break;
         }
     }

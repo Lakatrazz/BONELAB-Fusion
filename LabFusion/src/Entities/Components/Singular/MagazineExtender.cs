@@ -1,28 +1,33 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Entities;
 
 public class MagazineExtender : EntityComponentExtender<Magazine>
 {
-    public static FusionComponentCache<Magazine, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Magazine, NetworkEntity> Cache = new();
 
     private TimedDespawnHandler _despawnHandler = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Magazine component)
+    protected override void OnRegister(NetworkEntity entity, Magazine component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             _despawnHandler = new();
             _despawnHandler.Register(component.interactableHost, component._poolee);
         }
+
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Magazine component)
+    protected override void OnUnregister(NetworkEntity entity, Magazine component)
     {
         Cache.Remove(component);
 
@@ -31,5 +36,15 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
             _despawnHandler.Unregister();
             _despawnHandler = null;
         }
+
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
+    {
+        // Send claim message
+        var data = new MagazineClaimData() { OwnerID = PlayerIDManager.LocalSmallID, EntityID = entity.ID, Handedness = Handedness.UNDEFINED };
+
+        MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }
 }

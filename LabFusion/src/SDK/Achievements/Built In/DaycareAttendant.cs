@@ -1,69 +1,64 @@
 ﻿using LabFusion.Player;
 using LabFusion.Utilities;
 
-using UnityEngine;
+namespace LabFusion.SDK.Achievements;
 
-namespace LabFusion.SDK.Achievements
+public class DaycareAttendant : Achievement
 {
-    public class DaycareAttendant : Achievement
+    public override string Title => "Daycare Attendant";
+
+    public override string Description => "Stay in the same server for one hour.";
+
+    public override int BitReward => 500;
+
+    protected float _timeElapsed;
+    protected bool _oneHourPassed = false;
+
+    protected override void OnRegister()
     {
-        public override string Title => "Daycare Attendant";
+        MultiplayerHooking.OnJoinedServer += OnJoinServer;
+        MultiplayerHooking.OnStartedServer += OnJoinServer;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
+    }
 
-        public override string Description => "Stay in the same server for one hour.";
+    protected override void OnUnregister()
+    {
+        MultiplayerHooking.OnJoinedServer -= OnJoinServer;
+        MultiplayerHooking.OnStartedServer -= OnJoinServer;
+        MultiplayerHooking.OnDisconnected -= OnDisconnect;
 
-        public override int BitReward => 500;
+        // Incase it wasn't removed
+        MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
+    }
 
-        public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(DaycareAttendant)).Preview;
+    private void OnJoinServer()
+    {
+        _timeElapsed = 0f;
+        _oneHourPassed = false;
 
-        protected float _timeElapsed;
-        protected bool _oneHourPassed = false;
+        MultiplayerHooking.OnLateUpdate += OnLateUpdate;
+    }
 
-        protected override void OnRegister()
+    private void OnDisconnect()
+    {
+        _timeElapsed = 0f;
+        _oneHourPassed = false;
+
+        MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
+    }
+
+    private void OnLateUpdate()
+    {
+        // If we haven't already given the achievement, and there is more than 1 player, increment the timer
+        if (!_oneHourPassed && PlayerIDManager.HasOtherPlayers)
         {
-            MultiplayerHooking.OnJoinServer += OnJoinServer;
-            MultiplayerHooking.OnStartServer += OnJoinServer;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
-        }
+            _timeElapsed += TimeUtilities.DeltaTime;
 
-        protected override void OnUnregister()
-        {
-            MultiplayerHooking.OnJoinServer -= OnJoinServer;
-            MultiplayerHooking.OnStartServer -= OnJoinServer;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
-
-            // Incase it wasn't removed
-            MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
-        }
-
-        private void OnJoinServer()
-        {
-            _timeElapsed = 0f;
-            _oneHourPassed = false;
-
-            MultiplayerHooking.OnLateUpdate += OnLateUpdate;
-        }
-
-        private void OnDisconnect()
-        {
-            _timeElapsed = 0f;
-            _oneHourPassed = false;
-
-            MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
-        }
-
-        private void OnLateUpdate()
-        {
-            // If we haven't already given the achievement, and there is more than 1 player, increment the timer
-            if (!_oneHourPassed && PlayerIdManager.HasOtherPlayers)
+            // 3600 seconds in an hour
+            if (_timeElapsed >= 3600f)
             {
-                _timeElapsed += TimeUtilities.DeltaTime;
-
-                // 3600 seconds in an hour
-                if (_timeElapsed >= 3600f)
-                {
-                    _oneHourPassed = true;
-                    IncrementTask();
-                }
+                _oneHourPassed = true;
+                IncrementTask();
             }
         }
     }

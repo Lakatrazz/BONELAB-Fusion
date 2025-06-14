@@ -3,6 +3,7 @@
 using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Grabbables;
 
@@ -16,9 +17,13 @@ public enum GrabGroup : byte
 
 public abstract class GrabGroupHandler<T> : GrabGroupHandler where T : SerializedGrab, new()
 {
-    public override void HandleGrab(ref SerializedGrab serializedGrab, FusionReader reader)
+    public override void HandleGrab(ref SerializedGrab serializedGrab, INetSerializer serializer)
     {
-        serializedGrab = reader.ReadFusionSerializable<T>();
+        var genericGrab = serializedGrab as T;
+
+        serializer.SerializeValue(ref genericGrab);
+
+        serializedGrab = genericGrab;
     }
 }
 
@@ -26,7 +31,7 @@ public abstract class GrabGroupHandler
 {
     public virtual GrabGroup? Group { get; } = null;
 
-    public abstract void HandleGrab(ref SerializedGrab serializedGrab, FusionReader reader);
+    public abstract void HandleGrab(ref SerializedGrab serializedGrab, INetSerializer serializer);
 
     // Handlers are created up front, they're not static
     public static void RegisterHandlersFromAssembly(Assembly targetAssembly)
@@ -40,7 +45,7 @@ public abstract class GrabGroupHandler
         AssemblyUtilities.LoadAllValid<GrabGroupHandler>(targetAssembly, RegisterHandler);
     }
 
-    public static void RegisterHandler<T>() where T : FusionMessageHandler => RegisterHandler(typeof(T));
+    public static void RegisterHandler<T>() where T : NativeMessageHandler => RegisterHandler(typeof(T));
 
     protected static void RegisterHandler(Type type)
     {
@@ -64,11 +69,11 @@ public abstract class GrabGroupHandler
         }
     }
 
-    public static void ReadGrab(ref SerializedGrab grab, FusionReader reader, GrabGroup group)
+    public static void SerializeGrab(ref SerializedGrab grab, INetSerializer serializer, GrabGroup group)
     {
         try
         {
-            Handlers[(byte)group].HandleGrab(ref grab, reader);
+            Handlers[(byte)group].HandleGrab(ref grab, serializer);
         }
         catch (Exception e)
         {

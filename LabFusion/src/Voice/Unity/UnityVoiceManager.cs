@@ -38,7 +38,7 @@ public sealed class UnityVoiceManager : VoiceManager
         return new UnityVoiceReceiver();
     }
 
-    protected override IVoiceSpeaker OnCreateSpeaker(PlayerId id)
+    protected override IVoiceSpeaker OnCreateSpeaker(PlayerID id)
     {
         return new UnityVoiceSpeaker(id);
     }

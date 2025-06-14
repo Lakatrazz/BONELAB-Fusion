@@ -7,7 +7,7 @@ namespace LabFusion.Bonelab.Extenders;
 
 public class SimpleGripEventsExtender : EntityComponentArrayExtender<SimpleGripEvents>
 {
-    public static FusionComponentCache<SimpleGripEvents, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<SimpleGripEvents, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity networkEntity, SimpleGripEvents[] components)
     {

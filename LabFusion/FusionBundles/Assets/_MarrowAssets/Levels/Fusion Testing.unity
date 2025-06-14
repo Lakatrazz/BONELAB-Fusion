@@ -1197,6 +1197,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6357430252239417488, guid: 7d8843a887cdf7249abacdc04c1b8a84, type: 3}
   m_PrefabInstance: {fileID: 144629290}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &151037965
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 151037966}
+  - component: {fileID: 151037967}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &151037966
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151037965}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.52, y: 6.53, z: 11.56}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &151037967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151037965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &172327947
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2830,6 +2874,8 @@ Transform:
   m_Children:
   - {fileID: 1903154667}
   - {fileID: 777551225}
+  - {fileID: 627599139}
+  - {fileID: 577701029}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3960,6 +4006,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6357430252239417488, guid: 7d8843a887cdf7249abacdc04c1b8a84, type: 3}
   m_PrefabInstance: {fileID: 376419163}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &389055138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 389055139}
+  - component: {fileID: 389055140}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &389055139
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389055138}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12.75, y: 6.75, z: 11.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &389055140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389055138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &393955274
 GameObject:
   m_ObjectHideFlags: 0
@@ -8171,6 +8261,43 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3395687495258739070, guid: d822aaea3083e7e4da6a256f78781f56, type: 3}
   m_PrefabInstance: {fileID: 576170584}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &577701028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 577701029}
+  m_Layer: 0
+  m_Name: Smash Bones
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &577701029
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577701028}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 389055139}
+  - {fileID: 1135067213}
+  - {fileID: 1372990623}
+  - {fileID: 1226141309}
+  - {fileID: 151037966}
+  - {fileID: 1963785726}
+  m_Father: {fileID: 277419361}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &588251037
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8545,6 +8672,41 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3395687495258739070, guid: d822aaea3083e7e4da6a256f78781f56, type: 3}
   m_PrefabInstance: {fileID: 622179745}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &627599138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 627599139}
+  m_Layer: 0
+  m_Name: Regular
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &627599139
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 627599138}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1439642205}
+  - {fileID: 2081729754}
+  - {fileID: 1825259913}
+  - {fileID: 1540710496}
+  m_Father: {fileID: 277419361}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &631316471
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9558,6 +9720,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
 --- !u!1001 &698989462
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10649,7 +10815,7 @@ MonoBehaviour:
       _PersistentArguments:
       - _Type: 2
         _Int: 0
-        _String: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
+        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
         _X: 0
         _Y: 0
         _Z: 0
@@ -10668,7 +10834,7 @@ MonoBehaviour:
       _PersistentArguments:
       - _Type: 2
         _Int: 0
-        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+        _String: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
         _X: 0
         _Y: 0
         _Z: 0
@@ -10703,10 +10869,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamOverrides:
-  - teamBarcode: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
+  - teamTag:
+      _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
     overrideName: RED
     overrideLogo: {fileID: 0}
-  - teamBarcode: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+  - teamTag:
+      _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
     overrideName: BLU
     overrideLogo: {fileID: 0}
 --- !u!1001 &836617676
@@ -13186,11 +13356,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teamOverrides: []
   songOverrides:
-  - SLZ.BONELAB.Content.MonoDisc.BackThroughTheLab
-  - SLZ.BONELAB.Content.MonoDisc.BackToMythOS
-  victorySongOverride: SLZ.BONELAB.Content.MonoDisc.BonestepEndStem
-  failureSongOverride: SLZ.BONELAB.Content.MonoDisc.HallVortexEndStem
-  tieSongOverride: SLZ.BONELAB.Content.MonoDisc.RipToBitsEndStem
+  - _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BackThroughTheLab
+  - _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BackToMythOS
+  victorySongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BonestepEndStem
+  failureSongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.HallVortexEndStem
+  tieSongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.RipToBitsEndStem
 --- !u!114 &1077344384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13205,6 +13383,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AwakeEvent:
     _PersistentCalls:
+    - _Target: {fileID: 1077344383}
+      _MethodName: SetVictorySong
+      _PersistentArguments:
+      - _Type: 2
+        _Int: 0
+        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
+      - _Type: 2
+        _Int: 0
+        _String: Lakatrazz.FusionContent.MonoDisc.AppenBeyuge
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
     - _Target: {fileID: 1077344383}
       _MethodName: AddSong
       _PersistentArguments:
@@ -13536,6 +13733,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6357430252239417488, guid: 7d8843a887cdf7249abacdc04c1b8a84, type: 3}
   m_PrefabInstance: {fileID: 1121635874}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1135067212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1135067213}
+  - component: {fileID: 1135067214}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1135067213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135067212}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.69, y: 5.44, z: -9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1135067214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135067212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1145194644
 GameObject:
   m_ObjectHideFlags: 0
@@ -14164,6 +14405,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
 --- !u!1001 &1193754973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14440,6 +14685,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1641196928535706828, guid: feb569f846352164086b92eb8ce6f04a, type: 3}
   m_PrefabInstance: {fileID: 1207803429}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1226141308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1226141309}
+  - component: {fileID: 1226141310}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1226141309
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226141308}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12.48, y: 4.04, z: -10.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1226141310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226141308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1230388819
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16431,6 +16720,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1372990622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1372990623}
+  - component: {fileID: 1372990624}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1372990623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372990622}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.52, y: 6.81, z: -6.09}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1372990624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372990622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1387469566
 GameObject:
   m_ObjectHideFlags: 0
@@ -17029,6 +17362,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4308036558946904769, guid: 46eaf6aa9c6dce24bac32ed873a7c402, type: 3}
   m_PrefabInstance: {fileID: 1427296923}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1439642204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1439642205}
+  - component: {fileID: 1439642206}
+  m_Layer: 2
+  m_Name: Gamemode Marker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1439642205
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439642204}
+  m_LocalRotation: {x: -0, y: -0.38268274, z: -0, w: 0.9238798}
+  m_LocalPosition: {x: 5.5, y: 4, z: -5.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 627599139}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
+--- !u!114 &1439642206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439642204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamTags:
+    _tags: []
 --- !u!1001 &1455407933
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17931,6 +18310,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3395687495258739070, guid: d822aaea3083e7e4da6a256f78781f56, type: 3}
   m_PrefabInstance: {fileID: 1539974603}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1540710495
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1540710496}
+  - component: {fileID: 1540710497}
+  m_Layer: 2
+  m_Name: Gamemode Marker (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1540710496
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540710495}
+  m_LocalRotation: {x: -0, y: 0.38268343, z: -0, w: 0.9238796}
+  m_LocalPosition: {x: -5.568268, y: 4, z: -5.5023932}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 627599139}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
+--- !u!114 &1540710497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540710495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamTags:
+    _tags: []
 --- !u!1001 &1560448641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19552,6 +19977,52 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1825259912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1825259913}
+  - component: {fileID: 1825259914}
+  m_Layer: 2
+  m_Name: Gamemode Marker (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1825259913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825259912}
+  m_LocalRotation: {x: -0, y: 0.9238798, z: -0, w: 0.38268283}
+  m_LocalPosition: {x: -5.5682564, y: 4, z: 5.497607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 627599139}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+--- !u!114 &1825259914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825259912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamTags:
+    _tags: []
 --- !u!1 &1841821193
 GameObject:
   m_ObjectHideFlags: 0
@@ -20656,6 +21127,50 @@ MonoBehaviour:
   manualMode: 1
   onSpawnEvent:
     _PersistentCalls: []
+--- !u!1 &1963785725
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1963785726}
+  - component: {fileID: 1963785727}
+  m_Layer: 2
+  m_Name: Dropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1963785726
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963785725}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 12, y: 5.21, z: 7.11}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577701029}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1963785727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963785725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79ff2f9343bbc694e8a22fc9c75edbb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1977122841
 GameObject:
   m_ObjectHideFlags: 0
@@ -21360,6 +21875,52 @@ MonoBehaviour:
         _Z: 0
         _W: 0
         _Object: {fileID: 0}
+--- !u!1 &2081729753
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2081729754}
+  - component: {fileID: 2081729755}
+  m_Layer: 2
+  m_Name: Gamemode Marker (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2081729754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081729753}
+  m_LocalRotation: {x: -0, y: -0.92387956, z: -0, w: 0.3826834}
+  m_LocalPosition: {x: 5.5, y: 4, z: 5.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 627599139}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: -135, z: 0}
+--- !u!114 &2081729755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081729753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamTags:
+    _tags: []
 --- !u!1001 &2083743223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21841,6 +22402,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
 --- !u!1001 &2116464510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22051,3 +22616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake

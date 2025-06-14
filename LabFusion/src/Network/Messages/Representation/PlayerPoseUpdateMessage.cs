@@ -1,49 +1,28 @@
-﻿using LabFusion.Data;
-using LabFusion.Player;
-using LabFusion.Representation;
+﻿using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerPoseUpdateData : IFusionSerializable
+public class PlayerPoseUpdateData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
-        * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
+    public const int Size = RigPose.Size;
 
-    public byte playerId;
+    public int? GetSize() => Size;
 
-    public float health;
+    public RigPose Pose;
 
-    public RigPose pose;
-
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(playerId);
-
-        writer.Write(pose);
-
-        writer.Write(health);
+        serializer.SerializeValue(ref Pose);
     }
 
-    public void Deserialize(FusionReader reader)
+    public static PlayerPoseUpdateData Create(RigPose pose)
     {
-        playerId = reader.ReadByte();
-
-        pose = reader.ReadFusionSerializable<RigPose>();
-
-        health = reader.ReadSingle();
-    }
-
-    public static PlayerPoseUpdateData Create(byte playerId, RigPose pose)
-    {
-        var health = RigData.Refs.Health;
-
         var data = new PlayerPoseUpdateData
         {
-            playerId = playerId,
-            pose = pose,
-            health = health.curr_Health,
+            Pose = pose,
         };
 
         return data;
@@ -51,35 +30,28 @@ public class PlayerPoseUpdateData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerPoseUpdateMessage : FusionMessageHandler
+public class PlayerPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerPoseUpdate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerPoseUpdateData>();
+        var data = received.ReadData<PlayerPoseUpdateData>();
 
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.playerId, NetworkChannel.Unreliable, message, false);
-            return;
-        }
+        var playerId = received.Sender.Value;
 
         // Make sure this isn't us
-        if (data.playerId == PlayerIdManager.LocalSmallId)
+        if (playerId == PlayerIDManager.LocalSmallID)
         {
             throw new Exception("Player received a pose for their own player.");
         }
 
         // Get network player
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerId);
 
         if (entity == null)
         {
-            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {data.playerId}!");
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {playerId}!");
             return;
         }
 
@@ -92,6 +64,6 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
         }
 
         // Apply pose
-        networkPlayer.OnReceivePose(data.pose);
+        networkPlayer.OnReceivePose(data.Pose);
     }
 }

@@ -1,27 +1,23 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class ComponentHashData : IFusionSerializable
+public class ComponentHashData : INetSerializable
 {
     public const int Size = sizeof(int) * 2;
 
-    public int hash;
-    public int index;
+    public int? GetSize() => Size;
 
-    public void Serialize(FusionWriter writer)
-    {
-        writer.Write(hash);
-        writer.Write(index);
-    }
+    public int Hash;
+    public int Index;
 
-    public void Deserialize(FusionReader reader)
+    public void Serialize(INetSerializer serializer)
     {
-        hash = reader.ReadInt32();
-        index = reader.ReadInt32();
+        serializer.SerializeValue(ref Hash);
+        serializer.SerializeValue(ref Index);
     }
 }
 
@@ -71,21 +67,31 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
     public TComponent GetComponentFromData(ComponentHashData data)
     {
-        if (!HashToComponents.TryGetValue(data.hash, out var components))
+        if (data == null)
         {
             return null;
         }
 
-        if (data.index >= components.Count || data.index < 0)
+        if (!HashToComponents.TryGetValue(data.Hash, out var components))
         {
             return null;
         }
 
-        return components[data.index];
+        if (data.Index >= components.Count || data.Index < 0)
+        {
+            return null;
+        }
+
+        return components[data.Index];
     }
 
     public ComponentHashData GetDataFromComponent(TComponent component)
     {
+        if (component == null)
+        {
+            return null;
+        }
+
         if (!ComponentToHash.TryGetValue(component, out var hash))
         {
             return null;
@@ -96,8 +102,10 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
         return new ComponentHashData()
         {
-            hash = hash,
-            index = index,
+            Hash = hash,
+            Index = index,
         };
     }
+
+    public bool IsHashed(TComponent component) => component != null && ComponentToHash.ContainsKey(component);
 }

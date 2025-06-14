@@ -38,6 +38,8 @@ Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
 - Team Deathmatch, Kill as many players on the opposite team!
 - Entangled, Be constrained to a randomized partner!
 - Hide and Seek, Seekers try to find hiders as quick as possible!
+- Smash Bones, use dropped items to knock players off the stage and be the last one standing!
+- Juggernaut, defeat the giant Juggernaut to gain its power, then kill as many survivors as possible!
 
 Custom maps can implement these gamemodes, and customize them specifically for their map.
 

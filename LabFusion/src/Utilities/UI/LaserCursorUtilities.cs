@@ -3,13 +3,23 @@
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Utilities
+using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
+
+namespace LabFusion.Utilities;
+
+public static class LaserCursorUtilities
 {
-    public static class LaserCursorUtilities
+    public static void CreateLaserCursor(Action<LaserCursor> onCursorReady = null)
     {
-        public static LaserCursor CreateLaserCursor(Action<LaserCursor> onSetupRegions = null)
+        var cursorSpawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.LaserCursorReference);
+
+        LocalAssetSpawner.Register(cursorSpawnable);
+
+        LocalAssetSpawner.Spawn(cursorSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
-            var instance = GameObject.Instantiate(FusionContentLoader.LaserCursor.Asset);
+            var instance = poolee.gameObject;
+
             var transform = instance.transform;
             instance.SetActive(false);
 
@@ -26,10 +36,10 @@ namespace LabFusion.Utilities
 
             var growCurve = new AnimationCurve(new Keyframe[]
             {
-                new(0f, 1f),
-                new(0.1271991f, 1.953225f),
-                new(0.724905f, 0.9818711f),
-                new(1f, 1f),
+            new(0f, 1f),
+            new(0.1271991f, 1.953225f),
+            new(0.724905f, 0.9818711f),
+            new(1f, 1f),
             });
             ray_start.blipCurve = growCurve;
             ray_mid.blipCurve = growCurve;
@@ -54,7 +64,9 @@ namespace LabFusion.Utilities
             prismaticSFX.sourceMinDistance = 1f;
             prismaticSFX.pitchMod = 1f;
             prismaticSFX.loopClips = true;
-            prismaticSFX.modulatedClips = new AudioClip[] { FusionContentLoader.LaserPrismaticSFX.Asset };
+
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LaserPrismaticSFXReference, (clip) => { prismaticSFX.modulatedClips = new AudioClip[] { clip }; });
+
             prismaticSFX.SpatialBlend = 0.98f;
 
             // Fill out the laser cursor
@@ -69,9 +81,11 @@ namespace LabFusion.Utilities
             cursor.bezCurve = drawBezierCurve;
             cursor.pulseLength = 0.2f;
             cursor.pulseAceleration = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-            cursor.pulseSound = new AudioClip[] { FusionContentLoader.LaserPulseSound.Asset };
-            cursor.raySpawn = new AudioClip[] { FusionContentLoader.LaserRaySpawn.Asset };
-            cursor.rayDespawn = new AudioClip[] { FusionContentLoader.LaserRayDespawn.Asset };
+
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LaserPulseReference, (clip) => { cursor.pulseSound = new AudioClip[] { clip }; });
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LaserRaySpawnReference, (clip) => { cursor.raySpawn = new AudioClip[] { clip }; });
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LaserRayDespawnReference, (clip) => { cursor.rayDespawn = new AudioClip[] { clip }; });
+
             cursor.prismaticSFX = prismaticSFX;
             cursor.spatialBlend = 1f;
             cursor._sourceVolume = 0.3f;
@@ -80,27 +94,25 @@ namespace LabFusion.Utilities
             cursor.canShowCursor = true;
             cursor.maxMillimeters = 16;
 
-            onSetupRegions?.Invoke(cursor);
+            onCursorReady?.Invoke(cursor);
+        });
+    }
 
-            return cursor;
-        }
+    private static PageElementView SetupPageElementView(this Transform transform)
+    {
+        var highlightUI = transform.gameObject.AddComponent<HighlightUI>();
+        highlightUI.color1 = new Color(1f, 1f, 1f, 0.1294118f);
+        highlightUI.color2 = Color.white;
 
-        private static PageElementView SetupPageElementView(this Transform transform)
-        {
-            var highlightUI = transform.gameObject.AddComponent<HighlightUI>();
-            highlightUI.color1 = new Color(1f, 1f, 1f, 0.1294118f);
-            highlightUI.color2 = Color.white;
+        var pageElementView = transform.gameObject.AddComponent<PageElementView>();
+        pageElementView.highlightColor1 = new Color(1f, 1f, 1f, 0f);
+        pageElementView.highlightColor2 = Color.white;
+        pageElementView.color1 = new Color(1f, 1f, 1f, 0f);
+        pageElementView.color2 = Color.white;
+        pageElementView.blipCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
 
-            var pageElementView = transform.gameObject.AddComponent<PageElementView>();
-            pageElementView.highlightColor1 = new Color(1f, 1f, 1f, 0f);
-            pageElementView.highlightColor2 = Color.white;
-            pageElementView.color1 = new Color(1f, 1f, 1f, 0f);
-            pageElementView.color2 = Color.white;
-            pageElementView.blipCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+        pageElementView.elements = new HighlightUI[] { highlightUI };
 
-            pageElementView.elements = new HighlightUI[] { highlightUI };
-
-            return pageElementView;
-        }
+        return pageElementView;
     }
 }

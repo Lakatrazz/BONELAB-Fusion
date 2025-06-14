@@ -1,44 +1,96 @@
 ﻿using LabFusion.Data;
+using LabFusion.Entities;
+using LabFusion.Network.Serialization;
+using LabFusion.Utilities;
+
+using UnityEngine;
 
 namespace LabFusion.Network;
 
-public class ComponentPathData : IFusionSerializable
+public class ComponentPathData : INetSerializable
 {
-    public bool hasNetworkEntity;
+    public const int Size = sizeof(byte) + sizeof(ushort) * 2 + sizeof(bool) + ComponentHashData.Size;
 
-    public ushort entityId;
-    public ushort componentIndex;
+    public bool HasEntity;
 
-    public ComponentHashData hashData;
+    public ushort EntityID;
+    public ushort ComponentIndex;
 
-    public void Serialize(FusionWriter writer)
+    public ComponentHashData HashData;
+
+    public int? GetSize() => Size;
+
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(hasNetworkEntity);
+        serializer.SerializeValue(ref HasEntity);
+        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref ComponentIndex);
 
-        writer.Write(entityId);
-        writer.Write(componentIndex);
+        bool hasHashData = HashData != null;
 
-        writer.Write(hashData);
+        serializer.SerializeValue(ref hasHashData);
+
+        if (hasHashData)
+        {
+            serializer.SerializeValue(ref HashData);
+        }
     }
 
-    public void Deserialize(FusionReader reader)
+    public static ComponentPathData CreateFromComponent<TComponent, TExtender>(TComponent component, ComponentHashTable<TComponent> hashTable, FusionComponentCache<TComponent, NetworkEntity> cache) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
     {
-        hasNetworkEntity = reader.ReadBoolean();
+        var hashData = hashTable.GetDataFromComponent(component);
 
-        entityId = reader.ReadUInt16();
-        componentIndex = reader.ReadUInt16();
+        var hasNetworkEntity = false;
+        ushort entityID = 0;
+        ushort componentIndex = 0;
 
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
-    }
+        if (cache.TryGet(component, out var entity))
+        {
+            hasNetworkEntity = true;
+            var extender = entity.GetExtender<TExtender>();
 
-    public static ComponentPathData Create(bool hasNetworkEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)
-    {
+            entityID = entity.ID;
+            componentIndex = extender.GetIndex(component).Value;
+        }
+
         return new ComponentPathData()
         {
-            hasNetworkEntity = hasNetworkEntity,
-            entityId = entityId,
-            componentIndex = componentIndex,
-            hashData = hashData,
+            HasEntity = hasNetworkEntity,
+            EntityID = entityID,
+            ComponentIndex = componentIndex,
+            HashData = hashData,
         };
+    }
+
+    public bool TryGetComponent<TComponent, TExtender>(ComponentHashTable<TComponent> hashTable, out TComponent component) where TComponent : Component where TExtender : EntityComponentArrayExtender<TComponent>
+    {
+        component = null;
+
+        if (HasEntity)
+        {
+            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(EntityID);
+
+            if (entity == null)
+            {
+                return false;
+            }
+
+            var extender = entity.GetExtender<TExtender>();
+
+            if (extender == null)
+            {
+                return false;
+            }
+
+            component = extender.GetComponent(ComponentIndex);
+
+            return component != null;
+        }
+        else
+        {
+            component = hashTable.GetComponentFromData(HashData);
+
+            return component != null;
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
 using LabFusion.SDK.Points;
 using LabFusion.Marrow.Integration;
 
@@ -12,19 +11,21 @@ namespace LabFusion.SDK.Cosmetics;
 
 public class CosmeticItem : PointItem
 {
-    public override string Title => Variables.title;
+    public override string Title => Variables.Title;
 
-    public override string Description => Variables.description;
+    public override string Description => Variables.Description;
 
-    public override int Price => Variables.price;
+    public override int Price => Variables.Price;
 
-    public override string Author => Variables.author;
+    public override string Author => Variables.Author;
 
-    public override string[] Tags => Variables.tags;
+    public override string Category => Variables.Category;
 
-    public override string Barcode => Variables.barcode;
+    public override string[] Tags => Variables.Tags;
 
-    public override bool Redacted => Variables.hiddenInShop;
+    public override string Barcode => Variables.Barcode;
+
+    public override bool Redacted => Variables.HiddenInShop;
 
     // We use LateUpdate to cleanup accessories, so it should be hooked
     public override bool ImplementLateUpdate => true;
@@ -41,7 +42,7 @@ public class CosmeticItem : PointItem
     {
         _variables = variables;
 
-        _spawnableCrateReference = new(variables.barcode);
+        _spawnableCrateReference = new(variables.Barcode);
     }
 
     public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
@@ -122,7 +123,7 @@ public class CosmeticItem : PointItem
                 var accessory = GameObject.Instantiate(go);
                 accessory.name = go.name;
 
-                var instance = new CosmeticInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && Variables.hiddenInView, Variables.cosmeticPoint);
+                var instance = new CosmeticInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && Variables.HiddenInView, Variables.CosmeticPoint);
                 _accessoryInstances.Add(payload.rigManager, instance);
             };
             _spawnableCrateReference.Crate.MainGameObject.LoadAsset(onLoaded);
@@ -139,7 +140,9 @@ public class CosmeticItem : PointItem
     {
         // Make sure theres accessory instances
         if (_accessoryInstances.Count <= 0)
+        {
             return;
+        }
 
         // Check if all instances are valid. Otherwise, clean them up
         List<CosmeticInstance> accessoriesToRemove = null;

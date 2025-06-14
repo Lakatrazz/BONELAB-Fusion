@@ -8,17 +8,15 @@ namespace LabFusion.Utilities;
 
 public static class PooleeUtilities
 {
-    internal static bool CanDespawn = false;
-
     public static void DespawnAll()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
 
         // Loop through all NetworkProps and despawn them
-        var entities = NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Keys.ToArray();
+        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityIDLookup.Keys.ToArray();
         foreach (var networkEntity in entities)
         {
             var prop = networkEntity.GetExtender<NetworkProp>();
@@ -42,14 +40,16 @@ public static class PooleeUtilities
     public static void SendDespawn(ushort entityId, bool despawnEffect)
     {
         // Send response
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
-            using var writer = FusionWriter.Create(DespawnResponseData.Size);
-            var data = DespawnResponseData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
-            writer.Write(data);
+            var data = new DespawnResponseData()
+            {
+                Despawner = new(PlayerIDManager.LocalSmallID),
+                Entity = new(entityId),
+                DespawnEffect = despawnEffect,
+            };
 
-            using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, CommonMessageRoutes.ReliableToOtherClients);
         }
         // Send request
         else
@@ -60,32 +60,26 @@ public static class PooleeUtilities
 
     public static void RequestDespawn(ushort entityId, bool despawnEffect)
     {
-        using var writer = FusionWriter.Create(DespawnRequestData.Size);
-        var data = DespawnRequestData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
-        writer.Write(data);
+        var data = new DespawnRequestData()
+        {
+            Entity = new NetworkEntityReference(entityId),
+            DespawnEffect = despawnEffect,
+        };
 
-        using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
-        using var writer = FusionWriter.Create(SpawnRequestData.Size);
-        var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId, spawnEffect);
-        writer.Write(data);
+        var data = SpawnRequestData.Create(barcode, serializedTransform, trackerId, spawnEffect);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
-        using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId, spawnEffect);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
-
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, CommonMessageRoutes.ReliableToClients);
     }
 }

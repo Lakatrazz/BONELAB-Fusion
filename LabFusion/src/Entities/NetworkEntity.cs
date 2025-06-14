@@ -5,12 +5,12 @@ namespace LabFusion.Entities;
 
 public delegate void NetworkEntityDelegate(NetworkEntity entity);
 
-public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerId player);
+public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerID player);
 
 public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
     private ushort _id = 0;
-    private ushort _queueId = 0;
+    private ushort _queueID = 0;
 
     private bool _isRegistered = false;
     private bool _isQueued = false;
@@ -18,11 +18,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private bool _isOwnerLocked = false;
 
-    public ushort Id => _id;
+    public ushort ID => _id;
 
-    private PlayerId _ownerId = null;
+    private PlayerID _ownerID = null;
 
-    public ushort QueueId => _queueId;
+    public ushort QueueID => _queueID;
 
     public bool IsRegistered => _isRegistered;
 
@@ -30,18 +30,38 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public bool IsDestroyed => _isDestroyed;
 
-    public PlayerId OwnerId => _ownerId;
+    public PlayerID OwnerID => _ownerID;
 
-    public bool IsOwner => HasOwner && _ownerId.IsMe;
+    public bool IsOwner => HasOwner && _ownerID.IsMe;
 
-    public bool HasOwner => _ownerId != null;
+    public bool HasOwner => _ownerID != null;
 
     public bool IsOwnerLocked => _isOwnerLocked;
 
+    /// <summary>
+    /// Invoked when the entity is unregistered.
+    /// </summary>
     public event NetworkEntityDelegate OnEntityUnregistered;
-    public event NetworkEntityPlayerDelegate OnEntityCatchup, OnEntityOwnershipTransfer;
+
+    /// <summary>
+    /// Invoked when a Player becomes the entity's new sync owner.
+    /// </summary>
+    public NetworkEntityPlayerDelegate OnEntityOwnershipTransfer;
+
+    /// <summary>
+    /// Invoked when a new Player joins the server and the creation of this NetworkEntity needs to be caught up.
+    /// </summary>
+    public event NetworkEntityPlayerDelegate OnEntityCreationCatchup;
+
+    /// <summary>
+    /// Invoked on the entity owner's end when a Player finishes creating this NetworkEntity and needs its data to be caught up.
+    /// </summary>
+    public event NetworkEntityPlayerDelegate OnEntityDataCatchup;
 
     private NetworkEntityDelegate _registeredCallback = null;
+
+    private readonly List<byte> _dataCaughtUpPlayers = new();
+    private readonly Dictionary<byte, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
     private readonly HashSet<IEntityExtender> _extenders = new();
 
@@ -68,18 +88,78 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return default;
     }
 
-    public bool InvokeCatchup(PlayerId playerId)
+    public IEntityExtender GetExtender(Type type)
     {
-        if (OnEntityCatchup == null)
+        foreach (var extender in _extenders)
         {
-            return false;
+            if (type.IsAssignableFrom(extender.GetType()))
+            {
+                return extender;
+            }
         }
 
-        OnEntityCatchup?.Invoke(this, playerId);
-
-        return true;
+        return null;
     }
 
+    internal void OnPlayerLeft(PlayerID playerID)
+    {
+        byte smallID = playerID.SmallID;
+
+        _dataCaughtUpPlayers.Remove(smallID);
+        _dataCatchupCallbacks.Remove(smallID);
+
+        if (OwnerID == playerID)
+        {
+            RemoveOwner();
+        }
+    }
+
+    internal bool InvokeCreationCatchup(PlayerID playerID)
+    {
+        bool caughtUp = false;
+
+        if (OnEntityCreationCatchup != null)
+        {
+            OnEntityCreationCatchup?.InvokeSafe(this, playerID, "executing OnEntityCreationCatchup");
+            caughtUp = true;
+        }
+
+        return caughtUp;
+    }
+
+    internal bool InvokeDataCatchup(PlayerID playerID)
+    {
+        bool caughtUp = false;
+
+        byte smallID = playerID.SmallID;
+
+        if (OnEntityDataCatchup != null)
+        {
+            OnEntityDataCatchup?.InvokeSafe(this, playerID, "executing OnEntityDataCatchup");
+            caughtUp = true;
+        }
+
+        if (_dataCatchupCallbacks.TryGetValue(smallID, out var callback))
+        {
+            _dataCatchupCallbacks.Remove(smallID);
+
+            callback?.InvokeSafe(this, playerID, "executing data catchup callback");
+
+            caughtUp = true;
+        }
+
+        if (!_dataCaughtUpPlayers.Contains(smallID))
+        {
+            _dataCaughtUpPlayers.Add(smallID);
+        }
+
+        return caughtUp;
+    }
+
+    /// <summary>
+    /// Registers a callback for when the NetworkEntity is registered. If the entity is already registered, this will invoke immediately.
+    /// </summary>
+    /// <param name="registeredCallback"></param>
     public void HookOnRegistered(NetworkEntityDelegate registeredCallback)
     {
         if (IsRegistered)
@@ -92,9 +172,49 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         }
     }
 
+    /// <summary>
+    /// Registers a callback for when a Player requests data catchup for a NetworkEntity. If they've already requested it, the callback invokes immediately.
+    /// <para>Hook into this when catchup depends on multiple NetworkEntities.</para>
+    /// </summary>
+    /// <param name="playerID"></param>
+    /// <param name="dataCatchupCallback"></param>
+    public void HookOnDataCatchup(PlayerID playerID, NetworkEntityPlayerDelegate dataCatchupCallback)
+    {
+        if (HasDataCaughtUp(playerID))
+        {
+            dataCatchupCallback?.Invoke(this, playerID);
+        }
+        else
+        {
+            byte smallID = playerID.SmallID;
+
+            if (!_dataCatchupCallbacks.ContainsKey(smallID))
+            {
+                _dataCatchupCallbacks[smallID] = null;
+            }
+
+            _dataCatchupCallbacks[smallID] += dataCatchupCallback;
+        }
+    }
+
+    /// <summary>
+    /// Returns if this NetworkEntity has already had data catchup requested from a specific Player.
+    /// </summary>
+    /// <param name="playerID"></param>
+    /// <returns></returns>
+    public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID);
+
+    /// <summary>
+    /// Clears the players that have had data catch up for this NetworkEntity.
+    /// </summary>
+    public void ClearDataCaughtUpPlayers()
+    {
+        _dataCaughtUpPlayers.Clear();
+    }
+
     public void Queue(ushort queuedId)
     {
-        _queueId = queuedId;
+        _queueID = queuedId;
         _isQueued = true;
 
         _isRegistered = false;
@@ -104,7 +224,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void Register(ushort id)
     {
         _isQueued = false;
-        _queueId = 0;
+        _queueID = 0;
 
         _isRegistered = true;
         _id = id;
@@ -116,7 +236,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void Unregister()
     {
         _isQueued = false;
-        _queueId = 0;
+        _queueID = 0;
 
         _isRegistered = false;
         _id = 0;
@@ -126,24 +246,25 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         OnEntityUnregistered?.Invoke(this);
 
         OnEntityUnregistered = null;
-        OnEntityCatchup = null;
+        OnEntityCreationCatchup = null;
+        OnEntityDataCatchup = null;
 
         RemoveOwner();
     }
 
-    public void SetOwner(PlayerId ownerId)
+    public void SetOwner(PlayerID ownerID)
     {
         if (IsOwnerLocked)
         {
 #if DEBUG
-            FusionLogger.Warn($"Tried setting the owner of a NetworkEntity at id {Id} to {ownerId.SmallId}, but it was locked!");
+            FusionLogger.Warn($"Tried setting the owner of a NetworkEntity at id {ID} to {ownerID.SmallID}, but it was locked!");
 #endif
             return;
         }
 
-        _ownerId = ownerId;
+        _ownerID = ownerID;
 
-        OnEntityOwnershipTransfer?.Invoke(this, ownerId);
+        OnEntityOwnershipTransfer?.Invoke(this, ownerID);
     }
 
     public void RemoveOwner()
@@ -151,12 +272,12 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         if (IsOwnerLocked)
         {
 #if DEBUG
-            FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {Id}, but it was locked!");
+            FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {ID}, but it was locked!");
 #endif
             return;
         }
 
-        _ownerId = null;
+        _ownerID = null;
 
         OnEntityOwnershipTransfer?.Invoke(this, null);
     }

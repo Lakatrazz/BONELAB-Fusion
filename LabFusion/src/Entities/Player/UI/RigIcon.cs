@@ -2,13 +2,15 @@
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
+using LabFusion.UI;
 
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigIcon : IHeadUIElement
+public class RigIcon : IPopupLayoutElement
 {
     private Transform _iconTransform;
     private Poolee _iconPoolee;
@@ -67,15 +69,11 @@ public class RigIcon : IHeadUIElement
 
     public void Spawn(Transform parent)
     {
-        var spawnable = new Spawnable()
-        {
-            crateRef = FusionSpawnableReferences.IconReference,
-            policyData = null,
-        };
+        var spawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.IconReference);
 
-        AssetSpawner.Register(spawnable);
+        LocalAssetSpawner.Register(spawnable);
 
-        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        LocalAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _iconPoolee = poolee;
             _iconImage = poolee.GetComponentInChildren<RawImage>();
