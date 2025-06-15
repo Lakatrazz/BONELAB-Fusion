@@ -54,7 +54,7 @@ public class InventorySlotDropMessage : ModuleMessageHandler
         }
 
         var slotReceiver = slotExtender.GetComponent(data.SlotIndex);
-        WeaponSlot weaponSlot = null;
+        var weaponSlot = slotReceiver._slottedWeapon;
 
         InventorySlotReceiverPatches.IgnorePatches = true;
 
@@ -79,7 +79,6 @@ public class InventorySlotDropMessage : ModuleMessageHandler
             if (weaponSlot && weaponSlot.grip)
             {
                 weaponSlot.grip.MoveIntoHand(grabber.RigRefs.GetHand(data.Handedness));
-                grabber.Grabber.Attach(data.Handedness, weaponSlot.grip);
             }
 
             var hand = grabber.RigRefs.GetHand(data.Handedness);

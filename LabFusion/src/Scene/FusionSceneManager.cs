@@ -80,13 +80,13 @@ public static partial class FusionSceneManager
             LocalPlayer.Metadata.LevelBarcode.SetValue(Barcode);
 
             // Invoke the level load hook
-            _onLevelLoad?.Invoke();
+            _onLevelLoad?.InvokeSafe("executing OnLevelLoad hook");
             _onLevelLoad = null;
 
             // If the target was loaded, invoke that hook
             if (HasTargetLoaded())
             {
-                _onTargetLevelLoad?.Invoke();
+                _onTargetLevelLoad?.InvokeSafe("executing OnTargetLevelLoad hook");
                 _onTargetLevelLoad = null;
 
                 MultiplayerHooking.InvokeTargetLevelLoaded();
@@ -115,7 +115,7 @@ public static partial class FusionSceneManager
             FusionMod.OnMainSceneInitializeDelayed();
 
             // Invoke the level load hook
-            _onDelayedLevelLoad?.Invoke();
+            _onDelayedLevelLoad?.InvokeSafe("executing OnDelayedLevelLoad hook");
             _onDelayedLevelLoad = null;
         }
     }

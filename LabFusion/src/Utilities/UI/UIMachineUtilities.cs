@@ -35,6 +35,11 @@ public static class UIMachineUtilities
 
             FusionSceneManager.HookOnLevelLoad(() =>
             {
+                if (cursor == null)
+                {
+                    return;
+                }
+
                 cursor.gameObject.SetActive(true);
             });
         });
