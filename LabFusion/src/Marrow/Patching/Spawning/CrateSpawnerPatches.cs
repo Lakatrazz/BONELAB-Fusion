@@ -22,6 +22,15 @@ public static class CrateSpawnerPatches
 {
     public static readonly ComponentHashTable<CrateSpawner> HashTable = new();
 
+    public static void PatchAll()
+    {
+        var original = typeof(CrateSpawner).GetMethod(nameof(CrateSpawner.SpawnSpawnableAsync), AccessTools.all);
+
+        var prefix = new HarmonyMethod(typeof(CrateSpawnerPatches).GetMethod(nameof(SpawnSpawnableAsyncPrefix), AccessTools.all));
+
+        FusionMod.Instance.HarmonyInstance.Patch(original, prefix);
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(nameof(CrateSpawner.Awake))]
     public static void Awake(CrateSpawner __instance)
@@ -151,8 +160,6 @@ public static class CrateSpawnerPatches
         return false;
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(CrateSpawner.SpawnSpawnableAsync))]
     public static bool SpawnSpawnableAsyncPrefix(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
     {
         // If this scene is unsynced, the spawner can function as normal.

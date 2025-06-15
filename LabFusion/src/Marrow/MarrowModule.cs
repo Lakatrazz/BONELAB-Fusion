@@ -3,6 +3,7 @@ using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Combat;
 using LabFusion.Marrow.Scene;
+using LabFusion.Marrow.Patching;
 
 namespace LabFusion.Marrow;
 
@@ -40,6 +41,15 @@ public class MarrowModule : Module
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
 
         LevelEventHandler.OnInitializeMelon();
+
+        if (PlatformHelper.IsAndroid)
+        {
+            CrateSpawnerAndroidPatches.PatchAll();
+        }
+        else
+        {
+            CrateSpawnerPatches.PatchAll();
+        }
     }
 
     protected override void OnModuleUnregistered()
