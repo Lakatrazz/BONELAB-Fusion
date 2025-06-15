@@ -12,20 +12,20 @@ public abstract class SerializedGrab : INetSerializable
 {
     public const int Size = sizeof(byte) + SerializedTransform.Size;
 
-    public bool isGrabbed;
-    public SerializedTransform targetInBase;
-    public GripPair gripPair;
+    public bool IsGrabbed;
+    public SerializedTransform TargetInBase;
+    public GripPair GripPair;
 
     public void WriteDefaultGrip(Hand hand, Grip grip)
     {
         // Check if this is actually grabbed
-        isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
+        IsGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
 
         // Store the target
         var target = grip.GetTargetInBase(hand);
-        targetInBase = new SerializedTransform(target.position, target.rotation);
+        TargetInBase = new SerializedTransform(target.position, target.rotation);
 
-        gripPair = new GripPair(hand, grip);
+        GripPair = new GripPair(hand, grip);
     }
 
     public virtual int GetSize()
@@ -35,8 +35,8 @@ public abstract class SerializedGrab : INetSerializable
 
     public virtual void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref isGrabbed);
-        serializer.SerializeValue(ref targetInBase);
+        serializer.SerializeValue(ref IsGrabbed);
+        serializer.SerializeValue(ref TargetInBase);
     }
 
     public abstract Grip GetGrip();
@@ -50,7 +50,7 @@ public abstract class SerializedGrab : INetSerializable
         }
 
         // Don't do anything if this isn't grabbed anymore
-        if (!isGrabbed)
+        if (!IsGrabbed)
         {
             return;
         }
@@ -61,6 +61,6 @@ public abstract class SerializedGrab : INetSerializable
             return;
         }
 
-        player.Grabber.Attach(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
+        player.Grabber.Attach(handedness, grip, SimpleTransform.Create(TargetInBase.position, TargetInBase.rotation));
     }
 }

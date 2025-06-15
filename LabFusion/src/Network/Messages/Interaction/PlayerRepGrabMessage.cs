@@ -15,28 +15,28 @@ public class PlayerRepGrabData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3;
 
-    public byte smallId;
-    public Handedness handedness;
-    public GrabGroup group;
-    public SerializedGrab serializedGrab;
+    public byte SmallID;
+    public Handedness Handedness;
+    public GrabGroup Group;
+    public SerializedGrab SerializedGrab;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref handedness, Precision.OneByte);
-        serializer.SerializeValue(ref group, Precision.OneByte);
+        serializer.SerializeValue(ref SmallID);
+        serializer.SerializeValue(ref Handedness, Precision.OneByte);
+        serializer.SerializeValue(ref Group, Precision.OneByte);
 
-        GrabGroupHandler.SerializeGrab(ref serializedGrab, serializer, group);
+        GrabGroupHandler.SerializeGrab(ref SerializedGrab, serializer, Group);
     }
 
     public Grip GetGrip()
     {
-        return serializedGrab.GetGrip();
+        return SerializedGrab.GetGrip();
     }
 
     public NetworkPlayer GetPlayer()
     {
-        if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(SmallID, out var player))
         {
             return player;
         }
@@ -48,10 +48,10 @@ public class PlayerRepGrabData : INetSerializable
     {
         return new PlayerRepGrabData()
         {
-            smallId = smallId,
-            handedness = handedness,
-            group = group,
-            serializedGrab = serializedGrab
+            SmallID = smallId,
+            Handedness = handedness,
+            Group = group,
+            SerializedGrab = serializedGrab
         };
     }
 }
@@ -66,7 +66,7 @@ public class PlayerRepGrabMessage : NativeMessageHandler
         var data = received.ReadData<PlayerRepGrabData>();
 
         // Make sure this isn't us
-        if (data.smallId == PlayerIDManager.LocalSmallID)
+        if (data.SmallID == PlayerIDManager.LocalSmallID)
         {
             return;
         }
@@ -94,6 +94,6 @@ public class PlayerRepGrabMessage : NativeMessageHandler
             return;
         }
 
-        data.serializedGrab.RequestGrab(player, data.handedness, grip);
+        data.SerializedGrab.RequestGrab(player, data.Handedness, grip);
     }
 }
