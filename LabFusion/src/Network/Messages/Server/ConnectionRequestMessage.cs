@@ -179,16 +179,19 @@ public class ConnectionRequestMessage : NativeMessageHandler
         OnConnectionAllowed(playerId, data);
     }
 
-    private static void OnConnectionAllowed(PlayerID playerId, ConnectionRequestData data)
+    private static void OnConnectionAllowed(PlayerID playerID, ConnectionRequestData data)
     {
+        // Reserve the player's smallID so that other players don't steal it
+        PlayerIDManager.ReserveSmallID(playerID.SmallID);
+
         // Send the new player to all existing players (and the new player so they know they exist)
-        ConnectionSender.SendPlayerJoin(playerId, data.AvatarBarcode, data.AvatarStats);
+        ConnectionSender.SendPlayerJoin(playerID, data.AvatarBarcode, data.AvatarStats);
 
         // Now we send all of our other players to the new player
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
             // Don't resend the new player to themselves
-            if (id.SmallID == playerId.SmallID)
+            if (id.SmallID == playerID.SmallID)
             {
                 continue;
             }

@@ -8,8 +8,11 @@ public static class PlayerIDManager
     public const int MaxPlayerID = byte.MaxValue;
 
     public static readonly HashSet<PlayerID> PlayerIDs = new();
+
     public static readonly Dictionary<byte, PlayerID> SmallIDLookup = new();
     public static readonly Dictionary<ulong, PlayerID> PlatformIDLookup = new();
+
+    public static readonly HashSet<byte> ReservedSmallIDs = new();
 
     public static int PlayerCount => PlayerIDs.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
@@ -30,6 +33,8 @@ public static class PlayerIDManager
         PlayerIDs.Add(playerID);
         SmallIDLookup[playerID.SmallID] = playerID;
         PlatformIDLookup[playerID.PlatformID] = playerID;
+
+        ReserveSmallID(playerID.SmallID);
     }
 
     public static void RemovePlayerID(PlayerID playerID)
@@ -37,13 +42,30 @@ public static class PlayerIDManager
         PlayerIDs.Remove(playerID);
         SmallIDLookup.Remove(playerID.SmallID);
         PlatformIDLookup.Remove(playerID.PlatformID);
+
+        UnreserveSmallID(playerID.SmallID);
+    }
+
+    public static void ReserveSmallID(byte smallID)
+    {
+        ReservedSmallIDs.Add(smallID);
+    }
+
+    public static void UnreserveSmallID(byte smallID)
+    {
+        ReservedSmallIDs.Remove(smallID);
+    }
+
+    public static bool IsSmallIDReserved(byte smallID)
+    {
+        return ReservedSmallIDs.Contains(smallID);
     }
 
     public static byte? GetUniquePlayerID()
     {
         for (byte i = MinPlayerID; i < MaxPlayerID; i++)
         {
-            if (!HasPlayerID(i))
+            if (!IsSmallIDReserved(i))
             {
                 return i;
             }
