@@ -51,8 +51,6 @@ public class SpawnRequestMessage : NativeMessageHandler
 
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
-    public const int MaxSpawnsPerSecond = 15;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<SpawnRequestData>();
@@ -75,20 +73,6 @@ public class SpawnRequestMessage : NativeMessageHandler
 #endif
 
             return;
-        }
-
-        // If the player isn't hosting a level, limit the amount of spawns per second
-        if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.Sender.Value)))
-        {
-            var activity = LimitedActivityManager.GetTracker(nameof(SpawnRequestMessage)).GetActivity(received.Sender.Value);
-
-            activity.Increment();
-
-            if (activity.Counter > MaxSpawnsPerSecond)
-            {
-                FusionLogger.Warn($"Blocking Player {received.Sender.Value}'s spawn of {data.Barcode} because they have tried to spawn {activity.Counter} entities in one second!");
-                return;
-            }
         }
 
         var entityId = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();

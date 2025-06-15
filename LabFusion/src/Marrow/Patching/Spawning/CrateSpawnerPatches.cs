@@ -6,10 +6,10 @@ using LabFusion.Marrow.Integration;
 using LabFusion.Data;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
-using Il2CppSLZ.Marrow.Zones;
 
 using UnityEngine;
 
@@ -90,9 +90,9 @@ public static class CrateSpawnerPatches
         }
 
         // Send spawn message
-        var spawnedId = info.Entity.ID;
+        var spawnedID = info.Entity.ID;
 
-        CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, spawnedId);
+        CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, spawnedID);
     }
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)
@@ -102,16 +102,7 @@ public static class CrateSpawnerPatches
 
         try
         {
-            if (spawner.gameObject.activeInHierarchy)
-            {
-                spawner.OnPooleeSpawn(go);
-            }
-            else
-            {
-                // ISpawnListenables unregister from CrateSpawners on disable
-                // This can cause problems due to latency if the CrateSpawner itself becomes disabled on a NetworkEntity
-                ManualInvokeListeners(spawner, go);
-            }
+            spawner.OnPooleeSpawn(go);
         }
         catch (Exception e)
         {
@@ -128,23 +119,6 @@ public static class CrateSpawnerPatches
         catch (Exception e)
         {
             FusionLogger.LogException("executing CrateSpawner.onmmSpawnEvent", e);
-        }
-    }
-
-    private static void ManualInvokeListeners(CrateSpawner spawner, GameObject go)
-    {
-        var listeners = spawner.GetComponents<ISpawnListenable>();
-
-        foreach (var listener in listeners)
-        {
-            var monobehaviour = listener.TryCast<MonoBehaviour>();
-
-            if (monobehaviour != null && !monobehaviour.enabled)
-            {
-                continue;
-            }
-
-            listener.OnSpawn(go);
         }
     }
 
@@ -194,8 +168,8 @@ public static class CrateSpawnerPatches
             return true;
         }
 
-        // If we aren't the scene host, don't allow a crate spawn
-        if (!NetworkSceneManager.IsLevelHost)
+        // If we don't own the CrateSpawner, don't allow a spawn from it
+        if (!HasOwnership(spawner))
         {
             __result = new UniTask<Poolee>(null);
             return false;
@@ -215,5 +189,15 @@ public static class CrateSpawnerPatches
         }
 
         return false;
+    }
+
+    private static bool HasOwnership(CrateSpawner spawner)
+    {
+        if (CrateSpawnerExtender.Cache.TryGet(spawner, out var networkEntity))
+        {
+            return networkEntity.IsOwner;
+        }
+
+        return NetworkSceneManager.IsLevelHost;
     }
 }

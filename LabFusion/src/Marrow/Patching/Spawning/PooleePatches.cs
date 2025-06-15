@@ -3,6 +3,7 @@
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Scene;
+using LabFusion.RPC;
 
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Interaction;
@@ -96,38 +97,29 @@ public class PooleeDespawnPatch
             return true;
         }
 
-        bool isLevelHost = NetworkSceneManager.IsLevelHost;
+        if (!PooleeExtender.Cache.TryGet(__instance, out var networkEntity))
+        {
+            return true;
+        }
 
-        // If we are not the level host then don't let the entity be despawned
-        if (!isLevelHost && PooleeExtender.Cache.ContainsSource(__instance))
+        if (networkEntity.GetExtender<NetworkProp>() == null)
+        {
+            return true;
+        }
+
+        bool hasOwnership = NetworkSceneManager.IsLevelHost || networkEntity.IsOwner;
+
+        if (!hasOwnership)
         {
             return false;
         }
 
-        // If we are the scene host, sync the poolee despawn
-        if (isLevelHost)
+        NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
         {
-            CheckForDespawn(__instance);
-        }
+            EntityID = networkEntity.ID,
+            DespawnEffect = false,
+        });
 
-        return true;
-    }
-
-    private static void CheckForDespawn(Poolee __instance)
-    {
-        if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
-        {
-            return;
-        }
-
-        var prop = entity.GetExtender<NetworkProp>();
-
-        if (prop == null)
-        {
-            return;
-        }
-
-        PooleeUtilities.SendDespawn(entity.ID, false);
-        NetworkEntityManager.IDManager.UnregisterEntity(entity);
+        return false;
     }
 }
