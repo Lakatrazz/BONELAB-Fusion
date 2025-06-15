@@ -27,7 +27,13 @@ public static class ListFetcher
     
     private static IEnumerator CoFetchFile(string url, Action<string> callback)
     {
-        using var client = new HttpClient();
+        var handler = new HttpClientHandler()
+        {
+            ClientCertificateOptions = ClientCertificateOption.Automatic,
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        };
+
+        using var client = new HttpClient(handler);
 
         var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
 
