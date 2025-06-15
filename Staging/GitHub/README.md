@@ -1,6 +1,6 @@
 ## **Fusion**
 #### Hotfix:
-- Fixed issue with server settings breaking with too many players
+- Fixed quest crashing issues
 
 ## **Fusion Auto Updater**
 - No changes
