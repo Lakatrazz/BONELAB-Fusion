@@ -11,7 +11,9 @@ namespace LabFusion.Network;
 
 public class ServerSettingsData : INetSerializable
 {
-    public LobbyInfo lobbyInfo;
+    public LobbyInfo LobbyInfo;
+
+    public int? GetSize() => SerializeJson().GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
@@ -25,21 +27,26 @@ public class ServerSettingsData : INetSerializable
         }
     }
 
+    private string SerializeJson()
+    {
+        return JsonSerializer.Serialize(LobbyInfo);
+    }
+
     public void Serialize(NetWriter writer)
     {
-        writer.Write(JsonSerializer.Serialize(lobbyInfo));
+        writer.Write(SerializeJson());
     }
 
     public void Deserialize(NetReader reader)
     {
-        lobbyInfo = JsonSerializer.Deserialize<LobbyInfo>(reader.ReadString());
+        LobbyInfo = JsonSerializer.Deserialize<LobbyInfo>(reader.ReadString());
     }
 
     public static ServerSettingsData Create()
     {
         return new ServerSettingsData()
         {
-            lobbyInfo = LobbyInfoManager.LobbyInfo,
+            LobbyInfo = LobbyInfoManager.LobbyInfo,
         };
     }
 }
@@ -54,10 +61,6 @@ public class ServerSettingsMessage : NativeMessageHandler
     {
         var data = received.ReadData<ServerSettingsData>();
 
-        LobbyInfoManager.LobbyInfo = data.lobbyInfo;
-
-#if DEBUG
-        FusionLogger.Log("Server LobbyInfo received!");
-#endif
+        LobbyInfoManager.LobbyInfo = data.LobbyInfo;
     }
 }
