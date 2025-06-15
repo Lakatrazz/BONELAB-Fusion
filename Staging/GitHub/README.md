@@ -1,6 +1,6 @@
 ## **Fusion**
 #### Hotfix:
-- Fixed quest crashing issues
+- Fixed grabbing and ragdolling issues on quest
 
 ## **Fusion Auto Updater**
 - No changes
