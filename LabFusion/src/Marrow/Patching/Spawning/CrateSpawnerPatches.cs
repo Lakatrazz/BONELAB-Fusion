@@ -118,7 +118,7 @@ public static class CrateSpawnerPatches
         }
         catch (Exception e)
         {
-            FusionLogger.LogException("executing CrateSpawner.onmmSpawnEvent", e);
+            FusionLogger.LogException("executing CrateSpawner.onSpawnEvent", e);
         }
     }
 
