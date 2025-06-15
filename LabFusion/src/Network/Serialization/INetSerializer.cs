@@ -34,9 +34,9 @@ public interface INetSerializer
 
     void SerializeValue(ref string[] value);
 
-    void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum;
+    void SerializeValue<TEnum>(ref TEnum value) where TEnum : struct, Enum;
 
-    void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : Enum;
+    void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : struct, Enum;
 
     void SerializeValue(ref byte? value);
 

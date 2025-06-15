@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Math;
 using LabFusion.Utilities;
 
 using System.Runtime.CompilerServices;
@@ -198,26 +199,26 @@ public sealed class NetReader : INetSerializer, IDisposable
         return array;
     }
 
-    public TEnum ReadEnum<TEnum>() where TEnum : Enum
+    public TEnum ReadEnum<TEnum>() where TEnum : struct, Enum
     {
         var value = ReadInt32();
 
-        return Unsafe.As<int, TEnum>(ref value);
+        return EnumConverter.ConvertToEnum<TEnum>(value);
     }
 
-    public TEnum ReadEnum<TEnum>(Precision precision) where TEnum : Enum
+    public TEnum ReadEnum<TEnum>(Precision precision) where TEnum : struct, Enum
     {
         switch (precision)
         {
             default:
                 var full = ReadInt32();
-                return Unsafe.As<int, TEnum>(ref full);
+                return EnumConverter.ConvertToEnum<TEnum>(full);
             case Precision.TwoBytes:
                 var twoBytes = ReadInt16();
-                return Unsafe.As<short, TEnum>(ref twoBytes);
+                return EnumConverter.ConvertToEnum<TEnum>(twoBytes);
             case Precision.OneByte:
                 var oneByte = ReadByte();
-                return Unsafe.As<byte, TEnum>(ref oneByte);
+                return EnumConverter.ConvertToEnum<TEnum>(oneByte);
         }
     }
 
@@ -287,9 +288,9 @@ public sealed class NetReader : INetSerializer, IDisposable
 
     public void SerializeValue(ref string[] value) => value = ReadStrings();
 
-    public void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum => value = ReadEnum<TEnum>();
+    public void SerializeValue<TEnum>(ref TEnum value) where TEnum : struct, Enum => value = ReadEnum<TEnum>();
 
-    public void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : Enum => value = ReadEnum<TEnum>(precision);
+    public void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : struct, Enum => value = ReadEnum<TEnum>(precision);
 
     public void SerializeValue(ref byte? value) => value = ReadByteNullable();
 

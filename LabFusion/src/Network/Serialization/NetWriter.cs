@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Math;
 using LabFusion.Utilities;
 
 using System.Buffers;
@@ -160,23 +161,23 @@ public sealed class NetWriter : INetSerializer, IDisposable
         }
     }
 
-    public void Write<TEnum>(TEnum value) where TEnum : Enum
+    public void Write<TEnum>(TEnum value) where TEnum : struct, Enum
     {
-        Write(Unsafe.As<TEnum, int>(ref value));
+        Write(EnumConverter.ConvertToInt32(value));
     }
 
-    public void Write<TEnum>(TEnum value, Precision precision) where TEnum : Enum
+    public void Write<TEnum>(TEnum value, Precision precision) where TEnum : struct, Enum
     {
         switch (precision)
         {
             default:
-                Write(Unsafe.As<TEnum, int>(ref value));
+                Write(EnumConverter.ConvertToInt32(value));
                 break;
             case Precision.TwoBytes:
-                Write(Unsafe.As<TEnum, short>(ref value));
+                Write(EnumConverter.ConvertToInt16(value));
                 break;
             case Precision.OneByte:
-                Write(Unsafe.As<TEnum, byte>(ref value));
+                Write(EnumConverter.ConvertToByte(value));
                 break;
         }
     }
@@ -241,9 +242,9 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void SerializeValue(ref string[] value) => Write(value);
 
-    public void SerializeValue<TEnum>(ref TEnum value) where TEnum : Enum => Write(value);
+    public void SerializeValue<TEnum>(ref TEnum value) where TEnum : struct, Enum => Write(value);
 
-    public void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : Enum => Write(value, precision);
+    public void SerializeValue<TEnum>(ref TEnum value, Precision precision) where TEnum : struct, Enum => Write(value, precision);
 
     public void SerializeValue(ref byte? value) => Write(value);
 

@@ -17,27 +17,27 @@ public class PhysicsRigStateData : INetSerializable
 {
     public const int Size = sizeof(byte) * 4;
 
-    public byte entityId;
+    public byte EntityID;
 
-    public PhysicsRigStateType type;
-    public bool enabled;
+    public PhysicsRigStateType Type;
+    public bool Enabled;
 
-    public bool left;
+    public bool Left;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-        serializer.SerializeValue(ref enabled);
-        serializer.SerializeValue(ref left);
+        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref Type, Precision.OneByte);
+        serializer.SerializeValue(ref Enabled);
+        serializer.SerializeValue(ref Left);
     }
 
     public void Apply(PhysicsRig physicsRig)
     {
-        switch (type)
+        switch (Type)
         {
             case PhysicsRigStateType.SHUTDOWN:
-                if (enabled)
+                if (Enabled)
                 {
                     physicsRig.ShutdownRig();
                 }
@@ -47,7 +47,7 @@ public class PhysicsRigStateData : INetSerializable
                 }
                 break;
             case PhysicsRigStateType.RAGDOLL:
-                if (enabled)
+                if (Enabled)
                 {
                     physicsRig.RagdollRig();
                 }
@@ -57,15 +57,15 @@ public class PhysicsRigStateData : INetSerializable
                 }
                 break;
             case PhysicsRigStateType.LEG_SHUTDOWN:
-                var leg = left ? physicsRig.legLf : physicsRig.legRt;
+                var leg = Left ? physicsRig.legLf : physicsRig.legRt;
 
-                if (enabled)
+                if (Enabled)
                 {
                     leg.ShutdownLimb();
                 }
                 break;
             case PhysicsRigStateType.PHYSICAL_LEGS:
-                if (enabled)
+                if (Enabled)
                 {
                     physicsRig.PhysicalLegs();
                 }
@@ -81,16 +81,16 @@ public class PhysicsRigStateData : INetSerializable
     {
         return new PhysicsRigStateData
         {
-            entityId = entityId,
-            type = type,
-            enabled = enabled,
-            left = left,
+            EntityID = entityId,
+            Type = type,
+            Enabled = enabled,
+            Left = left,
         };
     }
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerRepRagdollMessage : NativeMessageHandler
+public class PhysicsRigStateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PhysicsRigState;
 
@@ -98,7 +98,7 @@ public class PlayerRepRagdollMessage : NativeMessageHandler
     {
         var data = received.ReadData<PhysicsRigStateData>();
 
-        if (NetworkPlayerManager.TryGetPlayer(data.entityId, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(data.EntityID, out var player))
         {
             player.EnqueuePhysicsRigState(data);
         }
