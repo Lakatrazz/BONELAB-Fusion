@@ -1,6 +1,7 @@
 ## **Fusion**
 #### Hotfix:
 - Fixed grabbing and ragdolling issues on quest
+- Fixed module messages being broken on quest
 
 ## **Fusion Auto Updater**
 - No changes

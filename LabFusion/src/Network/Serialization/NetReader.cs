@@ -84,7 +84,7 @@ public sealed class NetReader : INetSerializer, IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        long result = BigEndianHelper.ReadInt64(_buffer, Position);
+        long result = BitConverter.ToInt64(_buffer, Position);
         Position += sizeof(long);
         return result;
     }

@@ -58,24 +58,6 @@ internal static class BigEndianHelper
     }
 
     /// <summary>
-    ///     Writes the bytes from the long to the destination array at offset.
-    /// </summary>
-    /// <param name="destination">The array to write to.</param>
-    /// <param name="offset">The position of the array to begin writing.</param>
-    /// <param name="value">The value to write.</param>
-    internal static void WriteBytes(byte[] destination, int offset, long value)
-    {
-        destination[offset] = (byte)(value >> 56);
-        destination[offset + 1] = (byte)(value >> 48);
-        destination[offset + 2] = (byte)(value >> 40);
-        destination[offset + 3] = (byte)(value >> 32);
-        destination[offset + 4] = (byte)(value >> 24);
-        destination[offset + 5] = (byte)(value >> 16);
-        destination[offset + 6] = (byte)(value >> 8);
-        destination[offset + 7] = (byte)value;
-    }
-
-    /// <summary>
     ///     Writes the bytes from the unsigned long to the destination array at offset.
     /// </summary>
     /// <param name="destination">The array to write to.</param>
@@ -161,17 +143,6 @@ internal static class BigEndianHelper
     internal static uint ReadUInt32(byte[] source, int offset)
     {
         return (uint)((source[offset] << 24) | (source[offset + 1] << 16) | (source[offset + 2] << 8) | source[offset + 3]);
-    }
-
-    /// <summary>
-    ///     Reads a long from the array at offset.
-    /// </summary>
-    /// <param name="source">The array to read from.</param>
-    /// <param name="offset">The position to begin reading from.</param>
-    /// <returns>The long read.</returns>
-    internal static long ReadInt64(byte[] source, int offset)
-    {
-        return (long)(((ulong)source[offset] << 56) | ((ulong)source[offset + 1] << 48) | ((ulong)source[offset + 2] << 40) | ((ulong)source[offset + 3] << 32) | ((ulong)source[offset + 4] << 24) | ((ulong)source[offset + 5] << 16) | ((ulong)source[offset + 6] << 8) | source[offset + 7]);
     }
 
     /// <summary>

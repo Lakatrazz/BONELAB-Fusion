@@ -134,7 +134,7 @@ public unsafe class NetMessage : IDisposable
 
         var expandedBuffer = new byte[buffer.Count + sizeof(long)];
 
-        BigEndianHelper.WriteBytes(expandedBuffer, 0, value);
+        BitConverter.TryWriteBytes(expandedBuffer, value);
 
         for (var i = 0; i < buffer.Count; i++)
         {

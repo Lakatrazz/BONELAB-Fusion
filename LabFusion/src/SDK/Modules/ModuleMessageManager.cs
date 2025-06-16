@@ -144,7 +144,7 @@ public static class ModuleMessageManager
 
     private static long GetTag(byte[] bytes)
     {
-        return BigEndianHelper.ReadInt64(bytes, 0);
+        return BitConverter.ToInt64(bytes, 0);
     }
 
     private static byte[] GetBuffer(byte[] bytes)

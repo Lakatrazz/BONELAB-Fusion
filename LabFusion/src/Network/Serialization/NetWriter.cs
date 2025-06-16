@@ -79,7 +79,7 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void Write(long value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BitConverter.TryWriteBytes(new Span<byte>(_buffer, Position, sizeof(long)), value);
         Position += sizeof(long);
     }
 
