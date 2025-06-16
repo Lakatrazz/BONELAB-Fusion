@@ -7,6 +7,24 @@ namespace LabFusion.Utilities;
 
 public static class FusionDevTools
 {
+    public static bool DevToolsDisabled
+    {
+        get
+        {
+            if (GamemodeManager.IsGamemodeStarted)
+            {
+                var gamemode = GamemodeManager.ActiveGamemode;
+
+                if (gamemode.DisableDevTools)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     public static bool DespawnConstrainer(PlayerID id)
     {
         // Check permission level
@@ -21,13 +39,9 @@ public static class FusionDevTools
 
     public static bool DespawnDevTool(PlayerID id)
     {
-        // Check gamemode
-        if (GamemodeManager.IsGamemodeStarted)
+        if (DevToolsDisabled)
         {
-            var gamemode = GamemodeManager.ActiveGamemode;
-
-            if (gamemode.DisableDevTools)
-                return true;
+            return true;
         }
 
         // Check permission level

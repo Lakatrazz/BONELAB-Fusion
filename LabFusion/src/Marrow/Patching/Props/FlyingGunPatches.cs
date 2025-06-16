@@ -18,9 +18,15 @@ public static class FlyingGunPatches
     [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
     public static bool OnTriggerGripUpdatePrefix(FlyingGun __instance, Hand hand, ref bool __state)
     {
+        // If dev tools are disabled, don't allow the nimbus gun to function at all
+        if (FusionDevTools.DevToolsDisabled)
+        {
+            return false;
+        }
+
         // In a server, prevent two nimbus guns from sending you flying out of the map
         // Due to SLZ running these forces on update for whatever reason, the forces are inconsistent
-        if (NetworkInfo.HasServer && hand.handedness == Handedness.LEFT)
+        if (NetworkSceneManager.IsLevelNetworked && hand.handedness == Handedness.LEFT)
         {
             var otherHand = hand.otherHand;
 
