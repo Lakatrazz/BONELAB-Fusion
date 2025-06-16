@@ -12,7 +12,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
 {
     public static readonly FusionComponentCache<SpawnGun, NetworkEntity> Cache = new();
 
-    private TimedDespawnHandler _despawnHandler = null;
+    private EntityCleaner _cleaner = null;
 
     private Grip.HandDelegate _onAttachDelegate = null;
 
@@ -23,11 +23,10 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
     {
         Cache.Add(component, entity);
 
+        RegisterCleaner();
+
         if (NetworkInfo.IsHost)
         {
-            _despawnHandler = new();
-            _despawnHandler.Register(component.host, component._poolee);
-
             _poolee = component._poolee;
 
             _onAttachDelegate = (Grip.HandDelegate)((hand) => { OnAttach(hand); });
@@ -40,11 +39,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
     {
         Cache.Remove(component);
 
-        if (_despawnHandler != null)
-        {
-            _despawnHandler.Unregister();
-            _despawnHandler = null;
-        }
+        UnregisterCleaner();
 
         if (_onAttachDelegate != null)
         {
@@ -52,6 +47,21 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
 
             _onAttachDelegate = null;
             _poolee = null;
+        }
+    }
+
+    private void RegisterCleaner()
+    {
+        _cleaner = new();
+        _cleaner.Register(NetworkEntity, Component.host, Component._poolee);
+    }
+
+    private void UnregisterCleaner()
+    {
+        if (_cleaner != null)
+        {
+            _cleaner.Unregister();
+            _cleaner = null;
         }
     }
 

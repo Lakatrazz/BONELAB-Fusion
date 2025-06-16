@@ -12,17 +12,13 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
 {
     public static readonly FusionComponentCache<Magazine, NetworkEntity> Cache = new();
 
-    private TimedDespawnHandler _despawnHandler = null;
+    private EntityCleaner _cleaner = null;
 
     protected override void OnRegister(NetworkEntity entity, Magazine component)
     {
         Cache.Add(component, entity);
 
-        if (NetworkInfo.IsHost)
-        {
-            _despawnHandler = new();
-            _despawnHandler.Register(component.interactableHost, component._poolee);
-        }
+        RegisterCleaner();
 
         entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
@@ -31,13 +27,24 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
     {
         Cache.Remove(component);
 
-        if (_despawnHandler != null)
-        {
-            _despawnHandler.Unregister();
-            _despawnHandler = null;
-        }
+        UnregisterCleaner();
 
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+    }
+
+    private void RegisterCleaner()
+    {
+        _cleaner = new();
+        _cleaner.Register(NetworkEntity, Component.interactableHost, Component._poolee);
+    }
+
+    private void UnregisterCleaner()
+    {
+        if (_cleaner != null)
+        {
+            _cleaner.Unregister();
+            _cleaner = null;
+        }
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)

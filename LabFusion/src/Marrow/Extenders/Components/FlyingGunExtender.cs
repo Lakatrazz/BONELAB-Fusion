@@ -11,7 +11,7 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
 {
     public static readonly FusionComponentCache<FlyingGun, NetworkEntity> Cache = new();
 
-    private TimedDespawnHandler _despawnHandler = null;
+    private EntityCleaner _cleaner = null;
 
     private Grip.HandDelegate _onAttachDelegate = null;
 
@@ -21,11 +21,10 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
     {
         Cache.Add(component, entity);
 
+        RegisterCleaner();
+
         if (NetworkInfo.IsHost)
         {
-            _despawnHandler = new();
-            _despawnHandler.Register(component._host, component._host.marrowEntity._poolee);
-
             _poolee = component._host.marrowEntity._poolee;
 
             _onAttachDelegate = (Grip.HandDelegate)((hand) => { OnAttach(hand); });
@@ -38,11 +37,7 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
     {
         Cache.Remove(component);
 
-        if (_despawnHandler != null)
-        {
-            _despawnHandler.Unregister();
-            _despawnHandler = null;
-        }
+        UnregisterCleaner();
 
         if (_onAttachDelegate != null)
         {
@@ -50,6 +45,21 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
 
             _onAttachDelegate = null;
             _poolee = null;
+        }
+    }
+
+    private void RegisterCleaner()
+    {
+        _cleaner = new();
+        _cleaner.Register(NetworkEntity, Component._host, Component._host.marrowEntity._poolee);
+    }
+
+    private void UnregisterCleaner()
+    {
+        if (_cleaner != null)
+        {
+            _cleaner.Unregister();
+            _cleaner = null;
         }
     }
 

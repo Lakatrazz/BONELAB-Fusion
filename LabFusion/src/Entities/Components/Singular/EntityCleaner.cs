@@ -9,20 +9,25 @@ namespace LabFusion.Entities;
 
 using System;
 
-public class TimedDespawnHandler
+/// <summary>
+/// Attaches to a NetworkEntity and automatically cleans it up when not interacted with for a certain amount of time.
+/// </summary>
+public class EntityCleaner
 {
-    private TimedDespawner _despawner = null;
+    public TimedDespawner Despawner { get; set; } = null;
 
-    private InteractableHost _host = null;
+    public InteractableHost Host { get; set; } = null;
 
-    private bool _registered = false;
+    public bool Registered { get; set; } = false;
+
+    public NetworkEntity NetworkEntity { get; set; } = null;
 
     private Il2CppSystem.Action<InteractableHost, Hand> _onHandAttached = null;
     private Il2CppSystem.Action<InteractableHost, Hand> _onHandDetached = null;
 
-    public void Register(InteractableHost host, Poolee poolee)
+    public void Register(NetworkEntity networkEntity, InteractableHost host, Poolee poolee)
     {
-        if (_registered)
+        if (Registered)
         {
             return;
         }
@@ -32,27 +37,31 @@ public class TimedDespawnHandler
             return;
         }
 
-        _host = host;
+        NetworkEntity = networkEntity;
+
+        Host = host;
 
         RegisterGrips(host);
         RegisterDespawner(poolee);
 
-        _registered = true;
+        Registered = true;
     }
 
     public void Unregister()
     {
-        if (!_registered)
+        if (!Registered)
         {
             return;
         }
 
-        UnregisterGrips(_host);
+        UnregisterGrips(Host);
         UnregisterDespawner();
 
-        _host = null;
+        NetworkEntity = null;
 
-        _registered = false;
+        Host = null;
+
+        Registered = false;
     }
 
     private void RegisterGrips(InteractableHost host)
@@ -75,23 +84,29 @@ public class TimedDespawnHandler
 
     private void RegisterDespawner(Poolee poolee)
     {
-        _despawner = poolee.gameObject.AddComponent<TimedDespawner>();
-        _despawner.Poolee = poolee;
-        _despawner.OnDespawnCheck += OnDespawnCheck;
+        Despawner = poolee.gameObject.AddComponent<TimedDespawner>();
+        Despawner.Poolee = poolee;
+        Despawner.OnDespawnCheck += OnDespawnCheck;
     }
 
     private void UnregisterDespawner()
     {
-        _despawner.OnDespawnCheck -= OnDespawnCheck;
-        _despawner.Poolee = null;
+        Despawner.OnDespawnCheck -= OnDespawnCheck;
+        Despawner.Poolee = null;
 
-        GameObject.Destroy(_despawner);
-        _despawner = null;
+        GameObject.Destroy(Despawner);
+        Despawner = null;
     }
 
     private bool OnDespawnCheck()
     {
-        var marrowBody = _host._marrowBody;
+        // Only automatically despawn if we own the entity
+        if (NetworkEntity != null && !NetworkEntity.IsOwner)
+        {
+            return false;
+        }
+
+        var marrowBody = Host._marrowBody;
 
         // If there's no marrow body, it probably shouldn't be despawned anyways
         if (!marrowBody)
@@ -139,7 +154,7 @@ public class TimedDespawnHandler
 
     private void ToggleDespawner(bool enabled)
     {
-        _despawner.enabled = enabled;
-        _despawner.RefreshTimer();
+        Despawner.enabled = enabled;
+        Despawner.RefreshTimer();
     }
 }
