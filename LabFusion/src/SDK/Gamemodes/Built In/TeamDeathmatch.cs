@@ -65,6 +65,12 @@ public class TeamDeathmatch : Gamemode
     private readonly TeamManager _teamManager = new();
     public TeamManager TeamManager => _teamManager;
 
+    private readonly Team _sabrelakeTeam = new(DefaultSabrelakeName);
+    public Team SabrelakeTeam => _sabrelakeTeam;
+
+    private readonly Team _lavaGangTeam = new(DefaultLavaGangName);
+    public Team LavaGangTeam => _lavaGangTeam;
+
     private TeamScoreKeeper _scoreKeeper = null;
     public TeamScoreKeeper ScoreKeeper => _scoreKeeper;
 
@@ -136,17 +142,14 @@ public class TeamDeathmatch : Gamemode
         return group;
     }
 
-    public void AddTeams()
+    private void ApplyTeamSettings()
     {
-        // TODO: Clean up
-        // Clear all team settings
-        TeamManager.ClearTeams();
         TeamMusicManager.ClearTeams();
         TeamLogoManager.ClearTeams();
 
         // Get the default values
-        var sabrelakeBarcode = FusionBoneTagReferences.TeamSabrelakeReference.Barcode.ToString();
-        var lavaGangBarcode = FusionBoneTagReferences.TeamLavaGangReference.Barcode.ToString();
+        var sabrelakeBarcode = FusionBoneTagReferences.TeamSabrelakeReference.Barcode.ID;
+        var lavaGangBarcode = FusionBoneTagReferences.TeamLavaGangReference.Barcode.ID;
 
         var sabrelakeVictoryReference = FusionMonoDiscReferences.SabrelakeVictoryReference;
         var sabrelakeFailureReference = FusionMonoDiscReferences.SabrelakeFailureReference;
@@ -167,25 +170,8 @@ public class TeamDeathmatch : Gamemode
 
         if (musicSettings != null)
         {
-            if (musicSettings.TeamVictorySongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeVictory))
-            {
-                sabrelakeVictoryReference = new MonoDiscReference(sabrelakeVictory);
-            }
-
-            if (musicSettings.TeamFailureSongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeFailure))
-            {
-                sabrelakeFailureReference = new MonoDiscReference(sabrelakeFailure);
-            }
-
-            if (musicSettings.TeamVictorySongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangVictory))
-            {
-                lavaGangVictoryReference = new MonoDiscReference(lavaGangVictory);
-            }
-
-            if (musicSettings.TeamFailureSongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangFailure))
-            {
-                lavaGangFailureReference = new MonoDiscReference(lavaGangFailure);
-            }
+            musicSettings.ApplyTeamOverrides(sabrelakeBarcode, ref sabrelakeVictoryReference, ref sabrelakeFailureReference);
+            musicSettings.ApplyTeamOverrides(lavaGangBarcode, ref lavaGangVictoryReference, ref lavaGangFailureReference);
 
             if (!string.IsNullOrWhiteSpace(musicSettings.TieSongOverride))
             {
@@ -197,45 +183,21 @@ public class TeamDeathmatch : Gamemode
 
         if (teamSettings != null)
         {
-            if (teamSettings.TeamLogoOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeLogo))
-            {
-                sabrelakeLogo = newSabrelakeLogo;
-            }
-
-            if (teamSettings.TeamLogoOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangLogo))
-            {
-                lavaGangLogo = newLavaGangLogo;
-            }
-
-            if (teamSettings.TeamNameOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeName))
-            {
-                sabrelakeDisplayName = newSabrelakeName;
-            }
-
-            if (teamSettings.TeamNameOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangName))
-            {
-                lavaGangDisplayName = newLavaGangName;
-            }
+            teamSettings.ApplyOverrides(sabrelakeBarcode, ref sabrelakeDisplayName, ref sabrelakeLogo);
+            teamSettings.ApplyOverrides(lavaGangBarcode, ref lavaGangDisplayName, ref lavaGangLogo);
         }
 
-        // Create the teams
-        Team sabrelake = new(DefaultSabrelakeName)
-        {
-            DisplayName = sabrelakeDisplayName
-        };
+        // Apply the settings
+        SabrelakeTeam.DisplayName = sabrelakeDisplayName;
+        LavaGangTeam.DisplayName = lavaGangDisplayName;
 
-        Team lavaGang = new(DefaultLavaGangName)
-        {
-            DisplayName = lavaGangDisplayName
-        };
-
-        TeamMusicManager.SetMusic(sabrelake, new TeamMusic()
+        TeamMusicManager.SetMusic(SabrelakeTeam, new TeamMusic()
         {
             WinMusic = new AudioReference(sabrelakeVictoryReference),
             LoseMusic = new AudioReference(sabrelakeFailureReference),
         });
 
-        TeamMusicManager.SetMusic(lavaGang, new TeamMusic()
+        TeamMusicManager.SetMusic(LavaGangTeam, new TeamMusic()
         {
             WinMusic = new AudioReference(lavaGangVictoryReference),
             LoseMusic = new AudioReference(lavaGangFailureReference),
@@ -243,11 +205,8 @@ public class TeamDeathmatch : Gamemode
 
         TeamMusicManager.TieMusic = new AudioReference(tieReference);
 
-        TeamLogoManager.SetLogo(sabrelake, sabrelakeLogo);
-        TeamLogoManager.SetLogo(lavaGang, lavaGangLogo);
-
-        TeamManager.AddTeam(sabrelake);
-        TeamManager.AddTeam(lavaGang);
+        TeamLogoManager.SetLogo(SabrelakeTeam, sabrelakeLogo);
+        TeamLogoManager.SetLogo(LavaGangTeam, lavaGangLogo);
     }
 
     public override void OnGamemodeRegistered()
@@ -263,6 +222,9 @@ public class TeamDeathmatch : Gamemode
         // Register team manager
         TeamManager.Register(this);
         TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+
+        TeamManager.AddTeam(SabrelakeTeam);
+        TeamManager.AddTeam(LavaGangTeam);
 
         TeamLogoManager.Register(TeamManager);
 
@@ -415,7 +377,7 @@ public class TeamDeathmatch : Gamemode
         MusicPlaylist.SetPlaylist(playlist);
         MusicPlaylist.Shuffle();
 
-        AddTeams();
+        ApplyTeamSettings();
 
         _avatarOverride = null;
 
@@ -535,6 +497,8 @@ public class TeamDeathmatch : Gamemode
     public override void OnGamemodeStarted()
     {
         base.OnGamemodeStarted();
+
+        ApplyTeamSettings();
 
         if (NetworkInfo.IsHost)
         {

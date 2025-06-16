@@ -4,6 +4,8 @@ using UnityEngine;
 using MelonLoader;
 
 using Il2CppInterop.Runtime.Attributes;
+
+using Il2CppSLZ.Marrow.Warehouse;
 #else
 using System;
 using System.Collections.Generic;
@@ -55,6 +57,20 @@ namespace LabFusion.Marrow.Integration
 
         [HideFromIl2Cpp]
         public string TieSongOverride => _tieSongOverride;
+
+        [HideFromIl2Cpp]
+        public void ApplyTeamOverrides(string barcode, ref MonoDiscReference victorySong, ref MonoDiscReference failureSong)
+        {
+            if (TeamVictorySongOverrides.TryGetValue(barcode, out var victorySongOverride))
+            {
+                victorySong = new(victorySongOverride);
+            }
+
+            if (TeamFailureSongOverrides.TryGetValue(barcode, out var failureSongOverride))
+            {
+                failureSong = new(failureSongOverride);
+            }
+        }
 
         private void Awake()
         {

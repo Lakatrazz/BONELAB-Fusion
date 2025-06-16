@@ -237,7 +237,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerID.Metadata.Loading.GetValue())
+        while (IsPlayerLoading())
         {
             if (FusionSceneManager.IsLoading())
             {
@@ -254,6 +254,21 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         _puppet.CreatePuppet(OnPuppetCreated);
+
+        bool IsPlayerLoading()
+        {
+            if (FusionSceneManager.IsDelayedLoading())
+            {
+                return true;
+            }
+
+            if (PlayerID.Metadata.IsValid && PlayerID.Metadata.Loading.GetValue())
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     internal void Internal_OnAvatarChanged(string barcode)

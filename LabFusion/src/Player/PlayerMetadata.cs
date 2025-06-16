@@ -18,6 +18,8 @@ public class PlayerMetadata
 
     public MetadataVariable PermissionLevel { get; private set; } = null;
 
+    public bool IsValid { get; private set; } = false;
+
     public void CreateMetadata()
     {
         Metadata = new NetworkMetadata();
@@ -33,10 +35,14 @@ public class PlayerMetadata
         AvatarModID = new MetadataInt(nameof(AvatarModID), Metadata);
 
         PermissionLevel = new MetadataVariable(nameof(PermissionLevel), Metadata);
+
+        IsValid = true;
     }
 
     public void DestroyMetadata()
     {
+        IsValid = false;
+
         Username.Remove();
         Nickname.Remove();
         Description.Remove();

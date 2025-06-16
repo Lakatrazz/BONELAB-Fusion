@@ -36,6 +36,20 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public Dictionary<string, Texture2D> TeamLogoOverrides => _teamLogoOverrides;
 
+        [HideFromIl2Cpp]
+        public void ApplyOverrides(string barcode, ref string displayName, ref Texture logo)
+        {
+            if (TeamNameOverrides.TryGetValue(barcode, out var nameOverride))
+            {
+                displayName = nameOverride;
+            }
+
+            if (TeamLogoOverrides.TryGetValue(barcode, out var logoOverride))
+            {
+                logo = logoOverride;
+            }
+        }
+
         private void Awake()
         {
             if (Instance == null)
