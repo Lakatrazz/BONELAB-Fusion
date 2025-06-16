@@ -61,6 +61,22 @@ public class TeamDeathmatch : Gamemode
     private float _savedVitality = 1f;
 
     private int _minimumPlayers = 4;
+    public int MinimumPlayers
+    {
+        get
+        {
+            return _minimumPlayers;
+        }
+        set
+        {
+            _minimumPlayers = value;
+
+            if (!IsStarted && IsSelected)
+            {
+                GamemodeManager.ValidateReadyConditions();
+            }
+        }
+    }
 
     private readonly TeamManager _teamManager = new();
     public TeamManager TeamManager => _teamManager;
@@ -112,13 +128,13 @@ public class TeamDeathmatch : Gamemode
         var minimumPlayersData = new IntElementData()
         {
             Title = "Minimum Players",
-            Value = _minimumPlayers,
+            Value = MinimumPlayers,
             Increment = 1,
             MinValue = 1,
             MaxValue = 255,
             OnValueChanged = (v) =>
             {
-                _minimumPlayers = v;
+                MinimumPlayers = v;
             }
         };
 
@@ -303,7 +319,7 @@ public class TeamDeathmatch : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIDManager.PlayerCount >= _minimumPlayers;
+        return PlayerIDManager.PlayerCount >= MinimumPlayers;
     }
 
     public override bool CanAttack(PlayerID player)

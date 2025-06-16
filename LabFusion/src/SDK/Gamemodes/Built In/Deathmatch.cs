@@ -64,6 +64,22 @@ public class Deathmatch : Gamemode
     private int _totalMinutes = _defaultMinutes;
 
     private int _minimumPlayers = 2;
+    public int MinimumPlayers
+    {
+        get
+        {
+            return _minimumPlayers;
+        }
+        set
+        {
+            _minimumPlayers = value;
+
+            if (!IsStarted && IsSelected)
+            {
+                GamemodeManager.ValidateReadyConditions();
+            }
+        }
+    }
 
     private float _savedVitality = 1f;
 
@@ -99,13 +115,13 @@ public class Deathmatch : Gamemode
         var minimumPlayersData = new IntElementData()
         {
             Title = "Minimum Players",
-            Value = _minimumPlayers,
+            Value = MinimumPlayers,
             Increment = 1,
             MinValue = 1,
             MaxValue = 255,
             OnValueChanged = (v) =>
             {
-                _minimumPlayers = v;
+                MinimumPlayers = v;
             }
         };
 
@@ -313,7 +329,7 @@ public class Deathmatch : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIDManager.PlayerCount >= _minimumPlayers;
+        return PlayerIDManager.PlayerCount >= MinimumPlayers;
     }
 
     public override void OnGamemodeStarted()
