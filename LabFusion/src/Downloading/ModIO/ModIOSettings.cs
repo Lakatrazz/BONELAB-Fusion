@@ -13,8 +13,8 @@ namespace LabFusion.Downloading.ModIO;
 public static class ModIOSettings
 {
     public const string ApiPath = "https://api.mod.io/v1/games/";
-    public const int GameId = 3809; // BONELAB GameId
-    public static string GameApiPath => $"{ApiPath}{GameId}/mods/";
+    public const int GameID = 3809; // BONELAB GameID
+    public static string GameApiPath => $"{ApiPath}{GameID}/mods/";
 
     private static string _loadedToken = null;
     public static string LoadedToken => _loadedToken;

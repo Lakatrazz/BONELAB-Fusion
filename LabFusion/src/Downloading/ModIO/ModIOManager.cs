@@ -32,9 +32,9 @@ public static class ModIOManager
         return null;
     }
 
-    public static void GetMod(int modId, ModCallback modCallback)
+    public static void GetMod(int modID, ModCallback modCallback)
     {
-        var url = $"{ModIOSettings.GameApiPath}{modId}";
+        var url = $"{ModIOSettings.GameApiPath}{modID}";
 
         ModIOSettings.LoadToken(OnTokenLoaded);
 

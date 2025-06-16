@@ -1,7 +1,7 @@
 ## **Fusion**
-#### Hotfix:
-- Fixed grabbing and ragdolling issues on quest
-- Fixed module messages being broken on quest
+#### Fixed:
+- Issues with mod blacklisting
+- Nimbus/Spawn guns despawning while in your hand
 
 ## **Fusion Auto Updater**
 - No changes

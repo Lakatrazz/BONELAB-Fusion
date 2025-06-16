@@ -54,12 +54,12 @@ public static class LevelDownloaderManager
         // Request the mod id from the host
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
-            target = info.LevelHost,
-            barcode = info.LevelBarcode,
-            beginDownloadCallback = OnDownloadBegin,
-            finishDownloadCallback = OnDownloadFinished,
-            maxBytes = maxBytes,
-            highPriority = true,
+            Target = info.LevelHost,
+            Barcode = info.LevelBarcode,
+            BeginDownloadCallback = OnDownloadBegin,
+            FinishDownloadCallback = OnDownloadFinished,
+            MaxBytes = maxBytes,
+            HighPriority = true,
         });
     }
 

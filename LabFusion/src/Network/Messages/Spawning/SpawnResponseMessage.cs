@@ -105,10 +105,10 @@ public class SpawnResponseMessage : NativeMessageHandler
 
             NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
             { 
-                target = owner,
-                barcode = barcode,
-                finishDownloadCallback = OnModDownloaded,
-                maxBytes = maxBytes,
+                Target = owner,
+                Barcode = barcode,
+                FinishDownloadCallback = OnModDownloaded,
+                MaxBytes = maxBytes,
             });
 
             void OnModDownloaded(DownloadCallbackInfo info)

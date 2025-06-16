@@ -3,7 +3,6 @@
 using LabFusion.Downloading;
 using LabFusion.Downloading.ModIO;
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
@@ -22,28 +21,28 @@ public static class NetworkModRequester
 
     public struct ModRequestInfo
     {
-        public byte target;
+        public byte Target;
 
-        public string barcode;
+        public string Barcode;
 
-        public Action<ModCallbackInfo> modCallback;
+        public Action<ModCallbackInfo> ModCallback;
     }
 
     public struct ModInstallInfo
     {
-        public byte target;
+        public byte Target;
 
-        public string barcode;
+        public string Barcode;
 
-        public Action<ModCallbackInfo> beginDownloadCallback;
+        public Action<ModCallbackInfo> BeginDownloadCallback;
 
-        public DownloadCallback finishDownloadCallback;
+        public DownloadCallback FinishDownloadCallback;
 
-        public long? maxBytes;
+        public long? MaxBytes;
 
-        public IProgress<float> reporter;
+        public IProgress<float> Reporter;
 
-        public bool highPriority;
+        public bool HighPriority;
     }
 
     private static uint _lastTrackedRequest = 0;
@@ -71,9 +70,9 @@ public static class NetworkModRequester
 
         RequestMod(new ModRequestInfo()
         {
-            target = installInfo.target,
-            barcode = installInfo.barcode,
-            modCallback = OnModInfoReceived,
+            Target = installInfo.Target,
+            Barcode = installInfo.Barcode,
+            ModCallback = OnModInfoReceived,
         });
 
         // Wait for timeout
@@ -90,11 +89,11 @@ public static class NetworkModRequester
             FusionLogger.Warn($"Mod request for {installInfo.barcode} timed out.");
 #endif
 
-            installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            installInfo.FinishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
 
             // Remove the callbacks incase it gets received very late
-            installInfo.beginDownloadCallback = null;
-            installInfo.finishDownloadCallback = null;
+            installInfo.BeginDownloadCallback = null;
+            installInfo.FinishDownloadCallback = null;
         }
 
         void OnModInfoReceived(ModCallbackInfo info)
@@ -107,16 +106,16 @@ public static class NetworkModRequester
                 FusionLogger.Warn("Mod info did not have a file, cancelling download.");
 #endif
 
-                installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+                installInfo.FinishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
                 return;
             }
 
-            installInfo.beginDownloadCallback?.Invoke(info);
+            installInfo.BeginDownloadCallback?.Invoke(info);
 
             bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
 
             // If high priority, cancel other downloads
-            if (installInfo.highPriority)
+            if (installInfo.HighPriority)
             {
                 ModIODownloader.CancelQueue();
             }
@@ -125,9 +124,9 @@ public static class NetworkModRequester
             {
                 ModFile = info.ModFile,
                 Temporary = temporary,
-                Callback = installInfo.finishDownloadCallback,
-                MaxBytes = installInfo.maxBytes,
-                Reporter = installInfo.reporter,
+                Callback = installInfo.FinishDownloadCallback,
+                MaxBytes = installInfo.MaxBytes,
+                Reporter = installInfo.Reporter,
             });
         }
     }
@@ -136,18 +135,18 @@ public static class NetworkModRequester
     {
         uint trackerId = _lastTrackedRequest++;
 
-        if (info.modCallback != null)
+        if (info.ModCallback != null)
         {
-            _callbackQueue.Add(trackerId, info.modCallback);
+            _callbackQueue.Add(trackerId, info.ModCallback);
         }
 
         // Send the request to the server
         var data = new ModInfoRequestData()
         {
-            Barcode = info.barcode,
+            Barcode = info.Barcode,
             TrackerID = trackerId,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.ModInfoRequest, new MessageRoute(info.target, NetworkChannel.Reliable));
+        MessageRelay.RelayNative(data, NativeMessageTag.ModInfoRequest, new MessageRoute(info.Target, NetworkChannel.Reliable));
     }
 }

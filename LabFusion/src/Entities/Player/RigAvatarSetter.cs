@@ -76,12 +76,12 @@ public class RigAvatarSetter
 
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
-            target = owner,
-            barcode = barcode,
-            beginDownloadCallback = OnAvatarBeginDownload,
-            finishDownloadCallback = OnAvatarDownloaded,
-            maxBytes = maxBytes,
-            reporter = ProgressBar,
+            Target = owner,
+            Barcode = barcode,
+            BeginDownloadCallback = OnAvatarBeginDownload,
+            FinishDownloadCallback = OnAvatarDownloaded,
+            MaxBytes = maxBytes,
+            Reporter = ProgressBar,
         });
     }
 

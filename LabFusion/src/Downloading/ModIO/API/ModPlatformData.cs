@@ -7,11 +7,11 @@ public readonly struct ModPlatformData
 {
     public string Platform { get; }
 
-    public int ModfileLive { get; }
+    public int ModFileLive { get; }
 
     public ModPlatformData(JToken token)
     {
         Platform = token.Value<string>("platform");
-        ModfileLive = token.Value<int>("modfile_live");
+        ModFileLive = token.Value<int>("modfile_live");
     }
 }
