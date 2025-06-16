@@ -1,10 +1,26 @@
 ﻿using LabFusion.Player;
 using LabFusion.SDK.Metadata;
+using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Gamemodes;
 
 public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
 {
+    protected override void OnRegistered()
+    {
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
+    }
+
+    protected override void OnUnregistered()
+    {
+        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
+    }
+
+    private void OnPlayerLeft(PlayerID playerID)
+    {
+        RemoveScoreMetadata(playerID);
+    }
+
     public override string GetKeyWithProperty(PlayerID property)
     {
         return KeyHelper.GetKeyFromPlayer(Key, property);

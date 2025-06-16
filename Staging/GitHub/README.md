@@ -1,7 +1,6 @@
 ## **Fusion**
 #### Fixed:
-- Issues with mod blacklisting
-- Nimbus/Spawn guns despawning while in your hand
+- Smash Bones stockless/damageless bugs (potentially)
 
 ## **Fusion Auto Updater**
 - No changes

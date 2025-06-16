@@ -32,6 +32,7 @@ public abstract class ScoreKeeper<TProperty>
     {
         _metadata = metadata;
         _metadata.OnMetadataChanged += OnMetadataChanged;
+        _metadata.OnMetadataRemoved += OnMetadataRemoved;
 
         Key = key;
     }
@@ -42,8 +43,13 @@ public abstract class ScoreKeeper<TProperty>
     public void Unregister()
     {
         _metadata.OnMetadataChanged -= OnMetadataChanged;
+        _metadata.OnMetadataRemoved -= OnMetadataRemoved;
         _metadata = null;
     }
+
+    protected virtual void OnRegistered() { }
+
+    protected virtual void OnUnregistered() { }
 
     private void OnMetadataChanged(string key, string value)
     {
@@ -71,6 +77,27 @@ public abstract class ScoreKeeper<TProperty>
         OnScoreChanged?.Invoke(property, score);
     }
 
+    private void OnMetadataRemoved(string key, string value)
+    {
+        // Check if this is a score key
+        if (!KeyHelper.KeyMatchesVariable(key, Key))
+        {
+            return;
+        }
+
+        var removedMetadata = _propertyToScore.Where((pair) => pair.Value.Key == key);
+
+        foreach (var pair in removedMetadata)
+        {
+            if (pair.Key == null)
+            {
+                continue;
+            }
+
+            _propertyToScore.Remove(pair.Key);
+        }
+    }
+
     public MetadataInt GetScoreMetadata(TProperty property)
     {
         if (property == null)
@@ -85,6 +112,16 @@ public abstract class ScoreKeeper<TProperty>
         }
 
         return variable;
+    }
+
+    public void RemoveScoreMetadata(TProperty property)
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        _propertyToScore.Remove(property);
     }
 
     public void SetScore(TProperty property, int score)

@@ -17,7 +17,7 @@ public class TeamManager
 
     public event Action<PlayerID, Team> OnAssignedToTeam, OnRemovedFromTeam;
 
-    private readonly Dictionary<PlayerID, MetadataVariable> _playersToTeam = new();
+    private readonly Dictionary<byte, MetadataVariable> _playersToTeam = new();
 
     /// <summary>
     /// Registers the TeamManager to a gamemode. This is required for events to be processed properly.
@@ -28,6 +28,8 @@ public class TeamManager
         _gamemode = gamemode;
         gamemode.Metadata.OnMetadataChanged += OnMetadataChanged;
         gamemode.Metadata.OnMetadataRemoved += OnMetadataRemoved;
+
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
     /// <summary>
@@ -37,6 +39,9 @@ public class TeamManager
     {
         _gamemode.Metadata.OnMetadataChanged -= OnMetadataChanged;
         _gamemode.Metadata.OnMetadataRemoved -= OnMetadataRemoved;
+
+        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
+
         _gamemode = null;
     }
 
@@ -61,7 +66,7 @@ public class TeamManager
 
         var teamVariable = new MetadataVariable(key, Gamemode.Metadata);
 
-        _playersToTeam[player] = teamVariable;
+        _playersToTeam[player.SmallID] = teamVariable;
 
         // Remove from existing teams
         foreach (var existingTeam in Teams)
@@ -102,7 +107,7 @@ public class TeamManager
             return;
         }
 
-        _playersToTeam.Remove(player);
+        _playersToTeam.Remove(player.SmallID);
 
         // Invoke team remove event
         var team = GetTeamByName(value);
@@ -111,6 +116,23 @@ public class TeamManager
         {
             OnRemovedFromTeam?.Invoke(player, team);
             team.ForceRemovePlayer(player);
+        }
+    }
+
+    private void OnPlayerLeft(PlayerID playerID)
+    {
+        byte smallID = playerID.SmallID;
+
+        _playersToTeam.Remove(smallID);
+
+        foreach (var team in Teams)
+        {
+            if (team.HasPlayer(smallID) && playerID != null)
+            {
+                OnRemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
+            }
+
+            team.ForceRemovePlayer(smallID);
         }
     }
 
@@ -250,7 +272,7 @@ public class TeamManager
     /// <returns>The given team of a player.</returns>
     public Team GetPlayerTeam(PlayerID player)
     {
-        if (!_playersToTeam.TryGetValue(player, out var teamVariable))
+        if (!_playersToTeam.TryGetValue(player.SmallID, out var teamVariable))
         {
             return null;
         }
