@@ -1,9 +1,8 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Math;
-using LabFusion.Utilities;
 
 using System.Buffers;
-using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
 using System.Text;
 
 namespace LabFusion.Network.Serialization;
@@ -61,25 +60,25 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void Write(double value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteDoubleBigEndian(new Span<byte>(_buffer, Position, sizeof(double)), value);
         Position += sizeof(double);
     }
 
     public void Write(short value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteInt16BigEndian(new Span<byte>(_buffer, Position, sizeof(short)), value);
         Position += sizeof(short);
     }
 
     public void Write(int value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteInt32BigEndian(new Span<byte>(_buffer, Position, sizeof(int)), value);
         Position += sizeof(int);
     }
 
     public void Write(long value)
     {
-        BitConverter.TryWriteBytes(new Span<byte>(_buffer, Position, sizeof(long)), value);
+        BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(_buffer, Position, sizeof(long)), value);
         Position += sizeof(long);
     }
 
@@ -90,25 +89,25 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void Write(float value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteSingleBigEndian(new Span<byte>(_buffer, Position, sizeof(float)), value);
         Position += sizeof(float);
     }
 
     public void Write(ushort value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteUInt16BigEndian(new Span<byte>(_buffer, Position, sizeof(ushort)), value);
         Position += sizeof(ushort);
     }
 
     public void Write(uint value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteUInt32BigEndian(new Span<byte>(_buffer, Position, sizeof(uint)), value);
         Position += sizeof(uint);
     }
 
     public void Write(ulong value)
     {
-        BigEndianHelper.WriteBytes(_buffer, Position, value);
+        BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(_buffer, Position, sizeof(ulong)), value);
         Position += sizeof(ulong);
     }
 

@@ -2,7 +2,7 @@
 using LabFusion.Math;
 using LabFusion.Utilities;
 
-using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
 using System.Text;
 
 namespace LabFusion.Network.Serialization;
@@ -50,7 +50,7 @@ public sealed class NetReader : INetSerializer, IDisposable
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
 
-        double result = BigEndianHelper.ReadDouble(_buffer, Position);
+        double result = BinaryPrimitives.ReadDoubleBigEndian(new(_buffer, Position, sizeof(double)));
         Position += sizeof(double);
 
         return result;
@@ -62,7 +62,7 @@ public sealed class NetReader : INetSerializer, IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 2 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        short result = BigEndianHelper.ReadInt16(_buffer, Position);
+        short result = BinaryPrimitives.ReadInt16BigEndian(new(_buffer, Position, sizeof(short)));
         Position += sizeof(short);
         return result;
     }
@@ -73,7 +73,7 @@ public sealed class NetReader : INetSerializer, IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        int result = BigEndianHelper.ReadInt32(_buffer, Position);
+        int result = BinaryPrimitives.ReadInt32BigEndian(new(_buffer, Position, sizeof(int)));
         Position += sizeof(int);
         return result;
     }
@@ -84,7 +84,7 @@ public sealed class NetReader : INetSerializer, IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        long result = BitConverter.ToInt64(_buffer, Position);
+        long result = BinaryPrimitives.ReadInt64BigEndian(new(_buffer, Position, sizeof(long)));
         Position += sizeof(long);
         return result;
     }
@@ -100,7 +100,7 @@ public sealed class NetReader : INetSerializer, IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        float result = BigEndianHelper.ReadSingle(_buffer, Position);
+        float result = BinaryPrimitives.ReadSingleBigEndian(new(_buffer, Position, sizeof(float)));
         Position += sizeof(float);
         return result;
     }
@@ -137,7 +137,7 @@ public sealed class NetReader : INetSerializer, IDisposable
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 2 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
 
-        ushort result = BigEndianHelper.ReadUInt16(_buffer, Position);
+        ushort result = BinaryPrimitives.ReadUInt16BigEndian(new(_buffer, Position, sizeof(ushort)));
         Position += sizeof(ushort);
 
         return result;
@@ -150,7 +150,7 @@ public sealed class NetReader : INetSerializer, IDisposable
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
 
-        uint result = BigEndianHelper.ReadUInt32(_buffer, Position);
+        uint result = BinaryPrimitives.ReadUInt32BigEndian(new(_buffer, Position, sizeof(uint)));
         Position += sizeof(uint);
 
         return result;
@@ -163,7 +163,7 @@ public sealed class NetReader : INetSerializer, IDisposable
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
 
-        ulong result = BigEndianHelper.ReadUInt64(_buffer, Position);
+        ulong result = BinaryPrimitives.ReadUInt64BigEndian(new(_buffer, Position, sizeof(ulong)));
         Position += sizeof(ulong);
 
         return result;

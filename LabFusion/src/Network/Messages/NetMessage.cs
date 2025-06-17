@@ -1,7 +1,7 @@
 ﻿using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
-using LabFusion.Utilities;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Network;
@@ -134,7 +134,7 @@ public unsafe class NetMessage : IDisposable
 
         var expandedBuffer = new byte[buffer.Count + sizeof(long)];
 
-        BitConverter.TryWriteBytes(expandedBuffer, value);
+        BinaryPrimitives.WriteInt64BigEndian(expandedBuffer, value);
 
         for (var i = 0; i < buffer.Count; i++)
         {

@@ -7,15 +7,15 @@ namespace LabFusion.Data;
 [Serializable]
 public class PlatformInfo : IEquatable<PlatformInfo>
 {
-    [JsonPropertyName("platformId")]
-    public ulong PlatformId { get; set; }
+    [JsonPropertyName("platformID")]
+    public ulong PlatformID { get; set; }
 
     [JsonPropertyName("platform")]
     public string Platform { get; set; }
 
-    public PlatformInfo(ulong platformId)
+    public PlatformInfo(ulong platformID)
     {
-        PlatformId = platformId;
+        PlatformID = platformID;
 
         if (NetworkLayerManager.HasLayer)
         {
@@ -25,7 +25,7 @@ public class PlatformInfo : IEquatable<PlatformInfo>
 
     public bool Equals(PlatformInfo other)
     {
-        return other is not null && PlatformId == other.PlatformId && Platform == other.Platform;
+        return other is not null && PlatformID == other.PlatformID && Platform == other.Platform;
     }
 
     public override bool Equals(object obj)
@@ -33,7 +33,7 @@ public class PlatformInfo : IEquatable<PlatformInfo>
         return Equals(obj as PlatformInfo);
     }
 
-    public override int GetHashCode() => PlatformId.GetHashCode() ^ Platform.GetHashCode();
+    public override int GetHashCode() => PlatformID.GetHashCode() ^ Platform.GetHashCode();
 
     public static bool operator ==(PlatformInfo x, PlatformInfo y)
     {

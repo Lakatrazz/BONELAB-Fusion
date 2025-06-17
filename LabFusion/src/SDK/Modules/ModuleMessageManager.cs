@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Buffers.Binary;
+using System.Reflection;
 
 using LabFusion.Extensions;
 using LabFusion.Math;
@@ -144,7 +145,7 @@ public static class ModuleMessageManager
 
     private static long GetTag(byte[] bytes)
     {
-        return BitConverter.ToInt64(bytes, 0);
+        return BinaryPrimitives.ReadInt64BigEndian(bytes);
     }
 
     private static byte[] GetBuffer(byte[] bytes)
