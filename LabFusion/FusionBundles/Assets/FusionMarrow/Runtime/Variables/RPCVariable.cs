@@ -76,7 +76,11 @@ namespace LabFusion.Marrow.Integration
 
         public void InvokeHolder()
         {
-            OnVariableChangedHolder?.Invoke();
+            try
+            {
+                OnVariableChangedHolder?.Invoke();
+            }
+            catch { }
         }
 
         [HideFromIl2Cpp]
