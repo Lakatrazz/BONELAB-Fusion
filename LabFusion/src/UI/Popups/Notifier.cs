@@ -123,7 +123,7 @@ public static class Notifier
 
             string incomingSubTitle = CurrentNotification.Message.Text;
 
-            Sprite incomingSprite = GetPopupSprite(CurrentNotification);
+            Sprite incomingSprite = GetPopupSprite(CurrentNotification) ?? headTitles.defaultElementSprite;
 
             float holdTime = CurrentNotification.PopupLength;
 
@@ -138,6 +138,11 @@ public static class Notifier
 
     private static Sprite GetPopupSprite(Notification notification)
     {
+        if (!MenuResources.HasResources)
+        {
+            return null;
+        }
+
         Texture2D incomingTexture = notification.Type switch
         {
             NotificationType.WARNING => MenuResources.GetNotificationIcon("Warning").TryCast<Texture2D>(),
@@ -206,7 +211,7 @@ public static class Notifier
     internal static void OnUpdate()
     {
         // Make sure we aren't loading so we can dequeue existing notifications
-        if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer && MenuResources.HasResources)
+        if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer)
         {
             // Enable the tutorial rig a frame before showing notifs
             if (!_hasEnabledTutorialRig)

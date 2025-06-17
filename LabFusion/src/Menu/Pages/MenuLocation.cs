@@ -167,7 +167,7 @@ public static class MenuLocation
         element.ServerNameElement
             .Cleared()
             .WithTitle("Server Name")
-            .WithValue(info.LobbyName);
+            .WithValue(info.LobbyName.RemoveRichTextExceptColor());
 
         element.ServerNameElement.EmptyFormat = emptyFormat;
         element.ServerNameElement.TextFormat = "{1}";
@@ -178,7 +178,7 @@ public static class MenuLocation
         element.DescriptionElement
             .Cleared()
             .WithTitle("Description")
-            .WithValue(info.LobbyDescription);
+            .WithValue(info.LobbyDescription.RemoveRichTextExceptColor());
 
         element.DescriptionElement.EmptyFormat = emptyFormat;
         element.DescriptionElement.TextFormat = "{1}";

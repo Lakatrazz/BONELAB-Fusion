@@ -1,7 +1,8 @@
 ## **Fusion**
 #### Fixed:
-- Late joiners not being given 0 stocks and 0 score in Smash Bones
-- Avatar stats always being refreshed breaking certain stat changes
+- Notifications not appearing with the content not installed
+#### Improved:
+- Prevented rich text in lobby names except for color
 
 ## **Fusion Auto Updater**
 - No changes
