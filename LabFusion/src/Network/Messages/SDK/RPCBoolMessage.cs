@@ -40,12 +40,6 @@ public static class RPCBoolSender
 
     public static void CatchupValue(RPCBool rpcBool, PlayerID playerID)
     {
-        // Make sure we are the level host
-        if (!NetworkSceneManager.IsLevelHost)
-        {
-            return;
-        }
-
         // Send the message
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcBool, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCBoolData.Create(pathData, rpcBool.GetLatestValue());

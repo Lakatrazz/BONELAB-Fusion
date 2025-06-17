@@ -43,12 +43,6 @@ public static class RPCVector3Sender
 
     public static void CatchupValue(RPCVector3 rpcVector3, PlayerID playerID)
     {
-        // Make sure we are the level host
-        if (!NetworkSceneManager.IsLevelHost)
-        {
-            return;
-        }
-
         // Send the message
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcVector3, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCVector3Data.Create(pathData, rpcVector3.GetLatestValue());

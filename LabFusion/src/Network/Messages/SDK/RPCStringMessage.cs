@@ -41,12 +41,6 @@ public static class RPCStringSender
 
     public static void CatchupValue(RPCString rpcString, PlayerID playerID)
     {
-        // Make sure we are the level host
-        if (!NetworkSceneManager.IsLevelHost)
-        {
-            return;
-        }
-
         // Send the message
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcString, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCStringData.Create(pathData, rpcString.GetLatestValue());

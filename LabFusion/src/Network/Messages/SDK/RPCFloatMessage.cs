@@ -40,12 +40,6 @@ public static class RPCFloatSender
 
     public static void CatchupValue(RPCFloat rpcFloat, PlayerID playerID)
     {
-        // Make sure we are the level host
-        if (!NetworkSceneManager.IsLevelHost)
-        {
-            return;
-        }
-
         // Send the message
         var pathData = ComponentPathData.CreateFromComponent<RPCVariable, RPCVariableExtender>(rpcFloat, RPCVariable.HashTable, RPCVariableExtender.Cache);
         var boolData = RPCFloatData.Create(pathData, rpcFloat.GetLatestValue());
