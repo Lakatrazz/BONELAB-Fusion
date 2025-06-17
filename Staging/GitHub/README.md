@@ -1,9 +1,7 @@
 ## **Fusion**
 #### Fixed:
-- Gamemode issues with lingering players in score/team after leaving
-- Spawn/Nimbus guns not cleaning up at all
-#### Rewrote:
-- Switch all byte writing to use BinaryPrimitives BigEndian for consistency
+- Late joiners not being given 0 stocks and 0 score in Smash Bones
+- Avatar stats always being refreshed breaking certain stat changes
 
 ## **Fusion Auto Updater**
 - No changes

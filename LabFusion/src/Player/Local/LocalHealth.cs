@@ -12,6 +12,8 @@ namespace LabFusion.Player;
 public static class LocalHealth
 {
     private static float? _vitalityOverride = null;
+    private static bool _wasOverridingVitality = false;
+
     public static float? VitalityOverride
     {
         get
@@ -148,11 +150,15 @@ public static class LocalHealth
         {
             avatar._vitality = VitalityOverride.Value;
             health.SetAvatar(avatar);
+
+            _wasOverridingVitality = true;
         }
-        else
+        else if (_wasOverridingVitality)
         {
             avatar.RefreshBodyMeasurements();
             health.SetAvatar(avatar);
+
+            _wasOverridingVitality = false;
         }
 
         // Apply mortality

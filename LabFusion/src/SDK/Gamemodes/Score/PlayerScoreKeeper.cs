@@ -92,9 +92,9 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
     /// <summary>
     /// Returns the placement of a player starting at index 0.
     /// </summary>
-    /// <param name="player">The player to get the index of.</param>
+    /// <param name="playerID">The player to get the index of.</param>
     /// <returns></returns>
-    public int GetPlace(PlayerID player)
+    public int GetPlace(PlayerID playerID)
     {
         var players = GetPlacedPlayers();
 
@@ -105,7 +105,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 
         for (var i = 0; i < players.Count; i++)
         {
-            if (players[i] == player)
+            if (players[i] == playerID)
             {
                 return i;
             }
@@ -113,4 +113,12 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 
         return -1;
     }
+
+    public void SetScore(PlayerID playerID, int score) => SetScore(playerID.SmallID, score);
+
+    public int GetScore(PlayerID playerID) => GetScore(playerID.SmallID);
+
+    public void AddScore(PlayerID playerID, int amount = 1) => AddScore(playerID.SmallID, amount);
+
+    public void SubtractScore(PlayerID playerID, int amount = 1) => SubtractScore(playerID.SmallID, amount);
 }

@@ -460,11 +460,11 @@ public class SmashBones : Gamemode
 
         var deathInfo = JsonSerializer.Deserialize<DeathInfo>(value);
 
-        var playerId = PlayerIDManager.GetPlayerID(deathInfo.PlatformID);
+        var playerID = PlayerIDManager.GetPlayerID(deathInfo.PlatformID);
 
         if (NetworkInfo.IsHost)
         {
-            var stocks = PlayerStocksKeeper.GetScore(playerId);
+            var stocks = PlayerStocksKeeper.GetScore(playerID);
 
             var newStocks = stocks - 1;
 
@@ -473,34 +473,34 @@ public class SmashBones : Gamemode
                 newStocks = 0;
             }
 
-            PlayerStocksKeeper.SetScore(playerId, newStocks);
-            PlayerDamageKeeper.GetVariable(playerId).SetValue(0f);
+            PlayerStocksKeeper.SetScore(playerID, newStocks);
+            PlayerDamageKeeper.GetVariable(playerID).SetValue(0f);
 
             // Move the player to the spectator team if they lost all stocks
             if (newStocks <= 0)
             {
-                TeamManager.TryAssignTeam(playerId, SpectatorTeam);
+                TeamManager.TryAssignTeam(playerID, SpectatorTeam);
             }
         }
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
 
-        MultiplayerHooking.InvokeOnPlayerAction(playerId, PlayerActionType.DEATH);
+        MultiplayerHooking.InvokeOnPlayerAction(playerID, PlayerActionType.DEATH);
     }
 
-    private void OnLivesChanged(PlayerID player, int lives)
+    private void OnLivesChanged(PlayerID playerID, int lives)
     {
         if (!IsStarted)
         {
             return;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(playerID, out var networkPlayer))
         {
             networkPlayer.LivesBar.Lives = lives;
         }
 
-        if (player.IsMe)
+        if (playerID.IsMe)
         {
             OnSelfLivesChanged(lives);
         }
@@ -508,7 +508,7 @@ public class SmashBones : Gamemode
         if (NetworkInfo.IsHost && lives <= 0)
         {
             _latestScore++;
-            PlayerScoreKeeper.SetScore(player, _latestScore);
+            PlayerScoreKeeper.SetScore(playerID, _latestScore);
 
             CheckFreeForAllStocksVictory();
         }
@@ -521,8 +521,9 @@ public class SmashBones : Gamemode
         foreach (var player in PlayerIDManager.PlayerIDs)
         {
             var stocks = PlayerStocksKeeper.GetScore(player);
+            bool spectator = SpectatorTeam.HasPlayer(player);
 
-            if (stocks > 0)
+            if (stocks > 0 && !spectator)
             {
                 livingPlayers.Add(player);
             }
@@ -644,6 +645,10 @@ public class SmashBones : Gamemode
     {
         if (NetworkInfo.IsHost)
         {
+            PlayerStocksKeeper.SetScore(playerID, 0);
+            PlayerScoreKeeper.SetScore(playerID, 0);
+            PlayerDamageKeeper.GetVariable(playerID).SetValue(0f);
+
             TeamManager.TryAssignTeam(playerID, SpectatorTeam);
         }
     }

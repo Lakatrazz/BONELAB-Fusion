@@ -175,7 +175,7 @@ public class TeamManager
     /// <returns>Whether the assign was successful.</returns>
     public bool TryAssignTeam(PlayerID player, Team team)
     {
-        var playerKey = KeyHelper.GetKeyFromPlayer(CommonKeys.TeamKey, player);
+        var playerKey = KeyHelper.GetKeyFromPlayer(CommonKeys.TeamKey, player.SmallID);
         return Gamemode.Metadata.TrySetMetadata(playerKey, team.TeamName);
     }
 
@@ -232,7 +232,7 @@ public class TeamManager
     /// <returns>Whether the unassign was successful.</returns>
     public bool TryUnassignTeam(PlayerID player)
     {
-        var playerKey = KeyHelper.GetKeyFromPlayer(CommonKeys.TeamKey, player);
+        var playerKey = KeyHelper.GetKeyFromPlayer(CommonKeys.TeamKey, player.SmallID);
         return Gamemode.Metadata.TryRemoveMetadata(playerKey);
     }
 
