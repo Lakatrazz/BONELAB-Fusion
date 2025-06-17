@@ -2,7 +2,6 @@
 
 using Il2CppSLZ.Marrow.Pool;
 
-using LabFusion.Network;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -47,12 +46,6 @@ public class TimedDespawner : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Make sure this is the server, otherwise we shouldn't despawn it
-        if (!NetworkInfo.IsHost)
-        {
-            return;
-        }
-
         _elapsedTime += TimeUtilities.DeltaTime;
 
         // Despawn the poolee

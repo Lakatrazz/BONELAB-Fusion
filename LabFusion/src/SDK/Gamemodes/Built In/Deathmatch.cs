@@ -254,7 +254,7 @@ public class Deathmatch : Gamemode
 
         // Register score keeper
         ScoreKeeper.Register(Metadata);
-        ScoreKeeper.OnScoreChanged += OnScoreChanged;
+        ScoreKeeper.OnPlayerScoreChanged += OnScoreChanged;
     }
 
     public override void OnGamemodeUnregistered()
@@ -271,7 +271,7 @@ public class Deathmatch : Gamemode
 
         // Unregister score keeper
         ScoreKeeper.Unregister();
-        ScoreKeeper.OnScoreChanged -= OnScoreChanged;
+        ScoreKeeper.OnPlayerScoreChanged -= OnScoreChanged;
     }
 
     private new void OnMetadataChanged(string key, string value)

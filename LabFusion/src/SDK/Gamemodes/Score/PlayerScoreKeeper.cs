@@ -4,29 +4,45 @@ using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Gamemodes;
 
-public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
+public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 {
+    public event Action<PlayerID, int> OnPlayerScoreChanged;
+
     protected override void OnRegistered()
     {
+        OnScoreChanged += OnByteScoreChanged;
+
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
     protected override void OnUnregistered()
     {
+        OnScoreChanged -= OnByteScoreChanged;
+
         MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
+    }
+
+    private void OnByteScoreChanged(byte smallID, int score)
+    {
+        var playerID = PlayerIDManager.GetPlayerID(smallID);
+
+        if (playerID != null)
+        {
+            OnPlayerScoreChanged?.InvokeSafe(playerID, score, "executing PlayerScoreKeeper.OnPlayerScoreChanged");
+        }
     }
 
     private void OnPlayerLeft(PlayerID playerID)
     {
-        RemoveScoreMetadata(playerID);
+        RemoveScoreMetadata(playerID.SmallID);
     }
 
-    public override string GetKeyWithProperty(PlayerID property)
+    public override string GetKeyWithProperty(byte property)
     {
         return KeyHelper.GetKeyFromPlayer(Key, property);
     }
 
-    public override PlayerID GetPropertyWithKey(string key)
+    public override byte GetPropertyWithKey(string key)
     {
         return KeyHelper.GetPlayerFromKey(key);
     }
@@ -38,7 +54,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
     public IReadOnlyList<PlayerID> GetPlacedPlayers()
     {
         List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
-        leaders = leaders.OrderBy(id => GetScore(id)).ToList();
+        leaders = leaders.OrderBy(playerID => GetScore(playerID.SmallID)).ToList();
         leaders.Reverse();
 
         return leaders;
@@ -51,7 +67,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
     public IReadOnlyList<PlayerID> GetOrderedPlayers()
     {
         List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
-        leaders = leaders.OrderBy(id => GetScore(id)).ToList();
+        leaders = leaders.OrderBy(playerID => GetScore(playerID.SmallID)).ToList();
 
         return leaders;
     }

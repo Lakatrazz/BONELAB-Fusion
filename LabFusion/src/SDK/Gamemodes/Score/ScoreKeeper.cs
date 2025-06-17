@@ -35,6 +35,8 @@ public abstract class ScoreKeeper<TProperty>
         _metadata.OnMetadataRemoved += OnMetadataRemoved;
 
         Key = key;
+
+        OnRegistered();
     }
 
     /// <summary>
@@ -45,6 +47,8 @@ public abstract class ScoreKeeper<TProperty>
         _metadata.OnMetadataChanged -= OnMetadataChanged;
         _metadata.OnMetadataRemoved -= OnMetadataRemoved;
         _metadata = null;
+
+        OnUnregistered();
     }
 
     protected virtual void OnRegistered() { }

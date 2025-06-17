@@ -55,27 +55,26 @@ public class TeamManager
 
         var player = KeyHelper.GetPlayerFromKey(key);
 
-        // If the key doesn't return a player, ignore it
-        if (player == null)
-        {
-#if DEBUG
-            FusionLogger.Warn($"Key {key} led to a null player on TeamManager.OnMetadataChanged.");
-#endif
-            return;
-        }
+        var playerID = PlayerIDManager.GetPlayerID(player);
 
         var teamVariable = new MetadataVariable(key, Gamemode.Metadata);
 
-        _playersToTeam[player.SmallID] = teamVariable;
+        _playersToTeam[player] = teamVariable;
 
         // Remove from existing teams
         foreach (var existingTeam in Teams)
         {
-            if (existingTeam.HasPlayer(player))
+            if (!existingTeam.HasPlayer(player))
             {
-                OnRemovedFromTeam?.Invoke(player, existingTeam);
-                existingTeam.ForceRemovePlayer(player);
+                continue;
             }
+
+            if (playerID != null)
+            {
+                OnRemovedFromTeam?.InvokeSafe(playerID, existingTeam, "executing TeamManager.OnRemovedFromTeam");
+            }
+
+            existingTeam.ForceRemovePlayer(player);
         }
 
         // Invoke team change event
@@ -83,7 +82,11 @@ public class TeamManager
         
         if (team != null)
         {
-            OnAssignedToTeam?.Invoke(player, team);
+            if (playerID != null)
+            {
+                OnAssignedToTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnAssignedToTeam");
+            }
+
             team.ForceAddPlayer(player);
         }
     }
@@ -98,23 +101,20 @@ public class TeamManager
 
         var player = KeyHelper.GetPlayerFromKey(key);
 
-        // If the key doesn't return a player, ignore it
-        if (player == null)
-        {
-#if DEBUG
-            FusionLogger.Warn($"Key {key} led to a null player on TeamManager.OnMetadataRemoved.");
-#endif
-            return;
-        }
+        var playerID = PlayerIDManager.GetPlayerID(player);
 
-        _playersToTeam.Remove(player.SmallID);
+        _playersToTeam.Remove(player);
 
         // Invoke team remove event
         var team = GetTeamByName(value);
 
         if (team != null)
         {
-            OnRemovedFromTeam?.Invoke(player, team);
+            if (playerID != null)
+            {
+                OnRemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
+            }
+
             team.ForceRemovePlayer(player);
         }
     }
@@ -127,7 +127,7 @@ public class TeamManager
 
         foreach (var team in Teams)
         {
-            if (team.HasPlayer(smallID) && playerID != null)
+            if (team.HasPlayer(smallID))
             {
                 OnRemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
             }

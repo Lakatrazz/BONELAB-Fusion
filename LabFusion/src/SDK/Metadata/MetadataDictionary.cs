@@ -1,4 +1,6 @@
-﻿namespace LabFusion.SDK.Metadata;
+﻿using LabFusion.Utilities;
+
+namespace LabFusion.SDK.Metadata;
 
 public abstract class MetadataDictionary<TProperty, TVariable> where TVariable : MetadataVariable
 {
@@ -18,8 +20,11 @@ public abstract class MetadataDictionary<TProperty, TVariable> where TVariable :
     {
         _metadata = metadata;
         _metadata.OnMetadataChanged += OnMetadataChanged;
+        _metadata.OnMetadataRemoved += OnMetadataRemoved;
 
         Key = key;
+
+        OnRegistered();
     }
 
     public void Unregister()
@@ -28,7 +33,13 @@ public abstract class MetadataDictionary<TProperty, TVariable> where TVariable :
         _metadata = null;
 
         Key = string.Empty;
+
+        OnUnregistered();
     }
+
+    protected virtual void OnRegistered() { }
+
+    protected virtual void OnUnregistered() { }
 
     private void OnMetadataChanged(string key, string value)
     {
@@ -48,11 +59,37 @@ public abstract class MetadataDictionary<TProperty, TVariable> where TVariable :
 
         var variable = GetVariable(property);
 
-        OnVariableChanged?.Invoke(property, variable);
+        OnVariableChanged?.InvokeSafe(property, variable, "executing MetadataDictionary.OnVariableChanged");
+    }
+
+    private void OnMetadataRemoved(string key, string value)
+    {
+        // Check if this is a variable key
+        if (!KeyHelper.KeyMatchesVariable(key, Key))
+        {
+            return;
+        }
+
+        var removedMetadata = _propertyToVariable.Where(pair => pair.Value.Key == key).ToList();
+
+        foreach (var removed in removedMetadata)
+        {
+            if (removed.Key == null)
+            {
+                continue;
+            }
+
+            _propertyToVariable.Remove(removed.Key);
+        }
     }
 
     public TVariable GetVariable(TProperty property)
     {
+        if (property == null)
+        {
+            return null;
+        }
+
         if (!_propertyToVariable.TryGetValue(property, out var variable))
         {
             variable = Activator.CreateInstance(typeof(TVariable), GetKeyWithProperty(property), _metadata) as TVariable;
@@ -60,6 +97,16 @@ public abstract class MetadataDictionary<TProperty, TVariable> where TVariable :
         }
 
         return variable;
+    }
+
+    public void RemoveVariable(TProperty property)
+    {
+        if (property == null)
+        {
+            return;
+        }
+
+        _propertyToVariable.Remove(property);
     }
 
     public void Clear()

@@ -214,10 +214,10 @@ public class SmashBones : Gamemode
         PlayerScoreKeeper.Register(Metadata);
 
         PlayerStocksKeeper.Register(Metadata, CommonKeys.LivesKey);
-        PlayerStocksKeeper.OnScoreChanged += OnLivesChanged;
+        PlayerStocksKeeper.OnPlayerScoreChanged += OnLivesChanged;
 
         PlayerDamageKeeper.Register(Metadata, CommonKeys.DamageKey);
-        PlayerDamageKeeper.OnVariableChanged += OnDamageChanged;
+        PlayerDamageKeeper.OnPlayerVariableChanged += OnDamageChanged;
 
         LocalHealth.OnAttackedByPlayer += OnAttackedByPlayer;
     }
@@ -235,10 +235,10 @@ public class SmashBones : Gamemode
         PlayerScoreKeeper.Unregister();
 
         PlayerStocksKeeper.Unregister();
-        PlayerStocksKeeper.OnScoreChanged -= OnLivesChanged;
+        PlayerStocksKeeper.OnPlayerScoreChanged -= OnLivesChanged;
 
         PlayerDamageKeeper.Unregister();
-        PlayerDamageKeeper.OnVariableChanged -= OnDamageChanged;
+        PlayerDamageKeeper.OnPlayerVariableChanged -= OnDamageChanged;
 
         LocalHealth.OnAttackedByPlayer -= OnAttackedByPlayer;
     }
@@ -640,11 +640,19 @@ public class SmashBones : Gamemode
         OnSetSpawn(SpectatorTeam.HasPlayer(PlayerIDManager.LocalID));
     }
 
-    protected override void OnPlayerJoined(PlayerID playerId)
+    protected override void OnPlayerJoined(PlayerID playerID)
     {
         if (NetworkInfo.IsHost)
         {
-            TeamManager.TryAssignTeam(playerId, SpectatorTeam);
+            TeamManager.TryAssignTeam(playerID, SpectatorTeam);
+        }
+    }
+
+    protected override void OnPlayerLeft(PlayerID playerID)
+    {
+        if (NetworkInfo.IsHost)
+        {
+            CheckFreeForAllStocksVictory();
         }
     }
 
