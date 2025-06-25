@@ -89,6 +89,7 @@ public class FusionMod : MelonMod
 
         // Load APIs
         SteamAPILoader.OnLoadSteamAPI();
+        EOSSDKLoader.OnLoadEOSSDK();
 
         // Initialize data and hooks
         PDController.OnInitializeMelon();
@@ -205,7 +206,7 @@ public class FusionMod : MelonMod
         PlayerAdditionsHelper.OnDeinitializeMelon();
 
         // Free APIs
-        SteamAPILoader.OnFreeSteamAPI();
+        EOSSDKLoader.OnFreeEOSSDK();
     }
 
     public override void OnPreferencesLoaded()
