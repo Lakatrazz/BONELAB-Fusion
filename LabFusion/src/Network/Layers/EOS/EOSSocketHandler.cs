@@ -1,6 +1,8 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
 
+using LabFusion.Player;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using System;
@@ -11,12 +13,12 @@ namespace LabFusion.Network
 	public static class EOSSocketHandler
 	{
 		public const int MaxPacketSize = 1170;
-
 		public static readonly SocketId SocketId = new SocketId { SocketName = "FusionSocket" };
 
 		private static int _totalSentPackets = 0;
 		private static int _totalReceivedPackets = 0;
 		private static int _failedSendPackets = 0;
+		private static Dictionary<ProductUserId, bool> _connectedClients = new();
 
 		public static byte ConvertToP2PChannel(NetworkChannel channel)
 		{
@@ -48,6 +50,20 @@ namespace LabFusion.Network
 
 				p2pInterface.AddNotifyPeerConnectionRequest(ref connectOptions, null, OnPeerConnectionRequest);
 
+				var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
+				{
+					SocketId = SocketId
+				};
+
+				p2pInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, OnPeerConnectionEstablished);
+
+				var closedOptions = new AddNotifyPeerConnectionClosedOptions
+				{
+					SocketId = SocketId
+				};
+
+				p2pInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, OnPeerConnectionClosed);
+
 				var sendOptions = new SendPacketOptions
 				{
 					LocalUserId = localUserId,
@@ -60,12 +76,38 @@ namespace LabFusion.Network
 				};
 
 				p2pInterface.SendPacket(ref sendOptions);
+				_connectedClients[remoteUserId] = true;
 
 				FusionLogger.Log($"P2P connection request sent to {remoteUserId}");
 			}
 			catch (Exception ex)
 			{
 				FusionLogger.LogException($"Error initializing P2P connection", ex);
+			}
+		}
+
+		private static void OnPeerConnectionEstablished(ref OnPeerConnectionEstablishedInfo info)
+		{
+			if (info.RemoteUserId != null)
+			{
+				_connectedClients[info.RemoteUserId] = true;
+				FusionLogger.Log($"P2P connection established with {info.RemoteUserId}");
+			}
+		}
+
+		private static void OnPeerConnectionClosed(ref OnRemoteConnectionClosedInfo info)
+		{
+			if (info.RemoteUserId != null)
+			{
+				_connectedClients.Remove(info.RemoteUserId);
+				FusionLogger.Log($"P2P connection closed with {info.RemoteUserId}");
+
+				if (PlayerIDManager.HasPlayerID((ulong)info.RemoteUserId.ToString().GetHashCode()))
+				{
+					InternalServerHelpers.OnPlayerLeft((ulong)info.RemoteUserId.ToString().GetHashCode());
+
+					ConnectionSender.SendDisconnect((ulong)info.RemoteUserId.ToString().GetHashCode());
+				}
 			}
 		}
 
@@ -216,7 +258,7 @@ namespace LabFusion.Network
 				var readableMessage = new ReadableMessage()
 				{
 					Buffer = messageSpan,
-					IsServerHandled = true
+					IsServerHandled = false
 				};
 
 				NativeMessageHandler.ReadMessage(readableMessage);
@@ -277,6 +319,11 @@ namespace LabFusion.Network
 						if (peerId != null)
 						{
 							NetworkInfo.LastReceivedUser = (ulong)peerId.ToString().GetHashCode();
+
+							if (!_connectedClients.ContainsKey(peerId))
+							{
+								_connectedClients[peerId] = true;
+							}
 						}
 
 						var messageSpan = new ReadOnlySpan<byte>(buffer, 0, (int)bytesWritten);
