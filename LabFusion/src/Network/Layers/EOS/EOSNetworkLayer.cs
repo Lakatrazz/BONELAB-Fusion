@@ -702,8 +702,10 @@ public class EOSNetworkLayer : NetworkLayer
 			PermissionLevel = Epic.OnlineServices.Lobby.LobbyPermissionLevel.Publicadvertised,
 			BucketId = "BONELABFUSION",
 			EnableRTCRoom = false,
-			DisableHostMigration = true
-		};
+			DisableHostMigration = true,
+			AllowInvites = true,
+			PresenceEnabled = true,
+        };
 
 		lobbyInterface.CreateLobby(ref createOptions, null, (ref Epic.OnlineServices.Lobby.CreateLobbyCallbackInfo info) =>
 		{
