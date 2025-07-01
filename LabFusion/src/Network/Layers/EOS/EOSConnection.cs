@@ -25,7 +25,7 @@ namespace LabFusion.Network
 		/// <summary>
 		/// Platform ID for this connection (used for player identification)
 		/// </summary>
-		public ulong PlatformId { get; private set; }
+		public string PlatformId { get; private set; }
 
 		/// <summary>
 		/// Whether the connection is active
@@ -38,7 +38,7 @@ namespace LabFusion.Network
 			IsLocal = isLocal;
 			IsHost = isHost;
 
-			PlatformId = (ulong)remoteUserId.ToString().GetHashCode();
+			PlatformId = remoteUserId.ToString();
 		}
 
 		public void Close()

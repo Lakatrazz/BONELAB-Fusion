@@ -19,7 +19,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     public bool IsHost => SmallID == PlayerIDManager.HostSmallID;
 
-    public ulong PlatformID { get; private set; }
+    public string PlatformID { get; private set; }
     public byte SmallID { get; private set; }
 
     private readonly PlayerMetadata _metadata = new();
@@ -57,7 +57,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         _isValid = false;
     }
 
-    public PlayerID(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
+    public PlayerID(string longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
     {
         Metadata.CreateMetadata();
 
@@ -154,7 +154,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     public static implicit operator byte(PlayerID id) => id.SmallID;
 
-    public static implicit operator ulong(PlayerID id) => id.PlatformID;
+    public static implicit operator string(PlayerID id) => id.PlatformID;
 
     public static bool IsNullOrInvalid(PlayerID id)
     {

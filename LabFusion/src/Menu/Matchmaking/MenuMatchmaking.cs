@@ -657,7 +657,7 @@ public static class MenuMatchmaking
             .WithColor(Color.red)
             .WithInteractability(false);
 
-        element.PlatformIDElement.Value = info.LongId.ToString();
+        element.PlatformIDElement.Value = info.StringID;
 
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
 

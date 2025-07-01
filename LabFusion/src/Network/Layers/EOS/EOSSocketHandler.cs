@@ -98,11 +98,11 @@ namespace LabFusion.Network
 				_connectedClients.Remove(info.RemoteUserId);
 				FusionLogger.Log($"P2P connection closed with {info.RemoteUserId}");
 
-				if (PlayerIDManager.HasPlayerID((ulong)info.RemoteUserId.ToString().GetHashCode()))
+				if (PlayerIDManager.HasPlayerID(info.RemoteUserId.ToString()))
 				{
-					InternalServerHelpers.OnPlayerLeft((ulong)info.RemoteUserId.ToString().GetHashCode());
+					InternalServerHelpers.OnPlayerLeft(info.RemoteUserId.ToString());
 
-					ConnectionSender.SendDisconnect((ulong)info.RemoteUserId.ToString().GetHashCode());
+					ConnectionSender.SendDisconnect(info.RemoteUserId.ToString());
 				}
 			}
 		}
@@ -298,7 +298,7 @@ namespace LabFusion.Network
 					{
 						if (peerId != null)
 						{
-							NetworkInfo.LastReceivedUser = (ulong)peerId.ToString().GetHashCode();
+							NetworkInfo.LastReceivedUser = peerId.ToString();
 
 							if (!_connectedClients.ContainsKey(peerId))
 							{

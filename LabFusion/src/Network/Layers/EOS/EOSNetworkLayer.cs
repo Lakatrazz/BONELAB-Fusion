@@ -253,7 +253,7 @@ public class EOSNetworkLayer : NetworkLayer
 		{
 			LocalUserId = connectLoginCallbackInfo.LocalUserId;
 			FusionLogger.Log($"Connect login successful. ProductUserId: {LocalUserId}");
-			PlayerIDManager.SetLongID((ulong)LocalUserId.ToString().GetHashCode());
+			PlayerIDManager.SetStringID(LocalUserId.ToString());
 			LocalPlayer.Username = $"{LocalUserId?.ToString()}"; // Fix this at some point
 
 			ConfigureP2P();
@@ -284,7 +284,7 @@ public class EOSNetworkLayer : NetworkLayer
 		{
 			LocalUserId = createUserCallbackInfo.LocalUserId;
 			FusionLogger.Log($"New user created successfully. ProductUserId: {LocalUserId}");
-			PlayerIDManager.SetLongID((ulong)LocalUserId.ToString().GetHashCode());
+			PlayerIDManager.SetStringID(LocalUserId.ToString());
 			LocalPlayer.Username = $"{LocalUserId?.ToString()}"; // Fix this at some point
 
 			ConfigureP2P();
@@ -429,7 +429,7 @@ public class EOSNetworkLayer : NetworkLayer
 		VoiceManager.ClearManager();
 	}
 
-	public override string GetUsername(ulong userId)
+	public override string GetUsername(string userId)
 	{
 		if (_platformInterface == null || LocalAccountId == null)
 		{
@@ -466,7 +466,7 @@ public class EOSNetworkLayer : NetworkLayer
 		return LocalPlayer.Username ?? "EOS User";
 	}
 
-	public override bool IsFriend(ulong userId)
+	public override bool IsFriend(string userId)
 	{
 		return userId == PlayerIDManager.LocalPlatformID;
 	}
@@ -499,13 +499,13 @@ public class EOSNetworkLayer : NetworkLayer
 	public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
 	{
 		var playerID = PlayerIDManager.GetPlayerID(userId);
-		if (playerID != null && playerID.PlatformID != 0)
+		if (playerID != null && !string.IsNullOrEmpty(playerID.PlatformID))
 		{
 			SendFromServer(playerID.PlatformID, channel, message);
 		}
 	}
 
-	public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+	public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
 	{
 		if (!IsHost)
 		{

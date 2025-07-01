@@ -59,14 +59,14 @@ public static class NetworkInfo
     /// <summary>
     /// The userid from whoever sent the most recent message.
     /// </summary>
-    public static ulong? LastReceivedUser { get; internal set; } = null;
+    public static string LastReceivedUser { get; internal set; } = null;
 
     /// <summary>
     /// Checks if the message userId was spoofed based on the last received id. Only valid on the server's end.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public static bool IsSpoofed(ulong userId)
+    public static bool IsSpoofed(string userId)
     {
         // If the network layer cannot validate the user id, then we can't properly spoof check
         if (HasLayer && !Layer.RequiresValidId)
@@ -75,11 +75,11 @@ public static class NetworkInfo
         }
 
         // If we haven't received any messages, then just assume it isn't spoofed
-        if (!LastReceivedUser.HasValue)
+        if (string.IsNullOrEmpty(LastReceivedUser))
         {
             return false;
         }
 
-        return LastReceivedUser.Value != userId;
+        return LastReceivedUser != userId;
     }
 }

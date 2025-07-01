@@ -63,12 +63,12 @@ public static class NetworkHelper
     /// <summary>
     /// Returns true if this user is friended on the active network platform.
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="stringID"></param>
     /// <returns></returns>
-    public static bool IsFriend(ulong userId)
+    public static bool IsFriend(string stringID)
     {
         if (NetworkLayerManager.Layer != null)
-            return NetworkLayerManager.Layer.IsFriend(userId);
+            return NetworkLayerManager.Layer.IsFriend(stringID);
 
         return false;
     }
@@ -137,16 +137,16 @@ public static class NetworkHelper
     /// </summary>
     /// <param name="longId"></param>
     /// <returns></returns>
-    public static bool IsBanned(ulong longId)
+    public static bool IsBanned(string stringID)
     {
         // Check if the user is blessed
-        if (FusionBlessings.IsBlessed(longId))
+        if (FusionBlessings.IsBlessed(stringID))
             return false;
 
         // Check the ban list
         foreach (var ban in BanManager.BanList.Bans)
         {
-            if (ban.Player.LongId == longId)
+            if (ban.Player.StringID == stringID)
             {
                 return true;
             }
@@ -159,8 +159,8 @@ public static class NetworkHelper
     /// Pardons a user from the ban list.
     /// </summary>
     /// <param name="longId"></param>
-    public static void PardonUser(ulong longId)
+    public static void PardonUser(string stringID)
     {
-        BanManager.Pardon(longId);
+        BanManager.Pardon(stringID);
     }
 }

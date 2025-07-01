@@ -10,8 +10,8 @@ namespace LabFusion.Data;
 [Serializable]
 public class PlayerInfo
 {
-    [JsonPropertyName("longId")]
-    public ulong LongId { get; set; }
+    [JsonPropertyName("stringID")]
+    public string StringID { get; set; }
 
     [JsonPropertyName("username")]
     public string Username { get; set; }
@@ -35,7 +35,7 @@ public class PlayerInfo
 
     public PlayerInfo(PlayerID playerId)
     {
-        LongId = playerId.PlatformID;
+        StringID = playerId.PlatformID;
 
         Username = playerId.Metadata.Username.GetValue();
         Nickname = playerId.Metadata.Nickname.GetValue();

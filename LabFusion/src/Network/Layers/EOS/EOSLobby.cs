@@ -112,11 +112,11 @@ namespace LabFusion.Network
 			return value;
 		}
 
-		public override Action CreateJoinDelegate(ulong lobbyId)
+		public override Action CreateJoinDelegate(string lobbyId)
 		{
 			if (NetworkLayerManager.Layer is EOSNetworkLayer eosLayer)
 			{
-				var hostId = ProductUserId.FromString(lobbyId.ToString());
+				var hostId = ProductUserId.FromString(lobbyId);
 
 				if (hostId != null)
 				{
