@@ -45,7 +45,7 @@ public class EOSNetworkLayer : NetworkLayer
 	string ClientId => "xyza7891gWLwVJx3rdLOLs6vJ05u9jWT";
 	string ClientSecret => "IWrUy1Z62wWajAX37k3zkQ4Kkto+AvfQSyZ9zfvibzw";
 
-	LogLevel logLevel = LogLevel.Info;
+	LogLevel logLevel = LogLevel.VeryVerbose;
 
 	protected bool _isServerActive = false;
 	protected bool _isConnectionActive = false;
@@ -119,8 +119,13 @@ public class EOSNetworkLayer : NetworkLayer
 		}
 
 		Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, logLevel);
+        Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
+        {
+            FusionLogger.Log(logMessage.Message);
+        });
 
-		var options = new Epic.OnlineServices.Platform.Options()
+
+        var options = new Epic.OnlineServices.Platform.Options()
 		{
 			ProductId = ProductId,
 			SandboxId = SandboxId,
@@ -156,8 +161,9 @@ public class EOSNetworkLayer : NetworkLayer
 			},
 			ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile |
 						 Epic.OnlineServices.Auth.AuthScopeFlags.Presence |
-						 Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList
-		};
+						 Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList |
+                         Epic.OnlineServices.Auth.AuthScopeFlags.Country
+        };
 
 		_authInterface.Login(ref authLoginOptions, null, OnAuthLoginComplete);
 	}
@@ -289,7 +295,7 @@ public class EOSNetworkLayer : NetworkLayer
 		}
 	}
 
-	private void ConfigureP2P()
+    private void ConfigureP2P()
 	{
 		if (_p2pInterface == null || LocalUserId == null)
 		{

@@ -12,12 +12,8 @@ namespace LabFusion.Network
 {
 	public static class EOSSocketHandler
 	{
-		public const int MaxPacketSize = 1170;
 		public static readonly SocketId SocketId = new SocketId { SocketName = "FusionSocket" };
 
-		private static int _totalSentPackets = 0;
-		private static int _totalReceivedPackets = 0;
-		private static int _failedSendPackets = 0;
 		private static Dictionary<ProductUserId, bool> _connectedClients = new();
 
 		public static byte ConvertToP2PChannel(NetworkChannel channel)
@@ -161,7 +157,6 @@ namespace LabFusion.Network
 			if (p2pInterface == null || EOSNetworkLayer.LocalUserId == null || remoteUserId == null)
 			{
 				FusionLogger.Error("Cannot send message - missing required objects");
-				_failedSendPackets++;
 				return;
 			}
 
@@ -175,13 +170,7 @@ namespace LabFusion.Network
 				if (messageBytes.Length == 0)
 				{
 					FusionLogger.Error("Message is empty, not sending");
-					_failedSendPackets++;
 					return;
-				}
-
-				if (messageBytes.Length > MaxPacketSize)
-				{
-					FusionLogger.Warn($"Message size ({messageBytes.Length}) exceeds max packet size ({MaxPacketSize}), may be truncated");
 				}
 
 				ArraySegment<byte> dataSegment = new ArraySegment<byte>(messageBytes);
@@ -202,17 +191,10 @@ namespace LabFusion.Network
 				if (result != Result.Success)
 				{
 					FusionLogger.Error($"Failed to send packet: {result}");
-					_failedSendPackets++;
-				}
-				else
-				{
-					_totalSentPackets++;
-					FusionLogger.Log($"Successfully sent packet #{_totalSentPackets} to {remoteUserId}, size: {messageBytes.Length}");
 				}
 			}
 			catch (Exception ex)
 			{
-				_failedSendPackets++;
 				FusionLogger.LogException("Error sending packet", ex);
 			}
 		}
@@ -314,8 +296,6 @@ namespace LabFusion.Network
 
 					if (result == Result.Success && bytesWritten > 0)
 					{
-						_totalReceivedPackets++;
-
 						if (peerId != null)
 						{
 							NetworkInfo.LastReceivedUser = (ulong)peerId.ToString().GetHashCode();
