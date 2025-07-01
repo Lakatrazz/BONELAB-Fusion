@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Player;
+﻿using LabFusion.Utilities;
+
+namespace LabFusion.Player;
 
 public static class PlayerIDManager
 {
@@ -91,6 +93,11 @@ public static class PlayerIDManager
 
     public static PlayerID GetPlayerID(string platformID)
     {
+        if (string.IsNullOrEmpty(platformID))
+        {
+            return null;
+        }
+
         if (PlatformIDLookup.TryGetValue(platformID, out var playerID))
         {
             return playerID;

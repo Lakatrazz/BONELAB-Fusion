@@ -69,6 +69,8 @@ public class ConnectionRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionRequestData>();
 
+        FusionLogger.Log($"Received connection request from {data.PlatformID} with version {data.Version} and avatar barcode {data.AvatarBarcode}.");
+
         // Make sure the id isn't spoofed.
         if (NetworkInfo.IsSpoofed(data.PlatformID))
         {

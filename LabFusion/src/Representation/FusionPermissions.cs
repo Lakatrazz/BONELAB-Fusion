@@ -43,7 +43,7 @@ public static class FusionPermissions
         LocalPlayer.Metadata.PermissionLevel.SetValue(permissionLevel);
     }
 
-    public static void FetchPermissionLevel(string longId, out PermissionLevel level, out Color color)
+    public static void FetchPermissionLevel(string stringID, out PermissionLevel level, out Color color)
     {
         level = PermissionLevel.DEFAULT;
         color = Color.white;
@@ -51,7 +51,7 @@ public static class FusionPermissions
         // Get server level permissions
         if (NetworkInfo.IsHost)
         {
-            if (longId == PlayerIDManager.LocalPlatformID)
+            if (stringID == PlayerIDManager.LocalPlatformID)
             {
                 level = PermissionLevel.OWNER;
             }
@@ -59,7 +59,7 @@ public static class FusionPermissions
             {
                 foreach (var tuple in PermissionList.PermittedUsers)
                 {
-                    if (tuple.Item1 == longId)
+                    if (tuple.Item1 == stringID)
                     {
                         level = tuple.Item3;
                     }
@@ -69,9 +69,9 @@ public static class FusionPermissions
         // Get client side permissions
         else
         {
-            var id = PlayerIDManager.GetPlayerID(longId);
+            var id = PlayerIDManager.GetPlayerID(stringID);
 
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return;
             }

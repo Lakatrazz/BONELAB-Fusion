@@ -1,6 +1,8 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
+using static LabFusion.Network.EOSNetworkLayer;
+
 using LabFusion.Utilities;
 
 namespace LabFusion.Network
@@ -8,13 +10,12 @@ namespace LabFusion.Network
 	public class EOSLobby : NetworkLobby
 	{
 		public LobbyDetails LobbyDetails { get; private set; }
-		private ProductUserId _hostId;
-		private string _lobbyId;
 
-		public EOSLobby(LobbyDetails lobbyDetails, ProductUserId hostId, string lobbyId)
+        private string _lobbyId;
+
+		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
 			LobbyDetails = lobbyDetails;
-			_hostId = hostId;
 			_lobbyId = lobbyId;
 		}
 
@@ -22,68 +23,79 @@ namespace LabFusion.Network
 		{
 			SaveKey(key);
 
-			if (NetworkLayerManager.Layer is EOSNetworkLayer eosLayer && LobbyDetails != null)
+			_pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
+        }
+
+		private Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
+		private float _lastUpdateTime = 0f;
+        public void UpdateLobby()
+		{
+			_lastUpdateTime += TimeUtilities.DeltaTime;
+			if (_lastUpdateTime > 1f && _pendingUpdates.TryDequeue(out var update))
 			{
-				var lobbyInterface = eosLayer._platformInterface.GetLobbyInterface();
-				if (lobbyInterface == null)
-				{
-					FusionLogger.Error("Failed to get lobby interface for SetMetadata");
-					return;
-				}
+				_lastUpdateTime = 0f;
 
-				var updateOptions = new UpdateLobbyModificationOptions
-				{
-					LobbyId = _lobbyId,
-					LocalUserId = EOSNetworkLayer.LocalUserId
-				};
+                if (NetworkLayerManager.Layer is not EOSNetworkLayer eosLayer)
+                    return;
 
-				Result result = lobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);
-				if (result != Result.Success || lobbyModification == null)
-				{
-					FusionLogger.Error($"Failed to create lobby modification: {result}");
-					return;
-				}
+                var lobbyInterface = PlatformInterface.GetLobbyInterface();
 
-				try
-				{
-					var attributeData = new AttributeData
-					{
-						Key = key,
-						Value = new AttributeDataValue { AsUtf8 = value }
-					};
+                var updateOptions = new UpdateLobbyModificationOptions
+                {
+                    LobbyId = _lobbyId,
+                    LocalUserId = EOSNetworkLayer.LocalUserId
+                };
 
-					var addAttributeOptions = new LobbyModificationAddAttributeOptions
-					{
-						Attribute = attributeData,
-						Visibility = LobbyAttributeVisibility.Public
-					};
+                Result result = lobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);
+                if (result != Result.Success || lobbyModification == null)
+                {
+                    FusionLogger.Error($"Failed to create lobby modification: {result}");
+                    return;
+                }
 
-					result = lobbyModification.AddAttribute(ref addAttributeOptions);
-					if (result != Result.Success)
-					{
-						FusionLogger.Error($"Failed to add attribute to lobby modification: {result}");
-						return;
-					}
+                try
+                {
+                    string key = update.Key;
+					string value = update.Value;
 
-					var updateLobbyOptions = new UpdateLobbyOptions
-					{
-						LobbyModificationHandle = lobbyModification
-					};
+                    var attributeData = new AttributeData
+                    {
+                        Key = key,
+                        Value = new AttributeDataValue { AsUtf8 = value }
+                    };
 
-					lobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
-					{
-						if (data.ResultCode != Result.Success)
-						{
-							FusionLogger.Error($"Failed to update lobby with new attribute: {data.ResultCode}");
-						}
-					});
-				}
-				finally
-				{
-					lobbyModification.Release();
-				}
-			}
-		}
+                    var addAttributeOptions = new LobbyModificationAddAttributeOptions
+                    {
+                        Attribute = attributeData,
+                        Visibility = LobbyAttributeVisibility.Public
+                    };
+
+                    result = lobbyModification.AddAttribute(ref addAttributeOptions);
+                    if (result != Result.Success)
+                    {
+                        FusionLogger.Error($"Failed to add attribute to lobby modification: {result}");
+                        return;
+                    }
+
+                    var updateLobbyOptions = new UpdateLobbyOptions
+                    {
+                        LobbyModificationHandle = lobbyModification
+                    };
+
+                    lobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
+                    {
+                        if (data.ResultCode != Result.Success)
+                        {
+                            FusionLogger.Error($"Failed to update lobby with new attribute: {data.ResultCode}");
+                        }
+                    });
+                }
+                finally
+                {
+                    lobbyModification.Release();
+                }
+            }
+        }
 
 		public override bool TryGetMetadata(string key, out string value)
 		{
@@ -102,7 +114,9 @@ namespace LabFusion.Network
 				}
 			}
 
-			value = null;
+			FusionLogger.Error($"Failed to get metadata for key '{key}' in lobby '{_lobbyId}' since lobby details were null!");
+
+            value = null;
 			return false;
 		}
 

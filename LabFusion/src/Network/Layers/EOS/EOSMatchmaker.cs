@@ -36,7 +36,7 @@ namespace LabFusion.Network
 
 			var createSearchOptions = new CreateLobbySearchOptions
 			{
-				MaxResults = 100
+				MaxResults = 100,
 			};
 
 			Result createResult = _lobbyInterface.CreateLobbySearch(ref createSearchOptions, out LobbySearch searchHandle);
@@ -51,10 +51,10 @@ namespace LabFusion.Network
 			{
 				Parameter = new AttributeData
 				{
-					Key = LobbyConstants.HasServerOpenKey,
-					Value = new AttributeDataValue { AsBool = true }
+					Key = "lobby_open",
+                    Value = new AttributeDataValue { AsUtf8 = bool.TrueString }
 				},
-				ComparisonOp = ComparisonOp.Equal
+				ComparisonOp = ComparisonOp.Equal,
 			};
 
 			searchHandle.SetParameter(ref paramOptions);
@@ -91,7 +91,9 @@ namespace LabFusion.Network
 			var countOptions = new LobbySearchGetSearchResultCountOptions();
 			uint lobbyCount = searchHandle.GetSearchResultCount(ref countOptions);
 
-			for (uint i = 0; i < lobbyCount; i++)
+			FusionLogger.Log($"Found {lobbyCount} lobbies in search results");
+
+            for (uint i = 0; i < lobbyCount; i++)
 			{
 				var copyOptions = new LobbySearchCopySearchResultByIndexOptions
 				{
@@ -110,7 +112,7 @@ namespace LabFusion.Network
 
 						if (ownerId != null)
 						{
-							var networkLobby = new EOSLobby(lobbyDetails, ownerId, lobbyInfo.Value.LobbyId);
+							var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
 
 							var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
 
@@ -122,9 +124,15 @@ namespace LabFusion.Network
 									Metadata = metadata
 								});
 							}
-						}
+						} else
+						{
+							FusionLogger.Error($"Failed to get lobby owner for lobby index {i} since owner ID is null!");
+                        }
 					}
-				}
+				} else
+				{
+					FusionLogger.Error($"Failed to copy search result for lobby index {i}");
+                }
 			}
 
 			searchHandle.Release();

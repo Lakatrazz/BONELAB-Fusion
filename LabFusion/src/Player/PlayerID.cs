@@ -154,7 +154,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     public static implicit operator byte(PlayerID id) => id.SmallID;
 
-    public static implicit operator string(PlayerID id) => id.PlatformID;
+    public static implicit operator string(PlayerID id) => id?.PlatformID;
 
     public static bool IsNullOrInvalid(PlayerID id)
     {
