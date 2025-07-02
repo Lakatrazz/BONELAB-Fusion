@@ -43,8 +43,10 @@ public class EOSNetworkLayer : NetworkLayer
 	protected bool _isConnectionActive = false;
 	protected bool _isInitialized = false;
 
-	// EOS Interfaces
-	internal static PlatformInterface PlatformInterface;
+	internal static LogLevel LogLevel => LogLevel.Verbose;
+
+    // EOS Interfaces
+    internal static PlatformInterface PlatformInterface;
 	internal static AuthInterface AuthInterface;
     internal static ConnectInterface ConnectInterface;
     internal static P2PInterface P2PInterface;
@@ -111,7 +113,12 @@ public class EOSNetworkLayer : NetworkLayer
 
 		_matchmaker = null;
 
-		if (PlatformInterface != null)
+		_currentLobby = null;
+		LobbyDetails = null;
+
+		Disconnect();
+
+        if (PlatformInterface != null)
 		{
 			PlatformInterface.Release();
 			PlatformInterface = null;
@@ -219,25 +226,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
 	{
-        // Make sure this is actually the server
-        if (!IsHost)
-        {
-            return;
-        }
-
-        var countOptions = new LobbyDetailsGetMemberCountOptions();
-        uint memberCount = LobbyDetails.GetMemberCount(ref countOptions);
-
-        for (uint i = 0; i < memberCount; i++)
-        {
-            var memberOptions = new LobbyDetailsGetMemberByIndexOptions
-            {
-                MemberIndex = i
-            };
-            ProductUserId memberId = LobbyDetails.GetMemberByIndex(ref memberOptions);
-
-            EOSSocketHandler.SendToClient(memberId, channel, message);
-        }
+		EOSSocketHandler.SendFromServer(userId, channel, message);
     }
 
 	public override void StartServer()
@@ -362,7 +351,6 @@ public class EOSNetworkLayer : NetworkLayer
 		LobbyMetadataHelper.WriteInfo(_currentLobby);
 	}
 
-	private ulong _connectRequestid = 0;
 	private void CreateLobby()
 	{
         var lobbyInterface = PlatformInterface.GetLobbyInterface();
@@ -421,7 +409,7 @@ public class EOSNetworkLayer : NetworkLayer
 						SocketId = EOSSocketHandler.SocketId
 					};
 
-                    _connectRequestid = P2PInterface.AddNotifyPeerConnectionRequest(ref options, null, (ref OnIncomingConnectionRequestInfo data) =>
+                    P2PInterface.AddNotifyPeerConnectionRequest(ref options, null, (ref OnIncomingConnectionRequestInfo data) =>
                     {
                         FusionLogger.Log("Incoming P2P connection request...");
                         var acceptOptions = new AcceptConnectionOptions

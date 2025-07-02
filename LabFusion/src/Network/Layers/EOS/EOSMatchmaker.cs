@@ -91,8 +91,6 @@ namespace LabFusion.Network
 			var countOptions = new LobbySearchGetSearchResultCountOptions();
 			uint lobbyCount = searchHandle.GetSearchResultCount(ref countOptions);
 
-			FusionLogger.Log($"Found {lobbyCount} lobbies in search results");
-
             for (uint i = 0; i < lobbyCount; i++)
 			{
 				var copyOptions = new LobbySearchCopySearchResultByIndexOptions

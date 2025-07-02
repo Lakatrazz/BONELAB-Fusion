@@ -43,8 +43,7 @@ public static class GlobalBanManager
 
     private static void OnFileFetched(string text)
     {
-        //List = DataSaver.ReadJsonFromText<GlobalBanList>(text);
-        List = new();
+        List = DataSaver.ReadJsonFromText<GlobalBanList>(text);
     }
 
     public static void ExportFile()
