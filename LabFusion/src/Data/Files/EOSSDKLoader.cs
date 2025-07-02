@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using MelonLoader;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace LabFusion.Data;
 
@@ -38,7 +39,7 @@ public static class EOSSDKLoader
         if (PlatformHelper.IsAndroid)
         {
             // Get EOS SDK Path
-            eosSDKPath = PersistentData.GetPath($"EOSSDK.so");
+            eosSDKPath = PersistentData.GetPath($"libEOSSDK.so");
             libEOSSDKPath = "LabFusion.dependencies.resources.lib.arm64.libEOSSDK.so";
 
             // Extract libc++_shared for android
@@ -76,7 +77,7 @@ public static class EOSSDKLoader
             {
                 JClass systemClass = JNI.FindClass("java/lang/System");
                 JMethodID loadLibraryId = JNI.GetStaticMethodID(systemClass, "loadLibrary", "(Ljava/lang/String;)V");
-                JValue[] parameters = new JValue[] { new(eosSDKPath) };
+                JValue[] parameters = new JValue[] { new("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so") };
 
                 JNI.CallStaticVoidMethod(systemClass, loadLibraryId, parameters);
             }
