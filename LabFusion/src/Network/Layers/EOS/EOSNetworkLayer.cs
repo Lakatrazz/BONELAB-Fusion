@@ -45,7 +45,7 @@ public class EOSNetworkLayer : NetworkLayer
 	protected bool _isConnectionActive = false;
 	protected bool _isInitialized = false;
 
-	internal static LogLevel LogLevel => LogLevel.Warning;
+	internal static LogLevel LogLevel => LogLevel.VeryVerbose;
 
 	// EOS Interfaces
 	internal static PlatformInterface PlatformInterface;

@@ -1,9 +1,11 @@
 ﻿using Epic.OnlineServices;
+using JNISharp.NativeInterface;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,18 +26,14 @@ namespace LabFusion.Network
 
         internal static void InitializeEOS()
         {
-            var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
+            var initializeOptions = new Epic.OnlineServices.Platform.AndroidInitializeOptions()
             {
                 ProductName = ProductName,
-                ProductVersion = ProductVersion
+                ProductVersion = ProductVersion,
             };
 
             var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
-            if (initializeResult != Result.Success)
-            {
-                throw new Exception("Failed to initialize platform: " + initializeResult);
-            }
-
+            FusionLogger.Log($"EOS Initialize Result: {initializeResult}");
             Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, LogLevel);
             Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
             {
@@ -56,7 +54,9 @@ namespace LabFusion.Network
                 {
                     ClientId = ClientId,
                     ClientSecret = ClientSecret
-                }
+                },
+                Flags = Epic.OnlineServices.Platform.PlatformFlags.DisableOverlay,
+                
             };
 
             PlatformInterface = Epic.OnlineServices.Platform.PlatformInterface.Create(ref options);

@@ -458,6 +458,9 @@
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
+	<Reference Include="JNISharp">
+	  <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\JNISharp.dll</HintPath>
+	</Reference>
   </ItemGroup>
 
   <ItemGroup>

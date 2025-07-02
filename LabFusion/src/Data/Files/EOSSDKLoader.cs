@@ -1,16 +1,28 @@
-﻿using LabFusion.Utilities;
+﻿using Epic.OnlineServices;
+using JNISharp.NativeInterface;
+using LabFusion.Utilities;
 using MelonLoader;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace LabFusion.Data;
 
 public static class EOSSDKLoader
 {
     public static bool HasEOSSDK { get; private set; } = false;
-    private static string libEOSSDKPath;
-    private static string libCPlusPlus;
-    private static string libPath;
+    private const string libCPlusPlus = "LabFusion.dependencies.resources.lib.arm64.libc++_shared.so";
 
-    private static IntPtr _libraryPtr;
+    private static IntPtr _libraryPtr = IntPtr.Zero;
+
+
+    private static IntPtr AndroidImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+    {
+        if (libraryName == Config.LibraryName + ".so")
+            return _libraryPtr;
+            
+
+        return IntPtr.Zero;
+    }
 
     public static void OnLoadEOSSDK()
     {
@@ -21,40 +33,58 @@ public static class EOSSDKLoader
         }
 
         string eosSDKPath;
+        string libEOSSDKPath;
 
         if (PlatformHelper.IsAndroid)
         {
-            eosSDKPath = PersistentData.GetPath($"libEOSSDK.so");
+            // Get EOS SDK Path
+            eosSDKPath = PersistentData.GetPath($"EOSSDK.so");
             libEOSSDKPath = "LabFusion.dependencies.resources.lib.arm64.libEOSSDK.so";
-            libPath = PersistentData.GetPath($"libc++_shared.so");
-            libCPlusPlus = "LabFusion.dependencies.resources.lib.arm64.libc++_shared.so";
 
-            Extract(libPath, false, libCPlusPlus);
+            // Extract libc++_shared for android
+            string libCPPPath = PersistentData.GetPath($"libc++_shared.so");
+            Extract(libCPPPath, false, libCPlusPlus);
+
+            if (MelonLoader.NativeLibrary.LoadLib(libCPPPath) == IntPtr.Zero)
+                FusionLogger.Error($"Failed to load libc++_shared.so from {libCPPPath}"); 
+            else
+                FusionLogger.Log($"Successfully loaded libc++_shared.so from {libCPPPath}");
         }
         else
         {
+            // Get EOS SDK Path
             eosSDKPath = PersistentData.GetPath($"EOSSDK.dll");
             libEOSSDKPath = "LabFusion.dependencies.resources.lib.x86_64.EOSSDK-Win64-Shipping.dll";
         }
 
+        // Extract EOS SDK to persistent data
         Extract(eosSDKPath, false, libEOSSDKPath);
 
-        if (TryLoadEOSSDK(eosSDKPath, out var libraryPtr, out var errorCode))
+        _libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
+
+        if (_libraryPtr == IntPtr.Zero)
         {
-            OnLoadEOSSDK(libraryPtr);
+            FusionLogger.Error($"Failed to load EOS SDK from {eosSDKPath}");
+            return;
         }
-        // 193 is a corrupted file
-        else if (errorCode == 193)
+        else
         {
-            FusionLogger.Error("EOS SDK was corrupted, attempting re-extraction...");
+            FusionLogger.Log($"Successfully loaded EOS SDK from {eosSDKPath}");
+            HasEOSSDK = true;
 
-            Extract(eosSDKPath, true, libEOSSDKPath);
-
-            if (TryLoadEOSSDK(eosSDKPath, out libraryPtr, out _))
+            if (PlatformHelper.IsAndroid)
             {
-                OnLoadEOSSDK(libraryPtr);
+                JClass systemClass = JNI.FindClass("java/lang/System");
+                JMethodID loadLibraryId = JNI.GetStaticMethodID(systemClass, "loadLibrary", "(Ljava/lang/String;)V");
+                JValue[] parameters = new JValue[] { new(eosSDKPath) };
+
+                JNI.CallStaticVoidMethod(systemClass, loadLibraryId, parameters);
             }
         }
+
+        // Set custom Import Resolver since Android doesn't like the DLLImport
+        if (PlatformHelper.IsAndroid)
+            System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
     }
 
     public static void OnFreeEOSSDK()
@@ -78,35 +108,5 @@ public static class EOSSDKLoader
         {
             FusionLogger.Log("EOS SDK already exists, skipping extraction.");
         }
-    }
-
-    private static bool TryLoadEOSSDK(string path, out IntPtr libraryPtr, out uint errorCode)
-    {
-        errorCode = 0;
-
-        if (PlatformHelper.IsAndroid)
-        {
-            NativeLibrary.LoadLib(libPath);
-        }
-
-        libraryPtr = NativeLibrary.LoadLib(path);
-
-        if (libraryPtr != IntPtr.Zero)
-        {
-            return true;
-        }
-        else
-        {
-            errorCode = 1;
-            return false;
-        }
-    }
-
-    private static void OnLoadEOSSDK(IntPtr libraryPtr)
-    {
-        _libraryPtr = libraryPtr;
-
-        FusionLogger.Log("Successfully loaded EOS SDK into the application!");
-        HasEOSSDK = true;
     }
 }
