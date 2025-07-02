@@ -9,15 +9,20 @@ namespace LabFusion.Network
 {
 	public class EOSLobby : NetworkLobby
 	{
-		public LobbyDetails LobbyDetails { get; private set; }
-
+		internal LobbyDetails LobbyDetails;
         private string _lobbyId;
 
 		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
 			LobbyDetails = lobbyDetails;
-			_lobbyId = lobbyId;
+            _lobbyId = lobbyId;
 		}
+
+		public void UpdateLobbyDetails(LobbyDetails details)
+		{
+			LobbyDetails.Release();
+			LobbyDetails = details;
+        }
 
 		public override void SetMetadata(string key, string value)
 		{
@@ -130,13 +135,11 @@ namespace LabFusion.Network
 		{
 			if (NetworkLayerManager.Layer is EOSNetworkLayer eosLayer)
 			{
-				var hostId = ProductUserId.FromString(lobbyId);
-
-				if (hostId != null)
+				return () =>
 				{
-					return () => eosLayer.JoinServer(hostId);
-				}
-			}
+					eosLayer.JoinServer(lobbyId);
+				};
+            }
 
 			return null;
 		}

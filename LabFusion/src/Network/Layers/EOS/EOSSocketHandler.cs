@@ -1,7 +1,9 @@
 ﻿using Epic.OnlineServices;
+using Epic.OnlineServices.Lobby;
 using Il2CppSLZ.ModIO.WebSockets;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,20 +37,10 @@ namespace LabFusion.Network
 
         private static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel)
         {
-            if (LocalUserId == null || userId == null || data == null)
-                return Result.InvalidParameters;
-
             if (LocalUserId == userId)
             {
-                var messageSpan = new ReadOnlySpan<byte>(data);
-                var readableMessage = new ReadableMessage()
-                {
-                    Buffer = messageSpan,
-                    IsServerHandled = HostId == LocalUserId
-                };
-                NativeMessageHandler.ReadMessage(readableMessage);
-                FusionLogger.Log($"Received message from self: {readableMessage.Buffer.ToArray().Length} bytes.");
-                return Result.Success;
+                FusionLogger.Error("Attempted to send a packet to self. This is not allowed.");
+                return Result.UnexpectedError;
             }
 
             var reliability = channel == NetworkChannel.Reliable
@@ -64,10 +56,8 @@ namespace LabFusion.Network
                 Data = new ArraySegment<byte>(data),
                 AllowDelayedDelivery = true,
                 Reliability = reliability,
-                DisableAutoAcceptConnection = false
+                DisableAutoAcceptConnection = false,
             };
-
-            FusionLogger.Log($"Sending packet to user {userId} on channel {channel} with reliability {reliability}.");
 
             return P2PInterface.SendPacket(ref sendOptions);
         }
@@ -139,25 +129,20 @@ namespace LabFusion.Network
 
         internal static void BroadcastToServer(NetworkChannel channel, NetMessage message)
         {
+            if (HostId == LocalUserId)
+                return;
+
             Result result = SendPacketToUser(HostId, message.ToByteArray(), channel);
 
-            switch (result)
+            if (result != Result.Success)
             {
-                case Result.Success:
-                    FusionLogger.Log("Message sent to server successfully.");
-                    break;
-                case Result.InvalidParameters:
-                    FusionLogger.Error("Invalid parameters when sending message to server.");
-                    break;
-                case Result.LimitExceeded:
-                    FusionLogger.Warn("Message size exceeded the limit when sending to server or outgoing packet queue was full.");
-                    break;
-                case Result.NoConnection:
-                    FusionLogger.Error("No connection to the server when trying to send message.");
-                    break;
-                default:
-                    FusionLogger.Error($"Failed to send message to server with result: {result}");
-                    break;
+                // RETRY
+                Result retry = SendPacketToUser(HostId, message.ToByteArray(), channel);
+
+                if (retry != Result.Success)
+                {
+                    throw new Exception($"EOS result was {retry}.");
+                }
             }
         }
 
@@ -165,48 +150,24 @@ namespace LabFusion.Network
         {
             if (HostId != LocalUserId)
             {
-                FusionLogger.Error("BroadcastToClients can only be called by the server.");
                 return;
             }
-
-            var countOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberCountOptions();
-            uint memberCount = LobbyDetails.GetMemberCount(ref countOptions);
-
-            if (memberCount == 0)
+            if (NetworkLayerManager.Layer is EOSNetworkLayer layer)
             {
-                FusionLogger.Warn("No members in the lobby to broadcast to.");
-                return;
-            }
+                var countOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberCountOptions();
+                uint memberCount = layer.LobbyDetails.GetMemberCount(ref countOptions);
 
-            for (uint i = 0; i < memberCount; i++)
-            {
-                var memberOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberByIndexOptions
+                for (uint i = 0; i < memberCount; i++)
                 {
-                    MemberIndex = i
-                };
-                ProductUserId memberId = LobbyDetails.GetMemberByIndex(ref memberOptions);
-
-                if (memberId != LocalUserId)
-                {
-                    Result result = SendPacketToUser(memberId, message.ToByteArray(), channel);
-
-                    switch (result)
+                    var memberOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberByIndexOptions
                     {
-                        case Result.Success:
-                            FusionLogger.Log($"Message sent to client {memberId} successfully.");
-                            break;
-                        case Result.InvalidParameters:
-                            FusionLogger.Error($"Invalid parameters when sending message to client {memberId}.");
-                            break;
-                        case Result.LimitExceeded:
-                            FusionLogger.Warn($"Message size exceeded the limit when sending to client {memberId} or outgoing packet queue was full.");
-                            break;
-                        case Result.NoConnection:
-                            FusionLogger.Error($"No connection to client {memberId} when trying to send message.");
-                            break;
-                        default:
-                            FusionLogger.Error($"Failed to send message to client {memberId} with result: {result}");
-                            break;
+                        MemberIndex = i
+                    };
+                    ProductUserId memberId = layer.LobbyDetails.GetMemberByIndex(ref memberOptions);
+
+                    if (memberId != LocalUserId)
+                    {
+                        Result result = SendPacketToUser(memberId, message.ToByteArray(), channel);
                     }
                 }
             }
@@ -221,25 +182,6 @@ namespace LabFusion.Network
             }
 
             Result result = SendPacketToUser(userId, message.ToByteArray(), channel);
-
-            switch (result)
-            {
-                case Result.Success:
-                    FusionLogger.Log($"Message sent to client {userId} successfully.");
-                    break;
-                case Result.InvalidParameters:
-                    FusionLogger.Error($"Invalid parameters when sending message to client {userId}.");
-                    break;
-                case Result.LimitExceeded:
-                    FusionLogger.Warn($"Message size exceeded the limit when sending to client {userId} or outgoing packet queue was full.");
-                    break;
-                case Result.NoConnection:
-                    FusionLogger.Error($"No connection to client {userId} when trying to send message.");
-                    break;
-                default:
-                    FusionLogger.Error($"Failed to send message to client {userId} with result: {result}");
-                    break;
-            }
         }
 
         internal static void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
