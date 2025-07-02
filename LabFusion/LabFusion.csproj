@@ -128,6 +128,9 @@
     <None Remove="dependencies\EOSSDK\Bin\EOSSDK-Win32-Shipping.dll" />
     <None Remove="dependencies\EOSSDK\Bin\libEOSSDK-Linux-Shipping.so" />
     <None Remove="dependencies\EOSSDK\Bin\libEOSSDK-Mac-Shipping.dylib" />
+    <None Remove="dependencies\resources\lib\arm64\libc++_shared.so" />
+    <None Remove="dependencies\resources\lib\arm64\libEOSSDK-LinuxArm64-Shipping.so" />
+    <None Remove="dependencies\resources\lib\arm64\libEOSSDK.so" />
     <None Remove="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
     <None Remove="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <None Remove="dependencies\resources\text\credits\raw_credits_01.txt" />
@@ -317,6 +320,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="dependencies\resources\lib\arm64\libc++_shared.so" />
+    <EmbeddedResource Include="dependencies\resources\lib\arm64\libEOSSDK.so" />
     <EmbeddedResource Include="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
     <EmbeddedResource Include="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_01.txt" />

@@ -72,8 +72,6 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override void OnInitializeLayer()
 	{
-		try
-		{
 			EOSAuthenticator.InitializeEOS();
 
 			_voiceManager = new UnityVoiceManager();
@@ -92,11 +90,6 @@ public class EOSNetworkLayer : NetworkLayer
 			LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
 			_isInitialized = true;
-		}
-		catch (Exception e)
-		{
-			FusionLogger.LogException("Failed to initialize EOS layer", e);
-		}
 	}
 
 	public override void OnDeinitializeLayer()
@@ -251,7 +244,7 @@ public class EOSNetworkLayer : NetworkLayer
 			EnableJoinById = true,
 			LobbyId = LocalUserId.ToString(),
         };
-		LobbyInterface.CreateLobby(ref createOptions, null, (ref info) =>
+		LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
 		{
 			var copyOptions = new CopyLobbyDetailsHandleOptions
 			{
@@ -267,7 +260,7 @@ public class EOSNetworkLayer : NetworkLayer
 				SocketId = EOSSocketHandler.SocketId,
 				LocalUserId = LocalUserId
             };
-			P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref callbackInfo) =>
+			P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo callbackInfo) =>
 			{
 				OnUpdateLobby();
 				var acceptOptions = new AcceptConnectionOptions
@@ -347,7 +340,7 @@ public class EOSNetworkLayer : NetworkLayer
 			LocalUserId = LocalUserId,
 			PresenceEnabled = false,
         };
-		LobbyInterface.JoinLobbyById(ref joinLobbyOptions, null, (ref joinDelegate) =>
+		LobbyInterface.JoinLobbyById(ref joinLobbyOptions, null, (ref JoinLobbyByIdCallbackInfo joinDelegate) =>
 		{
 			var copyOptions = new CopyLobbyDetailsHandleOptions
 			{

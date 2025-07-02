@@ -1,10 +1,14 @@
 ﻿using LabFusion.Utilities;
+using MelonLoader;
 
 namespace LabFusion.Data;
 
 public static class EOSSDKLoader
 {
     public static bool HasEOSSDK { get; private set; } = false;
+    private static string libEOSSDKPath;
+    private static string libCPlusPlus;
+    private static string libPath;
 
     private static IntPtr _libraryPtr;
 
@@ -16,30 +20,37 @@ public static class EOSSDKLoader
             return;
         }
 
-        // Don't extract this for android
+        string eosSDKPath;
+
         if (PlatformHelper.IsAndroid)
         {
-            HasEOSSDK = false;
-            return;
+            eosSDKPath = PersistentData.GetPath($"libEOSSDK.so");
+            libEOSSDKPath = "LabFusion.dependencies.resources.lib.arm64.libEOSSDK.so";
+            libPath = PersistentData.GetPath($"libc++_shared.so");
+            libCPlusPlus = "LabFusion.dependencies.resources.lib.arm64.libc++_shared.so";
+
+            Extract(libPath, false, libCPlusPlus);
+        }
+        else
+        {
+            eosSDKPath = PersistentData.GetPath($"EOSSDK.dll");
+            libEOSSDKPath = "LabFusion.dependencies.resources.lib.x86_64.EOSSDK-Win64-Shipping.dll";
         }
 
-        // Extracts steam api 64 and loads it into the game
-        string sdkPath = PersistentData.GetPath($"EOSSDK-Win64-Shipping.dll");
+        Extract(eosSDKPath, false, libEOSSDKPath);
 
-        Extract(sdkPath, false);
-
-        if (TryLoadEOSSDK(sdkPath, out var libraryPtr, out var errorCode))
+        if (TryLoadEOSSDK(eosSDKPath, out var libraryPtr, out var errorCode))
         {
             OnLoadEOSSDK(libraryPtr);
         }
         // 193 is a corrupted file
         else if (errorCode == 193)
         {
-            FusionLogger.Error("EOSSDK-Win64-Shipping.dll was corrupted, attempting re-extraction...");
+            FusionLogger.Error("EOS SDK was corrupted, attempting re-extraction...");
 
-            Extract(sdkPath, true);
+            Extract(eosSDKPath, true, libEOSSDKPath);
 
-            if (TryLoadEOSSDK(sdkPath, out libraryPtr, out _))
+            if (TryLoadEOSSDK(eosSDKPath, out libraryPtr, out _))
             {
                 OnLoadEOSSDK(libraryPtr);
             }
@@ -52,20 +63,20 @@ public static class EOSSDKLoader
         if (!HasEOSSDK)
             return;
 
-        DllTools.FreeLibrary(_libraryPtr);
+        //DllTools.FreeLibrary(_libraryPtr);
 
         HasEOSSDK = false;
     }
 
-    private static void Extract(string path, bool overwrite = false)
+    private static void Extract(string path, bool overwrite, string libPath)
     {
         if (!File.Exists(path) || overwrite)
         {
-            File.WriteAllBytes(path, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.EOSSDKPath));
+            File.WriteAllBytes(path, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, libPath));
         }
         else
         {
-            FusionLogger.Log("EOSSDK-Win64-Shipping.dll already exists, skipping extraction.");
+            FusionLogger.Log("EOS SDK already exists, skipping extraction.");
         }
     }
 
@@ -73,7 +84,12 @@ public static class EOSSDKLoader
     {
         errorCode = 0;
 
-        libraryPtr = DllTools.LoadLibrary(path);
+        if (PlatformHelper.IsAndroid)
+        {
+            NativeLibrary.LoadLib(libPath);
+        }
+
+        libraryPtr = NativeLibrary.LoadLib(path);
 
         if (libraryPtr != IntPtr.Zero)
         {
@@ -81,7 +97,7 @@ public static class EOSSDKLoader
         }
         else
         {
-            errorCode = DllTools.GetLastError();
+            errorCode = 1;
             return false;
         }
     }
@@ -90,7 +106,7 @@ public static class EOSSDKLoader
     {
         _libraryPtr = libraryPtr;
 
-        FusionLogger.Log("Successfully loaded EOSSDK-Win64-Shipping.dll into the application!");
+        FusionLogger.Log("Successfully loaded EOS SDK into the application!");
         HasEOSSDK = true;
     }
 }
