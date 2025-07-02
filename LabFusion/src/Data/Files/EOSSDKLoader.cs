@@ -25,7 +25,10 @@ public static class EOSSDKLoader
         return IntPtr.Zero;
     }
 
-    public static void OnLoadEOSSDK()
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
+
+    public static unsafe void OnLoadEOSSDK()
     {
         // If it's already loaded, don't load it again
         if (HasEOSSDK)
@@ -75,17 +78,21 @@ public static class EOSSDKLoader
 
             if (PlatformHelper.IsAndroid)
             {
-                JClass systemClass = JNI.FindClass("java/lang/System");
-                JMethodID loadLibraryId = JNI.GetStaticMethodID(systemClass, "loadLibrary", "(Ljava/lang/String;)V");
-                JValue[] parameters = new JValue[] { new("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so") };
+                var vmPtrField = typeof(JNI).GetField("lastVmPtr", HarmonyLib.AccessTools.all);
+                IntPtr vmPtr = (IntPtr)vmPtrField.GetValue(null);
 
-                JNI.CallStaticVoidMethod(systemClass, loadLibraryId, parameters);
+                IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
+
+                var onLoad = Marshal.GetDelegateForFunctionPointer<JNI_OnLoadDelegate>(onLoadPtr);
+                int result = onLoad(vmPtr, IntPtr.Zero);
+
+                FusionLogger.Log($"JNI_OnLoad result: {result}");
             }
-        }
 
-        // Set custom Import Resolver since Android doesn't like the DLLImport
-        if (PlatformHelper.IsAndroid)
-            System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
+            // Set custom Import Resolver since Android doesn't like the DLLImport
+            if (PlatformHelper.IsAndroid)
+                System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
+        }
     }
 
     public static void OnFreeEOSSDK()

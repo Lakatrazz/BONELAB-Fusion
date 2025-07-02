@@ -26,7 +26,7 @@ namespace LabFusion.Network
 
         internal static void InitializeEOS()
         {
-            var initializeOptions = new Epic.OnlineServices.Platform.AndroidInitializeOptions()
+            var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
             {
                 ProductName = ProductName,
                 ProductVersion = ProductVersion,
@@ -56,7 +56,7 @@ namespace LabFusion.Network
                     ClientSecret = ClientSecret
                 },
                 Flags = Epic.OnlineServices.Platform.PlatformFlags.DisableOverlay,
-                
+                IntegratedPlatformOptionsContainerHandle = null,
             };
 
             PlatformInterface = Epic.OnlineServices.Platform.PlatformInterface.Create(ref options);
