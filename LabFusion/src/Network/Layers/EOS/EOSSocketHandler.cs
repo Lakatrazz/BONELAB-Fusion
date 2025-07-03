@@ -1,5 +1,4 @@
 ﻿using Epic.OnlineServices;
-
 using LabFusion.Utilities;
 
 using System;
@@ -20,7 +19,6 @@ namespace LabFusion.Network
 			var portOptions = new Epic.OnlineServices.P2P.SetPortRangeOptions
 			{
 				Port = 7777,
-				MaxAdditionalPortsToTry = 10
 			};
 			P2PInterface.SetPortRange(ref portOptions);
 
@@ -29,14 +27,34 @@ namespace LabFusion.Network
 				RelayControl = Epic.OnlineServices.P2P.RelayControl.AllowRelays,
 			};
 			P2PInterface.SetRelayControl(ref relayOptions);
+
+
+			var options = new Epic.OnlineServices.P2P.GetPacketQueueInfoOptions()
+			{
+
+			};
+			var result = P2PInterface.GetPacketQueueInfo(ref options, out var outPacketQueueInfo);
+
+			FusionLogger.Log(outPacketQueueInfo.OutgoingPacketQueueMaxSizeBytes);
+			FusionLogger.Log(outPacketQueueInfo.IncomingPacketQueueMaxSizeBytes);
+		}
+
+		internal static void CloseAllConnections()
+		{
+			var closeConnectionsOptions = new Epic.OnlineServices.P2P.CloseConnectionsOptions
+			{
+				LocalUserId = LocalUserId,
+				SocketId = SocketId
+			};
+
+			Result result = P2PInterface.CloseConnections(ref closeConnectionsOptions);
 		}
 
 		private static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel)
 		{
 			if (LocalUserId == userId)
 			{
-				FusionLogger.Error("Attempted to send a packet to self. This is not allowed.");
-				return Result.UnexpectedError;
+				return Result.InvalidUser;
 			}
 
 			var reliability = channel == NetworkChannel.Reliable

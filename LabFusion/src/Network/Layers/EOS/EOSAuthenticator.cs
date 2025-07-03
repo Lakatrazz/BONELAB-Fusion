@@ -233,6 +233,11 @@ namespace LabFusion.Network
 			{
 				return EpicAccountId.FromString(externalAccountInfo.Value.AccountId);
 			}
+			else if (result != Result.Success)
+			{
+				FusionLogger.Warn($"Failed to get EpicAccountId for ProductUserId {productUserId}: {result}");
+				return null;
+			}
 
 			return null;
 		}

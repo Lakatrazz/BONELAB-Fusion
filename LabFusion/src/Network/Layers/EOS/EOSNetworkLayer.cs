@@ -15,10 +15,16 @@ using LabFusion.Voice.Unity;
 
 namespace LabFusion.Network;
 
+public enum LobbyConnectionState
+{
+	Disconnected,
+	Connecting,
+	Connected,
+	Disconnecting
+}
+
 public class EOSNetworkLayer : NetworkLayer
 {
-	public const int ReceiveBufferSize = 32;
-
 	public override string Title => "Epic Online Services";
 
 	public override string Platform => "Epic";
@@ -53,6 +59,7 @@ public class EOSNetworkLayer : NetworkLayer
 	internal static LobbyInterface LobbyInterface;
 
 	internal LobbyDetails LobbyDetails => _currentLobby?.LobbyDetails;
+	public LobbyConnectionState LobbyConnectionState { get; private set; } = LobbyConnectionState.Disconnected;
 
 	public static ProductUserId LocalUserId;
 	public static EpicAccountId LocalAccountId;
@@ -115,6 +122,7 @@ public class EOSNetworkLayer : NetworkLayer
 		_currentLobby = null;
 
 		Disconnect();
+		SetLobbyConnectionState(LobbyConnectionState.Disconnected);
 
 		if (PlatformInterface != null)
 		{
@@ -273,6 +281,15 @@ public class EOSNetworkLayer : NetworkLayer
 
 		return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
 	}
+	private void SetLobbyConnectionState(LobbyConnectionState newState)
+	{
+		if (LobbyConnectionState != newState)
+		{
+			var previousState = LobbyConnectionState;
+			LobbyConnectionState = newState;
+			FusionLogger.Log($"Lobby connection state changed: {previousState} -> {newState}");
+		}
+	}
 
 	public override void StartServer()
 	{
@@ -281,6 +298,7 @@ public class EOSNetworkLayer : NetworkLayer
 			return;
 		}
 
+		SetLobbyConnectionState(LobbyConnectionState.Connecting);
 		CreateEpicLobby();
 	}
 
@@ -301,6 +319,13 @@ public class EOSNetworkLayer : NetworkLayer
 		};
 		LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
 		{
+			if (info.ResultCode != Result.Success)
+			{
+				FusionLogger.Error($"Failed to create EOS lobby: {info.ResultCode}");
+				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+				return;
+			}
+
 			var copyOptions = new CopyLobbyDetailsHandleOptions
 			{
 				LobbyId = info.LobbyId,
@@ -327,6 +352,29 @@ public class EOSNetworkLayer : NetworkLayer
 				P2PInterface.AcceptConnection(ref acceptOptions);
 				OnUpdateLobby();
 			});
+			var closedOptions = new AddNotifyPeerConnectionClosedOptions
+			{
+				SocketId = EOSSocketHandler.SocketId,
+				LocalUserId = LocalUserId
+			};
+			P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null , (ref OnRemoteConnectionClosedInfo info) =>
+			{
+				OnUpdateLobby();
+				var closeOptions = new CloseConnectionOptions
+				{
+					RemoteUserId = info.RemoteUserId,
+					SocketId = EOSSocketHandler.SocketId,
+					LocalUserId = LocalUserId
+				};
+				if (PlayerIDManager.HasPlayerID(info.RemoteUserId.ToString()))
+				{
+					InternalServerHelpers.OnPlayerLeft(info.RemoteUserId.ToString());
+
+					ConnectionSender.SendDisconnect(info.RemoteUserId.ToString());
+				}
+				P2PInterface.CloseConnection(ref closeOptions);
+				OnUpdateLobby();
+			});
 
 			_isServerActive = true;
 			_isConnectionActive = false;
@@ -339,6 +387,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 			InternalServerHelpers.OnStartServer();
 			FusionLogger.Log($"Created EOS lobby: {info.ResultCode} with ID {info.LobbyId}");
+			SetLobbyConnectionState(LobbyConnectionState.Connected);
 			RefreshServerCode();
 		});
 	}
@@ -348,7 +397,14 @@ public class EOSNetworkLayer : NetworkLayer
 		if (!_isServerActive && !_isConnectionActive)
 			return;
 
-		if (IsHost && _currentLobby != null && LobbyInterface != null && LocalUserId != null)
+		bool destroyingLobby = IsHost && _currentLobby != null && LobbyInterface != null && LocalUserId != null;
+		bool leavingLobby = !IsHost && _currentLobby != null && LobbyInterface != null && LocalUserId != null;
+
+		FusionLogger.Warn($"Disconnecting from EOS lobby: {reason} (Destroying: {destroyingLobby}, Leaving: {leavingLobby})");
+
+		SetLobbyConnectionState(LobbyConnectionState.Disconnecting);
+
+		if (destroyingLobby)
 		{
 			string lobbyId = _currentLobby.GetLobbyId();
 			if (!string.IsNullOrEmpty(lobbyId))
@@ -361,10 +417,14 @@ public class EOSNetworkLayer : NetworkLayer
 
 				LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
 				{
+					InternalServerHelpers.OnDisconnect(reason);
+					EOSSocketHandler.CloseAllConnections();
+					SetLobbyConnectionState(LobbyConnectionState.Disconnected);
 				});
 			}
 		}
-		else if (_currentLobby != null && LobbyInterface != null && LocalUserId != null)
+
+		else if (leavingLobby)
 		{
 			string lobbyId = _currentLobby.GetLobbyId();
 			if (!string.IsNullOrEmpty(lobbyId))
@@ -377,6 +437,9 @@ public class EOSNetworkLayer : NetworkLayer
 
 				LobbyInterface.LeaveLobby(ref leaveOptions, null, (ref LeaveLobbyCallbackInfo info) =>
 				{
+					InternalServerHelpers.OnDisconnect(reason);
+					EOSSocketHandler.CloseAllConnections();
+					SetLobbyConnectionState(LobbyConnectionState.Disconnected);
 				});
 			}
 		}
@@ -385,8 +448,6 @@ public class EOSNetworkLayer : NetworkLayer
 		_isConnectionActive = false;
 
 		_currentLobby = null;
-
-		InternalServerHelpers.OnDisconnect(reason);
 	}
 
 	private void OnDisconnect()
@@ -410,6 +471,8 @@ public class EOSNetworkLayer : NetworkLayer
 			return;
 		}
 
+		SetLobbyConnectionState(LobbyConnectionState.Connecting);
+
 		var joinLobbyOptions = new JoinLobbyByIdOptions
 		{
 			CrossplayOptOut = false,
@@ -419,6 +482,13 @@ public class EOSNetworkLayer : NetworkLayer
 		};
 		LobbyInterface.JoinLobbyById(ref joinLobbyOptions, null, (ref JoinLobbyByIdCallbackInfo joinDelegate) =>
 		{
+			if (joinDelegate.ResultCode != Result.Success)
+			{
+				FusionLogger.Error($"Failed to join EOS lobby: {joinDelegate.ResultCode}");
+				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+				return;
+			}
+
 			var copyOptions = new CopyLobbyDetailsHandleOptions
 			{
 				LobbyId = joinDelegate.LobbyId,
@@ -434,6 +504,8 @@ public class EOSNetworkLayer : NetworkLayer
 
 			ConnectionSender.SendConnectionRequest();
 			FusionLogger.Log($"Joined EOS lobby: {joinDelegate.ResultCode} with owner {HostId}");
+			_currentLobby = new EOSLobby(lobbyDetails, joinDelegate.LobbyId);
+			SetLobbyConnectionState(LobbyConnectionState.Connected);
 		});
 	}
 
