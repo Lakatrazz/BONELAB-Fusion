@@ -59,7 +59,7 @@ public static class GlobalBanManager
             game,
         };
 
-        var platform = new PlatformInfo(playerInfo.LongId);
+        var platform = new PlatformInfo(playerInfo.StringID);
         var platforms = new List<PlatformInfo>
         {
             platform

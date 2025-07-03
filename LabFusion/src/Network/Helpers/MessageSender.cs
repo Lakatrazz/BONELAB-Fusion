@@ -32,7 +32,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public static void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
@@ -162,7 +162,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(string userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;

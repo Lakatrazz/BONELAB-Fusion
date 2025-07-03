@@ -40,7 +40,7 @@ public static class NetworkVerification
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public static bool IsClientApproved(ulong userId)
+    public static bool IsClientApproved(string userId)
     {
         var privacy = SavedServerSettings.Privacy.Value;
 

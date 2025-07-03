@@ -81,7 +81,7 @@ public class HideAndSeek : Gamemode
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
 
-    private readonly HashSet<ulong> _tagRewards = new();
+    private readonly HashSet<string> _tagRewards = new();
 
     private float _elapsedTime = 0f;
 
@@ -188,13 +188,7 @@ public class HideAndSeek : Gamemode
 
     private void OnTagTriggered(string value)
     {
-        if (!ulong.TryParse(value, out var userId))
-        {
-            FusionLogger.Warn($"Player Tag was triggered, but the value {value} is not a userId!");
-            return;
-        }
-
-        var playerId = PlayerIDManager.GetPlayerID(userId);
+        var playerId = PlayerIDManager.GetPlayerID(value);
 
         if (playerId == null)
         {

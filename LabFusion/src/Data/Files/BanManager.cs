@@ -50,16 +50,16 @@ public static class BanManager
             Reason = reason,
         };
 
-        BanList.Bans.RemoveAll((info) => info.Player.LongId == playerInfo.LongId);
+        BanList.Bans.RemoveAll((info) => info.Player.StringID == playerInfo.StringID);
 
         BanList.Bans.Add(banInfo);
 
         WriteFile();
     }
 
-    public static void Pardon(ulong longId)
+    public static void Pardon(string stringID)
     {
-        BanList.Bans.RemoveAll((info) => info.Player.LongId == longId);
+        BanList.Bans.RemoveAll((info) => info.Player.StringID == stringID);
 
         WriteFile();
     }

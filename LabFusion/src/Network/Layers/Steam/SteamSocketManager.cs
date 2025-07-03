@@ -35,18 +35,18 @@ public class SteamSocketManager : SocketManager
 
         // Remove connection from list
         var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
-        var longId = pair.Key;
+        var stringID = pair.Key.ToString();
 
         ConnectedSteamIds.Remove(pair.Key);
 
         // Make sure the user hasn't previously disconnected
-        if (PlayerIDManager.HasPlayerID(longId))
+        if (PlayerIDManager.HasPlayerID(stringID))
         {
             // Update the mod so it knows this user has left
-            InternalServerHelpers.OnPlayerLeft(pair.Key);
+            InternalServerHelpers.OnPlayerLeft(pair.Key.ToString());
 
             // Send disconnect notif to everyone
-            ConnectionSender.SendDisconnect(longId);
+            ConnectionSender.SendDisconnect(stringID);
         }
     }
 
@@ -56,7 +56,7 @@ public class SteamSocketManager : SocketManager
 
         ConnectedSteamIds[identity.steamid] = connection;
 
-        NetworkInfo.LastReceivedUser = identity.steamid;
+        NetworkInfo.LastReceivedUser = identity.steamid.ToString();
 
         SteamSocketHandler.OnSocketMessageReceived(data, size, true);
     }

@@ -13,14 +13,14 @@ namespace LabFusion.Network;
 
 public class ConnectionRequestData : INetSerializable
 {
-    public ulong PlatformID;
+    public string PlatformID;
     public Version Version;
     public string AvatarBarcode;
     public SerializedAvatarStats AvatarStats;
     public Dictionary<string, string> InitialMetadata;
     public List<string> InitialEquippedItems;
 
-    public int? GetSize() => sizeof(ulong) + Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize() + InitialEquippedItems.GetSize();
+    public int? GetSize() => this.PlatformID.Length * sizeof(char) + Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize() + InitialEquippedItems.GetSize();
 
     public bool IsValid { get; private set; } = true;
 
@@ -43,13 +43,13 @@ public class ConnectionRequestData : INetSerializable
         }
     }
 
-    public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
+    public static ConnectionRequestData Create(string stringID, Version version, string avatarBarcode, SerializedAvatarStats stats)
     {
         LocalPlayer.InvokeApplyInitialMetadata();
 
         return new ConnectionRequestData()
         {
-            PlatformID = longId,
+            PlatformID = stringID,
             Version = version,
             AvatarBarcode = avatarBarcode,
             AvatarStats = stats,
@@ -68,6 +68,8 @@ public class ConnectionRequestMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ConnectionRequestData>();
+
+        FusionLogger.Log($"Received connection request from {data.PlatformID} with version {data.Version} and avatar barcode {data.AvatarBarcode}.");
 
         // Make sure the id isn't spoofed.
         if (NetworkInfo.IsSpoofed(data.PlatformID))

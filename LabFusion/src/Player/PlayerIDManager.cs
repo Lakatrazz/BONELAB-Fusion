@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Player;
+﻿using LabFusion.Utilities;
+
+namespace LabFusion.Player;
 
 public static class PlayerIDManager
 {
@@ -10,14 +12,14 @@ public static class PlayerIDManager
     public static readonly HashSet<PlayerID> PlayerIDs = new();
 
     public static readonly Dictionary<byte, PlayerID> SmallIDLookup = new();
-    public static readonly Dictionary<ulong, PlayerID> PlatformIDLookup = new();
+    public static readonly Dictionary<string, PlayerID> PlatformIDLookup = new();
 
     public static readonly HashSet<byte> ReservedSmallIDs = new();
 
     public static int PlayerCount => PlayerIDs.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
-    public static ulong LocalPlatformID { get; private set; }
+    public static string LocalPlatformID { get; private set; }
     public static byte LocalSmallID { get; private set; }
     public static PlayerID LocalID { get; private set; }
 
@@ -89,8 +91,13 @@ public static class PlayerIDManager
         return null;
     }
 
-    public static PlayerID GetPlayerID(ulong platformID)
+    public static PlayerID GetPlayerID(string platformID)
     {
+        if (string.IsNullOrEmpty(platformID))
+        {
+            return null;
+        }
+
         if (PlatformIDLookup.TryGetValue(platformID, out var playerID))
         {
             return playerID;
@@ -101,7 +108,7 @@ public static class PlayerIDManager
 
     public static bool HasPlayerID(byte smallID) => SmallIDLookup.ContainsKey(smallID);
 
-    public static bool HasPlayerID(ulong platformID) => PlatformIDLookup.ContainsKey(platformID);
+    public static bool HasPlayerID(string platformID) => PlatformIDLookup.ContainsKey(platformID);
 
     internal static void ApplyLocalID()
     {
@@ -123,8 +130,8 @@ public static class PlayerIDManager
         LocalID = null;
     }
 
-    public static void SetLongID(ulong longID)
+    public static void SetStringID(string stringID)
     {
-        LocalPlatformID = longID;
+        LocalPlatformID = stringID;
     }
 }

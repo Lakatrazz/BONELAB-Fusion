@@ -8,12 +8,12 @@ namespace LabFusion.Data;
 public class PlatformInfo : IEquatable<PlatformInfo>
 {
     [JsonPropertyName("platformID")]
-    public ulong PlatformID { get; set; }
+    public string PlatformID { get; set; }
 
     [JsonPropertyName("platform")]
     public string Platform { get; set; }
 
-    public PlatformInfo(ulong platformID)
+    public PlatformInfo(string platformID)
     {
         PlatformID = platformID;
 

@@ -16,9 +16,9 @@ public static class PermissionList
     private const string _userName = "username";
     private const string _levelName = "level";
 
-    private static readonly List<Tuple<ulong, string, PermissionLevel>> _permittedUsers = new();
+    private static readonly List<Tuple<string, string, PermissionLevel>> _permittedUsers = new();
 
-    public static IReadOnlyList<Tuple<ulong, string, PermissionLevel>> PermittedUsers => _permittedUsers;
+    public static IReadOnlyList<Tuple<string, string, PermissionLevel>> PermittedUsers => _permittedUsers;
 
     private static XMLFile _file;
 
@@ -31,11 +31,11 @@ public static class PermissionList
         {
             d.Descendants(_elementName).ForEach((element) =>
             {
-                if (element.TryGetAttribute(_idName, out string rawId) && element.TryGetAttribute(_userName, out string rawUser) && element.TryGetAttribute(_levelName, out string rawLevel))
+                if (element.TryGetAttribute(_idName, out string id) && element.TryGetAttribute(_userName, out string rawUser) && element.TryGetAttribute(_levelName, out string rawLevel))
                 {
-                    if (ulong.TryParse(rawId, out ulong id) && Enum.TryParse(rawLevel, out PermissionLevel level))
+                    if (Enum.TryParse(rawLevel, out PermissionLevel level))
                     {
-                        _permittedUsers.Add(new Tuple<ulong, string, PermissionLevel>(id, rawUser, level));
+                        _permittedUsers.Add(new Tuple<string, string, PermissionLevel>(id, rawUser, level));
                     }
                 }
             });
@@ -60,13 +60,13 @@ public static class PermissionList
         _file.WriteFile(entries);
     }
 
-    public static void SetPermission(ulong longId, string username, PermissionLevel level)
+    public static void SetPermission(string stringID, string username, PermissionLevel level)
     {
-        var tuple = new Tuple<ulong, string, PermissionLevel>(longId, username, level);
+        var tuple = new Tuple<string, string, PermissionLevel>(stringID, username, level);
 
         foreach (var user in _permittedUsers.ToArray())
         {
-            if (user.Item1 == longId)
+            if (user.Item1 == stringID)
             {
                 _permittedUsers.Remove(user);
                 break;
