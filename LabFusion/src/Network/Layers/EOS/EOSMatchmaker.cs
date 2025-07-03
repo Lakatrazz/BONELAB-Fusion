@@ -8,6 +8,7 @@ using MelonLoader;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LabFusion.Network
 {
@@ -27,6 +28,8 @@ namespace LabFusion.Network
 
 		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
 		{
+			var stopwatch = Stopwatch.StartNew();
+
 			if (EOSNetworkLayer.LocalUserId == null || _lobbyInterface == null)
 			{
 				FusionLogger.Error("Cannot find lobbies: LocalUserId or LobbyInterface is null");
@@ -52,7 +55,7 @@ namespace LabFusion.Network
 				Parameter = new AttributeData
 				{
 					Key = "lobby_open",
-                    Value = new AttributeDataValue { AsUtf8 = bool.TrueString }
+					Value = new AttributeDataValue { AsUtf8 = bool.TrueString }
 				},
 				ComparisonOp = ComparisonOp.Equal,
 			};
@@ -91,7 +94,7 @@ namespace LabFusion.Network
 			var countOptions = new LobbySearchGetSearchResultCountOptions();
 			uint lobbyCount = searchHandle.GetSearchResultCount(ref countOptions);
 
-            for (uint i = 0; i < lobbyCount; i++)
+			for (uint i = 0; i < lobbyCount; i++)
 			{
 				var copyOptions = new LobbySearchCopySearchResultByIndexOptions
 				{
@@ -122,20 +125,23 @@ namespace LabFusion.Network
 									Metadata = metadata
 								});
 							}
-						} else
+						}
+						else
 						{
 							FusionLogger.Error($"Failed to get lobby owner for lobby index {i} since owner ID is null!");
-                        }
+						}
 					}
-				} else
+				}
+				else
 				{
 					FusionLogger.Error($"Failed to copy search result for lobby index {i}");
-                }
+				}
 			}
 
 			searchHandle.Release();
 
-			FusionLogger.Log($"Found {lobbies.Count} lobbies");
+			stopwatch.Stop();
+			FusionLogger.Log($"Found {lobbies.Count} lobbies in {stopwatch.ElapsedMilliseconds}ms ({stopwatch.Elapsed.TotalSeconds:F2}s)");
 
 			callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo
 			{

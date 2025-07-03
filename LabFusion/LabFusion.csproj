@@ -8,12 +8,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_WINDOWS_64</DefineConstants>
+    <DefineConstants>$(DefineConstants);EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64;MELONLOADER</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_WINDOWS_64</DefineConstants>
+    <DefineConstants>$(DefineConstants);EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64;MELONLOADER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -458,9 +458,6 @@
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
-	<Reference Include="JNISharp">
-	  <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\JNISharp.dll</HintPath>
-	</Reference>
   </ItemGroup>
 
   <ItemGroup>

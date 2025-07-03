@@ -206,6 +206,7 @@ public class FusionMod : MelonMod
         PlayerAdditionsHelper.OnDeinitializeMelon();
 
         // Free APIs
+        SteamAPILoader.OnFreeSteamAPI();
         EOSSDKLoader.OnFreeEOSSDK();
     }
 
