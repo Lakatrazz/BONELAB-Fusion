@@ -61,11 +61,9 @@ public sealed class SteamMatchmaker : IMatchmaker
 
     private static Task<Lobby[]> FetchLobbies()
     {
-        var list = SteamMatchmaking.LobbyList;
-        list.FilterDistanceWorldwide();
-        list.WithMaxResults(int.MaxValue);
-        list.WithSlotsAvailable(int.MaxValue);
-        list.WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString);
-        return list.RequestAsync();
+        return SteamMatchmaking.LobbyList
+            .FilterDistanceWorldwide()
+            .WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString)
+            .RequestAsync();
     }
 }
