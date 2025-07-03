@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Network;
+﻿using LabFusion.Utilities;
+
+namespace LabFusion.Network;
 
 public static class LobbyMetadataSerializer
 {

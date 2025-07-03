@@ -54,6 +54,7 @@ namespace LabFusion.Network
 		{
 			if (LocalUserId == userId)
 			{
+				// FusionLogger.Warn("We cannot send a packet to ourself!");
 				return Result.InvalidUser;
 			}
 
@@ -163,9 +164,8 @@ namespace LabFusion.Network
 		internal static void BroadcastToClients(NetworkChannel channel, NetMessage message)
 		{
 			if (HostId != LocalUserId)
-			{
 				return;
-			}
+
 			if (NetworkLayerManager.Layer is EOSNetworkLayer layer)
 			{
 				var countOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberCountOptions();

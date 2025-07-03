@@ -26,7 +26,12 @@ namespace LabFusion.Network
 			MelonCoroutines.Start(FindLobbies(callback));
 		}
 
-		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+        public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
 		{
 			var stopwatch = Stopwatch.StartNew();
 
@@ -115,7 +120,7 @@ namespace LabFusion.Network
 						{
 							var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
 
-							var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
+							var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
 
 							if (metadata.HasServerOpen)
 							{

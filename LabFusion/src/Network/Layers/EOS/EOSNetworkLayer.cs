@@ -170,7 +170,7 @@ public class EOSNetworkLayer : NetworkLayer
 			return;
 		}
 
-		LobbyMetadataHelper.WriteInfo(_currentLobby);
+		LobbyMetadataSerializer.WriteInfo(_currentLobby);
 
 		if (_currentLobby == null)
 			return;
@@ -281,6 +281,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 		return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
 	}
+
 	private void SetLobbyConnectionState(LobbyConnectionState newState)
 	{
 		if (LobbyConnectionState != newState)
@@ -291,12 +292,13 @@ public class EOSNetworkLayer : NetworkLayer
 		}
 	}
 
-	public override void StartServer()
+    public override void StartServer()
 	{
-		if (!_isInitialized)
-		{
+        if (!_isInitialized)
+            return;
+
+        if (LobbyConnectionState == LobbyConnectionState.Connecting)
 			return;
-		}
 
 		SetLobbyConnectionState(LobbyConnectionState.Connecting);
 		CreateEpicLobby();
@@ -462,7 +464,10 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public void JoinServer(string lobbyId)
 	{
-		if (_isConnectionActive || _isServerActive)
+		if (LobbyConnectionState == LobbyConnectionState.Connecting)
+			return;
+
+        if (_isConnectionActive || _isServerActive)
 			Disconnect();
 
 		if (!_isInitialized)

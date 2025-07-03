@@ -30,7 +30,7 @@ public class SteamLobby : NetworkLobby
         return _lobby.GetData(key);
     }
 
-    public override Action CreateJoinDelegate(ulong lobbyId)
+    public override Action CreateJoinDelegate(string lobbyId)
     {
         if (NetworkLayerManager.Layer is SteamNetworkLayer steamLayer)
         {
