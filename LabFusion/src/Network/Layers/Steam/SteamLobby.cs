@@ -1,44 +1,45 @@
 ﻿using Steamworks.Data;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class SteamLobby : NetworkLobby
 {
-    public class SteamLobby : NetworkLobby
+    private Lobby _lobby;
+
+    public SteamLobby(Lobby lobby)
     {
-        private Lobby _lobby;
+        _lobby = lobby;
+    }
 
-        public SteamLobby(Lobby lobby)
-        {
-            _lobby = lobby;
-        }
+    public override void SetMetadata(string key, string value)
+    {
+        value ??= string.Empty;
 
-        public override void SetMetadata(string key, string value)
-        {
-            _lobby.SetData(key, value);
-            SaveKey(key);
-        }
+        _lobby.SetData(key, value);
+        SaveKey(key);
+    }
 
-        public override bool TryGetMetadata(string key, out string value)
-        {
-            value = _lobby.GetData(key);
-            return !string.IsNullOrWhiteSpace(value);
-        }
+    public override bool TryGetMetadata(string key, out string value)
+    {
+        value = _lobby.GetData(key);
+        return !string.IsNullOrWhiteSpace(value);
+    }
 
-        public override string GetMetadata(string key)
-        {
-            return _lobby.GetData(key);
-        }
+    public override string GetMetadata(string key)
+    {
+        return _lobby.GetData(key);
+    }
 
-        public override Action CreateJoinDelegate(ulong lobbyId)
+    public override Action CreateJoinDelegate(ulong lobbyId)
+    {
+        if (NetworkLayerManager.Layer is SteamNetworkLayer steamLayer)
         {
-            if (NetworkLayerManager.Layer is SteamNetworkLayer steamLayer)
+            return () =>
             {
-                return () =>
-                {
-                    steamLayer.JoinServer(lobbyId);
-                };
-            }
-
-            return null;
+                steamLayer.JoinServer(lobbyId);
+            };
         }
+
+        return null;
     }
 }

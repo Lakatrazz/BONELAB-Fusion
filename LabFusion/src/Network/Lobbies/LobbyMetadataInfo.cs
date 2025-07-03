@@ -2,6 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 using System.Text.Json;
 
@@ -31,6 +32,7 @@ public struct LobbyMetadataInfo
             HasServerOpen = NetworkInfo.IsHost,
             LobbyCode = lobbyInfo.LobbyCode,
             Privacy = lobbyInfo.Privacy,
+            Game = GameHelper.GameName,
         };
     }
 
