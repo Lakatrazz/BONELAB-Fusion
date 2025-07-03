@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 
-using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Voice;

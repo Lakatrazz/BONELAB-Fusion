@@ -9,15 +9,24 @@ namespace LabFusion.Network;
 
 public sealed class SteamMatchmaker : IMatchmaker
 {
+    private delegate Task<Lobby[]> LobbySearchDelegate();
+
     public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        MelonCoroutines.Start(FindLobbies(callback));
+        MelonCoroutines.Start(FindLobbies(FetchLobbies, callback));
     }
 
-    private static IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    {
+        MelonCoroutines.Start(FindLobbies(FetchLobbies, callback));
+
+        Task<Lobby[]> FetchLobbies() => FetchLobbiesByCode(code);
+    }
+
+    private static IEnumerator FindLobbies(LobbySearchDelegate searchDelegate, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         // Fetch lobbies
-        var task = FetchLobbies();
+        var task = searchDelegate();
 
         while (!task.IsCompleted)
         {
@@ -37,7 +46,7 @@ public sealed class SteamMatchmaker : IMatchmaker
             }
 
             var networkLobby = new SteamLobby(lobby);
-            var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
+            var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
 
             if (!metadata.HasServerOpen)
             {
@@ -63,7 +72,18 @@ public sealed class SteamMatchmaker : IMatchmaker
     {
         return SteamMatchmaking.LobbyList
             .FilterDistanceWorldwide()
-            .WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString)
+            .WithKeyValue(LobbyKeys.HasServerOpenKey, bool.TrueString)
+            .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.PRIVATE)
+            .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.LOCKED)
+            .RequestAsync();
+    }
+
+    private static Task<Lobby[]> FetchLobbiesByCode(string code)
+    {
+        return SteamMatchmaking.LobbyList
+            .FilterDistanceWorldwide()
+            .WithKeyValue(LobbyKeys.HasServerOpenKey, bool.TrueString)
+            .WithKeyValue(LobbyKeys.LobbyCodeKey, code)
             .RequestAsync();
     }
 }

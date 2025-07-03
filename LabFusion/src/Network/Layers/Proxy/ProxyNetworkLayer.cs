@@ -531,7 +531,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
 
         // Write active info about the lobby
-        LobbyMetadataHelper.WriteInfo(Lobby);
+        LobbyMetadataSerializer.WriteInfo(Lobby);
 
         // Request Steam Friends
         NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);

@@ -2,17 +2,6 @@
 
 namespace LabFusion.Network;
 
-/// <summary>
-/// A set of variables for Network Lobbies that should never change.
-/// </summary>
-public static class LobbyConstants
-{
-    private const string _internalPrefix = "BONELAB_FUSION_";
-    public const string HasServerOpenKey = _internalPrefix + "HasServerOpen";
-
-    public const string KeyCollectionKey = _internalPrefix + "KeyCollection";
-}
-
 public interface INetworkLobby
 {
     /// <summary>
@@ -56,7 +45,7 @@ public abstract class NetworkLobby : INetworkLobby
 
     public void WriteKeyCollection()
     {
-        SetMetadata(LobbyConstants.KeyCollectionKey, _keyCollection.Contract());
+        SetMetadata(LobbyKeys.KeyCollectionKey, _keyCollection.Contract());
     }
 
     /// <summary>
@@ -66,7 +55,7 @@ public abstract class NetworkLobby : INetworkLobby
     protected void SaveKey(string key)
     {
         // Don't save the key collection
-        if (key == LobbyConstants.KeyCollectionKey)
+        if (key == LobbyKeys.KeyCollectionKey)
         {
             return;
         }

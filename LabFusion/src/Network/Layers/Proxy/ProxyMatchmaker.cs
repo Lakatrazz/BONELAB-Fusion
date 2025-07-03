@@ -21,6 +21,12 @@ public sealed class ProxyMatchmaker : IMatchmaker
         MelonCoroutines.Start(FindLobbies(callback));
     }
 
+    public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    {
+        // TODO: Implement
+        throw new NotImplementedException();
+    }
+
     private static void SendTimeOutNotification()
     {
         Notifier.Send(new Notification()

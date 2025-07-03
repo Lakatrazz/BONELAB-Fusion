@@ -72,7 +72,7 @@ public class ProxyLobbyManager
                 lobby.CacheMetadata(key, value);
             }
 
-            LobbyMetadataInfo info = LobbyMetadataHelper.ReadInfo(lobby);
+            LobbyMetadataInfo info = LobbyMetadataSerializer.ReadInfo(lobby);
 
             tcs.SetResult(info);
             _metadataInfoRequests.Remove(lobbyId);

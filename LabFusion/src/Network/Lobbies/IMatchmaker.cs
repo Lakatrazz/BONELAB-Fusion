@@ -14,4 +14,6 @@ public interface IMatchmaker
     }
 
     void RequestLobbies(Action<MatchmakerCallbackInfo> callback);
+
+    void RequestLobbiesByCode(string code, Action<MatchmakerCallbackInfo> callback);
 }

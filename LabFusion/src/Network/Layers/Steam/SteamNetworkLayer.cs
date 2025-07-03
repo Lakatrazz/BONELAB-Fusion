@@ -336,25 +336,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
         FusionLogger.Log($"Searching for servers with code {code}...");
 #endif
 
-        Matchmaker.RequestLobbies((info) =>
+        Matchmaker.RequestLobbiesByCode(code, (info) =>
         {
-            foreach (var lobby in info.Lobbies)
+            if (info.Lobbies.Length <= 0)
             {
-                var lobbyCode = lobby.Metadata.LobbyInfo.LobbyCode;
-                var inputCode = code;
-
-#if DEBUG
-                FusionLogger.Log($"Found server with code {lobbyCode}");
-#endif
-
-                // Case insensitive
-                // Makes it easier to input
-                if (lobbyCode.ToLower() == code.ToLower())
-                {
-                    JoinServer(lobby.Metadata.LobbyInfo.LobbyId);
-                    break;
-                }
+                return;
             }
+
+            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
         });
     }
 
@@ -448,6 +437,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Write active info about the lobby
-        LobbyMetadataHelper.WriteInfo(Lobby);
+        LobbyMetadataSerializer.WriteInfo(Lobby);
     }
 }
