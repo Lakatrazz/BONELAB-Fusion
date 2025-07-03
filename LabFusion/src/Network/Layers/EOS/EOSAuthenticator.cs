@@ -27,7 +27,10 @@ namespace LabFusion.Network
 
 		internal static void InitializeEOS()
 		{
-			var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
+			string version = Epic.OnlineServices.Version.VersionInterface.GetVersion();
+			FusionLogger.Log(version);
+
+            var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
 			{
 				ProductName = ProductName,
 				ProductVersion = ProductVersion,
