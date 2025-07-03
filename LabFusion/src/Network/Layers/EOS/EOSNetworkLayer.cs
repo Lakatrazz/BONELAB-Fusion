@@ -292,12 +292,12 @@ public class EOSNetworkLayer : NetworkLayer
 		}
 	}
 
-    public override void StartServer()
+	public override void StartServer()
 	{
-        if (!_isInitialized)
-            return;
+		if (!_isInitialized)
+			return;
 
-        if (LobbyConnectionState == LobbyConnectionState.Connecting)
+		if (LobbyConnectionState == LobbyConnectionState.Connecting)
 			return;
 
 		SetLobbyConnectionState(LobbyConnectionState.Connecting);
@@ -467,7 +467,7 @@ public class EOSNetworkLayer : NetworkLayer
 		if (LobbyConnectionState == LobbyConnectionState.Connecting)
 			return;
 
-        if (_isConnectionActive || _isServerActive)
+		if (_isConnectionActive || _isServerActive)
 			Disconnect();
 
 		if (!_isInitialized)
