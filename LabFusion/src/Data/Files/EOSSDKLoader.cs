@@ -136,7 +136,13 @@ public static class EOSSDKLoader
 
 		FusionLogger.Log($"Downloading {libraryName} from {fullUrl} to {output}");
 
-		using (var httpClient = new HttpClient())
+		HttpClientHandler handler = new HttpClientHandler
+		{
+			ClientCertificateOptions = ClientCertificateOption.Manual,
+			ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+		};
+
+		using (var httpClient = new HttpClient(handler))
 		{
 			try
 			{
