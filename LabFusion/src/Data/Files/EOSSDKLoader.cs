@@ -14,7 +14,6 @@ public static class EOSSDKLoader
 	public static bool HasEOSSDK { get; private set; } = false;
 
 	private static IntPtr _libraryPtr = IntPtr.Zero;
-	public static IntPtr vm;
 
 	private static IntPtr AndroidImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 	{
@@ -23,9 +22,6 @@ public static class EOSSDKLoader
 
 		return IntPtr.Zero;
 	}
-
-	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public delegate int JNI_OnLoadFunc(IntPtr javaVM, IntPtr reserved);
 
 	public static async void OnLoadEOSSDK()
 	{
