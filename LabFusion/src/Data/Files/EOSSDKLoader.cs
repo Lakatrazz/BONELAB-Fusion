@@ -1,7 +1,9 @@
 ﻿using Epic.OnlineServices;
 
+using JNISharp.NativeInterface;
+
 using LabFusion.Utilities;
-using System.Diagnostics.CodeAnalysis;
+
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -23,18 +25,9 @@ public static class EOSSDKLoader
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	public delegate nint JNI_OnLoadFunc(IntPtr javaVM, IntPtr reserved);
-    public static T? GetExport<T>(nint hModule, string name) where T : Delegate
-    {
-        return !NativeLibrary.TryGetExport(hModule, name, out var export) ? null : Marshal.GetDelegateForFunctionPointer<T>(export);
-    }
-    public static bool GetExport<T>(nint hModule, string name, [NotNullWhen(true)] out T? func) where T : Delegate
-    {
-        func = GetExport<T>(hModule, name);
-        return func != null;
-    }
+	public delegate int JNI_OnLoadFunc(IntPtr javaVM, IntPtr reserved);
 
-    public static async void OnLoadEOSSDK()
+	public static async void OnLoadEOSSDK()
 	{
 		if (HasEOSSDK)
 		{
@@ -49,21 +42,26 @@ public static class EOSSDKLoader
 			eosSDKPath = PersistentData.GetPath($"libEOSSDK.so");
 			libCPPPath = PersistentData.GetPath($"libc++_shared.so");
 
-			bool eosDownloadSuccess = await DownloadLibraryAsync("libEOSSDK", eosSDKPath);
-			if (!eosDownloadSuccess)
+			if (!File.Exists(eosSDKPath))
 			{
-				FusionLogger.Error("Failed to download libEOSSDK.so");
-				return;
+				bool eosDownloadSuccess = await DownloadLibraryAsync("libEOSSDK", eosSDKPath);
+				if (!eosDownloadSuccess)
+				{
+					FusionLogger.Error("Failed to download libEOSSDK.so");
+					return;
+				}
 			}
 
-			bool cppDownloadSuccess = await DownloadLibraryAsync("libc++_shared", libCPPPath);
-			if (!cppDownloadSuccess)
+			if (!File.Exists(libCPPPath))
 			{
-				FusionLogger.Error("Failed to download libc++_shared.so");
-				return;
+				bool cppDownloadSuccess = await DownloadLibraryAsync("libc++_shared", libCPPPath);
+				if (!cppDownloadSuccess)
+				{
+					FusionLogger.Error("Failed to download libc++_shared.so");
+					return;
+				}
 			}
 
-			// Now load the libraries
 			if (MelonLoader.NativeLibrary.LoadLib(libCPPPath) == IntPtr.Zero)
 				FusionLogger.Error($"Failed to load libc++_shared.so into the application!");
 			else
@@ -84,6 +82,12 @@ public static class EOSSDKLoader
 			}
 		}
 
+		if (PlatformHelper.IsAndroid)
+		{
+			InitializeAndroidJNI();
+			System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
+		}
+
 		_libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
 
 		if (_libraryPtr == IntPtr.Zero)
@@ -95,13 +99,6 @@ public static class EOSSDKLoader
 		{
 			FusionLogger.Log($"Successfully loaded EOS SDK into the application!");
 			HasEOSSDK = true;
-
-			if (PlatformHelper.IsAndroid)
-				InitializeAndroidJNI();
-
-			// Set custom Import Resolver since Android is evil and doesn't like DLLImport
-			if (PlatformHelper.IsAndroid)
-				System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
 		}
 	}
 
@@ -177,28 +174,28 @@ public static class EOSSDKLoader
 	{
 		try
 		{
-			Type jniType = Type.GetType("JNISharp.NativeInterface.JNI, JNISharp", true);
-			if (jniType != null)
+			JClass systemClass = JNI.FindClass("java/lang/System");
+			if (systemClass == null)
 			{
-				var vmPtrField = jniType.GetField("lastVmPtr", HarmonyLib.AccessTools.all);
-				if (vmPtrField != null)
-				{
-					IntPtr vmPtr = (IntPtr)vmPtrField.GetValue(null);
-					vm = vmPtr; // Store the VM pointer for later use
-                    FusionLogger.Log($"JNI VM Pointer: {vmPtr}");
-
-                    IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
-					FusionLogger.Log($"JNI_OnLoad pointer: {onLoadPtr}");
-
-                    if (!GetExport<JNI_OnLoadFunc>(_libraryPtr, "JNI_OnLoad", out var jniOnLoad))
-                    {
-                        FusionLogger.Log("Can't load Export via JNI_OnLoad");
-                        return;
-                    }
-                    nint a = jniOnLoad(vmPtr, IntPtr.Zero);
-					FusionLogger.Log($"JNI_OnLoad returned: {a}");
-                }
+				FusionLogger.Error("Failed to find java.lang.System class");
+				return;
 			}
+
+			JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
+			if (loadMethod.Handle == IntPtr.Zero)
+			{
+				FusionLogger.Error("Failed to find System.load method");
+				return;
+			}
+
+			string fullLibPath = PersistentData.GetPath("libEOSSDK.so");
+			JString libPath = JNI.NewString(fullLibPath);
+
+			FusionLogger.Log($"Calling System.load with path: {fullLibPath}");
+
+			JNI.CallStaticVoidMethod(systemClass, loadMethod, new JValue(libPath));
+
+			FusionLogger.Log("System.load");
 		}
 		catch (Exception ex)
 		{
