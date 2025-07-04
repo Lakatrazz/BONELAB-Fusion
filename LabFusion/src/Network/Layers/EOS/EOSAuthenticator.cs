@@ -1,5 +1,6 @@
 ﻿using Epic.OnlineServices;
 
+using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -34,9 +35,17 @@ namespace LabFusion.Network
 			{
 				ProductName = ProductName,
 				ProductVersion = ProductVersion,
-			};
+                Reserved = EOSSDKLoader.vm,
+            };
 
-			var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
+            var a = new Epic.OnlineServices.Platform.AndroidInitializeOptions()
+            {
+                ProductName = ProductName,
+                ProductVersion = ProductVersion,
+				Reserved = EOSSDKLoader.vm,
+            };
+
+            var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
 			FusionLogger.Log($"EOS Initialize Result: {initializeResult}");
 			Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, LogLevel);
 			Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>

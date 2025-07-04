@@ -1,7 +1,7 @@
 ﻿using Epic.OnlineServices;
 
 using LabFusion.Utilities;
-
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -12,6 +12,7 @@ public static class EOSSDKLoader
 	public static bool HasEOSSDK { get; private set; } = false;
 
 	private static IntPtr _libraryPtr = IntPtr.Zero;
+	public static IntPtr vm;
 
 	private static IntPtr AndroidImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 	{
@@ -22,9 +23,18 @@ public static class EOSSDKLoader
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
+	public delegate nint JNI_OnLoadFunc(IntPtr javaVM, IntPtr reserved);
+    public static T? GetExport<T>(nint hModule, string name) where T : Delegate
+    {
+        return !NativeLibrary.TryGetExport(hModule, name, out var export) ? null : Marshal.GetDelegateForFunctionPointer<T>(export);
+    }
+    public static bool GetExport<T>(nint hModule, string name, [NotNullWhen(true)] out T? func) where T : Delegate
+    {
+        func = GetExport<T>(hModule, name);
+        return func != null;
+    }
 
-	public static async void OnLoadEOSSDK()
+    public static async void OnLoadEOSSDK()
 	{
 		if (HasEOSSDK)
 		{
@@ -87,9 +97,7 @@ public static class EOSSDKLoader
 			HasEOSSDK = true;
 
 			if (PlatformHelper.IsAndroid)
-			{
 				InitializeAndroidJNI();
-			}
 
 			// Set custom Import Resolver since Android is evil and doesn't like DLLImport
 			if (PlatformHelper.IsAndroid)
@@ -169,19 +177,27 @@ public static class EOSSDKLoader
 	{
 		try
 		{
-			Type jniType = Type.GetType("JNISharp.NativeInterface.JNI, JNISharp");
+			Type jniType = Type.GetType("JNISharp.NativeInterface.JNI, JNISharp", true);
 			if (jniType != null)
 			{
-				var vmPtrField = jniType.GetField("lastVmPtr", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+				var vmPtrField = jniType.GetField("lastVmPtr", HarmonyLib.AccessTools.all);
 				if (vmPtrField != null)
 				{
 					IntPtr vmPtr = (IntPtr)vmPtrField.GetValue(null);
+					vm = vmPtr; // Store the VM pointer for later use
+                    FusionLogger.Log($"JNI VM Pointer: {vmPtr}");
 
-					IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
+                    IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
+					FusionLogger.Log($"JNI_OnLoad pointer: {onLoadPtr}");
 
-					var onLoad = Marshal.GetDelegateForFunctionPointer<JNI_OnLoadDelegate>(onLoadPtr);
-					int result = onLoad(vmPtr, IntPtr.Zero);
-				}
+                    if (!GetExport<JNI_OnLoadFunc>(_libraryPtr, "JNI_OnLoad", out var jniOnLoad))
+                    {
+                        FusionLogger.Log("Can't load Export via JNI_OnLoad");
+                        return;
+                    }
+                    nint a = jniOnLoad(vmPtr, IntPtr.Zero);
+					FusionLogger.Log($"JNI_OnLoad returned: {a}");
+                }
 			}
 		}
 		catch (Exception ex)
