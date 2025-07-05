@@ -60,6 +60,8 @@ public class EOSNetworkLayer : NetworkLayer
 	internal static LobbyInterface LobbyInterface;
 	internal static FriendsInterface FriendsInterface;
 
+	internal LobbyDetails LobbyDetails => _currentLobby?.LobbyDetails;
+
     public LobbyConnectionState LobbyConnectionState { get; private set; } = LobbyConnectionState.Disconnected;
 
 	public static ProductUserId LocalUserId;
