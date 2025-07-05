@@ -342,7 +342,6 @@ public class EOSNetworkLayer : NetworkLayer
 			};
 			P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo callbackInfo) =>
 			{
-				OnUpdateLobby();
 				var acceptOptions = new AcceptConnectionOptions
 				{
 					RemoteUserId = callbackInfo.RemoteUserId,
@@ -350,7 +349,6 @@ public class EOSNetworkLayer : NetworkLayer
 					LocalUserId = LocalUserId
 				};
 				P2PInterface.AcceptConnection(ref acceptOptions);
-				OnUpdateLobby();
 			});
 			var closedOptions = new AddNotifyPeerConnectionClosedOptions
 			{
@@ -359,7 +357,6 @@ public class EOSNetworkLayer : NetworkLayer
 			};
 			P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null , (ref OnRemoteConnectionClosedInfo info) =>
 			{
-				OnUpdateLobby();
 				var closeOptions = new CloseConnectionOptions
 				{
 					RemoteUserId = info.RemoteUserId,
@@ -373,15 +370,12 @@ public class EOSNetworkLayer : NetworkLayer
 					ConnectionSender.SendDisconnect(info.RemoteUserId.ToString());
 				}
 				P2PInterface.CloseConnection(ref closeOptions);
-				OnUpdateLobby();
 			});
 
 			_isServerActive = true;
 			_isConnectionActive = false;
 
 			HostId = LocalUserId;
-
-            OnUpdateLobby();
 
 			InternalServerHelpers.OnStartServer();
 
@@ -544,6 +538,7 @@ public class EOSNetworkLayer : NetworkLayer
         {
             if (info.Lobbies.Length <= 0)
             {
+				FusionLogger.Log("No lobbies found with the given code.");	
                 return;
             }
 
