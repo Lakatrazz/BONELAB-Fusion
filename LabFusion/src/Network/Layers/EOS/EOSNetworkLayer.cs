@@ -481,7 +481,7 @@ public class EOSNetworkLayer : NetworkLayer
 			if (joinDelegate.ResultCode != Result.Success)
 			{
 				FusionLogger.Log(lobbyId);
-                FusionLogger.Error($"Failed to join EOS lobby: {joinDelegate.ResultCode}");
+				FusionLogger.Error($"Failed to join EOS lobby: {joinDelegate.ResultCode}");
 				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
 				return;
 			}
@@ -506,44 +506,44 @@ public class EOSNetworkLayer : NetworkLayer
 		});
 	}
 
-    public string ServerCode { get; private set; } = null;
+	public string ServerCode { get; private set; } = null;
 
-    public override string GetServerCode()
-    {
-        return ServerCode;
-    }
+	public override string GetServerCode()
+	{
+		return ServerCode;
+	}
 
-    public override void RefreshServerCode()
-    {
-        ServerCode = RandomCodeGenerator.GetString(8);
+	public override void RefreshServerCode()
+	{
+		ServerCode = RandomCodeGenerator.GetString(8);
 
-        LobbyInfoManager.PushLobbyUpdate();
-    }
+		LobbyInfoManager.PushLobbyUpdate();
+	}
 
-    public override void JoinServerByCode(string code)
-    {
-        if (Matchmaker == null)
-        {
-            return;
-        }
+	public override void JoinServerByCode(string code)
+	{
+		if (Matchmaker == null)
+		{
+			return;
+		}
 
 #if DEBUG
-        FusionLogger.Log($"Searching for servers with code {code}...");
+		FusionLogger.Log($"Searching for servers with code {code}...");
 #endif
 
-        Matchmaker.RequestLobbiesByCode(code, (info) =>
-        {
-            if (info.Lobbies.Length <= 0)
-            {
+		Matchmaker.RequestLobbiesByCode(code, (info) =>
+		{
+			if (info.Lobbies.Length <= 0)
+			{
 				FusionLogger.Log("No lobbies found with the given code.");	
-                return;
-            }
+				return;
+			}
 
-            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
-        });
-    }
+			JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
+		});
+	}
 
-    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
+	public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
 	{
 		if (IsHost)
 		{

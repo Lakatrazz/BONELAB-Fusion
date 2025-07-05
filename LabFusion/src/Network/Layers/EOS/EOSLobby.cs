@@ -14,7 +14,7 @@ namespace LabFusion.Network
 
 		private readonly Dictionary<string, string> _metadataCache = new Dictionary<string, string>();
 
-        public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
+		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
 			LobbyDetails = lobbyDetails;
 			_lobbyId = lobbyId;
@@ -49,12 +49,12 @@ namespace LabFusion.Network
 			if (_metadataCache.TryGetValue(key, out string cachedValue) && cachedValue == value) 
 				return;
 
-            value ??= string.Empty;
+			value ??= string.Empty;
 
-            SaveKey(key);
+			SaveKey(key);
 
 			_metadataCache[key] = value;
-            _pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
+			_pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
 		}
 
 		private readonly Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
@@ -63,7 +63,7 @@ namespace LabFusion.Network
 		{
 			_lastUpdateTime += TimeUtilities.DeltaTime;
 			// 100 lobby updates per minute is the EOS limit
-            if (_lastUpdateTime >= 60f/100f && _pendingUpdates.TryDequeue(out var update))
+			if (_lastUpdateTime >= 60f/100f && _pendingUpdates.TryDequeue(out var update))
 			{
 				_lastUpdateTime = 0f;
 
