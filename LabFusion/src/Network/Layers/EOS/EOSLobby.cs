@@ -10,14 +10,14 @@ namespace LabFusion.Network
 	public class EOSLobby : NetworkLobby
 	{
 		internal LobbyDetails LobbyDetails;
-		private readonly string _lobbyId;
+		internal readonly string LobbyId;
 
 		private readonly Dictionary<string, string> _metadataCache = new Dictionary<string, string>();
 
 		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
 			LobbyDetails = lobbyDetails;
-			_lobbyId = lobbyId;
+			LobbyId = lobbyId;
 		}
 
 		public override Action CreateJoinDelegate(string lobbyId)
@@ -74,7 +74,7 @@ namespace LabFusion.Network
 
 				var updateOptions = new UpdateLobbyModificationOptions
 				{
-					LobbyId = _lobbyId,
+					LobbyId = LobbyId,
 					LocalUserId = LocalUserId
 				};
 
@@ -146,7 +146,7 @@ namespace LabFusion.Network
 				}
 			}
 
-			FusionLogger.Error($"Failed to get metadata for key '{key}' in lobby '{_lobbyId}' since lobby details were null!");
+			FusionLogger.Error($"Failed to get metadata for key '{key}' in lobby '{LobbyId}' since lobby details were null!");
 
 			value = null;
 			return false;
@@ -156,11 +156,6 @@ namespace LabFusion.Network
 		{
 			TryGetMetadata(key, out string value);
 			return value;
-		}
-
-		public string GetLobbyId()
-		{
-			return _lobbyId;
 		}
 	}
 }

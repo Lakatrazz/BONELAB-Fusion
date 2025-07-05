@@ -1,5 +1,4 @@
 ﻿using Epic.OnlineServices;
-
 using LabFusion.Utilities;
 
 using static LabFusion.Network.EOSNetworkLayer;
@@ -21,22 +20,23 @@ namespace LabFusion.Network
 
 		internal static Epic.OnlineServices.P2P.SocketId SocketId = new Epic.OnlineServices.P2P.SocketId { SocketName = "FusionSocket" };
 
-		internal static void ConfigureP2PSocketToAcceptConnections()
+		internal static void ConfigureP2P()
 		{
-			var portOptions = new Epic.OnlineServices.P2P.SetPortRangeOptions
+            Epic.OnlineServices.P2P.SetPortRangeOptions portOptions = new()
 			{
 				Port = 7777,
+				MaxAdditionalPortsToTry = 5,
 			};
 			P2PInterface.SetPortRange(ref portOptions);
 
-			var relayOptions = new Epic.OnlineServices.P2P.SetRelayControlOptions
+			Epic.OnlineServices.P2P.SetRelayControlOptions relayOptions = new()
 			{
 				RelayControl = Epic.OnlineServices.P2P.RelayControl.AllowRelays,
 			};
 			P2PInterface.SetRelayControl(ref relayOptions);
 		}
 
-		internal static void CloseAllConnections()
+		internal static void CloseConnections()
 		{
 			var closeConnectionsOptions = new Epic.OnlineServices.P2P.CloseConnectionsOptions
 			{

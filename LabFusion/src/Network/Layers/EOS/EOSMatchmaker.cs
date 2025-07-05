@@ -14,22 +14,12 @@ namespace LabFusion.Network
 	{
 		private LobbyInterface _lobbyInterface;
 
-		public EOSMatchmaker(LobbyInterface lobbyInterface)
-		{
-			_lobbyInterface = lobbyInterface;
-		}
+		public EOSMatchmaker(LobbyInterface lobbyInterface) => _lobbyInterface = lobbyInterface;
 
-		public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
-		{
-			MelonCoroutines.Start(FindLobbies(callback));
-		}
+        public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback));
+        public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback, code));
 
-		public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
-		{
-			MelonCoroutines.Start(FindLobbies(callback, code));
-		}
-
-		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = "")
+        private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = "")
 		{
 			var stopwatch = Stopwatch.StartNew();
 
@@ -81,9 +71,7 @@ namespace LabFusion.Network
 			});
 
 			while (!searchComplete)
-			{
 				yield return null;
-			}
 
 			if (searchResult != Result.Success)
 			{
@@ -120,7 +108,9 @@ namespace LabFusion.Network
 							var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
 
 							var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
-							metadata.LobbyInfo.LobbyId = networkLobby.GetLobbyId();
+
+							// Make sure LobbyID is actually the EOS Lobby ID and not the PlayerID
+							metadata.LobbyInfo.LobbyId = networkLobby.LobbyId;
 
 							if (metadata.HasServerOpen)
 							{
@@ -132,15 +122,12 @@ namespace LabFusion.Network
 							}
 						}
 						else
-						{
 							FusionLogger.Error($"Failed to get lobby owner for lobby index {i} since owner ID is null!");
-						}
+
 					}
 				}
 				else
-				{
 					FusionLogger.Error($"Failed to copy search result for lobby index {i}");
-				}
 			}
 
 			searchHandle.Release();
