@@ -227,7 +227,7 @@ namespace LabFusion.Network
 			var options = new Epic.OnlineServices.Connect.CopyProductUserExternalAccountByAccountTypeOptions
 			{
 				TargetUserId = productUserId,
-				AccountIdType = ExternalAccountType.Epic
+				AccountIdType = ExternalAccountType.Epic,
 			};
 
 			Result result = ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);

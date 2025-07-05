@@ -255,9 +255,6 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override bool IsFriend(string userId)
 	{
-		if (string.IsNullOrEmpty(userId) || LocalAccountId == null)
-			return false;
-
 		if (LocalUserId.ToString() == userId)
 			return true;
 
