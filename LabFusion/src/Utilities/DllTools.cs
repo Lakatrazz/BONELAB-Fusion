@@ -14,5 +14,14 @@ namespace LabFusion.Utilities
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern UInt32 GetLastError();
+
+        [DllImport("libdl.so")]
+        public static extern IntPtr dlopen(string filename, int flags);
+
+        [DllImport("libdl.so")]
+        public static extern int dlclose(IntPtr handle);
+
+        [DllImport("libdl.so")]
+        public static extern IntPtr dlerror();
     }
 }

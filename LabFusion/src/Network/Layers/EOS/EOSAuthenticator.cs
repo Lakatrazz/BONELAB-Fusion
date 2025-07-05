@@ -31,15 +31,6 @@ namespace LabFusion.Network
 			string version = Epic.OnlineServices.Version.VersionInterface.GetVersion();
 			FusionLogger.Log(version);
 
-            var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
-			{
-				ProductName = ProductName,
-				ProductVersion = ProductVersion,
-            };
-
-
-            var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
-			FusionLogger.Log($"EOS Initialize Result: {initializeResult}");
 			Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, LogLevel);
 			Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
 			{
@@ -50,6 +41,13 @@ namespace LabFusion.Network
 				FusionLogger.Log(logMessage.Message);
 			});
 
+			var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
+			{
+				ProductName = ProductName,
+				ProductVersion = ProductVersion,
+			};
+			var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
+			FusionLogger.Log($"EOS Initialize Result: {initializeResult}");
 
 			var options = new Epic.OnlineServices.Platform.Options()
 			{

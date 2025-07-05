@@ -84,7 +84,10 @@ public static class EOSSDKLoader
 			System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
 		}
 
-		_libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
+		if (!PlatformHelper.IsAndroid)
+			_libraryPtr = DllTools.LoadLibrary(eosSDKPath);
+		else
+			_libraryPtr = DllTools.dlopen(eosSDKPath, 2);
 
 		if (_libraryPtr == IntPtr.Zero)
 		{
@@ -103,9 +106,10 @@ public static class EOSSDKLoader
 		if (!HasEOSSDK)
 			return;
 
-		// No Android equivalent, idk 
 		if (!PlatformHelper.IsAndroid)
 			DllTools.FreeLibrary(_libraryPtr);
+		else 
+			DllTools.dlclose(_libraryPtr);
 
 		HasEOSSDK = false;
 	}
@@ -171,7 +175,7 @@ public static class EOSSDKLoader
 		try
 		{
 			JClass systemClass = JNI.FindClass("java/lang/System");
-			if (systemClass == null)
+			if (systemClass.Handle == IntPtr.Zero)
 			{
 				FusionLogger.Error("Failed to find java.lang.System class");
 				return;
@@ -190,7 +194,6 @@ public static class EOSSDKLoader
 			FusionLogger.Log($"Calling System.load with path: {fullLibPath}");
 
 			JNI.CallStaticVoidMethod(systemClass, loadMethod, new JValue(libPath));
-
 			FusionLogger.Log("System.load");
 		}
 		catch (Exception ex)
