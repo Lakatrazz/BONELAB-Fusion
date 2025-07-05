@@ -1,16 +1,16 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-using static LabFusion.Network.EOSNetworkLayer;
-
 using LabFusion.Utilities;
+
+using static LabFusion.Network.EOSNetworkLayer;
 
 namespace LabFusion.Network
 {
 	public class EOSLobby : NetworkLobby
 	{
 		internal LobbyDetails LobbyDetails;
-		private string _lobbyId;
+		private readonly string _lobbyId;
 
 		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
@@ -24,6 +24,8 @@ namespace LabFusion.Network
 			{
 				return () =>
 				{
+					
+
 					eosLayer.JoinServer(lobbyId);
 				};
 			}
@@ -39,12 +41,17 @@ namespace LabFusion.Network
 
 		public override void SetMetadata(string key, string value)
 		{
-			SaveKey(key);
+			if (string.IsNullOrEmpty(key))
+				return;
+
+            value ??= string.Empty;
+
+            SaveKey(key);
 
 			_pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
 		}
 
-		private Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
+		private readonly Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
 		private float _lastUpdateTime = 0f;
 		public void UpdateLobby()
 		{
@@ -61,7 +68,7 @@ namespace LabFusion.Network
 				var updateOptions = new UpdateLobbyModificationOptions
 				{
 					LobbyId = _lobbyId,
-					LocalUserId = EOSNetworkLayer.LocalUserId
+					LocalUserId = LocalUserId
 				};
 
 				Result result = lobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);

@@ -281,7 +281,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
             Disconnect();
 
         SteamId steamId = new SteamId();
-        SteamId.Value = ulong.Parse(serverId);
+        steamId.Value = ulong.Parse(serverId);
 
         SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(steamId, 0);
 

@@ -1,10 +1,6 @@
 ﻿using Epic.OnlineServices;
-using LabFusion.Utilities;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using LabFusion.Utilities;
 
 using static LabFusion.Network.EOSNetworkLayer;
 
@@ -38,16 +34,6 @@ namespace LabFusion.Network
 				RelayControl = Epic.OnlineServices.P2P.RelayControl.AllowRelays,
 			};
 			P2PInterface.SetRelayControl(ref relayOptions);
-
-
-			var options = new Epic.OnlineServices.P2P.GetPacketQueueInfoOptions()
-			{
-
-			};
-			var result = P2PInterface.GetPacketQueueInfo(ref options, out var outPacketQueueInfo);
-
-			FusionLogger.Log(outPacketQueueInfo.OutgoingPacketQueueMaxSizeBytes);
-			FusionLogger.Log(outPacketQueueInfo.IncomingPacketQueueMaxSizeBytes);
 		}
 
 		internal static void CloseAllConnections()
@@ -58,7 +44,7 @@ namespace LabFusion.Network
 				SocketId = SocketId
 			};
 
-			Result result = P2PInterface.CloseConnections(ref closeConnectionsOptions);
+			P2PInterface.CloseConnections(ref closeConnectionsOptions);
 		}
 
 		private static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel)

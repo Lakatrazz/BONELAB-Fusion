@@ -1,14 +1,12 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 
-using LabFusion.Utilities;
-
 using MelonLoader;
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
+
+using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
@@ -28,10 +26,10 @@ namespace LabFusion.Network
 
 		public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
 		{
-			throw new NotImplementedException();
+			MelonCoroutines.Start(FindLobbies(callback, code));
 		}
 
-		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = "")
 		{
 			var stopwatch = Stopwatch.StartNew();
 
@@ -55,12 +53,13 @@ namespace LabFusion.Network
 				yield break;
 			}
 
+			// Needed for lobby search to work... for some reason...
 			var paramOptions = new LobbySearchSetParameterOptions
 			{
 				Parameter = new AttributeData
 				{
-					Key = "lobby_open",
-					Value = new AttributeDataValue { AsUtf8 = bool.TrueString }
+					Key = string.IsNullOrEmpty(code) ? LobbyKeys.HasServerOpenKey : LobbyKeys.LobbyCodeKey,
+					Value = string.IsNullOrEmpty(code) ? bool.TrueString : code,
 				},
 				ComparisonOp = ComparisonOp.Equal,
 			};
@@ -121,6 +120,7 @@ namespace LabFusion.Network
 							var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
 
 							var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
+							metadata.LobbyInfo.LobbyId = networkLobby.GetLobbyId();
 
 							if (metadata.HasServerOpen)
 							{
@@ -144,9 +144,7 @@ namespace LabFusion.Network
 			}
 
 			searchHandle.Release();
-
 			stopwatch.Stop();
-			FusionLogger.Log($"Found {lobbies.Count} lobbies in {stopwatch.ElapsedMilliseconds}ms ({stopwatch.Elapsed.TotalSeconds:F2}s)");
 
 			callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo
 			{

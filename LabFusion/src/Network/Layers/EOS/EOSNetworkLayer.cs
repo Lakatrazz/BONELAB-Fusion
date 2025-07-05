@@ -69,8 +69,6 @@ public class EOSNetworkLayer : NetworkLayer
 	private const float _PlatformTickInterval = 0.1f;
 	private float _PlatformTickTimer = 0f;
 
-	public string ServerCode { get; private set; } = null;
-
 	public override bool CheckSupported() => true;
 
 	public override bool CheckValidation() => EOSSDKLoader.HasEOSSDK;
@@ -158,7 +156,8 @@ public class EOSNetworkLayer : NetworkLayer
 		}
 
 		// Used for throttling metadata updates since EOS has a limit
-		_currentLobby?.UpdateLobby();
+		if (IsHost)
+			_currentLobby?.UpdateLobby();
 
 		EOSSocketHandler.ReceiveMessages();
 	}
@@ -317,7 +316,6 @@ public class EOSNetworkLayer : NetworkLayer
 			PresenceEnabled = false,
 			RejoinAfterKickRequiresInvite = false,
 			EnableJoinById = true,
-			LobbyId = LocalUserId.ToString(),
 		};
 		LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
 		{
@@ -383,12 +381,14 @@ public class EOSNetworkLayer : NetworkLayer
 
 			HostId = LocalUserId;
 
-			_currentLobby.SetMetadata("lobby_open", bool.TrueString);
-
-			OnUpdateLobby();
+            OnUpdateLobby();
 
 			InternalServerHelpers.OnStartServer();
+
+#if DEBUG
 			FusionLogger.Log($"Created EOS lobby: {info.ResultCode} with ID {info.LobbyId}");
+#endif
+
 			SetLobbyConnectionState(LobbyConnectionState.Connected);
 			RefreshServerCode();
 		});
@@ -489,7 +489,8 @@ public class EOSNetworkLayer : NetworkLayer
 		{
 			if (joinDelegate.ResultCode != Result.Success)
 			{
-				FusionLogger.Error($"Failed to join EOS lobby: {joinDelegate.ResultCode}");
+				FusionLogger.Log(lobbyId);
+                FusionLogger.Error($"Failed to join EOS lobby: {joinDelegate.ResultCode}");
 				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
 				return;
 			}
@@ -514,7 +515,43 @@ public class EOSNetworkLayer : NetworkLayer
 		});
 	}
 
-	public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
+    public string ServerCode { get; private set; } = null;
+
+    public override string GetServerCode()
+    {
+        return ServerCode;
+    }
+
+    public override void RefreshServerCode()
+    {
+        ServerCode = RandomCodeGenerator.GetString(8);
+
+        LobbyInfoManager.PushLobbyUpdate();
+    }
+
+    public override void JoinServerByCode(string code)
+    {
+        if (Matchmaker == null)
+        {
+            return;
+        }
+
+#if DEBUG
+        FusionLogger.Log($"Searching for servers with code {code}...");
+#endif
+
+        Matchmaker.RequestLobbiesByCode(code, (info) =>
+        {
+            if (info.Lobbies.Length <= 0)
+            {
+                return;
+            }
+
+            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
+        });
+    }
+
+    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
 	{
 		if (IsHost)
 		{
