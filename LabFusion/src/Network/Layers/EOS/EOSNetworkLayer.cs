@@ -77,7 +77,7 @@ public class EOSNetworkLayer : NetworkLayer
 	{
 		try
 		{
-			EOSManager.InitEOS();
+            EOSManager.InitEOS();
 
             _voiceManager = new UnityVoiceManager();
 			_voiceManager.Enable();

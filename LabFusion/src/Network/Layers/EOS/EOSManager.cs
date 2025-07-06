@@ -38,7 +38,9 @@ namespace LabFusion.Network
 				FusionLogger.Log(logMessage.Message);
 			});
 
-			var initializeOptions = new Epic.OnlineServices.Platform.InitializeOptions()
+			EOSJNI.EOS_Init();
+
+            var initializeOptions = new Epic.OnlineServices.Platform.AndroidInitializeOptions()
 			{
 				ProductName = ProductName,
 				ProductVersion = ProductVersion,

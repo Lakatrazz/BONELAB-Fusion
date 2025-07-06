@@ -1,7 +1,7 @@
 ﻿using Epic.OnlineServices;
 
 using JNISharp.NativeInterface;
-
+using LabFusion.Network;
 using LabFusion.Utilities;
 
 using System.Reflection;
@@ -13,7 +13,8 @@ public static class EOSSDKLoader
 {
 	public static bool HasEOSSDK { get; private set; } = false;
 
-	private static IntPtr _libraryPtr = IntPtr.Zero;
+	internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
+    private static IntPtr _libraryPtr = IntPtr.Zero;
 
 	private static IntPtr AndroidImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 	{
@@ -78,18 +79,15 @@ public static class EOSSDKLoader
 			}
 		}
 
-		if (PlatformHelper.IsAndroid)
+        _libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
+
+        if (PlatformHelper.IsAndroid)
 		{
-			InitializeAndroidJNI();
+			//InitializeAndroidJNI();
 			System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
 		}
 
-		if (!PlatformHelper.IsAndroid)
-			_libraryPtr = DllTools.LoadLibrary(eosSDKPath);
-		else
-			_libraryPtr = DllTools.dlopen(eosSDKPath, 2);
-
-		if (_libraryPtr == IntPtr.Zero)
+        if (_libraryPtr == IntPtr.Zero)
 		{
 			FusionLogger.Error($"Failed to load EOS SDK into the application!");
 			return;
@@ -175,27 +173,15 @@ public static class EOSSDKLoader
 		try
 		{
 			JClass systemClass = JNI.FindClass("java/lang/System");
-			if (systemClass.Handle == IntPtr.Zero)
-			{
-				FusionLogger.Error("Failed to find java.lang.System class");
-				return;
-			}
+            JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "loadLibrary", "(Ljava/lang/String;)V");
 
-			JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
-			if (loadMethod.Handle == IntPtr.Zero)
-			{
-				FusionLogger.Error("Failed to find System.load method");
-				return;
-			}
+			JNI.CallStaticVoidMethod(systemClass, loadMethod, new JValue("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so"));
 
-			string fullLibPath = PersistentData.GetPath("libEOSSDK.so");
-			JString libPath = JNI.NewString(fullLibPath);
+			FieldInfo lastVmPtrField = typeof(JNI).GetField("lastVmPtr", HarmonyLib.AccessTools.all);
+			JavaVM = (IntPtr)lastVmPtrField.GetValue(null);
 
-			FusionLogger.Log($"Calling System.load with path: {fullLibPath}");
-
-			JNI.CallStaticVoidMethod(systemClass, loadMethod, new JValue(libPath));
-			FusionLogger.Log("System.load");
-		}
+			FusionLogger.Log($"JNI initialized with JavaVM: {JavaVM}");
+        }
 		catch (Exception ex)
 		{
 			FusionLogger.Error($"Failed to initialize JNI: {ex.Message}");
