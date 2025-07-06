@@ -1,33 +1,70 @@
 ﻿using Epic.OnlineServices;
+using Epic.OnlineServices.Auth;
+using Epic.OnlineServices.Connect;
+using Epic.OnlineServices.Friends;
+using Epic.OnlineServices.Lobby;
+using Epic.OnlineServices.P2P;
+using Epic.OnlineServices.Platform;
 
+using Il2CppSystem;
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
-
+using MelonLoader;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using UnityEngine;
+using static Il2Cpp.Interop;
+using static Il2CppTrees.SparseVoxelOctree;
 using static LabFusion.Network.EOSNetworkLayer;
 
 namespace LabFusion.Network
 {
 	internal class EOSManager
 	{
-		// EOS Properties
-		static string ProductName => "BONELAB Fusion";
-		static string ProductVersion => "1.0";
-		static string ProductId => "29e074d5b4724f3bb01f26b7e33d2582";
-		static string SandboxId => "26f32d66d87f4dfeb4a7449b776a41f1";
-		static string DeploymentId => "1dffb21201e04ad89b0e6e415f0b8993";
-		static string ClientId => "xyza7891gWLwVJx3rdLOLs6vJ05u9jWT";
-		static string ClientSecret => "IWrUy1Z62wWajAX37k3zkQ4Kkto+AvfQSyZ9zfvibzw";
+		public static PlatformInterface PlatformInterface;
+		public static AuthInterface AuthInterface;
+		public static ConnectInterface ConnectInterface;
+		public static P2PInterface P2PInterface;
+		public static LobbyInterface LobbyInterface;
+		public static FriendsInterface FriendsInterface;
 
-		internal static void InitEOS()
+		public static string SavedUsername = string.Empty;
+
+		// EOS Properties
+		protected static string ProductName => "BONELAB Fusion";
+		protected static string ProductVersion => "1.0";
+		protected static string ProductId => "29e074d5b4724f3bb01f26b7e33d2582";
+		protected static string SandboxId => "26f32d66d87f4dfeb4a7449b776a41f1";
+		protected static string DeploymentId => "1dffb21201e04ad89b0e6e415f0b8993";
+		protected static string ClientId => "xyza7891gWLwVJx3rdLOLs6vJ05u9jWT";
+		protected static string ClientSecret => "IWrUy1Z62wWajAX37k3zkQ4Kkto+AvfQSyZ9zfvibzw";
+
+		private static IEnumerator Ticker()
 		{
+			float timePassed = 0f;
+			while (PlatformInterface != null)
+			{
+				timePassed += TimeUtilities.DeltaTime;
+				if (timePassed >= 1f/20f)
+				{
+					timePassed = 0f;
+					PlatformInterface?.Tick();
+				}
+				yield return null;
+			}
+
+			yield break;
+		}
+
+		internal static IEnumerator InitEOS(System.Action<bool> onComplete)
+		{
+			// Setup debug logging
 			Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, LogLevel);
 			Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
 			{
@@ -38,38 +75,102 @@ namespace LabFusion.Network
 				FusionLogger.Log(logMessage.Message);
 			});
 
-			EOSJNI.EOS_Init();
+			// Android specific initialization
+			if (PlatformHelper.IsAndroid)
+				EOSJNI.EOS_Init();
 
-            var initializeOptions = new Epic.OnlineServices.Platform.AndroidInitializeOptions()
+			if (!InitializeInterfaces())
+			{
+				onComplete?.Invoke(false);
+				yield break;
+			}
+
+			MelonCoroutines.Start(Ticker());
+
+			bool loginComplete = false;
+			bool loginSuccess = false;
+			MelonCoroutines.Start(Login((success) =>
+			{
+				loginSuccess = success;
+				loginComplete = true;
+			}));
+
+			while (!loginComplete)
+				yield return null;
+
+			if (!loginSuccess)
+			{
+				ShutdownEOS();
+				onComplete?.Invoke(false);
+				yield break;
+			}
+
+			bool connectComplete = false;
+			bool connectSuccess = false;
+			MelonCoroutines.Start(SetupConnectLogin((success) =>
+			{
+				connectSuccess = success;
+				connectComplete = true;
+			}));
+
+			while (!connectComplete)
+				yield return null;
+
+			if (!connectSuccess)
+			{
+				ShutdownEOS();
+				onComplete?.Invoke(false);
+				yield break;
+			}
+
+			bool usernameComplete = false;
+			MelonCoroutines.Start(SetupUsername(LocalAccountId, (username) =>
+			{
+				usernameComplete = true;
+				SavedUsername = username;
+			}));
+
+			while (!usernameComplete)
+				yield return null;
+
+			EOSSocketHandler.ConfigureP2P();
+
+			onComplete.Invoke(true);
+			yield break;
+		}
+
+		private static bool InitializeInterfaces()
+		{
+			var initializeOptions = new InitializeOptions()
 			{
 				ProductName = ProductName,
 				ProductVersion = ProductVersion,
 			};
-			var initializeResult = Epic.OnlineServices.Platform.PlatformInterface.Initialize(ref initializeOptions);
+			var initializeResult = PlatformInterface.Initialize(ref initializeOptions);
 
-			if (initializeResult != Result.Success)
+			if (initializeResult != Result.Success && initializeResult != Result.AlreadyConfigured)
 			{
 				FusionLogger.Error($"Failed to initialize EOS Platform: {initializeResult}");
-				return;
-            }
+				return false;
+			}
 
-            var options = new Epic.OnlineServices.Platform.Options()
+			var options = new Options()
 			{
 				ProductId = ProductId,
 				SandboxId = SandboxId,
 				DeploymentId = DeploymentId,
-				ClientCredentials = new Epic.OnlineServices.Platform.ClientCredentials()
+				ClientCredentials = new ClientCredentials()
 				{
 					ClientId = ClientId,
 					ClientSecret = ClientSecret
 				},
 			};
-			PlatformInterface = Epic.OnlineServices.Platform.PlatformInterface.Create(ref options);
+			PlatformInterface = PlatformInterface.Create(ref options);
 			if (PlatformInterface == null)
 			{
 				FusionLogger.Error("Failed to create EOS Platform Interface");
-				return;
-            }
+				return false;
+			}
 
 			AuthInterface = PlatformInterface.GetAuthInterface();
 			ConnectInterface = PlatformInterface.GetConnectInterface();
@@ -77,163 +178,217 @@ namespace LabFusion.Network
 			LobbyInterface = PlatformInterface.GetLobbyInterface();
 			FriendsInterface = PlatformInterface.GetFriendsInterface();
 
-            // Login with persistent auth
-            var authLoginOptions = new Epic.OnlineServices.Auth.LoginOptions()
+			return true;
+		}
+
+		private static IEnumerator Login(System.Action<bool> onComplete)
+		{
+			// First attempt persistent auth login
+			TaskCompletionSource<bool> persistentLoginAttempt = new();
+			var persistentLoginOptions = new Epic.OnlineServices.Auth.LoginOptions()
 			{
 				Credentials = new Epic.OnlineServices.Auth.Credentials()
 				{
-					Type = Epic.OnlineServices.Auth.LoginCredentialType.PersistentAuth,
+					Type = LoginCredentialType.PersistentAuth,
 					Id = null,
 					Token = null
 				},
-				ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile |
-							 Epic.OnlineServices.Auth.AuthScopeFlags.Presence |
-							 Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList |
-							 Epic.OnlineServices.Auth.AuthScopeFlags.Country
+				ScopeFlags = AuthScopeFlags.BasicProfile |
+							 AuthScopeFlags.Presence |
+							 AuthScopeFlags.FriendsList |
+							 AuthScopeFlags.Country
 			};
+			AuthInterface.Login(ref persistentLoginOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
+			{
+				// If persistent auth fails, use EOS account portal
+				if (loginCallbackInfo.ResultCode == Result.Success)
+				{
+					LocalAccountId = loginCallbackInfo.LocalUserId;
+					persistentLoginAttempt.SetResult(true);
+				}
+				else
+				{
+					persistentLoginAttempt.SetResult(false);
+				}
+			});
 
-			AuthInterface.Login(ref authLoginOptions, null, OnAuthLoginComplete);
+			while (!persistentLoginAttempt.Task.IsCompleted)
+				yield return null;
+
+			if (persistentLoginAttempt.Task.Result == true)
+			{
+				onComplete?.Invoke(true);
+				yield break;
+			}
+
+			TaskCompletionSource<bool> portalLoginAttempt = new TaskCompletionSource<bool>();
+			var portalLoginOptions = new Epic.OnlineServices.Auth.LoginOptions()
+			{
+				Credentials = new Epic.OnlineServices.Auth.Credentials()
+				{
+					Type = LoginCredentialType.AccountPortal,
+					Id = null,
+					Token = null
+				},
+				ScopeFlags = AuthScopeFlags.BasicProfile |
+							 AuthScopeFlags.Presence |
+							 AuthScopeFlags.FriendsList |
+							 AuthScopeFlags.Country
+			};
+			AuthInterface.Login(ref portalLoginOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
+			{
+				// If persistent auth fails, use EOS account portal
+				if (loginCallbackInfo.ResultCode == Result.Success)
+				{
+					LocalAccountId = loginCallbackInfo.LocalUserId;
+					portalLoginAttempt.SetResult(true);
+				}
+				else
+				{
+					portalLoginAttempt.SetResult(false);
+				}
+			});
+
+			while (!portalLoginAttempt.Task.IsCompleted)
+				yield return null;
+
+			if (portalLoginAttempt.Task.Result == true)
+			{
+				onComplete?.Invoke(true);
+				yield break;
+			}
+
+			FusionLogger.Error("Failed to login to EOS.");
+			onComplete?.Invoke(false);
 		}
 
 		internal static void ShutdownEOS()
 		{
-			PlatformInterface.Release();
+			PlatformInterface?.Release();
 			PlatformInterface = null;
-        }
+			AuthInterface = null;
+			ConnectInterface = null;
+			P2PInterface = null;
+			LobbyInterface = null;
+			FriendsInterface = null;
+		}
 
-		private static void OnAuthLoginComplete(ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo)
+		private static IEnumerator SetupConnectLogin(System.Action<bool> onComplete)
 		{
-			// If persistent auth fails, use EOS account portal
-			if (loginCallbackInfo.ResultCode == Result.Success)
+			var copyIdTokenOptions = new Epic.OnlineServices.Auth.CopyIdTokenOptions
+			{ 
+				AccountId = LocalAccountId,
+			};
+			var idTokenResult = AuthInterface.CopyIdToken(ref copyIdTokenOptions, out var idToken);
+
+			if (idTokenResult != Result.Success)
 			{
-				LocalAccountId = loginCallbackInfo.LocalUserId;
-				SetupConnectLogin();
+				FusionLogger.Error($"Failed to get Auth ID token for Connect login: {idTokenResult}");
+				onComplete?.Invoke(false);
+				yield break;
 			}
-			else
+
+			var connectLoginOptions = new Epic.OnlineServices.Connect.LoginOptions
 			{
-				var portalLoginOptions = new Epic.OnlineServices.Auth.LoginOptions()
+				Credentials = new Epic.OnlineServices.Connect.Credentials
 				{
-					Credentials = new Epic.OnlineServices.Auth.Credentials()
+					Type = ExternalCredentialType.EpicIdToken,
+					Token = idToken.Value.JsonWebToken,
+				},
+			};
+
+			bool loginComplete = false;
+			bool loginSuccess = false;
+			ConnectInterface.Login(ref connectLoginOptions, null, (ref Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo) =>
+			{
+				if (connectLoginCallbackInfo.ResultCode == Result.Success)
+				{
+					loginSuccess = true;
+					LocalUserId = connectLoginCallbackInfo.LocalUserId;
+					loginComplete = true;
+				} 
+				else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser && connectLoginCallbackInfo.ContinuanceToken != null)
+				{
+					var createUserOptions = new CreateUserOptions
 					{
-						Type = Epic.OnlineServices.Auth.LoginCredentialType.AccountPortal,
-						Id = null,
-						Token = null
-					},
-					ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile |
-								 Epic.OnlineServices.Auth.AuthScopeFlags.Presence |
-								 Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList |
-								 Epic.OnlineServices.Auth.AuthScopeFlags.Country
+						ContinuanceToken = connectLoginCallbackInfo.ContinuanceToken
+					};
+
+					ConnectInterface.CreateUser(ref createUserOptions, null, (ref CreateUserCallbackInfo callbackInfo) =>
+					{
+						if (callbackInfo.ResultCode != Result.Success)
+						{
+							FusionLogger.Error($"Failed to create new user: {callbackInfo.ResultCode}");
+							loginComplete = true;
+							return;
+						}
+
+						LocalUserId = callbackInfo.LocalUserId;
+#if DEBUG
+						FusionLogger.Log($"New user created successfully. ProductUserId: {LocalUserId}");
+#endif
+					} );
+				} 
+				else
+				{
+					loginComplete = true;
+				}
+			});
+
+			while (!loginComplete)
+				yield return null;
+
+			if (!loginSuccess)
+			{
+				FusionLogger.Error($"Connect login failed!");
+				onComplete?.Invoke(false);
+				yield break;
+			}
+
+			onComplete?.Invoke(true);
+		}
+
+		public static IEnumerator SetupUsername(EpicAccountId accountId, System.Action<string> onComplete)
+		{
+			var userInfoInterface = PlatformInterface.GetUserInfoInterface();
+			var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
+			{
+				LocalUserId = LocalAccountId,
+				TargetUserId = accountId
+			};
+
+			TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
+			userInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
+			{
+				if (callbackInfo.ResultCode != Result.Success)
+				{
+					usernameTask.SetResult(string.Empty);
+					return;
+				}
+
+				var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
+				{
+					LocalUserId = LocalAccountId,
+					TargetUserId = accountId
 				};
 
-				AuthInterface.Login(ref portalLoginOptions, null, OnPortalLoginComplete);
-			}
+				if (userInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
+					usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
+			});
+
+			while (!usernameTask.Task.IsCompleted)
+				yield return null;
+
+			onComplete?.Invoke(usernameTask.Task.Result);
+			yield break;
 		}
 
-		private static void OnPortalLoginComplete(ref Epic.OnlineServices.Auth.LoginCallbackInfo portalLoginCallbackInfo)
+		public static EpicAccountId GetAccountIdFromProductId(ProductUserId productUserId)
 		{
-			// Finally, exit if portal login fails
-			if (portalLoginCallbackInfo.ResultCode == Result.Success)
-			{
-				FusionLogger.Log("Auth Login succeeded via account portal.");
-				LocalAccountId = portalLoginCallbackInfo.LocalUserId;
-				SetupConnectLogin();
-			}
-			else
-			{
-				FusionLogger.Error("All login attempts failed: " + portalLoginCallbackInfo.ResultCode);
-				ShutdownEOS();
-            }
-		}
-
-		private static void SetupConnectLogin()
-		{
-            var copyIdTokenOptions = new Epic.OnlineServices.Auth.CopyIdTokenOptions { AccountId = LocalAccountId };
-            var idTokenResult = AuthInterface.CopyIdToken(ref copyIdTokenOptions, out var idToken);
-
-            if (idTokenResult == Result.Success)
-            {
-                var connectLoginOptions = new Epic.OnlineServices.Connect.LoginOptions
-                {
-                    Credentials = new Epic.OnlineServices.Connect.Credentials
-                    {
-                        Type = ExternalCredentialType.EpicIdToken,
-                        Token = idToken.Value.JsonWebToken,
-                    },
-                };
-
-                ConnectInterface.Login(ref connectLoginOptions, null, OnConnectLoginComplete);
-            }
-            else
-            {
-                FusionLogger.Error($"Failed to get Auth ID token for Connect login: {idTokenResult}");
-            }
-        }
-
-		private static void OnConnectLoginComplete(ref Epic.OnlineServices.Connect.LoginCallbackInfo connectLoginCallbackInfo)
-		{
-			var layer = NetworkLayerManager.Layer as EOSNetworkLayer;
-
-			if (connectLoginCallbackInfo.ResultCode == Result.Success)
-			{
-				LocalUserId = connectLoginCallbackInfo.LocalUserId;
-
-#if DEBUG
-				FusionLogger.Log($"Connect login successful. ProductUserId: {LocalUserId}");
-#endif
-				// Setup Fusion local player data
-				PlayerIDManager.SetStringID(LocalUserId.ToString());
-				LocalPlayer.Username = layer.GetUsername(LocalAccountId.ToString());
-
-				EOSSocketHandler.ConfigureP2P();
-			}
-			else if (connectLoginCallbackInfo.ResultCode == Result.InvalidUser && connectLoginCallbackInfo.ContinuanceToken != null)
-			{
-#if DEBUG
-				FusionLogger.Log("New user needs to be created with continuance token");
-#endif
-
-				var createUserOptions = new Epic.OnlineServices.Connect.CreateUserOptions
-                {
-                    ContinuanceToken = connectLoginCallbackInfo.ContinuanceToken
-                };
-
-                ConnectInterface.CreateUser(ref createUserOptions, null, OnCreateUserComplete);
-            }
-			else
-			{
-				FusionLogger.Error($"Connect login failed: {connectLoginCallbackInfo.ResultCode}");
-			}
-		}
-
-		private static void OnCreateUserComplete(ref Epic.OnlineServices.Connect.CreateUserCallbackInfo createUserCallbackInfo)
-		{
-			var layer = NetworkLayerManager.Layer as EOSNetworkLayer;
-
-			if (createUserCallbackInfo.ResultCode == Result.Success)
-			{
-				LocalUserId = createUserCallbackInfo.LocalUserId;
-
-#if DEBUG
-				FusionLogger.Log($"New user created successfully. ProductUserId: {LocalUserId}");
-#endif
-
-				PlayerIDManager.SetStringID(LocalUserId.ToString());
-				LocalPlayer.Username = layer.GetUsername(LocalAccountId.ToString());
-
-				EOSSocketHandler.ConfigureP2P();
-			}
-			else
-			{
-				FusionLogger.Error($"Failed to create new user: {createUserCallbackInfo.ResultCode}");
-			}
-		}
-
-		public static EpicAccountId GetEpicAccountIdFromProductUserId(ProductUserId productUserId)
-		{
-			if (productUserId == null || ConnectInterface == null)
+			if (productUserId == null)
 				return null;
 
-			var options = new Epic.OnlineServices.Connect.CopyProductUserExternalAccountByAccountTypeOptions
+			var options = new CopyProductUserExternalAccountByAccountTypeOptions
 			{
 				TargetUserId = productUserId,
 				AccountIdType = ExternalAccountType.Epic,
@@ -248,7 +403,6 @@ namespace LabFusion.Network
 			else if (result != Result.Success)
 			{
 				FusionLogger.Warn($"Failed to get EpicAccountId for ProductUserId {productUserId}: {result}");
-				return null;
 			}
 
 			return null;

@@ -1,12 +1,10 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
-
+using LabFusion.Utilities;
 using MelonLoader;
-
 using System.Collections;
 using System.Diagnostics;
-
-using LabFusion.Utilities;
+using UnityEngine.Profiling.Memory.Experimental;
 
 namespace LabFusion.Network
 {
@@ -16,10 +14,10 @@ namespace LabFusion.Network
 
 		public EOSMatchmaker(LobbyInterface lobbyInterface) => _lobbyInterface = lobbyInterface;
 
-        public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback));
-        public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback, code));
+		public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback));
+		public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback, code));
 
-        private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = "")
+		private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = null)
 		{
 			var stopwatch = Stopwatch.StartNew();
 
@@ -109,7 +107,12 @@ namespace LabFusion.Network
 
 							var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
 
-							// Make sure LobbyID is actually the EOS Lobby ID and not the PlayerID
+#if !DEBUG
+							if (metadata.LobbyInfo.LobbyId == EOSNetworkLayer.LocalUserId.ToString())
+								continue;
+#endif
+
+								// Make sure LobbyID is actually the EOS Lobby ID and not the PlayerID
 							metadata.LobbyInfo.LobbyId = networkLobby.LobbyId;
 
 							if (metadata.HasServerOpen)

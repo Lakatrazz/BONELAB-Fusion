@@ -6,13 +6,14 @@ using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
-
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using MelonLoader;
+using static Il2CppTrees.SparseVoxelOctree;
 
 namespace LabFusion.Network;
 
@@ -52,41 +53,64 @@ public class EOSNetworkLayer : NetworkLayer
 
 	internal static LogLevel LogLevel => LogLevel.Warning;
 
-	// EOS Interfaces
-	internal static PlatformInterface PlatformInterface;
-	internal static AuthInterface AuthInterface;
-	internal static ConnectInterface ConnectInterface;
-	internal static P2PInterface P2PInterface;
-	internal static LobbyInterface LobbyInterface;
-	internal static FriendsInterface FriendsInterface;
-
 	internal LobbyDetails LobbyDetails => _currentLobby?.LobbyDetails;
 
-    public LobbyConnectionState LobbyConnectionState { get; private set; } = LobbyConnectionState.Disconnected;
+	public LobbyConnectionState LobbyConnectionState { get; private set; } = LobbyConnectionState.Disconnected;
 
 	public static ProductUserId LocalUserId;
 	public static EpicAccountId LocalAccountId;
 
 	internal static ProductUserId HostId = null;
 
-	public override bool CheckSupported() => true;
+	public override bool CheckSupported()
+	{
+		return true;
+	}
 
-	public override bool CheckValidation() => EOSSDKLoader.HasEOSSDK;
+	public override bool CheckValidation()
+	{
+		return EOSSDKLoader.HasEOSSDK;
+	}
+
+	public override void LogIn()
+	{
+		MelonCoroutines.Start(EOSManager.InitEOS((success) =>
+		{
+			if (success)
+			{
+				InvokeLoggedInEvent();
+			} else
+			{
+				FusionLogger.Error("Failed to log in to EOS Network Layer.");
+			}
+		}));
+	}
+
+	public override void LogOut()
+	{
+		InvokeLoggedOutEvent();
+	}
+
+	public override string GetUsername(string userId)
+	{
+		return EOSManager.SavedUsername;
+	}
 
 	public override void OnInitializeLayer()
 	{
 		try
 		{
-            EOSManager.InitEOS();
+			PlayerIDManager.SetStringID(LocalUserId.ToString());
+			LocalPlayer.Username = GetUsername(EOSManager.SavedUsername);
 
-            _voiceManager = new UnityVoiceManager();
+			_voiceManager = new UnityVoiceManager();
 			_voiceManager.Enable();
 
-			_matchmaker = new EOSMatchmaker(LobbyInterface);
+			_matchmaker = new EOSMatchmaker(EOSManager.LobbyInterface);
 
 			HookEOSEvents();
 
-            _isInitialized = true;
+			_isInitialized = true;
 		}
 		catch (Exception e)
 		{
@@ -98,9 +122,9 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override void OnDeinitializeLayer()
 	{
-        Disconnect();
+		Disconnect();
 
-        _voiceManager?.Disable();
+		_voiceManager?.Disable();
 		_voiceManager = null;
 
 		_matchmaker = null;
@@ -110,48 +134,34 @@ public class EOSNetworkLayer : NetworkLayer
 
 		EOSManager.ShutdownEOS();
 
-        UnhookEOSEvents();
+		UnhookEOSEvents();
 
-        _isInitialized = false;
+		_isInitialized = false;
 	}
 
 	private void HookEOSEvents()
 	{
-        MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
-        MultiplayerHooking.OnDisconnected += OnDisconnect;
+		MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
+		MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
+		MultiplayerHooking.OnDisconnected += OnDisconnect;
 
-        LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
-    }
+		LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
+	}
 
 	private void UnhookEOSEvents()
 	{
-        MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
-        MultiplayerHooking.OnDisconnected -= OnDisconnect;
+		MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
+		MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
+		MultiplayerHooking.OnDisconnected -= OnDisconnect;
 
-        LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
-    }
-
-	public override void LogIn()
-	{
-		InvokeLoggedInEvent();
+		LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 	}
 
-	public override void LogOut()
+	public override void OnUpdateLayer()
 	{
-		InvokeLoggedOutEvent();
-	}
-
-    public override void OnUpdateLayer()
-	{
-        PlatformInterface?.Tick();
-
-		// Used for throttling metadata updates since EOS has a limit
-		if (IsHost)
-			_currentLobby?.UpdateLobby();
-
 		EOSSocketHandler.ReceiveMessages();
+
+		_currentLobby?.UpdateLobby();
 	}
 
 	public void OnUpdateLobby()
@@ -172,7 +182,7 @@ public class EOSNetworkLayer : NetworkLayer
 			LocalUserId = LocalUserId
 		};
 
-		Result result = LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+		Result result = EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
 		_currentLobby.UpdateLobbyDetails(lobbyDetails);
 	}
@@ -200,88 +210,43 @@ public class EOSNetworkLayer : NetworkLayer
 		VoiceManager.RemoveSpeaker(id);
 	}
 
-	public override string GetUsername(string userId)
+	public override bool IsFriend(string Id)
 	{
-		string username = "Unknown";
+		// Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
+		ProductUserId productUserId = ProductUserId.FromString(Id);
+		EpicAccountId epicAccountId = EOSManager.GetAccountIdFromProductId(productUserId);
 
-		if (string.IsNullOrEmpty(userId))
+		// this must be a lobby id if we failed to get the epic account id
+		if (epicAccountId == null)
 		{
-			FusionLogger.Error("GetUsername called with null or empty userId.");
-			return username;
-		}
-
-		EpicAccountId epicAccountId = EpicAccountId.FromString(userId);
-
-		var userInfoInterface = PlatformInterface.GetUserInfoInterface();
-		if (userInfoInterface != null)
-		{
-			var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
+			var copyOptions = new CopyLobbyDetailsHandleOptions
 			{
-				LocalUserId = LocalAccountId,
-				TargetUserId = epicAccountId
+				LobbyId = Id,
+				LocalUserId = LocalUserId
 			};
+			EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
-			userInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
-			{
-				if (callbackInfo.ResultCode == Result.Success)
-				{
-					var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
-					{
-						LocalUserId = LocalAccountId,
-						TargetUserId = epicAccountId
-					};
-
-					if (userInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
-					{
-						// This is done Asynchronously, so we cant just return the username. Instead we can just set LocalPlayer.Username as this method is only used for the local player. Fakin hell
-						LocalPlayer.Username = userInfo?.DisplayName ?? "Unknown User";
-					}
-				}
-			});
-
-			return username;
+			var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
+			epicAccountId = EOSManager.GetAccountIdFromProductId(lobbyDetails.GetLobbyOwner(ref ownerOptions));
+			lobbyDetails.Release();
 		}
 
-		return username;
+		if (LocalAccountId == epicAccountId)
+			return true;
+
+		var friendsInterface = EOSManager.PlatformInterface.GetFriendsInterface();
+
+		var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
+		{
+			LocalUserId = LocalAccountId,
+			TargetUserId = epicAccountId
+		};
+		var friendStatus = friendsInterface.GetStatus(ref statusOptions);
+
+		return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
 	}
 
-    public override bool IsFriend(string Id)
-    {
-        // Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
-        ProductUserId productUserId = ProductUserId.FromString(Id);
-        EpicAccountId epicAccountId = EOSManager.GetEpicAccountIdFromProductUserId(productUserId);
-
-        // this must be a lobby id if we failed to get the epic account id
-        if (epicAccountId == null)
-        {
-            var copyOptions = new CopyLobbyDetailsHandleOptions
-            {
-                LobbyId = Id,
-                LocalUserId = LocalUserId
-            };
-            LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
-
-            var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
-            epicAccountId = EOSManager.GetEpicAccountIdFromProductUserId(lobbyDetails.GetLobbyOwner(ref ownerOptions));
-            lobbyDetails.Release();
-        }
-
-        if (LocalAccountId == epicAccountId)
-            return true;
-
-        var friendsInterface = PlatformInterface.GetFriendsInterface();
-
-        var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
-        {
-            LocalUserId = LocalAccountId,
-            TargetUserId = epicAccountId
-        };
-        var friendStatus = friendsInterface.GetStatus(ref statusOptions);
-
-        return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
-    }
-
-    private void SetLobbyConnectionState(LobbyConnectionState newState)
+	private void SetLobbyConnectionState(LobbyConnectionState newState)
 	{
 		if (LobbyConnectionState != newState)
 		{
@@ -305,7 +270,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 	private ulong _connectionRequestedId = Common.InvalidNotificationid;
 	private ulong _connectionClosedId = Common.InvalidNotificationid;
-    private void CreateEpicLobby()
+	private void CreateEpicLobby()
 	{
 		var createOptions = new CreateLobbyOptions
 		{
@@ -319,7 +284,7 @@ public class EOSNetworkLayer : NetworkLayer
 			RejoinAfterKickRequiresInvite = false,
 			EnableJoinById = true,
 		};
-		LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
+		EOSManager.LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
 		{
 			if (info.ResultCode != Result.Success)
 			{
@@ -333,7 +298,7 @@ public class EOSNetworkLayer : NetworkLayer
 				LobbyId = info.LobbyId,
 				LocalUserId = LocalUserId
 			};
-			LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+			EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
 			_currentLobby = new EOSLobby(lobbyDetails, info.LobbyId);
 
@@ -342,7 +307,7 @@ public class EOSNetworkLayer : NetworkLayer
 				SocketId = EOSSocketHandler.SocketId,
 				LocalUserId = LocalUserId
 			};
-			_connectionRequestedId = P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo callbackInfo) =>
+			_connectionRequestedId = EOSManager.P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo callbackInfo) =>
 			{
 				var acceptOptions = new AcceptConnectionOptions
 				{
@@ -350,7 +315,7 @@ public class EOSNetworkLayer : NetworkLayer
 					SocketId = EOSSocketHandler.SocketId,
 					LocalUserId = LocalUserId
 				};
-				P2PInterface.AcceptConnection(ref acceptOptions);
+				EOSManager.P2PInterface.AcceptConnection(ref acceptOptions);
 			});
 
 			var closedOptions = new AddNotifyPeerConnectionClosedOptions
@@ -358,7 +323,7 @@ public class EOSNetworkLayer : NetworkLayer
 				SocketId = EOSSocketHandler.SocketId,
 				LocalUserId = LocalUserId
 			};
-			_connectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null , (ref OnRemoteConnectionClosedInfo info) =>
+			_connectionClosedId = EOSManager.P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null , (ref OnRemoteConnectionClosedInfo info) =>
 			{
 				var closeOptions = new CloseConnectionOptions
 				{
@@ -372,7 +337,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 					ConnectionSender.SendDisconnect(info.RemoteUserId.ToString());
 				}
-				P2PInterface.CloseConnection(ref closeOptions);
+				EOSManager.P2PInterface.CloseConnection(ref closeOptions);
 			});
 
 			_isServerActive = true;
@@ -398,54 +363,54 @@ public class EOSNetworkLayer : NetworkLayer
 
 		SetLobbyConnectionState(LobbyConnectionState.Disconnecting);
 
-        string lobbyId = _currentLobby.LobbyId;
+		string lobbyId = _currentLobby.LobbyId;
 
 		if (string.IsNullOrEmpty(lobbyId))
 			return;
 
-        if (IsHost)
-        {
-            var destroyOptions = new DestroyLobbyOptions
-            {
-                LocalUserId = LocalUserId,
-                LobbyId = lobbyId
-            };
+		if (IsHost)
+		{
+			var destroyOptions = new DestroyLobbyOptions
+			{
+				LocalUserId = LocalUserId,
+				LobbyId = lobbyId
+			};
 
-            LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
-            {
-				P2PInterface.RemoveNotifyPeerConnectionRequest(_connectionRequestedId);
-				P2PInterface.RemoveNotifyPeerConnectionClosed(_connectionClosedId);
+			EOSManager.LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
+			{
+				EOSManager.P2PInterface.RemoveNotifyPeerConnectionRequest(_connectionRequestedId);
+				EOSManager.P2PInterface.RemoveNotifyPeerConnectionClosed(_connectionClosedId);
 
-                EOSSocketHandler.CloseConnections();
-                InternalServerHelpers.OnDisconnect(reason);
+				EOSSocketHandler.CloseConnections();
+				InternalServerHelpers.OnDisconnect(reason);
 
-                _isServerActive = false;
-                _isConnectionActive = false;
-                _currentLobby = null;
+				_isServerActive = false;
+				_isConnectionActive = false;
+				_currentLobby = null;
 
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
-            });
-        }
+				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+			});
+		}
 		else
 		{
-            var leaveOptions = new LeaveLobbyOptions
-            {
-                LobbyId = lobbyId,
-                LocalUserId = LocalUserId
-            };
+			var leaveOptions = new LeaveLobbyOptions
+			{
+				LobbyId = lobbyId,
+				LocalUserId = LocalUserId
+			};
 
-            LobbyInterface.LeaveLobby(ref leaveOptions, null, (ref LeaveLobbyCallbackInfo info) =>
-            {
-                EOSSocketHandler.CloseConnections();
-                InternalServerHelpers.OnDisconnect(reason);
+			EOSManager.LobbyInterface.LeaveLobby(ref leaveOptions, null, (ref LeaveLobbyCallbackInfo info) =>
+			{
+				EOSSocketHandler.CloseConnections();
+				InternalServerHelpers.OnDisconnect(reason);
 
-                _isServerActive = false;
+				_isServerActive = false;
 				_isConnectionActive = false;
-                _currentLobby = null;
+				_currentLobby = null;
 
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
-            });
-        }
+				SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+			});
+		}
 	}
 
 	private void OnDisconnect()
@@ -481,7 +446,7 @@ public class EOSNetworkLayer : NetworkLayer
 			LocalUserId = LocalUserId,
 			PresenceEnabled = false,
 		};
-		LobbyInterface.JoinLobbyById(ref joinLobbyOptions, null, (ref JoinLobbyByIdCallbackInfo joinDelegate) =>
+		EOSManager.LobbyInterface.JoinLobbyById(ref joinLobbyOptions, null, (ref JoinLobbyByIdCallbackInfo joinDelegate) =>
 		{
 			if (joinDelegate.ResultCode != Result.Success)
 			{
@@ -496,7 +461,7 @@ public class EOSNetworkLayer : NetworkLayer
 				LobbyId = joinDelegate.LobbyId,
 				LocalUserId = LocalUserId
 			};
-			LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+			EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 			var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
 
 			HostId = lobbyDetails.GetLobbyOwner(ref ownerOptions);

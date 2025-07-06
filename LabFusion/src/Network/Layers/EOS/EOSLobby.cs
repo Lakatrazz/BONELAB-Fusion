@@ -12,7 +12,7 @@ namespace LabFusion.Network
 		internal LobbyDetails LobbyDetails;
 		internal readonly string LobbyId;
 
-		private readonly Dictionary<string, string> _metadataCache = new Dictionary<string, string>();
+		private Dictionary<string, string> _metadataCache = new();
 
 		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 		{
@@ -26,8 +26,6 @@ namespace LabFusion.Network
 			{
 				return () =>
 				{
-					
-
 					eosLayer.JoinServer(lobbyId);
 				};
 			}
@@ -43,35 +41,30 @@ namespace LabFusion.Network
 
 		public override void SetMetadata(string key, string value)
 		{
-			if (string.IsNullOrEmpty(key))
-				return;
-
-			if (_metadataCache.TryGetValue(key, out string cachedValue) && cachedValue == value) 
-				return;
-
+			SaveKey(key);
 			value ??= string.Empty;
 
-			SaveKey(key);
+			if (_metadataCache.Contains(new KeyValuePair<string, string>(key, value)))
+				return;
 
 			_metadataCache[key] = value;
 			_pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
 		}
 
 		private readonly Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
-		private float _lastUpdateTime = 0f;
+		private float _lastUpdateTime = 60f / 100f;
 		public void UpdateLobby()
 		{
+			if (!NetworkInfo.IsHost)
+				return;
+
 			_lastUpdateTime += TimeUtilities.DeltaTime;
 			// 100 lobby updates per minute is the EOS limit
 			if (_lastUpdateTime >= 60f/100f && _pendingUpdates.TryDequeue(out var update))
 			{
 				_lastUpdateTime = 0f;
-
-				if (NetworkLayerManager.Layer is not EOSNetworkLayer eosLayer)
-					return;
-
-				var lobbyInterface = PlatformInterface.GetLobbyInterface();
-
+				FusionLogger.Log(_pendingUpdates.Count + " pending lobby updates remaining.");	
+				var lobbyInterface = EOSManager.PlatformInterface.GetLobbyInterface();
 				var updateOptions = new UpdateLobbyModificationOptions
 				{
 					LobbyId = LobbyId,
@@ -79,53 +72,49 @@ namespace LabFusion.Network
 				};
 
 				Result result = lobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);
-				if (result != Result.Success || lobbyModification == null)
+				if (result != Result.Success)
 				{
 					FusionLogger.Error($"Failed to create lobby modification: {result}");
+					lobbyModification?.Release();
 					return;
 				}
 
-				try
+				string key = update.Key;
+				string value = update.Value;
+
+				var attributeData = new AttributeData
 				{
-					string key = update.Key;
-					string value = update.Value;
+					Key = key,
+					Value = new AttributeDataValue { AsUtf8 = value }
+				};
 
-					var attributeData = new AttributeData
-					{
-						Key = key,
-						Value = new AttributeDataValue { AsUtf8 = value }
-					};
+				var addAttributeOptions = new LobbyModificationAddAttributeOptions
+				{
+					Attribute = attributeData,
+					Visibility = LobbyAttributeVisibility.Public
+				};
 
-					var addAttributeOptions = new LobbyModificationAddAttributeOptions
-					{
-						Attribute = attributeData,
-						Visibility = LobbyAttributeVisibility.Public
-					};
+				result = lobbyModification.AddAttribute(ref addAttributeOptions);
+				if (result != Result.Success)
+				{
+					FusionLogger.Error($"Failed to add attribute to lobby modification: {result}");
+					return;
+				}
 
-					result = lobbyModification.AddAttribute(ref addAttributeOptions);
-					if (result != Result.Success)
+				var updateLobbyOptions = new UpdateLobbyOptions
+				{
+					LobbyModificationHandle = lobbyModification
+				};
+
+				lobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
+				{
+					if (data.ResultCode != Result.Success)
 					{
-						FusionLogger.Error($"Failed to add attribute to lobby modification: {result}");
-						return;
+						FusionLogger.Error($"Failed to update lobby with new attribute: {data.ResultCode}");
 					}
+				});
 
-					var updateLobbyOptions = new UpdateLobbyOptions
-					{
-						LobbyModificationHandle = lobbyModification
-					};
-
-					lobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
-					{
-						if (data.ResultCode != Result.Success)
-						{
-							FusionLogger.Error($"Failed to update lobby with new attribute: {data.ResultCode}");
-						}
-					});
-				}
-				finally
-				{
-					lobbyModification.Release();
-				}
+				lobbyModification.Release();
 			}
 		}
 

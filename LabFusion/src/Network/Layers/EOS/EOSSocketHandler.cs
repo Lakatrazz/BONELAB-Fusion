@@ -1,6 +1,7 @@
 ﻿using Epic.OnlineServices;
 using LabFusion.Utilities;
 
+using static LabFusion.Network.EOSManager;
 using static LabFusion.Network.EOSNetworkLayer;
 
 namespace LabFusion.Network
@@ -22,7 +23,7 @@ namespace LabFusion.Network
 
 		internal static void ConfigureP2P()
 		{
-            Epic.OnlineServices.P2P.SetPortRangeOptions portOptions = new()
+			Epic.OnlineServices.P2P.SetPortRangeOptions portOptions = new()
 			{
 				Port = 7777,
 				MaxAdditionalPortsToTry = 5,
@@ -31,7 +32,7 @@ namespace LabFusion.Network
 
 			Epic.OnlineServices.P2P.SetRelayControlOptions relayOptions = new()
 			{
-				RelayControl = Epic.OnlineServices.P2P.RelayControl.AllowRelays,
+				RelayControl = Epic.OnlineServices.P2P.RelayControl.ForceRelays,
 			};
 			P2PInterface.SetRelayControl(ref relayOptions);
 		}
@@ -136,7 +137,7 @@ namespace LabFusion.Network
 
 		internal static void ReceiveMessages()
 		{
-			if (LocalUserId == null)
+			if (LocalUserId == null || P2PInterface == null)
 				return;
 
 			try
