@@ -28,7 +28,7 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override string Platform => "Epic";
 
-	public override bool RequiresValidId => false;
+	public override bool RequiresValidId => true;
 
 	public override bool ServerCanSendToHost => false;
 
