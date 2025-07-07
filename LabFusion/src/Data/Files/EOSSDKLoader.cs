@@ -1,11 +1,4 @@
-﻿using Epic.OnlineServices;
-
-using JNISharp.NativeInterface;
-using LabFusion.Network;
-using LabFusion.Utilities;
-
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Data;
 
@@ -13,16 +6,7 @@ public static class EOSSDKLoader
 {
 	public static bool HasEOSSDK { get; private set; } = false;
 
-	internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
-    private static IntPtr _libraryPtr = IntPtr.Zero;
-
-	private static IntPtr AndroidImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-	{
-		if (libraryName == Config.LibraryName + ".so")
-			return _libraryPtr;
-
-		return IntPtr.Zero;
-	}
+	private static IntPtr _libraryPtr = IntPtr.Zero;
 
 	public static async void OnLoadEOSSDK()
 	{
@@ -79,15 +63,9 @@ public static class EOSSDKLoader
 			}
 		}
 
-        _libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
+		_libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
 
-        if (PlatformHelper.IsAndroid)
-		{
-			//InitializeAndroidJNI();
-			System.Runtime.InteropServices.NativeLibrary.SetDllImportResolver(typeof(EOSSDKLoader).Assembly, AndroidImportResolver);
-		}
-
-        if (_libraryPtr == IntPtr.Zero)
+		if (_libraryPtr == IntPtr.Zero)
 		{
 			FusionLogger.Error($"Failed to load EOS SDK into the application!");
 			return;
@@ -165,26 +143,6 @@ public static class EOSSDKLoader
 				onComplete?.Invoke(false);
 				return false;
 			}
-		}
-	}
-
-	private static void InitializeAndroidJNI()
-	{
-		try
-		{
-			JClass systemClass = JNI.FindClass("java/lang/System");
-            JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "loadLibrary", "(Ljava/lang/String;)V");
-
-			JNI.CallStaticVoidMethod(systemClass, loadMethod, new JValue("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so"));
-
-			FieldInfo lastVmPtrField = typeof(JNI).GetField("lastVmPtr", HarmonyLib.AccessTools.all);
-			JavaVM = (IntPtr)lastVmPtrField.GetValue(null);
-
-			FusionLogger.Log($"JNI initialized with JavaVM: {JavaVM}");
-        }
-		catch (Exception ex)
-		{
-			FusionLogger.Error($"Failed to initialize JNI: {ex.Message}");
 		}
 	}
 }

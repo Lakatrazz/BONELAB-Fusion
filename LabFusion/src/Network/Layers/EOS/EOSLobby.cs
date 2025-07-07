@@ -3,148 +3,148 @@ using Epic.OnlineServices.Lobby;
 
 using LabFusion.Utilities;
 
-using static LabFusion.Network.EOSNetworkLayer;
+namespace LabFusion.Network;
 
-namespace LabFusion.Network
+public class EOSLobby : NetworkLobby
 {
-	public class EOSLobby : NetworkLobby
+	internal LobbyDetails LobbyDetails;
+	internal readonly string LobbyId;
+
+	private List<KeyValuePair<string, string>> _metadataCache = new();
+
+	public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
 	{
-		internal LobbyDetails LobbyDetails;
-		internal readonly string LobbyId;
+		LobbyDetails = lobbyDetails;
+		LobbyId = lobbyId;
+	}
 
-		private Dictionary<string, string> _metadataCache = new();
-
-		public EOSLobby(LobbyDetails lobbyDetails, string lobbyId)
+	public override Action CreateJoinDelegate(string lobbyId)
+	{
+		if (NetworkLayerManager.Layer is EOSNetworkLayer eosLayer)
 		{
-			LobbyDetails = lobbyDetails;
-			LobbyId = lobbyId;
-		}
-
-		public override Action CreateJoinDelegate(string lobbyId)
-		{
-			if (NetworkLayerManager.Layer is EOSNetworkLayer eosLayer)
+			return () =>
 			{
-				return () =>
-				{
-					eosLayer.JoinServer(lobbyId);
-				};
-			}
-
-			return null;
+				eosLayer.JoinServer(lobbyId);
+			};
 		}
 
-		public void UpdateLobbyDetails(LobbyDetails details)
+		return null;
+	}
+
+	public void UpdateLobbyDetails(LobbyDetails details)
+	{
+		LobbyDetails.Release();
+		LobbyDetails = details;
+	}
+
+	public override void SetMetadata(string key, string value)
+	{
+		value ??= string.Empty;
+
+		var keyValuePair = new KeyValuePair<string, string>(key, value);
+
+		var existingPair = _metadataCache.FirstOrDefault(kvp => kvp.Key == key);
+		if (!existingPair.Equals(default(KeyValuePair<string, string>)) && existingPair.Value == value)
 		{
-			LobbyDetails.Release();
-			LobbyDetails = details;
+			FusionLogger.Log($"Metadata key '{key}' already set with same value, skipping update.");
+			return;
 		}
 
-		public override void SetMetadata(string key, string value)
-		{
-			SaveKey(key);
-			value ??= string.Empty;
+		SaveKey(key);
+		SetData(key, value);
+	}
 
-			if (_metadataCache.Contains(new KeyValuePair<string, string>(key, value)))
-				return;
-
-			_metadataCache[key] = value;
-			_pendingUpdates.Enqueue(new KeyValuePair<string, string>(key, value));
-		}
-
-		private readonly Queue<KeyValuePair<string, string>> _pendingUpdates = new Queue<KeyValuePair<string, string>>();
-		private float _lastUpdateTime = 60f / 100f;
-		public void UpdateLobby()
+	public void SetData(string key, string value)
+	{
+		try
 		{
 			if (!NetworkInfo.IsHost)
 				return;
 
-			_lastUpdateTime += TimeUtilities.DeltaTime;
-			// 100 lobby updates per minute is the EOS limit
-			if (_lastUpdateTime >= 60f/100f && _pendingUpdates.TryDequeue(out var update))
+			var keyValuePair = new KeyValuePair<string, string>(key, value);
+
+			var updateOptions = new UpdateLobbyModificationOptions
 			{
-				_lastUpdateTime = 0f;
-				FusionLogger.Log(_pendingUpdates.Count + " pending lobby updates remaining.");	
-				var lobbyInterface = EOSManager.PlatformInterface.GetLobbyInterface();
-				var updateOptions = new UpdateLobbyModificationOptions
-				{
-					LobbyId = LobbyId,
-					LocalUserId = LocalUserId
-				};
+				LobbyId = LobbyId,
+				LocalUserId = EOSNetworkLayer.LocalUserId
+			};
 
-				Result result = lobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);
-				if (result != Result.Success)
+			Result result = EOSManager.LobbyInterface.UpdateLobbyModification(ref updateOptions, out LobbyModification lobbyModification);
+			if (result != Result.Success)
+			{
+				lobbyModification?.Release();
+				throw new InvalidOperationException($"Failed to create lobby modification: {result}");
+			}
+
+			var attributeData = new AttributeData
+			{
+				Key = key,
+				Value = new AttributeDataValue { AsUtf8 = value }
+			};
+
+			var addAttributeOptions = new LobbyModificationAddAttributeOptions
+			{
+				Attribute = attributeData,
+				Visibility = LobbyAttributeVisibility.Public
+			};
+
+			result = lobbyModification.AddAttribute(ref addAttributeOptions);
+			if (result != Result.Success)
+			{
+				throw new InvalidOperationException($"Failed to add attribute to lobby modification: {result}");
+			}
+
+			var updateLobbyOptions = new UpdateLobbyOptions
+			{
+				LobbyModificationHandle = lobbyModification
+			};
+
+			EOSManager.LobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
+			{
+				if (data.ResultCode != Result.Success)
 				{
-					FusionLogger.Error($"Failed to create lobby modification: {result}");
-					lobbyModification?.Release();
-					return;
+					throw new InvalidOperationException($"Failed to update lobby with new attribute: {data.ResultCode}");
 				}
+			});
 
-				string key = update.Key;
-				string value = update.Value;
+			_metadataCache.RemoveAll(kvp => kvp.Key == key);
+			_metadataCache.Add(keyValuePair);
 
-				var attributeData = new AttributeData
-				{
-					Key = key,
-					Value = new AttributeDataValue { AsUtf8 = value }
-				};
+			lobbyModification.Release();
+		}
+		catch (Exception ex)
+		{
+			// A common exception is when the lobby gets closed but fusion tries to set metadata anyway.
+			FusionLogger.Error($"Failed to set metadata for key '{key}' in lobby '{LobbyId}': {ex.Message}");
+		}
+	}
 
-				var addAttributeOptions = new LobbyModificationAddAttributeOptions
-				{
-					Attribute = attributeData,
-					Visibility = LobbyAttributeVisibility.Public
-				};
+	public override bool TryGetMetadata(string key, out string value)
+	{
+		if (LobbyDetails != null)
+		{
+			var options = new LobbyDetailsCopyAttributeByKeyOptions
+			{
+				AttrKey = key
+			};
 
-				result = lobbyModification.AddAttribute(ref addAttributeOptions);
-				if (result != Result.Success)
-				{
-					FusionLogger.Error($"Failed to add attribute to lobby modification: {result}");
-					return;
-				}
-
-				var updateLobbyOptions = new UpdateLobbyOptions
-				{
-					LobbyModificationHandle = lobbyModification
-				};
-
-				lobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo data) =>
-				{
-					if (data.ResultCode != Result.Success)
-					{
-						FusionLogger.Error($"Failed to update lobby with new attribute: {data.ResultCode}");
-					}
-				});
-
-				lobbyModification.Release();
+			var result = LobbyDetails.CopyAttributeByKey(ref options, out Epic.OnlineServices.Lobby.Attribute? attribute);
+			if (result == Result.Success && attribute.HasValue)
+			{
+				value = attribute.Value.Data?.Value.AsUtf8;
+				return value != null;
 			}
 		}
 
-		public override bool TryGetMetadata(string key, out string value)
-		{
-			if (LobbyDetails != null)
-			{
-				var options = new LobbyDetailsCopyAttributeByKeyOptions
-				{
-					AttrKey = key
-				};
+		FusionLogger.Error($"Failed to get metadata for key '{key}' in lobby '{LobbyId}' since lobby details were null!");
 
-				var result = LobbyDetails.CopyAttributeByKey(ref options, out Epic.OnlineServices.Lobby.Attribute? attribute);
-				if (result == Result.Success && attribute.HasValue)
-				{
-					value = attribute.Value.Data?.Value.AsUtf8;
-					return value != null;
-				}
-			}
+		value = null;
+		return false;
+	}
 
-			FusionLogger.Error($"Failed to get metadata for key '{key}' in lobby '{LobbyId}' since lobby details were null!");
-
-			value = null;
-			return false;
-		}
-
-		public override string GetMetadata(string key)
-		{
-			TryGetMetadata(key, out string value);
-			return value;
-		}
+	public override string GetMetadata(string key)
+	{
+		TryGetMetadata(key, out string value);
+		return value;
 	}
 }

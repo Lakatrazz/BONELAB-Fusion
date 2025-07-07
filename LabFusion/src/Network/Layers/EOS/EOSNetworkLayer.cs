@@ -1,19 +1,16 @@
 using Epic.OnlineServices;
-using Epic.OnlineServices.Auth;
-using Epic.OnlineServices.Connect;
-using Epic.OnlineServices.Friends;
 using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
-using Epic.OnlineServices.Platform;
+
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+
 using MelonLoader;
-using static Il2CppTrees.SparseVoxelOctree;
 
 namespace LabFusion.Network;
 
@@ -74,6 +71,8 @@ public class EOSNetworkLayer : NetworkLayer
 
 	public override void LogIn()
 	{
+		NetworkLayerNotifications.SendLoggingInNotification();
+
 		MelonCoroutines.Start(EOSManager.InitEOS((success) =>
 		{
 			if (success)
@@ -160,8 +159,6 @@ public class EOSNetworkLayer : NetworkLayer
 	public override void OnUpdateLayer()
 	{
 		EOSSocketHandler.ReceiveMessages();
-
-		_currentLobby?.UpdateLobby();
 	}
 
 	public void OnUpdateLobby()
@@ -171,7 +168,7 @@ public class EOSNetworkLayer : NetworkLayer
 			return;
 		}
 
-		LobbyMetadataSerializer.WriteInfo(_currentLobby);
+		LobbyMetadataSerializer.WriteInfo(Lobby);
 
 		if (_currentLobby == null)
 			return;
@@ -214,7 +211,7 @@ public class EOSNetworkLayer : NetworkLayer
 	{
 		// Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
 		ProductUserId productUserId = ProductUserId.FromString(Id);
-		EpicAccountId epicAccountId = EOSManager.GetAccountIdFromProductId(productUserId);
+		EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(productUserId);
 
 		// this must be a lobby id if we failed to get the epic account id
 		if (epicAccountId == null)
@@ -227,7 +224,7 @@ public class EOSNetworkLayer : NetworkLayer
 			EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
 			var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
-			epicAccountId = EOSManager.GetAccountIdFromProductId(lobbyDetails.GetLobbyOwner(ref ownerOptions));
+			epicAccountId = EOSUtils.GetAccountIdFromProductId(lobbyDetails.GetLobbyOwner(ref ownerOptions));
 			lobbyDetails.Release();
 		}
 
@@ -280,9 +277,10 @@ public class EOSNetworkLayer : NetworkLayer
 			MaxLobbyMembers = 64,
 			PermissionLevel = LobbyPermissionLevel.Publicadvertised,
 			EnableRTCRoom = false,
-			PresenceEnabled = false,
+			PresenceEnabled = true,
 			RejoinAfterKickRequiresInvite = false,
 			EnableJoinById = true,
+			AllowInvites = true,
 		};
 		EOSManager.LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
 		{
