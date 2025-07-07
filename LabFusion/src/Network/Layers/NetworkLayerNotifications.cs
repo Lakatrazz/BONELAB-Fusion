@@ -10,20 +10,20 @@ namespace LabFusion.Network;
 
 public static class NetworkLayerNotifications
 {   
-    public const string NotificationTag = "NetworkLayer";
+	public const string NotificationTag = "NetworkLayer";
 
-    public static void SendLoggingInNotification()
-    {
-        Notifier.Cancel(NotificationTag);
+	public static void SendLoggingInNotification()
+	{
+		Notifier.Cancel(NotificationTag);
 
-        Notifier.Send(new Notification()
-        {
-            Title = "Please Wait!",
-            Message = "Logging in to the network layer...",
-            Tag = NotificationTag,
-            SaveToMenu = false,
-            ShowPopup = true,
-            Type = NotificationType.INFORMATION,
-        });
-    }
+		Notifier.Send(new Notification()
+		{
+			Title = "Please Wait!",
+			Message = $"Logging in to {NetworkLayerDeterminer.LoadedLayer.Platform}...",
+			Tag = NotificationTag,
+			SaveToMenu = false,
+			ShowPopup = true,
+			Type = NotificationType.INFORMATION,
+		});
+	}
 }
