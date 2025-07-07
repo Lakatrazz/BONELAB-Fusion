@@ -46,7 +46,7 @@ public class EOSLobby : NetworkLobby
 		var existingPair = _metadataCache.FirstOrDefault(kvp => kvp.Key == key);
 		if (!existingPair.Equals(default(KeyValuePair<string, string>)) && existingPair.Value == value)
 		{
-			FusionLogger.Log($"Metadata key '{key}' already set with same value, skipping update.");
+			// FusionLogger.Log($"Metadata key '{key}' already set with same value, skipping update.");
 			return;
 		}
 

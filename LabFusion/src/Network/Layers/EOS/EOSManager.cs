@@ -44,17 +44,6 @@ internal class EOSManager
 
 	internal static IEnumerator InitEOS(System.Action<bool> onComplete)
 	{
-		// Setup debug logging
-		Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, EOSNetworkLayer.LogLevel);
-		Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
-		{
-			// https://eoshelp.epicgames.com/s/article/Why-is-the-warning-LogEOS-FEpicGamesPlatform-GetOnlinePlatformType-unable-to-map-None-to-EOS-OnlinePlatformType-thrown?language=en_US
-			if (logMessage.Message == "FEpicGamesPlatform::GetOnlinePlatformType - unable to map None to EOS_OnlinePlatformType")
-				return;
-
-			FusionLogger.Log(logMessage.Message);
-		});
-
 		// Android specific initialization
 		if (PlatformHelper.IsAndroid)
 			EOSJNI.EOS_Init();
@@ -153,7 +142,19 @@ internal class EOSManager
 			return false;
 		}
 
-		AuthInterface = PlatformInterface.GetAuthInterface();
+        // Setup debug logging
+        Epic.OnlineServices.Logging.LoggingInterface.SetLogLevel(Epic.OnlineServices.Logging.LogCategory.AllCategories, EOSNetworkLayer.LogLevel);
+        Epic.OnlineServices.Logging.LoggingInterface.SetCallback((ref Epic.OnlineServices.Logging.LogMessage logMessage) =>
+        {
+            // https://eoshelp.epicgames.com/s/article/Why-is-the-warning-LogEOS-FEpicGamesPlatform-GetOnlinePlatformType-unable-to-map-None-to-EOS-OnlinePlatformType-thrown?language=en_US
+            if (logMessage.Message == "FEpicGamesPlatform::GetOnlinePlatformType - unable to map None to EOS_OnlinePlatformType")
+                return;
+
+            FusionLogger.Log(logMessage.Message);
+        });
+
+
+        AuthInterface = PlatformInterface.GetAuthInterface();
 		ConnectInterface = PlatformInterface.GetConnectInterface();
 		P2PInterface = PlatformInterface.GetP2PInterface();
 		LobbyInterface = PlatformInterface.GetLobbyInterface();

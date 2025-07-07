@@ -147,5 +147,9 @@ public sealed class EOSMatchmaker : IMatchmaker
 		{
 			Lobbies = lobbies.ToArray()
 		});
+
+#if DEBUG
+		FusionLogger.Log($"Found {lobbies.Count} lobbies in {stopwatch.ElapsedMilliseconds} ms");
+#endif
 	}
 }

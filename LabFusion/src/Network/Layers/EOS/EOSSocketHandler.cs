@@ -1,6 +1,8 @@
 ﻿using Epic.OnlineServices;
 
 using LabFusion.Utilities;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
@@ -133,6 +135,37 @@ internal static class EOSSocketHandler
 		return Result.Success;
 	}
 
+	private static bool IsServerHandled(ReadOnlySpan<byte> messageSpan)
+	{
+		// Actually the dumbest way to check, but it fixed a handful of issues
+		bool isHost = EOSNetworkLayer.HostId == EOSNetworkLayer.LocalUserId;
+		if (!isHost)
+			return false;
+
+		try
+		{
+			using var reader = NetReader.Create(messageSpan.ToArray());
+			MessagePrefix prefix = null;
+			reader.SerializeValue(ref prefix);
+
+			var route = prefix.Route;
+
+			// ToTarget messages targeting the local player should be handled as client
+			if (route.Type == RelayType.ToTarget &&
+				route.Target.HasValue &&
+				route.Target.Value == PlayerIDManager.LocalSmallID)
+			{
+				return false;
+			}
+
+			return true;
+		}
+		catch
+		{
+			return isHost;
+		}
+	}
+
 	internal static void ReceiveMessages()
 	{
 		if (EOSNetworkLayer.LocalUserId == null || EOSManager.P2PInterface == null)
@@ -182,7 +215,7 @@ internal static class EOSSocketHandler
 						var readableMessage = new ReadableMessage()
 						{
 							Buffer = messageSpan,
-							IsServerHandled = EOSNetworkLayer.HostId == EOSNetworkLayer.LocalUserId
+							IsServerHandled = IsServerHandled(messageSpan)
 						};
 
 						NativeMessageHandler.ReadMessage(readableMessage);
@@ -198,7 +231,7 @@ internal static class EOSSocketHandler
 							var readableMessage = new ReadableMessage()
 							{
 								Buffer = messageSpan,
-								IsServerHandled = EOSNetworkLayer.HostId == EOSNetworkLayer.LocalUserId
+								IsServerHandled = IsServerHandled(messageSpan)
 							};
 
 							NativeMessageHandler.ReadMessage(readableMessage);
