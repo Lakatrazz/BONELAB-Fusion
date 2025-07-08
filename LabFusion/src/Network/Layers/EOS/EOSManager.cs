@@ -6,6 +6,7 @@ using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
+using Epic.OnlineServices.UserInfo;
 
 using LabFusion.Utilities;
 
@@ -23,6 +24,7 @@ internal class EOSManager
 	public static P2PInterface P2PInterface;
 	public static LobbyInterface LobbyInterface;
 	public static FriendsInterface FriendsInterface;
+	public static UserInfoInterface UserInfoInterface;
 
 	public static string SavedUsername = string.Empty;
 
@@ -173,6 +175,7 @@ internal class EOSManager
 		P2PInterface = PlatformInterface.GetP2PInterface();
 		LobbyInterface = PlatformInterface.GetLobbyInterface();
 		FriendsInterface = PlatformInterface.GetFriendsInterface();
+		UserInfoInterface = PlatformInterface.GetUserInfoInterface();
 
 		return true;
 	}
@@ -191,7 +194,6 @@ internal class EOSManager
 
 	public static IEnumerator SetupUsername(EpicAccountId accountId, System.Action<string> onComplete)
 	{
-		var userInfoInterface = PlatformInterface.GetUserInfoInterface();
 		var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
 		{
 			LocalUserId = EOSNetworkLayer.LocalAccountId,
@@ -199,7 +201,7 @@ internal class EOSManager
 		};
 
 		TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
-		userInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
+		UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
 		{
 			if (callbackInfo.ResultCode != Result.Success)
 			{
@@ -213,7 +215,7 @@ internal class EOSManager
 				TargetUserId = accountId
 			};
 
-			if (userInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
+			if (UserInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
 				usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
 		});
 

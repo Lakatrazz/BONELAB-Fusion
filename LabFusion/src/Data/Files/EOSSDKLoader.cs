@@ -65,7 +65,7 @@ public static class EOSSDKLoader
 			}
 		}
 
-		// Better than using DLLTools.LoadLibrary. Works on android and windows
+		// Better than using DLLTools.LoadLibrary, works on android and windows. Also seems to copy the file to /data/data/ on android (???)
 		_libraryPtr = MelonLoader.NativeLibrary.LoadLib(eosSDKPath);
 
 		if (_libraryPtr == IntPtr.Zero)
@@ -122,7 +122,7 @@ public static class EOSSDKLoader
 
 		string fullUrl = url + fileName;
 
-		FusionLogger.Log($"Downloading {libraryName} from {fullUrl} to {output}");
+		FusionLogger.Log($"Downloading {libraryName}...");
 
 		HttpClientHandler handler = new HttpClientHandler
 		{
@@ -140,7 +140,7 @@ public static class EOSSDKLoader
 				await using var fileStream = new FileStream(output, FileMode.Create);
 				await response.Content.CopyToAsync(fileStream);
 
-				FusionLogger.Log($"Successfully downloaded {libraryName} to {output}");
+				FusionLogger.Log($"Successfully downloaded {libraryName}!");
 				onComplete?.Invoke(true);
 				return true;
 			}
