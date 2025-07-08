@@ -6,7 +6,7 @@ using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
-using LabFusion.Data;
+
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -45,19 +45,19 @@ internal class EOSManager
 
 	internal static IEnumerator InitEOS(System.Action<bool> onComplete)
 	{
-        // Setup debug logging
-        LoggingInterface.SetLogLevel(LogCategory.AllCategories, EOSNetworkLayer.LogLevel);
-        LoggingInterface.SetCallback((ref LogMessage logMessage) =>
-        {
-            // https://eoshelp.epicgames.com/s/article/Why-is-the-warning-LogEOS-FEpicGamesPlatform-GetOnlinePlatformType-unable-to-map-None-to-EOS-OnlinePlatformType-thrown?language=en_US
-            if (logMessage.Message == "FEpicGamesPlatform::GetOnlinePlatformType - unable to map None to EOS_OnlinePlatformType")
-                return;
+		// Setup debug logging
+		LoggingInterface.SetLogLevel(LogCategory.AllCategories, EOSNetworkLayer.LogLevel);
+		LoggingInterface.SetCallback((ref LogMessage logMessage) =>
+		{
+			// https://eoshelp.epicgames.com/s/article/Why-is-the-warning-LogEOS-FEpicGamesPlatform-GetOnlinePlatformType-unable-to-map-None-to-EOS-OnlinePlatformType-thrown?language=en_US
+			if (logMessage.Message == "FEpicGamesPlatform::GetOnlinePlatformType - unable to map None to EOS_OnlinePlatformType")
+				return;
 
-            FusionLogger.Log(logMessage.Message);
-        });
+			FusionLogger.Log(logMessage.Message);
+		});
 
-        // Android specific initialization
-        if (PlatformHelper.IsAndroid)
+		// Android specific initialization
+		if (PlatformHelper.IsAndroid)
 			EOSJNI.EOS_Init();
 
 		if (!InitializeInterfaces())
@@ -70,11 +70,21 @@ internal class EOSManager
 
 		bool loginComplete = false;
 		bool loginSuccess = false;
-		MelonCoroutines.Start(EOSAuth.Login((success) =>
+		if (!PlatformHelper.IsAndroid)
 		{
-			loginSuccess = success;
-			loginComplete = true;
-		}));
+			MelonCoroutines.Start(EOSAuthWindows64.Login((success) =>
+			{
+				loginSuccess = success;
+				loginComplete = true;
+			}));
+		}else
+		{
+			MelonCoroutines.Start(EOSAuthAndroid.Login((success) =>
+			{
+				loginSuccess = success;
+				loginComplete = true;
+			}));
+		}
 
 		while (!loginComplete)
 			yield return null;
@@ -88,11 +98,23 @@ internal class EOSManager
 
 		bool connectComplete = false;
 		bool connectSuccess = false;
-		MelonCoroutines.Start(EOSAuth.SetupConnectLogin((success) =>
+		if (!PlatformHelper.IsAndroid)
 		{
-			connectSuccess = success;
-			connectComplete = true;
-		}));
+			MelonCoroutines.Start(EOSAuthWindows64.SetupConnectLogin((success) =>
+			{
+				connectSuccess = success;
+				connectComplete = true;
+			}));
+		}
+		else
+		{
+			FusionLogger.Log("Android Connect Login");
+			MelonCoroutines.Start(EOSAuthAndroid.SetupConnectLogin((success) =>
+			{
+				connectSuccess = success;
+				connectComplete = true;
+			}));
+		}
 
 		while (!connectComplete)
 			yield return null;
@@ -125,8 +147,8 @@ internal class EOSManager
 	{
 		var initializeOptions =  new InitializeOptions();
 
-        initializeOptions.ProductName = EOSAuth.ProductName;
-		initializeOptions.ProductVersion = EOSAuth.ProductVersion;
+		initializeOptions.ProductName = EOSCredentialManager.ProductName;
+		initializeOptions.ProductVersion = EOSCredentialManager.ProductVersion;
 		initializeOptions.AllocateMemoryFunction = IntPtr.Zero;
 		initializeOptions.ReallocateMemoryFunction = IntPtr.Zero;
 		initializeOptions.ReleaseMemoryFunction = IntPtr.Zero;
@@ -142,9 +164,9 @@ internal class EOSManager
 		initializeOptions.OverrideThreadAffinity = overrideThreadAffinity;
 
 		Result initializeResult;
-        initializeResult = PlatformInterface.Initialize(ref initializeOptions);
+		initializeResult = PlatformInterface.Initialize(ref initializeOptions);
 
-        if (initializeResult != Result.Success && initializeResult != Result.AlreadyConfigured)
+		if (initializeResult != Result.Success && initializeResult != Result.AlreadyConfigured)
 		{
 			FusionLogger.Error($"Failed to initialize EOS Platform: {initializeResult}");
 			return false;
@@ -152,13 +174,13 @@ internal class EOSManager
 
 		var options = new Options()
 		{
-			ProductId = EOSAuth.ProductId,
-			SandboxId = EOSAuth.SandboxId,
-			DeploymentId = EOSAuth.DeploymentId,
+			ProductId = EOSCredentialManager.ProductId,
+			SandboxId = EOSCredentialManager.SandboxId,
+			DeploymentId = EOSCredentialManager.DeploymentId,
 			ClientCredentials = new ClientCredentials()
 			{
-				ClientId = EOSAuth.ClientId,
-				ClientSecret = EOSAuth.ClientSecret
+				ClientId = EOSCredentialManager.ClientId,
+				ClientSecret = EOSCredentialManager.ClientSecret
 			},
 		};
 		PlatformInterface = PlatformInterface.Create(ref options);
@@ -222,5 +244,5 @@ internal class EOSManager
 
 		onComplete?.Invoke(usernameTask.Task.Result);
 		yield break;
-	}
+	} 
 }

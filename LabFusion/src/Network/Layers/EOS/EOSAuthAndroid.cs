@@ -1,28 +1,21 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
 using Epic.OnlineServices.Connect;
-
-using LabFusion.Utilities;
+using Il2CppOculus.Platform;
+using Il2CppOculus.Platform.Models;
 using LabFusion.Data;
-
+using LabFusion.Utilities;
+using MelonLoader;
 using System.Collections;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using UnityEngine;
 
 namespace LabFusion.Network;
 
-internal class EOSAuth
+internal class EOSAuthAndroid
 {
-	// EOS Properties
-	internal static string ProductName => "BONELAB Fusion";
-	internal static string ProductVersion => "1.0";
-	internal static string ProductId => "29e074d5b4724f3bb01f26b7e33d2582";
-	internal static string SandboxId => "26f32d66d87f4dfeb4a7449b776a41f1";
-	internal static string DeploymentId => "1dffb21201e04ad89b0e6e415f0b8993";
-	internal static string ClientId => "xyza7891gWLwVJx3rdLOLs6vJ05u9jWT";
-	internal static string ClientSecret => "IWrUy1Z62wWajAX37k3zkQ4Kkto+AvfQSyZ9zfvibzw";
-
 	[System.Serializable]
 	private class AuthData
 	{
@@ -30,7 +23,7 @@ internal class EOSAuth
 		public string RefreshToken { get; set; }
 	}
 
-	private const string AuthFileName = "eos_auth.dat";
+	private const string AuthFileName = "eos_auth_android.dat";
 
 	private static void SaveAuthData(EpicAccountId accountId)
 	{
@@ -91,7 +84,9 @@ internal class EOSAuth
 
 	internal static IEnumerator Login(System.Action<bool> onComplete)
 	{
-		// Try to login with a saved refresh token
+		FusionLogger.Log("Android Auth");
+
+		// Try to login with a saved refresh token first
 		TaskCompletionSource<bool> refreshTokenAttempt = new();
 		var savedAuthData = LoadAuthData();
 
@@ -102,7 +97,8 @@ internal class EOSAuth
 				Credentials = new Epic.OnlineServices.Auth.Credentials()
 				{
 					Type = LoginCredentialType.RefreshToken,
-					Token = savedAuthData.RefreshToken
+					Token = savedAuthData.RefreshToken,
+					Id = null
 				},
 				ScopeFlags = AuthScopeFlags.BasicProfile |
 							 AuthScopeFlags.Presence |
@@ -134,9 +130,12 @@ internal class EOSAuth
 			}
 		}
 
-		// If there is no saved data or the refresh token failed, use the account portal
-		TaskCompletionSource<bool> portalLoginAttempt = new TaskCompletionSource<bool>();
-		var portalLoginOptions = new Epic.OnlineServices.Auth.LoginOptions()
+		// Try AccountPortal (modern replacement for DeviceCode)
+		FusionLogger.Log("Attempting AccountPortal authentication (device code flow)...");
+
+		TaskCompletionSource<bool> accountPortalAttempt = new();
+
+		var accountPortalOptions = new Epic.OnlineServices.Auth.LoginOptions()
 		{
 			Credentials = new Epic.OnlineServices.Auth.Credentials()
 			{
@@ -144,34 +143,118 @@ internal class EOSAuth
 				Id = null,
 				Token = null
 			},
+			LoginFlags = LoginFlags.NoUserInterface,
 			ScopeFlags = AuthScopeFlags.BasicProfile |
 						 AuthScopeFlags.Presence |
 						 AuthScopeFlags.FriendsList |
 						 AuthScopeFlags.Country
 		};
-		EOSManager.AuthInterface.Login(ref portalLoginOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
+
+		bool accountPortalComplete = false;
+		bool accountPortalSuccess = false;
+		PinGrantInfo? pinGrantInfo = null;
+
+		EOSManager.AuthInterface.Login(ref accountPortalOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
 		{
-			// If account portal login succeeds, save the auth data
+			FusionLogger.Log($"Enter code: {pinGrantInfo?.VerificationURI}");
+
 			if (loginCallbackInfo.ResultCode == Result.Success)
 			{
 				EOSNetworkLayer.LocalAccountId = loginCallbackInfo.LocalUserId;
 				SaveAuthData(loginCallbackInfo.LocalUserId);
-				portalLoginAttempt.SetResult(true);
+				accountPortalSuccess = true;
+				accountPortalComplete = true;
+				FusionLogger.Log("AccountPortal authentication successful!");
+			}
+			else if (loginCallbackInfo.ResultCode == Result.AuthPinGrantCode && loginCallbackInfo.PinGrantInfo.HasValue)
+			{
+				// This is the device code flow!
+				pinGrantInfo = loginCallbackInfo.PinGrantInfo.Value;
+
+				FusionLogger.Log("=== DEVICE CODE AUTHENTICATION ===");
+				FusionLogger.Log($"Go to: {pinGrantInfo.Value.VerificationURI}");
+				FusionLogger.Log($"Enter code: {pinGrantInfo.Value.UserCode}");
+				FusionLogger.Log($"Or visit: {pinGrantInfo.Value.VerificationURIComplete}");
+				FusionLogger.Log($"You have {pinGrantInfo.Value.ExpiresIn} seconds to complete this process");
+				FusionLogger.Log("==================================");
+
+				// Don't complete yet - we need to start polling
 			}
 			else
 			{
-				portalLoginAttempt.SetResult(false);
+				FusionLogger.Error($"AccountPortal authentication failed: {loginCallbackInfo.ResultCode}");
+				accountPortalComplete = true;
 			}
 		});
 
-		while (!portalLoginAttempt.Task.IsCompleted)
+		// Wait for initial response
+		while (!accountPortalComplete && pinGrantInfo == null)
 			yield return null;
 
-		if (portalLoginAttempt.Task.Result == true)
+		// If we got a pin grant code, start polling (device code flow)
+		if (pinGrantInfo.HasValue)
+		{
+			FusionLogger.Log("Waiting for user to complete authentication on their device...");
+
+			float pollInterval = 5.0f;
+			float timeElapsed = 0.0f;
+			float timeout = pinGrantInfo.Value.ExpiresIn;
+
+			while (timeElapsed < timeout && !accountPortalComplete)
+			{
+				yield return new WaitForSeconds(pollInterval);
+				timeElapsed += pollInterval;
+
+				// Poll by calling login again
+				EOSManager.AuthInterface.Login(ref accountPortalOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo pollCallbackInfo) =>
+				{
+					if (pollCallbackInfo.ResultCode == Result.Success)
+					{
+						EOSNetworkLayer.LocalAccountId = pollCallbackInfo.LocalUserId;
+						SaveAuthData(pollCallbackInfo.LocalUserId);
+						accountPortalSuccess = true;
+						accountPortalComplete = true;
+						FusionLogger.Log("Device code authentication completed successfully!");
+					}
+					else if (pollCallbackInfo.ResultCode == Result.AuthPinGrantPending)
+					{
+						FusionLogger.Log($"Still waiting for authentication... ({(int)(timeout - timeElapsed)} seconds remaining)");
+					}
+					else if (pollCallbackInfo.ResultCode == Result.AuthPinGrantExpired)
+					{
+						FusionLogger.Error("Device code has expired. Please try again.");
+						accountPortalComplete = true;
+					}
+					else
+					{
+						FusionLogger.Error($"Device code authentication failed: {pollCallbackInfo.ResultCode}");
+						accountPortalComplete = true;
+					}
+				});
+
+				// Wait for poll callback
+				while (!accountPortalComplete && timeElapsed < timeout)
+				{
+					yield return new WaitForSeconds(0.1f);
+					timeElapsed += 0.1f;
+				}
+			}
+
+			if (timeElapsed >= timeout && !accountPortalSuccess)
+			{
+				FusionLogger.Error("Device code authentication timed out.");
+			}
+		}
+
+		if (accountPortalSuccess)
 		{
 			onComplete?.Invoke(true);
 			yield break;
 		}
+
+		// Fall back to Oculus if AccountPortal fails
+		FusionLogger.Log("Falling back to Oculus authentication...");
+		// ... (your existing Oculus auth code)
 
 		FusionLogger.Error("Failed to login to EOS.");
 		onComplete?.Invoke(false);

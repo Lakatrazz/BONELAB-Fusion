@@ -1,5 +1,5 @@
-﻿using JNISharp.NativeInterface;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
+
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Data;
@@ -10,12 +10,12 @@ public static class EOSSDKLoader
 
 	internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
 
-    private static IntPtr _libraryPtr = IntPtr.Zero;
+	private static IntPtr _libraryPtr = IntPtr.Zero;
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
+	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+	delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
 
-    public static async void OnLoadEOSSDK()
+	public static async void OnLoadEOSSDK()
 	{
 		if (HasEOSSDK)
 		{
@@ -81,37 +81,12 @@ public static class EOSSDKLoader
 		{
 			FusionLogger.Log($"Successfully loaded EOS SDK into the application!");
 
-            if (PlatformHelper.IsAndroid)
-            {
-                JavaVM = (IntPtr)typeof(JNISharp.NativeInterface.JNI).GetField("lastVmPtr", HarmonyLib.AccessTools.all).GetValue(null);
-                if (JavaVM == IntPtr.Zero)
-                {
-                    FusionLogger.Error("Failed to get Java VM pointer from JNISharp!");
-                    return;
-                }
+			if (PlatformHelper.IsAndroid)
+			{
+				LoadJNI();
+			}
 
-                IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
-
-                var onLoad = Marshal.GetDelegateForFunctionPointer<JNI_OnLoadDelegate>(onLoadPtr);
-                int result = onLoad(JavaVM, IntPtr.Zero);
-
-#if DEBUG
-                FusionLogger.Log($"JNI_OnLoad returned: {result}");
-#endif
-                JClass systemClass = JNI.FindClass("java/lang/System");
-                JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
-				var libPath = JNI.NewString("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so");
-                JNI.CallStaticVoidMethod(systemClass, loadMethod, libPath);
-                if (JNI.ExceptionCheck())
-                {
-					JNI.ExceptionDescribe();
-                    FusionLogger.Error("Failed to call loadLibrary for libEOSSDK!");
-                }
-                else
-                    FusionLogger.Log("EOS SDK initialized successfully in Java.");
-            }
-
-            HasEOSSDK = true;
+			HasEOSSDK = true;
 		}
 	}
 
@@ -182,5 +157,50 @@ public static class EOSSDKLoader
 				return false;
 			}
 		}
+	}
+
+	// DO NOT MOVE CODE OUTSIDE OF THIS METHOD!!!!!! it avoids a dependency issue with windows
+	private static void LoadJNI()
+	{
+		var jniType = Type.GetType("JNISharp.NativeInterface.JNI, JNISharp");
+		if (jniType == null)
+		{
+			FusionLogger.Error("JNISharp.NativeInterface.JNI type not found!");
+			return;
+		}
+
+		var lastVmPtrField = jniType.GetField("lastVmPtr", HarmonyLib.AccessTools.all);
+		if (lastVmPtrField == null)
+		{
+			FusionLogger.Error("lastVmPtr field not found in JNI type!");
+			return;
+		}
+
+		JavaVM = (IntPtr)lastVmPtrField.GetValue(null);
+		if (JavaVM == IntPtr.Zero)
+		{
+			FusionLogger.Error("Failed to get Java VM pointer from JNISharp!");
+			return;
+		}
+
+		IntPtr onLoadPtr = MelonLoader.NativeLibrary.GetExport(_libraryPtr, "JNI_OnLoad");
+
+		var onLoad = Marshal.GetDelegateForFunctionPointer<JNI_OnLoadDelegate>(onLoadPtr);
+		int result = onLoad(JavaVM, IntPtr.Zero);
+
+#if DEBUG
+		FusionLogger.Log($"JNI_OnLoad returned: {result}");
+#endif
+		JNISharp.NativeInterface.JClass systemClass = JNISharp.NativeInterface.JNI.FindClass("java/lang/System");
+		JNISharp.NativeInterface.JMethodID loadMethod = JNISharp.NativeInterface.JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
+		var libPath = JNISharp.NativeInterface.JNI.NewString("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so");
+		JNISharp.NativeInterface.JNI.CallStaticVoidMethod(systemClass, loadMethod, libPath);
+		if (JNISharp.NativeInterface.JNI.ExceptionCheck())
+		{
+			JNISharp.NativeInterface.JNI.ExceptionDescribe();
+			FusionLogger.Error("Failed to call loadLibrary for libEOSSDK!");
+		}
+		else
+			FusionLogger.Log("EOS SDK initialized successfully in Java.");
 	}
 }

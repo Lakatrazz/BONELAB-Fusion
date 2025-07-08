@@ -344,6 +344,12 @@
     <Reference Include="Il2Cppmscorlib">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="Il2CppOculus.Platform">
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppOculus.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppOculus.VR">
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\\Il2CppOculus.VR.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppSLZ.Algorithms">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppSLZ.Algorithms.dll</HintPath>
     </Reference>
