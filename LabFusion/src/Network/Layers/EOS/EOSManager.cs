@@ -70,21 +70,11 @@ internal class EOSManager
 
 		bool loginComplete = false;
 		bool loginSuccess = false;
-		if (!PlatformHelper.IsAndroid)
+		MelonCoroutines.Start(EOSAuthenticator.Login((success) =>
 		{
-			MelonCoroutines.Start(EOSAuthWindows64.Login((success) =>
-			{
-				loginSuccess = success;
-				loginComplete = true;
-			}));
-		}else
-		{
-			MelonCoroutines.Start(EOSAuthAndroid.Login((success) =>
-			{
-				loginSuccess = success;
-				loginComplete = true;
-			}));
-		}
+			loginSuccess = success;
+			loginComplete = true;
+		}));
 
 		while (!loginComplete)
 			yield return null;
@@ -98,23 +88,11 @@ internal class EOSManager
 
 		bool connectComplete = false;
 		bool connectSuccess = false;
-		if (!PlatformHelper.IsAndroid)
+		MelonCoroutines.Start(EOSAuthenticator.SetupConnectLogin((success) =>
 		{
-			MelonCoroutines.Start(EOSAuthWindows64.SetupConnectLogin((success) =>
-			{
-				connectSuccess = success;
-				connectComplete = true;
-			}));
-		}
-		else
-		{
-			FusionLogger.Log("Android Connect Login");
-			MelonCoroutines.Start(EOSAuthAndroid.SetupConnectLogin((success) =>
-			{
-				connectSuccess = success;
-				connectComplete = true;
-			}));
-		}
+			connectSuccess = success;
+			connectComplete = true;
+		}));
 
 		while (!connectComplete)
 			yield return null;

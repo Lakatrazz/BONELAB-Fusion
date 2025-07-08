@@ -12,8 +12,10 @@ using System.Text.Json.Serialization;
 
 namespace LabFusion.Network;
 
-internal class EOSAuthAndroid
+internal class EOSAuthenticator
 {
+
+
 	[System.Serializable]
 	private class AuthData
 	{
