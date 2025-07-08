@@ -277,7 +277,7 @@ public class EOSNetworkLayer : NetworkLayer
 			MaxLobbyMembers = 64,
 			PermissionLevel = LobbyPermissionLevel.Publicadvertised,
 			EnableRTCRoom = false,
-			PresenceEnabled = true,
+			PresenceEnabled = false,
 			RejoinAfterKickRequiresInvite = false,
 			EnableJoinById = true,
 			AllowInvites = true,
