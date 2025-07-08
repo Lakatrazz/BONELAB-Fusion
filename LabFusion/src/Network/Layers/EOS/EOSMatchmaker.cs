@@ -1,12 +1,11 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
-
+using LabFusion.Debugging;
 using LabFusion.Utilities;
 
 using MelonLoader;
 
 using System.Collections;
-using System.Diagnostics;
 
 namespace LabFusion.Network;
 
@@ -21,7 +20,9 @@ public sealed class EOSMatchmaker : IMatchmaker
 
 	private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = null)
 	{
-		var stopwatch = Stopwatch.StartNew();
+		FusionStopwatch.Create();
+
+		bool noCodeProvided = string.IsNullOrEmpty(code);
 
 		if (EOSNetworkLayer.LocalUserId == null || _lobbyInterface == null)
 		{
@@ -30,9 +31,10 @@ public sealed class EOSMatchmaker : IMatchmaker
 			yield break;
 		}
 
+		// if we are searching for a lobby by code, we can speed up the search by only looking for one result
 		var createSearchOptions = new CreateLobbySearchOptions
 		{
-			MaxResults = 100,
+			MaxResults = noCodeProvided ? 100u : 1u,
 		};
 
 		Result createResult = _lobbyInterface.CreateLobbySearch(ref createSearchOptions, out LobbySearch searchHandle);
@@ -48,8 +50,8 @@ public sealed class EOSMatchmaker : IMatchmaker
 		{
 			Parameter = new AttributeData
 			{
-				Key = string.IsNullOrEmpty(code) ? LobbyKeys.HasServerOpenKey : LobbyKeys.LobbyCodeKey,
-				Value = string.IsNullOrEmpty(code) ? bool.TrueString : code,
+				Key = noCodeProvided ? LobbyKeys.HasServerOpenKey : LobbyKeys.LobbyCodeKey,
+				Value = noCodeProvided ? bool.TrueString : code,
 			},
 			ComparisonOp = ComparisonOp.Equal,
 		};
@@ -141,7 +143,7 @@ public sealed class EOSMatchmaker : IMatchmaker
 		}
 
 		searchHandle.Release();
-		stopwatch.Stop();
+		FusionStopwatch.Finish("matchmaking", out var ms);
 
 		callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo
 		{
@@ -149,7 +151,7 @@ public sealed class EOSMatchmaker : IMatchmaker
 		});
 
 #if DEBUG
-		FusionLogger.Log($"Found {lobbies.Count} lobbies in {stopwatch.ElapsedMilliseconds} ms");
+		FusionLogger.Log($"Found {lobbies.Count} lobbies in {ms} ms");
 #endif
 	}
 }

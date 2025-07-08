@@ -17,6 +17,7 @@ internal static class EOSSocketHandler
 	}
 
 	private static readonly int MAX_EOS_PACKET_SIZE = 1170;
+
 	private static readonly Dictionary<(string, ushort), FragmentCollection> _incomingFragments = new();
 
 	internal static Epic.OnlineServices.P2P.SocketId SocketId = new Epic.OnlineServices.P2P.SocketId { SocketName = "FusionSocket" };
@@ -30,6 +31,7 @@ internal static class EOSSocketHandler
 		};
 		EOSManager.P2PInterface.SetPortRange(ref portOptions);
 
+		// dont change unless we want to start leaking ips...
 		Epic.OnlineServices.P2P.SetRelayControlOptions relayOptions = new()
 		{
 			RelayControl = Epic.OnlineServices.P2P.RelayControl.ForceRelays,

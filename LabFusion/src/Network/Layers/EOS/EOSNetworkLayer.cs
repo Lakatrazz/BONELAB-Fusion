@@ -182,6 +182,7 @@ public class EOSNetworkLayer : NetworkLayer
 		Result result = EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
 		_currentLobby.UpdateLobbyDetails(lobbyDetails);
+
 	}
 
 	private void OnPlayerJoin(PlayerID id)
@@ -207,9 +208,9 @@ public class EOSNetworkLayer : NetworkLayer
 		VoiceManager.RemoveSpeaker(id);
 	}
 
+	// Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
 	public override bool IsFriend(string Id)
 	{
-		// Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
 		ProductUserId productUserId = ProductUserId.FromString(Id);
 		EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(productUserId);
 
@@ -231,14 +232,12 @@ public class EOSNetworkLayer : NetworkLayer
 		if (LocalAccountId == epicAccountId)
 			return true;
 
-		var friendsInterface = EOSManager.PlatformInterface.GetFriendsInterface();
-
 		var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
 		{
 			LocalUserId = LocalAccountId,
 			TargetUserId = epicAccountId
 		};
-		var friendStatus = friendsInterface.GetStatus(ref statusOptions);
+		var friendStatus = EOSManager.FriendsInterface.GetStatus(ref statusOptions);
 
 		return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
 	}
