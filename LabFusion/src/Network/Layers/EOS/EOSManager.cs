@@ -107,7 +107,7 @@ internal class EOSManager
 		}
 
 		bool usernameComplete = false;
-		MelonCoroutines.Start(SetupUsername(EOSNetworkLayer.LocalAccountId, (username) =>
+		MelonCoroutines.Start(EOSUtils.GetDisplayNameFromAccountId(EOSNetworkLayer.LocalAccountId, (username) =>
 		{
 			usernameComplete = true;
 			SavedUsername = username;
@@ -190,39 +190,5 @@ internal class EOSManager
 		P2PInterface = null;
 		LobbyInterface = null;
 		FriendsInterface = null;
-	}
-
-	public static IEnumerator SetupUsername(EpicAccountId accountId, System.Action<string> onComplete)
-	{
-		var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
-		{
-			LocalUserId = EOSNetworkLayer.LocalAccountId,
-			TargetUserId = accountId
-		};
-
-		TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
-		UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
-		{
-			if (callbackInfo.ResultCode != Result.Success)
-			{
-				usernameTask.SetResult(string.Empty);
-				return;
-			}
-
-			var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
-			{
-				LocalUserId = EOSNetworkLayer.LocalAccountId,
-				TargetUserId = accountId
-			};
-
-			if (UserInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
-				usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
-		});
-
-		while (!usernameTask.Task.IsCompleted)
-			yield return null;
-
-		onComplete?.Invoke(usernameTask.Task.Result);
-		yield break;
 	} 
 }

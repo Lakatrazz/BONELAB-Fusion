@@ -3,6 +3,8 @@ using Epic.OnlineServices.Connect;
 
 using LabFusion.Utilities;
 
+using System.Collections;
+
 namespace LabFusion.Network;
 
 public class EOSUtils
@@ -53,5 +55,39 @@ public class EOSUtils
 			return null;
 		}
 		return null;
+	}
+
+	public static IEnumerator GetDisplayNameFromAccountId(EpicAccountId accountId, System.Action<string> onComplete)
+	{
+		var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
+		{
+			LocalUserId = EOSNetworkLayer.LocalAccountId,
+			TargetUserId = accountId
+		};
+
+		TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
+		EOSManager.UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
+		{
+			if (callbackInfo.ResultCode != Result.Success)
+			{
+				usernameTask.SetResult(string.Empty);
+				return;
+			}
+
+			var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
+			{
+				LocalUserId = EOSNetworkLayer.LocalAccountId,
+				TargetUserId = accountId
+			};
+
+			if (EOSManager.UserInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
+				usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
+		});
+
+		while (!usernameTask.Task.IsCompleted)
+			yield return null;
+
+		onComplete?.Invoke(usernameTask.Task.Result);
+		yield break;
 	}
 }
