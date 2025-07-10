@@ -1,6 +1,6 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
-
+using Epic.OnlineServices.UserInfo;
 using LabFusion.Utilities;
 
 using System.Collections;
@@ -40,17 +40,16 @@ public class EOSUtils
         if (productUserId == null)
             return null;
 
-        var options = new CopyProductUserExternalAccountByAccountTypeOptions
+        var options = new CopyUserInfoOptions
         {
-            TargetUserId = productUserId,
-            AccountIdType = ExternalAccountType.Epic,
+            TargetUserId = GetAccountIdFromProductId(productUserId),
+            LocalUserId = EOSNetworkLayer.LocalAccountId
         };
-        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
-        FusionLogger.Log(result);
+        Result result = EOSManager.UserInfoInterface.CopyUserInfo(ref options, out UserInfoData? externalAccountInfo);
         if (result == Result.Success && externalAccountInfo.HasValue)
         {
-            FusionLogger.Log(externalAccountInfo.Value.DisplayName);
-            return externalAccountInfo.Value.DisplayName ?? "Unknown";
+            FusionLogger.Log(externalAccountInfo?.DisplayName);
+            return externalAccountInfo?.DisplayName ?? "Unknown";
         }
         else if (result != Result.Success)
         {
