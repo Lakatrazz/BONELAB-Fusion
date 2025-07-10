@@ -21,7 +21,9 @@ public sealed class EOSMatchmaker : IMatchmaker
 
 	private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback, string code = null)
 	{
+#if DEBUG
 		FusionStopwatch.Create();
+#endif
 
 		bool noCodeProvided = string.IsNullOrEmpty(code);
 
@@ -144,7 +146,10 @@ public sealed class EOSMatchmaker : IMatchmaker
 		}
 
 		searchHandle.Release();
+
+#if DEBUG
 		FusionStopwatch.Finish("matchmaking", out var ms);
+#endif
 
 		callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo
 		{

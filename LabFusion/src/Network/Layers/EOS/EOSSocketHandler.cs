@@ -52,7 +52,7 @@ internal static class EOSSocketHandler
 
 	internal static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled)
 	{
-		if (userId == EOSNetworkLayer.LocalUserId)
+		void HandleLocalMessage()
 		{
 			ReadableMessage readableMessage = new ReadableMessage()
 			{
@@ -60,6 +60,12 @@ internal static class EOSSocketHandler
 				IsServerHandled = isServerHandled
 			};
 			NativeMessageHandler.ReadMessage(readableMessage);
+        }
+
+        // Really dumb solution that to fix the server sending its client settings before the client gets its connection response message
+        if (userId == EOSNetworkLayer.LocalUserId)
+		{
+            DelayUtilities.InvokeDelayed(() => HandleLocalMessage(), 2);
 			return Result.Success;
         }
 
