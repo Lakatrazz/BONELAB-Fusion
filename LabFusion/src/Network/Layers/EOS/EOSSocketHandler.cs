@@ -1,8 +1,8 @@
 ﻿using Epic.OnlineServices;
-
-using LabFusion.Utilities;
+using Epic.OnlineServices.P2P;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -50,16 +50,22 @@ internal static class EOSSocketHandler
 		EOSManager.P2PInterface.CloseConnections(ref closeConnectionsOptions);
 	}
 
-	private static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel)
+	internal static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled)
 	{
-		if (EOSNetworkLayer.LocalUserId == userId)
+		if (userId == EOSNetworkLayer.LocalUserId)
 		{
-			return Result.InvalidUser;
-		}
+			ReadableMessage readableMessage = new ReadableMessage()
+			{
+				Buffer = new ReadOnlySpan<byte>(data),
+				IsServerHandled = isServerHandled
+			};
+			NativeMessageHandler.ReadMessage(readableMessage);
+			return Result.Success;
+        }
 
 		if (data.Length > MAX_EOS_PACKET_SIZE)
 		{
-			return SendFragmentedPacket(userId, data, channel);
+			return SendFragmentedPacket(userId, data, channel, isServerHandled);
 		}
 
 		var reliability = channel == NetworkChannel.Reliable
@@ -71,7 +77,7 @@ internal static class EOSSocketHandler
 			LocalUserId = EOSNetworkLayer.LocalUserId,
 			RemoteUserId = userId,
 			SocketId = SocketId,
-			Channel = 1,
+			Channel = isServerHandled ? (byte)2 : (byte)1,
 			Data = new ArraySegment<byte>(data),
 			AllowDelayedDelivery = true,
 			Reliability = reliability,
@@ -81,7 +87,7 @@ internal static class EOSSocketHandler
 		return EOSManager.P2PInterface.SendPacket(ref sendOptions);
 	}
 
-	private static Result SendFragmentedPacket(ProductUserId userId, byte[] data, NetworkChannel channel)
+	private static Result SendFragmentedPacket(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled)
 	{
 		int headerSize = 8;
 		int maxDataPerFragment = MAX_EOS_PACKET_SIZE - headerSize;
@@ -119,7 +125,7 @@ internal static class EOSSocketHandler
 				LocalUserId = EOSNetworkLayer.LocalUserId,
 				RemoteUserId = userId,
 				SocketId = SocketId,
-				Channel = 1,
+				Channel = isServerHandled ? (byte)2 : (byte)1,
 				Data = new ArraySegment<byte>(fragmentPacket),
 				AllowDelayedDelivery = true,
 				Reliability = reliability,
@@ -137,37 +143,6 @@ internal static class EOSSocketHandler
 		return Result.Success;
 	}
 
-	private static bool IsServerHandled(ReadOnlySpan<byte> messageSpan)
-	{
-		// Actually the dumbest way to check, but it fixed a handful of issues
-		bool isHost = EOSNetworkLayer.HostId == EOSNetworkLayer.LocalUserId;
-		if (!isHost)
-			return false;
-
-		try
-		{
-			using var reader = NetReader.Create(messageSpan.ToArray());
-			MessagePrefix prefix = null;
-			reader.SerializeValue(ref prefix);
-
-			var route = prefix.Route;
-
-			// ToTarget messages targeting the local player should be handled as client
-			if (route.Type == RelayType.ToTarget &&
-				route.Target.HasValue &&
-				route.Target.Value == PlayerIDManager.LocalSmallID)
-			{
-				return false;
-			}
-
-			return true;
-		}
-		catch
-		{
-			return isHost;
-		}
-	}
-
 	internal static void ReceiveMessages()
 	{
 		if (EOSNetworkLayer.LocalUserId == null || EOSManager.P2PInterface == null)
@@ -180,7 +155,7 @@ internal static class EOSSocketHandler
 				var getNextReceivedPacketSizeOptions = new Epic.OnlineServices.P2P.GetNextReceivedPacketSizeOptions
 				{
 					LocalUserId = EOSNetworkLayer.LocalUserId,
-					RequestedChannel = 1
+					RequestedChannel = null
 				};
 
 				if (EOSManager.P2PInterface.GetNextReceivedPacketSize(ref getNextReceivedPacketSizeOptions, out uint nextPacketSize) != Result.Success)
@@ -199,9 +174,8 @@ internal static class EOSSocketHandler
 				};
 
 				ProductUserId peerId = null;
-				byte channel = 1;
 
-				Result result = EOSManager.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref SocketId, out channel, dataSegment, out uint bytesWritten);
+				Result result = EOSManager.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref SocketId, out byte channel, dataSegment, out uint bytesWritten);
 
 				if (result == Result.Success && bytesWritten > 0)
 				{
@@ -217,7 +191,7 @@ internal static class EOSSocketHandler
 						var readableMessage = new ReadableMessage()
 						{
 							Buffer = messageSpan,
-							IsServerHandled = IsServerHandled(messageSpan)
+							IsServerHandled = channel == 2
 						};
 
 						NativeMessageHandler.ReadMessage(readableMessage);
@@ -233,7 +207,7 @@ internal static class EOSSocketHandler
 							var readableMessage = new ReadableMessage()
 							{
 								Buffer = messageSpan,
-								IsServerHandled = IsServerHandled(messageSpan)
+								IsServerHandled = channel == 2
 							};
 
 							NativeMessageHandler.ReadMessage(readableMessage);
@@ -361,15 +335,12 @@ internal static class EOSSocketHandler
 
 	internal static void BroadcastToServer(NetworkChannel channel, NetMessage message)
 	{
-		if (EOSNetworkLayer.HostId == EOSNetworkLayer.LocalUserId)
-			return;
-
-		Result result = SendPacketToUser(EOSNetworkLayer.HostId, message.ToByteArray(), channel);
+		Result result = SendPacketToUser(EOSNetworkLayer.HostId, message.ToByteArray(), channel, true);
 
 		if (result != Result.Success)
 		{
 			// RETRY
-			Result retry = SendPacketToUser(EOSNetworkLayer.HostId, message.ToByteArray(), channel);
+			Result retry = SendPacketToUser(EOSNetworkLayer.HostId, message.ToByteArray(), channel, true);
 
 			if (retry != Result.Success)
 			{
@@ -380,9 +351,6 @@ internal static class EOSSocketHandler
 
 	internal static void BroadcastToClients(NetworkChannel channel, NetMessage message)
 	{
-		if (EOSNetworkLayer.HostId != EOSNetworkLayer.LocalUserId)
-			return;
-
 		if (NetworkLayerManager.Layer is EOSNetworkLayer layer)
 		{
 			var countOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberCountOptions();
@@ -396,11 +364,8 @@ internal static class EOSSocketHandler
 				};
 				ProductUserId memberId = layer.LobbyDetails.GetMemberByIndex(ref memberOptions);
 
-				if (memberId != EOSNetworkLayer.LocalUserId)
-				{
-					Result result = SendPacketToUser(memberId, message.ToByteArray(), channel);
-				}
-			}
+                Result result = SendPacketToUser(memberId, message.ToByteArray(), channel, false);
+            }
 		}
 	}
 
@@ -413,17 +378,6 @@ internal static class EOSSocketHandler
 		}
 
 		ProductUserId targetUserId = ProductUserId.FromString(userId);
-		SendToClient(targetUserId, channel, message);
-	}
-
-	internal static void SendToClient(ProductUserId userId, NetworkChannel channel, NetMessage message)
-	{
-		if (EOSNetworkLayer.HostId != EOSNetworkLayer.LocalUserId)
-		{
-			FusionLogger.Error("SendToClient can only be called by the server.");
-			return;
-		}
-
-		Result result = SendPacketToUser(userId, message.ToByteArray(), channel);
-	}
+        Result result = SendPacketToUser(targetUserId, message.ToByteArray(), channel, false);
+    }
 }

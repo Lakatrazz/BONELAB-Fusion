@@ -11,6 +11,7 @@ using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 
 using MelonLoader;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace LabFusion.Network;
 
@@ -29,8 +30,6 @@ public class EOSNetworkLayer : NetworkLayer
 	public override string Platform => "Epic";
 
 	public override bool RequiresValidId => true;
-
-	public override bool ServerCanSendToHost => false;
 
 	public override bool IsHost => _isServerActive;
 	public override bool IsClient => _isConnectionActive;
@@ -320,7 +319,7 @@ public class EOSNetworkLayer : NetworkLayer
 				SocketId = EOSSocketHandler.SocketId,
 				LocalUserId = LocalUserId
 			};
-			_connectionClosedId = EOSManager.P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null , (ref OnRemoteConnectionClosedInfo info) =>
+			_connectionClosedId = EOSManager.P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, (ref OnRemoteConnectionClosedInfo info) =>
 			{
 				var closeOptions = new CloseConnectionOptions
 				{
@@ -428,12 +427,6 @@ public class EOSNetworkLayer : NetworkLayer
 		if (_isConnectionActive || _isServerActive)
 			Disconnect();
 
-		if (!_isInitialized)
-		{
-			FusionLogger.Error("Cannot join server: EOS not initialized");
-			return;
-		}
-
 		SetLobbyConnectionState(LobbyConnectionState.Connecting);
 
 		var joinLobbyOptions = new JoinLobbyByIdOptions
@@ -458,6 +451,7 @@ public class EOSNetworkLayer : NetworkLayer
 				LobbyId = joinDelegate.LobbyId,
 				LocalUserId = LocalUserId
 			};
+
 			EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 			var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
 
@@ -466,11 +460,26 @@ public class EOSNetworkLayer : NetworkLayer
 			_isServerActive = false;
 			_isConnectionActive = true;
 
-			ConnectionSender.SendConnectionRequest();
-			FusionLogger.Log($"Joined EOS lobby: {joinDelegate.ResultCode} with owner {HostId}");
 			_currentLobby = new EOSLobby(lobbyDetails, joinDelegate.LobbyId);
-			SetLobbyConnectionState(LobbyConnectionState.Connected);
-		});
+			
+			Epic.OnlineServices.P2P.AddNotifyPeerConnectionEstablishedOptions connectionOptions = new Epic.OnlineServices.P2P.AddNotifyPeerConnectionEstablishedOptions
+			{
+				SocketId = EOSSocketHandler.SocketId,
+				LocalUserId = LocalUserId
+			};
+
+            ulong connectionEstablishedId = Common.InvalidNotificationid;
+            connectionEstablishedId = EOSManager.P2PInterface.AddNotifyPeerConnectionEstablished(ref connectionOptions, null, (ref OnPeerConnectionEstablishedInfo data) =>
+			{
+				EOSManager.P2PInterface.RemoveNotifyPeerConnectionEstablished(connectionEstablishedId);
+                ConnectionSender.SendConnectionRequest();
+
+                SetLobbyConnectionState(LobbyConnectionState.Connected);
+            });
+
+            // Send a dummy packet to establish the connection
+            EOSSocketHandler.SendPacketToUser(HostId, Array.Empty<byte>(), NetworkChannel.Reliable, false);
+        });
 	}
 
 	public string ServerCode { get; private set; } = null;

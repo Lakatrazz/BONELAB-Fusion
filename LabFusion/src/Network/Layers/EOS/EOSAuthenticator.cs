@@ -100,8 +100,7 @@ internal class EOSAuthenticator
 				ScopeFlags = AuthScopeFlags.BasicProfile |
 							 AuthScopeFlags.Presence |
 							 AuthScopeFlags.FriendsList |
-							 AuthScopeFlags.Country |
-							 AuthScopeFlags.FriendsManagement
+							 AuthScopeFlags.Country,
 			};
 			EOSManager.AuthInterface.Login(ref refreshTokenOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
 			{
@@ -141,8 +140,7 @@ internal class EOSAuthenticator
 			ScopeFlags = AuthScopeFlags.BasicProfile |
 						 AuthScopeFlags.Presence |
 						 AuthScopeFlags.FriendsList |
-						 AuthScopeFlags.Country |
-						 AuthScopeFlags.FriendsManagement
+						 AuthScopeFlags.Country
 		};
 		EOSManager.AuthInterface.Login(ref portalLoginOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
 		{
