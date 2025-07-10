@@ -8,6 +8,8 @@ namespace LabFusion.Utilities;
 
 internal class EOSJNI
 {
+    private static JClass EOSSDK { get; set; } = null;
+
     internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -64,6 +66,9 @@ internal class EOSJNI
         if (_initialized)
             return;
 
+        if (!isEOSPatched())
+            return;    
+
         JClass playerClass = JNI.FindClass("com/unity3d/player/UnityPlayer");
         JFieldID currentActivityField = JNI.GetStaticFieldID(playerClass, "currentActivity", "Landroid/app/Activity;");
         JObject currentActivity = JNI.GetStaticObjectField<JObject>(playerClass, currentActivityField);
@@ -73,17 +78,9 @@ internal class EOSJNI
             return;
         }
 
-        JClass eosClass = JNI.FindClass("com/epicgames/mobile/eossdk/EOSSDK");
-        if (!eosClass.Valid())
-        {
-            FusionLogger.Error("Failed to find EOSSDK class! EOS SDK initialization aborted.");
-            FusionLogger.Error("Did the user install the EOS SDK plugin when installing Lemonloader?");
-            return;
-        }
+        JMethodID initMethod = EOSSDK.GetStaticMethodID("init", "(Landroid/app/Activity;)V");
 
-        JMethodID initMethod = eosClass.GetStaticMethodID("init", "(Landroid/app/Activity;)V");
-
-        JNI.CallStaticVoidMethod(eosClass, initMethod, currentActivity);
+        JNI.CallStaticVoidMethod(EOSSDK, initMethod, currentActivity);
         if (JNI.ExceptionCheck())
         {
             FusionLogger.Error("Failed to initialize the EOS SDK!");
@@ -92,5 +89,19 @@ internal class EOSJNI
             FusionLogger.Log("EOS SDK initialized successfully in Java.");
 
         _initialized = true;
+    }
+
+    private static bool isEOSPatched()
+    {
+        EOSSDK = JNI.FindClass("com/epicgames/mobile/eossdk/EOSSDK");
+        if (!EOSSDK.Valid())
+        {
+            FusionLogger.Error("Failed to find EOSSDK class!");
+            FusionLogger.Error("Did the user install the EOS SDK plugin when installing Lemonloader?");
+            
+            return false;
+        }
+        else
+            return true;
     }
 }

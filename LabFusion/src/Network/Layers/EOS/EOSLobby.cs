@@ -115,7 +115,7 @@ public class EOSLobby : NetworkLobby
         catch (Exception ex)
         {
             // A common exception is when the lobby gets closed but fusion tries to set metadata anyway.
-            FusionLogger.Error($"Failed to set metadata for key '{key}' in lobby '{LobbyId}': {ex.Message}");
+            // FusionLogger.Error($"Failed to set metadata for key '{key}' in lobby '{LobbyId}': {ex.Message}");
         }
     }
 
