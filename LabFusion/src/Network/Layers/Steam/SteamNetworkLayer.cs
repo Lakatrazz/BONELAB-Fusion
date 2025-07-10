@@ -22,6 +22,10 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override string Platform => "Steam";
 
+    public override int MaxPlayers => 256;
+
+    public override int MaxLobbies => 50;
+
     public override bool RequiresValidId => true;
 
     public override bool IsHost => _isServerActive;

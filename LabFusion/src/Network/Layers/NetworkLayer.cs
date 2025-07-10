@@ -69,6 +69,16 @@ public abstract class NetworkLayer
     public virtual bool ServerCanSendToHost => true;
 
     /// <summary>
+    /// The maximum number of players that can be in a lobby for this layer.
+    /// </summary>
+    public virtual int MaxPlayers => 256;
+
+    /// <summary>
+    /// The maximum number of lobbies that can be found in matchmaking for this layer.
+    /// </summary>
+    public virtual int MaxLobbies => int.MaxValue;
+
+    /// <summary>
     /// Returns the active lobby.
     /// </summary>
     public virtual INetworkLobby Lobby => null;

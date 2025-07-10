@@ -26,4 +26,19 @@ public static class NetworkLayerNotifications
 			Type = NotificationType.INFORMATION,
 		});
 	}
+
+	public static void SendLoginFailedNotification()
+	{
+        Notifier.Cancel(NotificationTag);
+
+        Notifier.Send(new Notification()
+        {
+            Title = "Please try again!",
+            Message = $"Failed to login to {NetworkLayerDeterminer.LoadedLayer.Platform}!",
+            Tag = NotificationTag,
+            SaveToMenu = false,
+            ShowPopup = true,
+            Type = NotificationType.ERROR,
+        });
+    }
 }

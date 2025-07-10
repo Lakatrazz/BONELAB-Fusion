@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
+using LabFusion.Math;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Safety;
@@ -466,6 +467,8 @@ public static class MenuMatchmaking
             lobbyColor = Color.red;
             versionColor = Color.red;
         }
+
+        ManagedMathf.Clamp(info.LobbyInfo.MaxPlayers, 0, NetworkLayerManager.Layer.MaxPlayers);
 
         if (info.LobbyInfo.PlayerCount >= info.LobbyInfo.MaxPlayers)
         {

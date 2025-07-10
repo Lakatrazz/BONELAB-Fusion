@@ -9,85 +9,89 @@ namespace LabFusion.Network;
 
 public class EOSUtils
 {
-	public static EpicAccountId GetAccountIdFromProductId(ProductUserId productUserId)
-	{
-		if (productUserId == null)
-			return null;
+    public static EpicAccountId GetAccountIdFromProductId(ProductUserId productUserId)
+    {
+        if (productUserId == null)
+            return null;
 
-		var options = new CopyProductUserExternalAccountByAccountTypeOptions
-		{
-			TargetUserId = productUserId,
-			AccountIdType = ExternalAccountType.Epic,
-		};
+        var options = new CopyProductUserExternalAccountByAccountTypeOptions
+        {
+            TargetUserId = productUserId,
+            AccountIdType = ExternalAccountType.Epic,
+        };
 
-		Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
+        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
 
-		if (result == Result.Success && externalAccountInfo.HasValue)
-		{
-			return EpicAccountId.FromString(externalAccountInfo.Value.AccountId);
-		}
-		else if (result != Result.Success)
-		{
-			FusionLogger.Warn($"Failed to get EpicAccountId for ProductUserId {productUserId}: {result}");
-			return null;
-		}
+        if (result == Result.Success && externalAccountInfo.HasValue)
+        {
+            return EpicAccountId.FromString(externalAccountInfo.Value.AccountId);
+        }
+        else if (result != Result.Success)
+        {
+            FusionLogger.Warn($"Failed to get EpicAccountId for ProductUserId {productUserId}: {result}");
+            return null;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static string GetDisplayNameFromProductId(ProductUserId productUserId)
-	{
-		if (productUserId == null)
-			return null;
-		var options = new CopyProductUserExternalAccountByAccountTypeOptions
-		{
-			TargetUserId = productUserId,
-			AccountIdType = ExternalAccountType.Epic,
-		};
-		Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
-		if (result == Result.Success && externalAccountInfo.HasValue)
-		{
-			return externalAccountInfo.Value.DisplayName ?? "Unknown";
-		}
-		else if (result != Result.Success)
-		{
-			FusionLogger.Warn($"Failed to get display name for ProductUserId {productUserId}: {result}");
-			return null;
-		}
-		return null;
-	}
+    public static string GetDisplayNameFromProductId(ProductUserId productUserId)
+    {
+        if (productUserId == null)
+            return null;
 
-	public static IEnumerator GetDisplayNameFromAccountId(EpicAccountId accountId, System.Action<string> onComplete)
-	{
-		var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
-		{
-			LocalUserId = EOSNetworkLayer.LocalAccountId,
-			TargetUserId = accountId
-		};
+        var options = new CopyProductUserExternalAccountByAccountTypeOptions
+        {
+            TargetUserId = productUserId,
+            AccountIdType = ExternalAccountType.Epic,
+        };
+        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
+        FusionLogger.Log(result);
+        if (result == Result.Success && externalAccountInfo.HasValue)
+        {
+            FusionLogger.Log(externalAccountInfo.Value.DisplayName);
+            return externalAccountInfo.Value.DisplayName ?? "Unknown";
+        }
+        else if (result != Result.Success)
+        {
+            FusionLogger.Warn($"Failed to get display name for ProductUserId {productUserId}: {result}");
+            return null;
+        }
 
-		TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
-		EOSManager.UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
-		{
-			if (callbackInfo.ResultCode != Result.Success)
-			{
-				usernameTask.SetResult(string.Empty);
-				return;
-			}
+        return null;
+    }
 
-			var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
-			{
-				LocalUserId = EOSNetworkLayer.LocalAccountId,
-				TargetUserId = accountId
-			};
+    public static IEnumerator GetDisplayNameFromAccountId(EpicAccountId accountId, System.Action<string> onComplete)
+    {
+        var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
+        {
+            LocalUserId = EOSNetworkLayer.LocalAccountId,
+            TargetUserId = accountId
+        };
 
-			if (EOSManager.UserInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
-				usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
-		});
+        TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
+        EOSManager.UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
+        {
+            if (callbackInfo.ResultCode != Result.Success)
+            {
+                usernameTask.SetResult(string.Empty);
+                return;
+            }
 
-		while (!usernameTask.Task.IsCompleted)
-			yield return null;
+            var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
+            {
+                LocalUserId = EOSNetworkLayer.LocalAccountId,
+                TargetUserId = accountId
+            };
 
-		onComplete?.Invoke(usernameTask.Task.Result);
-		yield break;
-	}
+            if (EOSManager.UserInfoInterface.CopyUserInfo(ref copyOptions, out var userInfo) == Result.Success)
+                usernameTask.SetResult(userInfo.Value.DisplayName ?? "Unknown");
+        });
+
+        while (!usernameTask.Task.IsCompleted)
+            yield return null;
+
+        onComplete?.Invoke(usernameTask.Task.Result);
+        yield break;
+    }
 }

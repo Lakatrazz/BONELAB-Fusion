@@ -17,10 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="dependencies\EOSSDK\Bin\Android\**" />
-    <Compile Remove="dependencies\EOSSDK\Bin\IOS\**" />
-    <Compile Remove="dependencies\EOSSDK\Bin\x64\**" />
-    <Compile Remove="dependencies\EOSSDK\Bin\x86\**" />
+    <Compile Remove="dependencies\EOSSDK\Bin\**" />
     <Compile Remove="dependencies\EOSSDK\Tools\**" />
     <Compile Remove="FusionBundles\Assets\Achievements\**" />
     <Compile Remove="FusionBundles\Assets\AddressableAssetsData\**" />
@@ -50,10 +47,7 @@
     <Compile Remove="FusionHelper\Steamworks.NET\**" />
     <Compile Remove="FusionHelper\Steamworks\**" />
     <Compile Remove="src\Data\Interfaces\**" />
-    <EmbeddedResource Remove="dependencies\EOSSDK\Bin\Android\**" />
-    <EmbeddedResource Remove="dependencies\EOSSDK\Bin\IOS\**" />
-    <EmbeddedResource Remove="dependencies\EOSSDK\Bin\x64\**" />
-    <EmbeddedResource Remove="dependencies\EOSSDK\Bin\x86\**" />
+    <EmbeddedResource Remove="dependencies\EOSSDK\Bin\**" />
     <EmbeddedResource Remove="dependencies\EOSSDK\Tools\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Achievements\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\AddressableAssetsData\**" />
@@ -83,10 +77,7 @@
     <EmbeddedResource Remove="FusionHelper\Steamworks.NET\**" />
     <EmbeddedResource Remove="FusionHelper\Steamworks\**" />
     <EmbeddedResource Remove="src\Data\Interfaces\**" />
-    <None Remove="dependencies\EOSSDK\Bin\Android\**" />
-    <None Remove="dependencies\EOSSDK\Bin\IOS\**" />
-    <None Remove="dependencies\EOSSDK\Bin\x64\**" />
-    <None Remove="dependencies\EOSSDK\Bin\x86\**" />
+    <None Remove="dependencies\EOSSDK\Bin\**" />
     <None Remove="dependencies\EOSSDK\Tools\**" />
     <None Remove="FusionBundles\Assets\Achievements\**" />
     <None Remove="FusionBundles\Assets\AddressableAssetsData\**" />
@@ -124,11 +115,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="dependencies\BoneLib.dll" />
-    <None Remove="dependencies\EOSSDK\Bin\EOSSDK-Win32-Shipping.dll" />
-    <None Remove="dependencies\EOSSDK\Bin\libEOSSDK-Linux-Shipping.so" />
-    <None Remove="dependencies\EOSSDK\Bin\libEOSSDK-Mac-Shipping.dylib" />
-    <None Remove="dependencies\resources\lib\arm64\libEOSSDK-LinuxArm64-Shipping.so" />
     <None Remove="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <None Remove="dependencies\resources\text\credits\raw_credits_01.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
