@@ -120,9 +120,6 @@ internal class EOSManager
 
         initializeOptions.ProductName = EOSCredentialManager.ProductName;
         initializeOptions.ProductVersion = EOSCredentialManager.ProductVersion;
-        initializeOptions.AllocateMemoryFunction = IntPtr.Zero;
-        initializeOptions.ReallocateMemoryFunction = IntPtr.Zero;
-        initializeOptions.ReleaseMemoryFunction = IntPtr.Zero;
 
         var overrideThreadAffinity = new InitializeThreadAffinity();
         overrideThreadAffinity.NetworkWork = 0;
@@ -153,6 +150,7 @@ internal class EOSManager
                 ClientId = EOSCredentialManager.ClientId,
                 ClientSecret = EOSCredentialManager.ClientSecret
             },
+            Flags = PlatformFlags.DisableOverlay | PlatformFlags.DisableSocialOverlay
         };
         PlatformInterface = PlatformInterface.Create(ref options);
         if (PlatformInterface == null)

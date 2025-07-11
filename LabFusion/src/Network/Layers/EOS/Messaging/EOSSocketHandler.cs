@@ -30,21 +30,6 @@ internal static class EOSSocketHandler
     {
         byte[] data = message.ToByteArray();
 
-        // Handle local packets with frame delay to avoid issues as host
-        if (userId == EOSNetworkLayer.LocalUserId)
-        {
-            DelayUtilities.InvokeNextFrame(() =>
-            {
-                var readableMessage = new ReadableMessage()
-                {
-                    Buffer = new ReadOnlySpan<byte>(data),
-                    IsServerHandled = isServerHandled
-                };
-                NativeMessageHandler.ReadMessage(readableMessage);
-            });
-            return Result.Success;
-        }
-
         // Use fragmentation for large packets
         if (data.Length > MAX_EOS_PACKET_SIZE)
         {

@@ -10,8 +10,8 @@ internal class EOSJNI
 {
     internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
 
-    private static JClass EOSSDK { get; set; } = null;
-    private static JClass UnityPlayer { get; set; } = null;
+    internal static JClass EOSSDK { get; set; } = null;
+    internal static JClass UnityPlayer { get; set; } = null;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
@@ -51,8 +51,8 @@ internal class EOSJNI
         FusionLogger.Log($"JNI_OnLoad returned: {result}");
 #endif
 
-        JClass systemClass = JNISharp.NativeInterface.JNI.FindClass("java/lang/System");
-        JMethodID loadMethod = JNISharp.NativeInterface.JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
+        JClass systemClass = JNI.FindClass("java/lang/System");
+        JMethodID loadMethod = JNI.GetStaticMethodID(systemClass, "load", "(Ljava/lang/String;)V");
         var libPath = JNI.NewString("/data/data/com.StressLevelZero.BONELAB/libEOSSDK.so");
         JNI.CallStaticVoidMethod(systemClass, loadMethod, libPath);
         if (JNI.ExceptionCheck())
