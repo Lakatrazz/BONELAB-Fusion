@@ -12,9 +12,15 @@ namespace LabFusion.Network;
 
 public sealed class EOSMatchmaker : IMatchmaker
 {
-    private LobbyInterface _lobbyInterface;
-
-    public EOSMatchmaker(LobbyInterface lobbyInterface) => _lobbyInterface = lobbyInterface;
+    private static readonly LobbySearchSetParameterOptions _serverOpenParamOptions = new()
+    {
+        Parameter = new AttributeData
+        {
+            Key = LobbyKeys.HasServerOpenKey,
+            Value = bool.TrueString,
+        },
+        ComparisonOp = ComparisonOp.Equal,
+    };
 
     public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback));
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback) => MelonCoroutines.Start(FindLobbies(callback, code));
@@ -27,20 +33,14 @@ public sealed class EOSMatchmaker : IMatchmaker
 
         bool noCodeProvided = string.IsNullOrEmpty(code);
 
-        if (EOSNetworkLayer.LocalUserId == null || _lobbyInterface == null)
-        {
-            FusionLogger.Error("Cannot find lobbies: LocalUserId or LobbyInterface is null");
-            callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo { Lobbies = new IMatchmaker.LobbyInfo[0] });
-            yield break;
-        }
-
-        // if we are searching for a lobby by code, we can speed up the search by only looking for one result
+        uint maxResults = noCodeProvided ? (uint)NetworkLayerManager.Layer.MaxLobbies : 1u;
+        
         var createSearchOptions = new CreateLobbySearchOptions
         {
-            MaxResults = noCodeProvided ? (uint)NetworkLayerManager.Layer.MaxLobbies : 1u,
+            MaxResults = maxResults,
         };
 
-        Result createResult = _lobbyInterface.CreateLobbySearch(ref createSearchOptions, out LobbySearch searchHandle);
+        Result createResult = EOSManager.LobbyInterface.CreateLobbySearch(ref createSearchOptions, out LobbySearch searchHandle);
         if (createResult != Result.Success || searchHandle == null)
         {
             FusionLogger.Error($"Failed to create lobby search: {createResult}");
@@ -48,16 +48,23 @@ public sealed class EOSMatchmaker : IMatchmaker
             yield break;
         }
 
-        // Needed for lobby search to work... for some reason...
-        var paramOptions = new LobbySearchSetParameterOptions
+        LobbySearchSetParameterOptions paramOptions;
+        if (noCodeProvided)
         {
-            Parameter = new AttributeData
+            paramOptions = _serverOpenParamOptions;
+        }
+        else
+        {
+            paramOptions = new LobbySearchSetParameterOptions
             {
-                Key = noCodeProvided ? LobbyKeys.HasServerOpenKey : LobbyKeys.LobbyCodeKey,
-                Value = noCodeProvided ? bool.TrueString : code,
-            },
-            ComparisonOp = ComparisonOp.Equal,
-        };
+                Parameter = new AttributeData
+                {
+                    Key = LobbyKeys.LobbyCodeKey,
+                    Value = code,
+                },
+                ComparisonOp = ComparisonOp.Equal,
+            };
+        }
 
         searchHandle.SetParameter(ref paramOptions);
 
@@ -98,51 +105,68 @@ public sealed class EOSMatchmaker : IMatchmaker
                 LobbyIndex = i
             };
 
-            if (searchHandle.CopySearchResultByIndex(ref copyOptions, out LobbyDetails lobbyDetails) == Result.Success && lobbyDetails != null)
+            if (searchHandle.CopySearchResultByIndex(ref copyOptions, out LobbyDetails lobbyDetails) != Result.Success || lobbyDetails == null)
             {
-                var infoOptions = new LobbyDetailsCopyInfoOptions();
-                Result infoResult = lobbyDetails.CopyInfo(ref infoOptions, out LobbyDetailsInfo? lobbyInfo);
+#if DEBUG
+                FusionLogger.Error($"Failed to copy search result for lobby index {i}");
+#endif
+                continue;
+            }
 
-                if (infoResult == Result.Success && lobbyInfo.HasValue)
-                {
-                    var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
-                    ProductUserId ownerId = lobbyDetails.GetLobbyOwner(ref ownerOptions);
+            var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
+            ProductUserId ownerId = lobbyDetails.GetLobbyOwner(ref ownerOptions);
+            if (ownerId == null)
+            {
+                // More often than not, this means the lobby has been abandoned but the EOS backend is keeping it alive with 0 players.
+#if DEBUG
+                FusionLogger.Error($"Failed to get lobby owner for lobby index {i} since owner ID is null! Dead lobby?");
+#endif
+                lobbyDetails.Release();
+                continue;
+            }
 
-                    if (ownerId != null)
-                    {
-                        var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
+            var infoOptions = new LobbyDetailsCopyInfoOptions();
+            Result infoResult = lobbyDetails.CopyInfo(ref infoOptions, out LobbyDetailsInfo? lobbyInfo);
 
-                        var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
+            if (infoResult != Result.Success || !lobbyInfo.HasValue)
+            {
+                lobbyDetails.Release();
+                continue;
+            }
+
+            var networkLobby = new EOSLobby(lobbyDetails, lobbyInfo.Value.LobbyId);
+
+            if (!networkLobby.TryGetMetadata(LobbyKeys.HasServerOpenKey, out var hasServerOpen) || hasServerOpen != bool.TrueString)
+            {
+                lobbyDetails.Release();
+                continue;
+            }
+
+            var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
 
 #if !DEBUG
-						if (metadata.LobbyInfo.LobbyId == EOSNetworkLayer.LocalUserId.ToString())
-							continue;
+            if (metadata.LobbyInfo.LobbyId == EOSNetworkLayer.LocalUserId.ToString())
+            {
+                lobbyDetails.Release();
+                continue;
+            }
 #endif
 
-                        // Make sure LobbyID is actually the EOS Lobby ID and not the host's PlayerID
-                        metadata.LobbyInfo.LobbyId = networkLobby.LobbyId;
+            // Make sure LobbyID is actually the EOS Lobby ID and not the host's PlayerID
+            metadata.LobbyInfo.LobbyId = networkLobby.LobbyId;
 
-                        if (metadata.HasServerOpen)
-                        {
-                            lobbies.Add(new IMatchmaker.LobbyInfo
-                            {
-                                Lobby = networkLobby,
-                                Metadata = metadata
-                            });
-                        }
-                    }
-                    else
-                    {
-                        // More often than not, this means the lobby has been abandoned but the EOS backend is keeping it alive with 0 players.
-#if DEBUG
-                        FusionLogger.Error($"Failed to get lobby owner for lobby index {i} since owner ID is null! Dead lobby?");
-#endif
-                    }
-
-                }
+            if (metadata.HasServerOpen)
+            {
+                lobbies.Add(new IMatchmaker.LobbyInfo
+                {
+                    Lobby = networkLobby,
+                    Metadata = metadata
+                });
             }
             else
-                FusionLogger.Error($"Failed to copy search result for lobby index {i}");
+            {
+                lobbyDetails.Release();
+            }
         }
 
         searchHandle.Release();
@@ -151,10 +175,12 @@ public sealed class EOSMatchmaker : IMatchmaker
         FusionStopwatch.Finish("matchmaking", out var ms);
 #endif
 
-        callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo
+        var resultInfo = new IMatchmaker.MatchmakerCallbackInfo
         {
             Lobbies = lobbies.ToArray()
-        });
+        };
+
+        callback?.Invoke(resultInfo);
 
 #if DEBUG
         FusionLogger.Log($"Found {lobbies.Count} lobbies");

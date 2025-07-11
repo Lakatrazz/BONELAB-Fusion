@@ -24,6 +24,8 @@ public enum LobbyConnectionState
 
 public class EOSNetworkLayer : NetworkLayer
 {
+    protected bool _isInitialized = false;
+
     public override string Title => "Epic Online Services";
 
     public override string Platform => "Epic";
@@ -48,20 +50,22 @@ public class EOSNetworkLayer : NetworkLayer
 
     protected bool _isServerActive = false;
     protected bool _isConnectionActive = false;
-    protected bool _isInitialized = false;
 
+    // EOS Log Level
     internal static LogLevel LogLevel => LogLevel.Warning;
 
+    // EOS Lobby Details
     internal LobbyDetails LobbyDetails => _currentLobby?.LobbyDetails;
 
+    // Current connection state. Needs a rework/better solution
     public LobbyConnectionState LobbyConnectionState { get; private set; } = LobbyConnectionState.Disconnected;
 
+    // Different player IDs used across the layer
     public static ProductUserId LocalUserId;
     public static EpicAccountId LocalAccountId;
-
     internal static ProductUserId HostId = null;
 
-    // Notification IDs for handling connection events
+    // Notification IDs for handling different connection events
     private ulong connectionRequestedId = Common.InvalidNotificationid;
     private ulong connectionEstablishedId = Common.InvalidNotificationid;
     private ulong connectionClosedId = Common.InvalidNotificationid;
@@ -107,7 +111,7 @@ public class EOSNetworkLayer : NetworkLayer
             _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
-            _matchmaker = new EOSMatchmaker(EOSManager.LobbyInterface);
+            _matchmaker = new EOSMatchmaker();
 
             HookEvents();
 
@@ -483,11 +487,13 @@ public class EOSNetworkLayer : NetworkLayer
 
     public void JoinServer(string lobbyId)
     {
-        if (LobbyConnectionState == LobbyConnectionState.Connecting)
-            return;
-
         if (_isConnectionActive || _isServerActive)
             Disconnect();
+
+        // we can return if we are connected to a lobby. we should have already disconnected/started to when we run Disconnect above
+        // may cause the user to need to click join twice, but that is also a thing on steam so idddrrrcccc
+        if (LobbyConnectionState == LobbyConnectionState.Connecting || LobbyConnectionState == LobbyConnectionState.Connected)
+            return;
 
         SetLobbyConnectionState(LobbyConnectionState.Connecting);
 
@@ -523,10 +529,12 @@ public class EOSNetworkLayer : NetworkLayer
 
             _currentLobby = new EOSLobby(lobbyDetails, joinDelegate.LobbyId);
 
+            // Add events so once we have a connection, we join on the fusion end
             AddNotifyPeerEvents();
 
             // Send a dummy packet to establish the connection
-            EOSSocketHandler.SendPacketToUser(HostId, Array.Empty<byte>(), NetworkChannel.Reliable, false);
+            NetMessage message = NetMessage.Create(0, Array.Empty<byte>(), CommonMessageRoutes.None);
+            EOSSocketHandler.SendPacketToUser(HostId, message, NetworkChannel.Reliable, false);
         });
     }
 
@@ -546,11 +554,6 @@ public class EOSNetworkLayer : NetworkLayer
 
     public override void JoinServerByCode(string code)
     {
-        if (Matchmaker == null)
-        {
-            return;
-        }
-
 #if DEBUG
         FusionLogger.Log($"Searching for servers with code {code}...");
 #endif

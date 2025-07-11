@@ -8,9 +8,10 @@ namespace LabFusion.Utilities;
 
 internal class EOSJNI
 {
-    private static JClass EOSSDK { get; set; } = null;
-
     internal static IntPtr JavaVM { get; private set; } = IntPtr.Zero;
+
+    private static JClass EOSSDK { get; set; } = null;
+    private static JClass UnityPlayer { get; set; } = null;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
@@ -69,9 +70,9 @@ internal class EOSJNI
         if (!isEOSPatched())
             return;    
 
-        JClass playerClass = JNI.FindClass("com/unity3d/player/UnityPlayer");
-        JFieldID currentActivityField = JNI.GetStaticFieldID(playerClass, "currentActivity", "Landroid/app/Activity;");
-        JObject currentActivity = JNI.GetStaticObjectField<JObject>(playerClass, currentActivityField);
+        UnityPlayer = JNI.FindClass("com/unity3d/player/UnityPlayer");
+        JFieldID currentActivityField = JNI.GetStaticFieldID(UnityPlayer, "currentActivity", "Landroid/app/Activity;");
+        JObject currentActivity = JNI.GetStaticObjectField<JObject>(UnityPlayer, currentActivityField);
         if (!currentActivity.Valid())
         {
             FusionLogger.Error("Failed to get current activity from UnityPlayer! EOS SDK initialization aborted.");

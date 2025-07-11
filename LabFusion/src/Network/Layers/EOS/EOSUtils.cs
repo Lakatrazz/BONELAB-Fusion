@@ -1,15 +1,16 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.UserInfo;
+
 using LabFusion.Utilities;
 
 using System.Collections;
 
 namespace LabFusion.Network;
 
-public class EOSUtils
+internal class EOSUtils
 {
-    public static EpicAccountId GetAccountIdFromProductId(ProductUserId productUserId)
+    internal static EpicAccountId GetAccountIdFromProductId(ProductUserId productUserId)
     {
         if (productUserId == null)
             return null;
@@ -20,7 +21,7 @@ public class EOSUtils
             AccountIdType = ExternalAccountType.Epic,
         };
 
-        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out Epic.OnlineServices.Connect.ExternalAccountInfo? externalAccountInfo);
+        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out ExternalAccountInfo? externalAccountInfo);
 
         if (result == Result.Success && externalAccountInfo.HasValue)
         {
@@ -35,7 +36,7 @@ public class EOSUtils
         return null;
     }
 
-    public static string GetDisplayNameFromProductId(ProductUserId productUserId)
+    internal static string GetDisplayNameFromProductId(ProductUserId productUserId)
     {
         if (productUserId == null)
             return null;
@@ -48,7 +49,6 @@ public class EOSUtils
         Result result = EOSManager.UserInfoInterface.CopyUserInfo(ref options, out UserInfoData? externalAccountInfo);
         if (result == Result.Success && externalAccountInfo.HasValue)
         {
-            FusionLogger.Log(externalAccountInfo?.DisplayName);
             return externalAccountInfo?.DisplayName ?? "Unknown";
         }
         else if (result != Result.Success)
@@ -60,16 +60,16 @@ public class EOSUtils
         return null;
     }
 
-    public static IEnumerator GetDisplayNameFromAccountId(EpicAccountId accountId, System.Action<string> onComplete)
+    internal static IEnumerator GetDisplayNameFromAccountId(EpicAccountId accountId, Action<string> onComplete)
     {
-        var userInfoOptions = new Epic.OnlineServices.UserInfo.QueryUserInfoOptions
+        var userInfoOptions = new QueryUserInfoOptions
         {
             LocalUserId = EOSNetworkLayer.LocalAccountId,
             TargetUserId = accountId
         };
 
         TaskCompletionSource<string> usernameTask = new TaskCompletionSource<string>();
-        EOSManager.UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref Epic.OnlineServices.UserInfo.QueryUserInfoCallbackInfo callbackInfo) =>
+        EOSManager.UserInfoInterface.QueryUserInfo(ref userInfoOptions, null, (ref QueryUserInfoCallbackInfo callbackInfo) =>
         {
             if (callbackInfo.ResultCode != Result.Success)
             {
@@ -77,7 +77,7 @@ public class EOSUtils
                 return;
             }
 
-            var copyOptions = new Epic.OnlineServices.UserInfo.CopyUserInfoOptions
+            var copyOptions = new CopyUserInfoOptions
             {
                 LocalUserId = EOSNetworkLayer.LocalAccountId,
                 TargetUserId = accountId

@@ -1,4 +1,5 @@
 using Epic.OnlineServices;
+
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -61,7 +62,7 @@ internal static class PacketFragmentation
                     SocketId = EOSSocketHandler.SocketId,
                     Channel = channelByte,
                     Data = new ArraySegment<byte>(fragmentPacket),
-                    AllowDelayedDelivery = true,
+                    AllowDelayedDelivery = false,
                     Reliability = reliability,
                     DisableAutoAcceptConnection = false,
                 };

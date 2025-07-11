@@ -1,4 +1,5 @@
 using Epic.OnlineServices;
+
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -7,13 +8,12 @@ internal static class EOSMessageSender
 {
     internal static void BroadcastToServer(NetworkChannel channel, NetMessage message)
     {
-        var messageData = message.ToByteArray();
-        Result result = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, messageData, channel, true);
+        Result result = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
 
         if (result != Result.Success)
         {
             // Retry once
-            Result retry = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, messageData, channel, true);
+            Result retry = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
 
             if (retry != Result.Success)
             {
@@ -30,7 +30,6 @@ internal static class EOSMessageSender
             return;
         }
 
-        var messageData = message.ToByteArray();
         var countOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberCountOptions();
         uint memberCount = layer.LobbyDetails.GetMemberCount(ref countOptions);
 
@@ -42,7 +41,7 @@ internal static class EOSMessageSender
             };
             ProductUserId memberId = layer.LobbyDetails.GetMemberByIndex(ref memberOptions);
 
-            EOSSocketHandler.SendPacketToUser(memberId, messageData, channel, false);
+            EOSSocketHandler.SendPacketToUser(memberId, message, channel, false);
         }
     }
 
@@ -55,9 +54,8 @@ internal static class EOSMessageSender
         }
 
         var targetUserId = ProductUserId.FromString(userId);
-        var messageData = message.ToByteArray();
         
-        Result result = EOSSocketHandler.SendPacketToUser(targetUserId, messageData, channel, false);
+        Result result = EOSSocketHandler.SendPacketToUser(targetUserId, message, channel, false);
         
         if (result != Result.Success)
         {

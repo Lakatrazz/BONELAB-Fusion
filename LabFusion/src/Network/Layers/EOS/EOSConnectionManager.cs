@@ -1,5 +1,3 @@
-using Epic.OnlineServices;
-
 namespace LabFusion.Network;
 
 internal static class EOSConnectionManager

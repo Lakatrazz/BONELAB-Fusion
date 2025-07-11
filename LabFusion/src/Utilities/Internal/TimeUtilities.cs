@@ -8,6 +8,8 @@ internal static class TimeUtilities
 
     public static float FixedDeltaTime { get { return _fixedDeltaTime; } }
 
+    public static float UnscaledDeltaTime { get { return _unscaledDeltaTime; } }
+
     public static float TimeSinceStartup { get { return _timeSinceStartup; } }
 
     public static float TimeScale { get { return _timeScale; } }
@@ -15,6 +17,7 @@ internal static class TimeUtilities
     public static int FrameCount { get { return _frameCount; } }
 
     private static float _deltaTime = 1f;
+    private static float _unscaledDeltaTime = 1f;
     private static float _fixedDeltaTime = 0.02f;
     private static float _timeSinceStartup = 0f;
 
@@ -28,6 +31,8 @@ internal static class TimeUtilities
 
         _deltaTime = Time.deltaTime;
         _timeSinceStartup += _deltaTime;
+
+        _unscaledDeltaTime = Time.unscaledDeltaTime;
 
         _frameCount++;
     }

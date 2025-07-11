@@ -1,4 +1,5 @@
 ﻿using Epic.OnlineServices;
+
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -25,12 +26,15 @@ internal static class EOSSocketHandler
 
     internal static void CleanupOldFragments() => PacketFragmentation.CleanupOldFragments();
 
-    internal static Result SendPacketToUser(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled)
+    internal static unsafe Result SendPacketToUser(ProductUserId userId, NetMessage message, NetworkChannel channel, bool isServerHandled)
     {
+        byte[] data = message.ToByteArray();
+
         // Handle local packets with frame delay to avoid issues as host
         if (userId == EOSNetworkLayer.LocalUserId)
         {
-            DelayUtilities.InvokeNextFrame(() => {
+            DelayUtilities.InvokeNextFrame(() =>
+            {
                 var readableMessage = new ReadableMessage()
                 {
                     Buffer = new ReadOnlySpan<byte>(data),
@@ -92,7 +96,7 @@ internal static class EOSSocketHandler
             SocketId = SocketId,
             Channel = isServerHandled ? (byte)2 : (byte)1,
             Data = new ArraySegment<byte>(data),
-            AllowDelayedDelivery = true,
+            AllowDelayedDelivery = false,
             Reliability = channel == NetworkChannel.Reliable
                 ? Epic.OnlineServices.P2P.PacketReliability.ReliableUnordered
                 : Epic.OnlineServices.P2P.PacketReliability.UnreliableUnordered,

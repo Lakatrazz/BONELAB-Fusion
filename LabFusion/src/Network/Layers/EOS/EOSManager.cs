@@ -6,6 +6,7 @@ using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
+using Epic.OnlineServices.UI;
 using Epic.OnlineServices.UserInfo;
 
 using LabFusion.Utilities;
@@ -19,6 +20,7 @@ namespace LabFusion.Network;
 internal class EOSManager
 {
     public static PlatformInterface PlatformInterface;
+    public static UIInterface UIInterface;
     public static AuthInterface AuthInterface;
     public static ConnectInterface ConnectInterface;
     public static P2PInterface P2PInterface;
@@ -31,7 +33,7 @@ internal class EOSManager
         float timePassed = 0f;
         while (PlatformInterface != null)
         {
-            timePassed += TimeUtilities.DeltaTime;
+            timePassed += TimeUtilities.UnscaledDeltaTime;
             if (timePassed >= 1f / 20f)
             {
                 timePassed = 0f;
@@ -105,7 +107,8 @@ internal class EOSManager
         }
 
         EOSSocketHandler.ConfigureP2P();
-        EOSInvites.ConfigureInvites();
+        EOSOverlay.SetupOverlay();
+        EOSAuthWatchdog.SetupWatchdog();
 
         onComplete.Invoke(true);
         yield break;
@@ -158,6 +161,7 @@ internal class EOSManager
             return false;
         }
 
+        UIInterface = PlatformInterface.GetUIInterface();
         AuthInterface = PlatformInterface.GetAuthInterface();
         ConnectInterface = PlatformInterface.GetConnectInterface();
         P2PInterface = PlatformInterface.GetP2PInterface();
@@ -170,7 +174,8 @@ internal class EOSManager
 
     internal static void ShutdownEOS()
     {
-        EOSInvites.ShutdownInvites();
+        EOSOverlay.ShutdownOverlay();
+        EOSAuthWatchdog.ShutdownWatchdog();
         PlatformInterface?.Release();
         PlatformInterface = null;
         AuthInterface = null;
