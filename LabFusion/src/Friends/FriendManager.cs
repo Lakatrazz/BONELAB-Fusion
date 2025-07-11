@@ -64,6 +64,21 @@ public class FriendManager
     }
 
     /// <summary>
+    /// Returns true if the given string ID is a friend on the current network layer or platform. (Steam/Epic/etc.)
+    /// </summary>
+    /// <param name="stringID"></param>
+    /// <returns></returns>
+    public static bool IsFriend(string stringID)
+    {
+        // Return if there isn't an active layer
+        if (NetworkLayerDeterminer.LoadedLayer == null)
+            return false;
+
+        return _friends.Friends.Any(f => f.Player.StringID == stringID && f.NetworkLayerTitle == NetworkLayerDeterminer.LoadedTitle)
+        || NetworkHelper.IsFriend(stringID); // Check the network layer for friends as well
+    }
+
+    /// <summary>
     /// Adds a friend to the current network layer.
     /// </summary>
     /// <param name="player"></param>
