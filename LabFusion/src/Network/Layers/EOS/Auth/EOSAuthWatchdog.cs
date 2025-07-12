@@ -13,7 +13,6 @@ internal class EOSAuthWatchdog
     internal static void SetupWatchdog()
     {
         var notifyAuthExpirationOptions = new AddNotifyAuthExpirationOptions();
-
         authExpirationNotifyId = EOSManager.ConnectInterface.AddNotifyAuthExpiration(ref notifyAuthExpirationOptions, null, AuthExpirationCallback);
     }
 

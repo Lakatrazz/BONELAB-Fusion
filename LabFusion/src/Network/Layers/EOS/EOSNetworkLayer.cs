@@ -1,4 +1,5 @@
 using Epic.OnlineServices;
+using Epic.OnlineServices.Friends;
 using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
@@ -149,6 +150,23 @@ public class EOSNetworkLayer : NetworkLayer
         return EOSUtils.GetDisplayNameFromProductId(ProductUserId.FromString(userId));
     }
 
+    public override bool IsFriend(string userId)
+    {
+        if (userId == LocalUserId.ToString())
+            return true;
+
+        EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(ProductUserId.FromString(userId));
+
+        var getStatusOptions = new GetStatusOptions
+        {
+            LocalUserId = LocalAccountId,
+            TargetUserId = epicAccountId
+        };
+        FriendsStatus Result = EOSManager.FriendsInterface.GetStatus(ref getStatusOptions);
+
+        return Result == FriendsStatus.Friends;
+    }
+
     private void HookEvents()
     {
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
@@ -277,7 +295,7 @@ public class EOSNetworkLayer : NetworkLayer
             LocalUserId = LocalUserId
         };
 
-        Result result = EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+        EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
         _currentLobby.UpdateLobbyDetails(lobbyDetails);
     }
@@ -303,67 +321,6 @@ public class EOSNetworkLayer : NetworkLayer
         }
 
         VoiceManager.RemoveSpeaker(id);
-    }
-
-    // Fusion calls this with the id of the lobby, we need to convert the lobby id into the host id
-    public override bool IsFriend(string Id)
-    {
-        ProductUserId productUserId = ProductUserId.FromString(Id);
-        EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(productUserId);
-
-        // Handle lobby ID case
-        if (epicAccountId == null)
-        {
-            var copyOptions = new CopyLobbyDetailsHandleOptions
-            {
-                LobbyId = Id,
-                LocalUserId = LocalUserId
-            };
-
-            FusionLogger.Log("FUCK YOU4");
-            
-            Result result = EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
-
-            FusionLogger.Log(result);
-            FusionLogger.Log(lobbyDetails is null);
-
-            if (result != Result.Success || lobbyDetails == null)
-                return false;
-
-            FusionLogger.Log("FUCK YOU22");
-
-            try
-            {
-                FusionLogger.Log("FUCK YOU2");
-                var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
-                ProductUserId ownerId = lobbyDetails.GetLobbyOwner(ref ownerOptions);
-                FusionLogger.Log(ownerId.ToString());
-                epicAccountId = EOSUtils.GetAccountIdFromProductId(ownerId);
-            }
-            finally
-            {
-                lobbyDetails?.Release();
-                FusionLogger.Log("FUCK YOU");
-            }
-        }
-
-        // Check if it's the local user
-        if (epicAccountId != null && LocalAccountId.Equals(epicAccountId))
-            return true;
-
-        // Check friend status
-        if (epicAccountId != null)
-        {
-            var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
-            {
-                LocalUserId = LocalAccountId,
-                TargetUserId = epicAccountId
-            };
-            var friendStatus = EOSManager.FriendsInterface.GetStatus(ref statusOptions);
-            return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
-        }
-
-        return false;
     }
 
     private void SetLobbyConnectionState(LobbyConnectionState newState)
@@ -587,6 +544,11 @@ public class EOSNetworkLayer : NetworkLayer
 
             JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
         });
+    }
+
+    public override string GetServerID()
+    {
+        return _currentLobby.LobbyId;
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)

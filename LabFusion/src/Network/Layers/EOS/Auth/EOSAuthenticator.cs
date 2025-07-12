@@ -86,44 +86,47 @@ internal class EOSAuthenticator
         TaskCompletionSource<bool> refreshTokenAttempt = new();
         var savedAuthData = LoadAuthData();
 
+        if (File.Exists(PersistentData.GetPath("NOAUTHFILE.txt")))
+            savedAuthData = null;
+
         if (savedAuthData != null && !string.IsNullOrEmpty(savedAuthData.RefreshToken))
-        {
-            var refreshTokenOptions = new Epic.OnlineServices.Auth.LoginOptions()
             {
-                Credentials = new Epic.OnlineServices.Auth.Credentials()
+                var refreshTokenOptions = new Epic.OnlineServices.Auth.LoginOptions()
                 {
-                    Type = LoginCredentialType.RefreshToken,
-                    Token = savedAuthData.RefreshToken
-                },
-                ScopeFlags = AuthScopeFlags.BasicProfile |
-                             AuthScopeFlags.Presence |
-                             AuthScopeFlags.FriendsList |
-                             AuthScopeFlags.Country,
-            };
-            EOSManager.AuthInterface.Login(ref refreshTokenOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
-            {
-                if (loginCallbackInfo.ResultCode == Result.Success)
+                    Credentials = new Epic.OnlineServices.Auth.Credentials()
+                    {
+                        Type = LoginCredentialType.RefreshToken,
+                        Token = savedAuthData.RefreshToken
+                    },
+                    ScopeFlags = AuthScopeFlags.BasicProfile |
+                                 AuthScopeFlags.Presence |
+                                 AuthScopeFlags.FriendsList |
+                                 AuthScopeFlags.Country,
+                };
+                EOSManager.AuthInterface.Login(ref refreshTokenOptions, null, (ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) =>
                 {
-                    EOSNetworkLayer.LocalAccountId = loginCallbackInfo.LocalUserId;
-                    refreshTokenAttempt.SetResult(true);
-                }
-                else
-                {
-                    FusionLogger.Warn($"Failed to login with saved refresh token ({loginCallbackInfo.ResultCode}), clearing saved data.");
-                    ClearAuthData();
-                    refreshTokenAttempt.SetResult(false);
-                }
-            });
+                    if (loginCallbackInfo.ResultCode == Result.Success)
+                    {
+                        EOSNetworkLayer.LocalAccountId = loginCallbackInfo.LocalUserId;
+                        refreshTokenAttempt.SetResult(true);
+                    }
+                    else
+                    {
+                        FusionLogger.Warn($"Failed to login with saved refresh token ({loginCallbackInfo.ResultCode}), clearing saved data.");
+                        ClearAuthData();
+                        refreshTokenAttempt.SetResult(false);
+                    }
+                });
 
-            while (!refreshTokenAttempt.Task.IsCompleted)
-                yield return null;
+                while (!refreshTokenAttempt.Task.IsCompleted)
+                    yield return null;
 
-            if (refreshTokenAttempt.Task.Result)
-            {
-                onComplete?.Invoke(true);
-                yield break;
+                if (refreshTokenAttempt.Task.Result)
+                {
+                    onComplete?.Invoke(true);
+                    yield break;
+                }
             }
-        }
 
         // If there is no saved data or the refresh token failed, use the account portal
         TaskCompletionSource<bool> portalLoginAttempt = new TaskCompletionSource<bool>();
@@ -147,7 +150,10 @@ internal class EOSAuthenticator
             if (loginCallbackInfo.ResultCode == Result.Success)
             {
                 EOSNetworkLayer.LocalAccountId = loginCallbackInfo.LocalUserId;
-                SaveAuthData(loginCallbackInfo.LocalUserId);
+
+                if (!File.Exists(PersistentData.GetPath("NOAUTHFILE.txt")))
+                    SaveAuthData(loginCallbackInfo.LocalUserId);
+                    
                 portalLoginAttempt.SetResult(true);
             }
             else

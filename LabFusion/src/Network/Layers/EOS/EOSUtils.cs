@@ -15,25 +15,26 @@ internal class EOSUtils
         if (productUserId == null)
             return null;
 
-        var options = new CopyProductUserExternalAccountByAccountTypeOptions
+        var productUserIds = new ProductUserId[]
         {
-            TargetUserId = productUserId,
-            AccountIdType = ExternalAccountType.Epic,
+            productUserId,
         };
-
-        Result result = EOSManager.ConnectInterface.CopyProductUserExternalAccountByAccountType(ref options, out ExternalAccountInfo? externalAccountInfo);
-
-        if (result == Result.Success && externalAccountInfo.HasValue)
+        var queryOptions = new QueryProductUserIdMappingsOptions
         {
-            return EpicAccountId.FromString(externalAccountInfo.Value.AccountId);
-        }
-        else if (result != Result.Success)
-        {
-            FusionLogger.Warn($"Failed to get EpicAccountId for ProductUserId {productUserId}: {result}");
-            return null;
-        }
+            LocalUserId = EOSNetworkLayer.LocalUserId,
+            ProductUserIds = productUserIds
+        };
+        EOSManager.ConnectInterface.QueryProductUserIdMappings(ref queryOptions, null, null);
 
-        return null;
+        var mappingsOptions = new GetProductUserIdMappingOptions
+        {
+            LocalUserId = EOSNetworkLayer.LocalUserId,
+            AccountIdType = ExternalAccountType.Epic,
+            TargetProductUserId = productUserId
+        };
+        EOSManager.ConnectInterface.GetProductUserIdMapping(ref mappingsOptions, out var epicAccountId);
+
+        return EpicAccountId.FromString(epicAccountId);
     }
 
     internal static string GetDisplayNameFromProductId(ProductUserId productUserId)

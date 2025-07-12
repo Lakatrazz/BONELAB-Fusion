@@ -249,6 +249,12 @@ public abstract class NetworkLayer
         throw new NotImplementedException("The current NetworkLayer does not support joining by code!");
     }
 
+    // Useful for layers that may use an id for the server that is different from the host's platform id
+    public virtual string GetServerID()
+    {
+        return PlayerIDManager.LocalPlatformID;
+    }
+
     public static void RegisterLayersFromAssembly(Assembly targetAssembly)
     {
         if (targetAssembly == null) throw new NullReferenceException("Can't register from a null assembly!");

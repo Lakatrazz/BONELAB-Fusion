@@ -152,9 +152,6 @@ public sealed class EOSMatchmaker : IMatchmaker
             }
 #endif
 
-            // Make sure LobbyID is actually the EOS Lobby ID and not the host's PlayerID
-            metadata.LobbyInfo.LobbyId = networkLobby.LobbyId;
-
             if (metadata.HasServerOpen)
             {
                 lobbies.Add(new IMatchmaker.LobbyInfo
