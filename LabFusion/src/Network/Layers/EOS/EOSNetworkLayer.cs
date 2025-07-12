@@ -311,7 +311,7 @@ public class EOSNetworkLayer : NetworkLayer
         ProductUserId productUserId = ProductUserId.FromString(Id);
         EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(productUserId);
 
-        // this must be a lobby id if we failed to get the epic account id
+        // Handle lobby ID case
         if (epicAccountId == null)
         {
             var copyOptions = new CopyLobbyDetailsHandleOptions
@@ -319,28 +319,51 @@ public class EOSNetworkLayer : NetworkLayer
                 LobbyId = Id,
                 LocalUserId = LocalUserId
             };
-            EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
 
-            // likely just a invalid playerid
-            if (lobbyDetails == null)
+            FusionLogger.Log("FUCK YOU4");
+            
+            Result result = EOSManager.LobbyInterface.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+
+            FusionLogger.Log(result);
+            FusionLogger.Log(lobbyDetails is null);
+
+            if (result != Result.Success || lobbyDetails == null)
                 return false;
 
-            var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
-            epicAccountId = EOSUtils.GetAccountIdFromProductId(lobbyDetails.GetLobbyOwner(ref ownerOptions));
-            lobbyDetails.Release();
+            FusionLogger.Log("FUCK YOU22");
+
+            try
+            {
+                FusionLogger.Log("FUCK YOU2");
+                var ownerOptions = new LobbyDetailsGetLobbyOwnerOptions();
+                ProductUserId ownerId = lobbyDetails.GetLobbyOwner(ref ownerOptions);
+                FusionLogger.Log(ownerId.ToString());
+                epicAccountId = EOSUtils.GetAccountIdFromProductId(ownerId);
+            }
+            finally
+            {
+                lobbyDetails?.Release();
+                FusionLogger.Log("FUCK YOU");
+            }
         }
 
-        if (LocalAccountId == epicAccountId)
+        // Check if it's the local user
+        if (epicAccountId != null && LocalAccountId.Equals(epicAccountId))
             return true;
 
-        var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
+        // Check friend status
+        if (epicAccountId != null)
         {
-            LocalUserId = LocalAccountId,
-            TargetUserId = epicAccountId
-        };
-        var friendStatus = EOSManager.FriendsInterface.GetStatus(ref statusOptions);
+            var statusOptions = new Epic.OnlineServices.Friends.GetStatusOptions()
+            {
+                LocalUserId = LocalAccountId,
+                TargetUserId = epicAccountId
+            };
+            var friendStatus = EOSManager.FriendsInterface.GetStatus(ref statusOptions);
+            return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
+        }
 
-        return friendStatus == Epic.OnlineServices.Friends.FriendsStatus.Friends;
+        return false;
     }
 
     private void SetLobbyConnectionState(LobbyConnectionState newState)
