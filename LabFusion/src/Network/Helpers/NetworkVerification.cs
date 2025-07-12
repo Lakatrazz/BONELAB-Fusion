@@ -1,5 +1,4 @@
-﻿using LabFusion.Friends;
-using LabFusion.Preferences.Server;
+﻿using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 
@@ -54,7 +53,7 @@ public static class NetworkVerification
             case ServerPrivacy.PRIVATE:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return FriendManager.IsFriend(userId);
+                return NetworkHelper.IsFriend(userId);
         }
     }
 }

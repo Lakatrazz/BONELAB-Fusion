@@ -16,8 +16,6 @@ internal static class EOSSocketHandler
 
     internal static void ConfigureP2P() => EOSConnectionManager.ConfigureP2P();
 
-    internal static void CloseConnections() => EOSConnectionManager.CloseConnections();
-
     internal static void BroadcastToServer(NetworkChannel channel, NetMessage message) => EOSMessageSender.BroadcastToServer(channel, message);
 
     internal static void BroadcastToClients(NetworkChannel channel, NetMessage message) => EOSMessageSender.BroadcastToClients(channel, message);

@@ -8,7 +8,7 @@ internal static class EOSConnectionManager
         ConfigureRelayControl();
     }
 
-    internal static void CloseConnections()
+    internal static void Close()
     {
         var closeConnectionsOptions = new Epic.OnlineServices.P2P.CloseConnectionsOptions
         {

@@ -271,9 +271,6 @@ public class EOSNetworkLayer : NetworkLayer
 
         LobbyMetadataSerializer.WriteInfo(Lobby);
 
-        if (_currentLobby == null)
-            return;
-
         var copyOptions = new CopyLobbyDetailsHandleOptions
         {
             LobbyId = _currentLobby.LobbyId,
@@ -426,37 +423,34 @@ public class EOSNetworkLayer : NetworkLayer
 
         SetLobbyConnectionState(LobbyConnectionState.Disconnecting);
 
-        string lobbyId = _currentLobby.LobbyId;
-
-        if (string.IsNullOrEmpty(lobbyId))
-            return;
-
         if (IsHost)
         {
             var destroyOptions = new DestroyLobbyOptions
             {
                 LocalUserId = LocalUserId,
-                LobbyId = lobbyId
+                LobbyId = _currentLobby.LobbyId
             };
 
             EOSManager.LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
             {
                 RemoveNotifyPeerEvents();
 
-                EOSSocketHandler.CloseConnections();
-                InternalServerHelpers.OnDisconnect(reason);
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+                EOSConnectionManager.Close();
 
                 _isServerActive = false;
                 _isConnectionActive = false;
                 _currentLobby = null;
+                ServerCode = null;
+
+                InternalServerHelpers.OnDisconnect(reason);
+                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
             });
         }
         else
         {
             var leaveOptions = new LeaveLobbyOptions
             {
-                LobbyId = lobbyId,
+                LobbyId = _currentLobby.LobbyId,
                 LocalUserId = LocalUserId
             };
 
@@ -464,13 +458,15 @@ public class EOSNetworkLayer : NetworkLayer
             {
                 RemoveNotifyPeerEvents();
 
-                EOSSocketHandler.CloseConnections();
-                InternalServerHelpers.OnDisconnect(reason);
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
+                EOSConnectionManager.Close();
 
                 _isServerActive = false;
                 _isConnectionActive = false;
                 _currentLobby = null;
+                ServerCode = null;
+
+                InternalServerHelpers.OnDisconnect(reason);
+                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
             });
         }
     }
