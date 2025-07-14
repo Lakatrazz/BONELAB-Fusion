@@ -2,6 +2,9 @@ using Epic.OnlineServices;
 
 using LabFusion.Utilities;
 
+using System.Collections.Concurrent;
+using System.Buffers.Binary;
+
 namespace LabFusion.Network;
 
 // This shit sucks
@@ -10,6 +13,7 @@ internal static class PacketFragmentation
     private struct FragmentCollection
     {
         public byte[][] Fragments;
+        public bool[] ReceivedFlags;
         public int ReceivedCount;
         public int TotalSize;
         public DateTime LastReceived;
@@ -19,10 +23,13 @@ internal static class PacketFragmentation
     private const ushort MAGIC_MARKER = 0xF2A9;
     private const int MAX_FRAGMENTS = 1000;
     private const int FRAGMENT_CLEANUP_SECONDS = 30;
+    private const int FRAGMENT_POOL_MAX_SIZE = 50;
 
     private static readonly Dictionary<(string, ushort), FragmentCollection> _incomingFragments = new();
+    private static readonly ConcurrentQueue<byte[]> _fragmentBufferPool = new();
+    private static int _nextFragmentId = 1;
 
-    internal static unsafe Result SendFragmentedPacket(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled, int maxPacketSize)
+    internal static Result SendFragmentedPacket(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled, int maxPacketSize)
     {
         int maxDataPerFragment = maxPacketSize - HEADER_SIZE;
         int totalFragments = (data.Length + maxDataPerFragment - 1) / maxDataPerFragment;
@@ -33,46 +40,55 @@ internal static class PacketFragmentation
             return Result.InvalidParameters;
         }
 
-        ushort fragmentId = (ushort)Random.Shared.Next(ushort.MaxValue);
+        ushort fragmentId = (ushort)Interlocked.Increment(ref _nextFragmentId);
         var reliability = channel == NetworkChannel.Reliable
             ? Epic.OnlineServices.P2P.PacketReliability.ReliableUnordered
             : Epic.OnlineServices.P2P.PacketReliability.UnreliableUnordered;
 
         byte channelByte = isServerHandled ? (byte)2 : (byte)1;
 
-        fixed (byte* dataPtr = data)
+        var sendOptions = new Epic.OnlineServices.P2P.SendPacketOptions()
         {
-            for (int i = 0; i < totalFragments; i++)
+            LocalUserId = EOSNetworkLayer.LocalUserId,
+            RemoteUserId = userId,
+            SocketId = EOSSocketHandler.SocketId,
+            Channel = channelByte,
+            AllowDelayedDelivery = false,
+            Reliability = reliability,
+            DisableAutoAcceptConnection = false,
+        };
+
+        for (int i = 0; i < totalFragments; i++)
+        {
+            int offset = i * maxDataPerFragment;
+            int fragmentSize = System.Math.Min(maxDataPerFragment, data.Length - offset);
+            int packetSize = HEADER_SIZE + fragmentSize;
+
+            byte[] fragmentPacket = RentFragmentBuffer(packetSize);
+            try
             {
-                int offset = i * maxDataPerFragment;
-                int fragmentSize = System.Math.Min(maxDataPerFragment, data.Length - offset);
-
-                byte[] fragmentPacket = new byte[HEADER_SIZE + fragmentSize];
-
-                fixed (byte* packetPtr = fragmentPacket)
+                unsafe
                 {
-                    WriteFragmentHeader(packetPtr, fragmentId, (ushort)i, (ushort)totalFragments);
-                    Buffer.MemoryCopy(dataPtr + offset, packetPtr + HEADER_SIZE, fragmentSize, fragmentSize);
+                    fixed (byte* packetPtr = fragmentPacket)
+                    {
+                        WriteFragmentHeader(packetPtr, fragmentId, (ushort)i, (ushort)totalFragments);
+                    }
                 }
 
-                var sendOptions = new Epic.OnlineServices.P2P.SendPacketOptions()
-                {
-                    LocalUserId = EOSNetworkLayer.LocalUserId,
-                    RemoteUserId = userId,
-                    SocketId = EOSSocketHandler.SocketId,
-                    Channel = channelByte,
-                    Data = new ArraySegment<byte>(fragmentPacket),
-                    AllowDelayedDelivery = false,
-                    Reliability = reliability,
-                    DisableAutoAcceptConnection = false,
-                };
+                Array.Copy(data, offset, fragmentPacket, HEADER_SIZE, fragmentSize);
 
+                sendOptions.Data = new ArraySegment<byte>(fragmentPacket, 0, packetSize);
                 var result = EOSManager.P2PInterface.SendPacket(ref sendOptions);
+
                 if (result != Result.Success)
                 {
                     FusionLogger.Error($"Failed to send fragment {i}/{totalFragments}: {result}");
                     return result;
                 }
+            }
+            finally
+            {
+                ReturnFragmentBuffer(fragmentPacket);
             }
         }
 
@@ -117,14 +133,10 @@ internal static class PacketFragmentation
         return false;
     }
 
-    internal static unsafe bool IsFragment(byte[] buffer)
+    internal static bool IsFragment(byte[] buffer)
     {
-        if (buffer.Length < 2) return false;
-
-        fixed (byte* bufferPtr = buffer)
-        {
-            return *(ushort*)bufferPtr == MAGIC_MARKER;
-        }
+        return buffer.Length >= 2 &&
+               BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(0, 2)) == MAGIC_MARKER;
     }
 
     internal static void CleanupOldFragments()
@@ -154,16 +166,14 @@ internal static class PacketFragmentation
         *(ushort*)(packetPtr + 6) = totalFragments;            // Total fragments
     }
 
-    private static unsafe (ushort FragmentId, ushort FragmentPart, ushort TotalFragments) ReadFragmentHeader(byte[] buffer)
+    private static (ushort FragmentId, ushort FragmentPart, ushort TotalFragments) ReadFragmentHeader(byte[] buffer)
     {
-        fixed (byte* bufferPtr = buffer)
-        {
-            return (
-                *(ushort*)(bufferPtr + 2),  // Fragment ID
-                *(ushort*)(bufferPtr + 4),  // Fragment part
-                *(ushort*)(bufferPtr + 6)   // Total fragments
-            );
-        }
+        var span = buffer.AsSpan();
+        return (
+            BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(2, 2)),  // Fragment ID
+            BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(4, 2)),  // Fragment part
+            BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(6, 2))   // Total fragments
+        );
     }
 
     private static bool ValidateFragmentHeader((ushort FragmentId, ushort FragmentPart, ushort TotalFragments) header, int bytesWritten)
@@ -194,6 +204,7 @@ internal static class PacketFragmentation
         return new FragmentCollection
         {
             Fragments = new byte[totalFragments][],
+            ReceivedFlags = new bool[totalFragments],
             ReceivedCount = 0,
             TotalSize = 0,
             LastReceived = DateTime.UtcNow
@@ -211,20 +222,18 @@ internal static class PacketFragmentation
         return true;
     }
 
-    private static unsafe bool TryAddFragment(ref FragmentCollection collection, (ushort FragmentId, ushort FragmentPart, ushort TotalFragments) header, byte[] buffer, int bytesWritten, (string, ushort) key)
+    private static bool TryAddFragment(ref FragmentCollection collection, (ushort FragmentId, ushort FragmentPart, ushort TotalFragments) header, byte[] buffer, int bytesWritten, (string, ushort) key)
     {
-        if (collection.Fragments[header.FragmentPart] != null)
+        if (collection.ReceivedFlags[header.FragmentPart])
             return true;
 
         int fragmentDataSize = bytesWritten - HEADER_SIZE;
         var fragmentData = new byte[fragmentDataSize];
 
-        fixed (byte* srcPtr = buffer, destPtr = fragmentData)
-        {
-            Buffer.MemoryCopy(srcPtr + HEADER_SIZE, destPtr, fragmentDataSize, fragmentDataSize);
-        }
+        Array.Copy(buffer, HEADER_SIZE, fragmentData, 0, fragmentDataSize);
 
         collection.Fragments[header.FragmentPart] = fragmentData;
+        collection.ReceivedFlags[header.FragmentPart] = true;
         collection.ReceivedCount++;
         collection.TotalSize += fragmentDataSize;
         collection.LastReceived = DateTime.UtcNow;
@@ -232,7 +241,7 @@ internal static class PacketFragmentation
         return true;
     }
 
-    private static unsafe bool TryReassembleFragments(FragmentCollection collection, (string, ushort) key, out byte[] reassembledData)
+    private static bool TryReassembleFragments(FragmentCollection collection, (string, ushort) key, out byte[] reassembledData)
     {
         reassembledData = null;
 
@@ -241,31 +250,25 @@ internal static class PacketFragmentation
             reassembledData = new byte[collection.TotalSize];
             int offset = 0;
 
-            fixed (byte* destPtr = reassembledData)
+            for (int i = 0; i < collection.Fragments.Length; i++)
             {
-                for (int i = 0; i < collection.Fragments.Length; i++)
+                var fragment = collection.Fragments[i];
+                if (fragment == null)
                 {
-                    var fragment = collection.Fragments[i];
-                    if (fragment == null)
-                    {
-                        FusionLogger.Error($"Missing fragment {i} during reassembly");
-                        _incomingFragments.Remove(key);
-                        return false;
-                    }
-
-                    if (offset + fragment.Length > reassembledData.Length)
-                    {
-                        FusionLogger.Error($"Fragment reassembly would overflow: {offset + fragment.Length} > {reassembledData.Length}");
-                        _incomingFragments.Remove(key);
-                        return false;
-                    }
-
-                    fixed (byte* srcPtr = fragment)
-                    {
-                        Buffer.MemoryCopy(srcPtr, destPtr + offset, fragment.Length, fragment.Length);
-                    }
-                    offset += fragment.Length;
+                    FusionLogger.Error($"Missing fragment {i} during reassembly");
+                    _incomingFragments.Remove(key);
+                    return false;
                 }
+
+                if (offset + fragment.Length > reassembledData.Length)
+                {
+                    FusionLogger.Error($"Fragment reassembly would overflow: {offset + fragment.Length} > {reassembledData.Length}");
+                    _incomingFragments.Remove(key);
+                    return false;
+                }
+
+                Array.Copy(fragment, 0, reassembledData, offset, fragment.Length);
+                offset += fragment.Length;
             }
 
             _incomingFragments.Remove(key);
@@ -277,5 +280,18 @@ internal static class PacketFragmentation
             _incomingFragments.Remove(key);
             return false;
         }
+    }
+
+    private static byte[] RentFragmentBuffer(int size)
+    {
+        if (_fragmentBufferPool.TryDequeue(out var buffer) && buffer.Length >= size)
+            return buffer;
+        return new byte[size];
+    }
+
+    private static void ReturnFragmentBuffer(byte[] buffer)
+    {
+        if (_fragmentBufferPool.Count < FRAGMENT_POOL_MAX_SIZE && buffer != null)
+            _fragmentBufferPool.Enqueue(buffer);
     }
 }

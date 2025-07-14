@@ -2,8 +2,6 @@
 using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.UserInfo;
 
-using LabFusion.Utilities;
-
 namespace LabFusion.Network;
 
 internal class EOSUtils

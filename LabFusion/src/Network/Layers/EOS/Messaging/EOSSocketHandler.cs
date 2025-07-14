@@ -2,16 +2,24 @@
 
 using LabFusion.Utilities;
 
+using System.Collections.Concurrent;
+
 namespace LabFusion.Network;
 
 internal static class EOSSocketHandler
 {
     private const int MAX_EOS_PACKET_SIZE = 1170;
     private const int MAX_MESSAGES_PER_FRAME = 100;
+    private const int POOL_MAX_SIZE = 100;
 
-    internal static Epic.OnlineServices.P2P.SocketId SocketId = new Epic.OnlineServices.P2P.SocketId 
-    { 
-        SocketName = "FusionSocket" 
+    private const byte SERVER_CHANNEL = 2;
+    private const byte CLIENT_CHANNEL = 1;
+
+    private static readonly ConcurrentQueue<byte[]> _bufferPool = new();
+
+    internal static Epic.OnlineServices.P2P.SocketId SocketId = new Epic.OnlineServices.P2P.SocketId
+    {
+        SocketName = "FusionSocket"
     };
 
     internal static void ConfigureP2P() => EOSConnectionManager.ConfigureP2P();
@@ -24,7 +32,20 @@ internal static class EOSSocketHandler
 
     internal static void CleanupOldFragments() => PacketFragmentation.CleanupOldFragments();
 
-    internal static unsafe Result SendPacketToUser(ProductUserId userId, NetMessage message, NetworkChannel channel, bool isServerHandled)
+    private static byte[] RentBuffer(int size)
+    {
+        if (_bufferPool.TryDequeue(out var buffer) && buffer.Length >= size)
+            return buffer;
+        return new byte[size];
+    }
+
+    private static void ReturnBuffer(byte[] buffer)
+    {
+        if (_bufferPool.Count < POOL_MAX_SIZE && buffer != null)
+            _bufferPool.Enqueue(buffer);
+    }
+
+    internal static Result SendPacketToUser(ProductUserId userId, NetMessage message, NetworkChannel channel, bool isServerHandled)
     {
         byte[] data = message.ToByteArray();
 
@@ -37,19 +58,21 @@ internal static class EOSSocketHandler
         return SendSinglePacket(userId, data, channel, isServerHandled);
     }
 
-    internal static unsafe void ReceiveMessages()
+    internal static void ReceiveMessages()
     {
         try
         {
+            var localUserId = EOSNetworkLayer.LocalUserId;
+
             var getPacketSizeOptions = new Epic.OnlineServices.P2P.GetNextReceivedPacketSizeOptions
             {
-                LocalUserId = EOSNetworkLayer.LocalUserId,
+                LocalUserId = localUserId,
                 RequestedChannel = null
             };
 
             var receiveOptions = new Epic.OnlineServices.P2P.ReceivePacketOptions
             {
-                LocalUserId = EOSNetworkLayer.LocalUserId,
+                LocalUserId = localUserId,
                 RequestedChannel = null
             };
 
@@ -70,14 +93,14 @@ internal static class EOSSocketHandler
         }
     }
 
-    private static Result SendSinglePacket(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled)
+    private static Result SendSinglePacket(ProductUserId userId, byte[] data, NetworkChannel channel, bool isServerHandled, bool voice = false)
     {
         var sendOptions = new Epic.OnlineServices.P2P.SendPacketOptions()
         {
             LocalUserId = EOSNetworkLayer.LocalUserId,
             RemoteUserId = userId,
             SocketId = SocketId,
-            Channel = isServerHandled ? (byte)2 : (byte)1,
+            Channel = isServerHandled ? SERVER_CHANNEL : CLIENT_CHANNEL,
             Data = new ArraySegment<byte>(data),
             AllowDelayedDelivery = false,
             Reliability = channel == NetworkChannel.Reliable
@@ -98,68 +121,82 @@ internal static class EOSSocketHandler
     {
         packetData = default;
 
-        byte[] buffer = new byte[packetSize];
+        if (packetSize == 0)
+            return false;
+
+        var buffer = RentBuffer((int)packetSize);
         var dataSegment = new ArraySegment<byte>(buffer);
         options.MaxDataSizeBytes = packetSize;
 
         ProductUserId peerId = null;
-        Result result = EOSManager.P2PInterface.ReceivePacket(ref options, ref peerId, ref SocketId, out byte channel, dataSegment, out uint bytesWritten);
-
-        if (result == Result.Success && bytesWritten > 0)
-        {
-            if (peerId != null)
-            {
-                NetworkInfo.LastReceivedUser = peerId.ToString();
-            }
-
-            packetData = new ReceivedPacketData
-            {
-                Buffer = buffer,
-                BytesWritten = (int)bytesWritten,
-                PeerId = peerId,
-                IsServerHandled = channel == 2
-            };
-            return true;
-        }
+        var result = EOSManager.P2PInterface.ReceivePacket(ref options, ref peerId, ref SocketId, out byte channel, dataSegment, out uint bytesWritten);
 
         if (result != Result.Success)
         {
             FusionLogger.Error($"Failed to receive packet: {result}");
+            ReturnBuffer(buffer);
+            return false;
         }
 
-        return false;
+        if (bytesWritten == 0 || peerId == null)
+        {
+            ReturnBuffer(buffer);
+            return false;
+        }
+
+        NetworkInfo.LastReceivedUser = peerId.ToString();
+        packetData = new ReceivedPacketData(buffer, (int)bytesWritten, peerId, channel == SERVER_CHANNEL);
+        return true;
     }
 
-    private static unsafe void ProcessReceivedPacket(ReceivedPacketData packetData)
+    private static void ProcessReceivedPacket(ReceivedPacketData packetData)
     {
-        // Try to handle as fragment first
-        if (PacketFragmentation.TryHandleFragment(packetData.Buffer, packetData.BytesWritten, packetData.PeerId, out byte[] reassembledData))
+        ReadOnlySpan<byte> messageBuffer;
+
+        if (PacketFragmentation.IsFragment(packetData.Buffer))
         {
-            var readableMessage = new ReadableMessage()
+            if (!PacketFragmentation.TryHandleFragment(packetData.Buffer, packetData.BytesWritten, packetData.PeerId, out byte[] reassembledData))
             {
-                Buffer = new ReadOnlySpan<byte>(reassembledData),
-                IsServerHandled = packetData.IsServerHandled
-            };
-            NativeMessageHandler.ReadMessage(readableMessage);
+                ReturnBuffer(packetData.Buffer);
+                return; // Incomplete fragment
+            }
+            messageBuffer = reassembledData;
+            ReturnBuffer(packetData.Buffer);
         }
-        else if (!PacketFragmentation.IsFragment(packetData.Buffer))
+        else
         {
-            // Process as regular message if not a fragment
-            var readableMessage = new ReadableMessage()
-            {
-                Buffer = new ReadOnlySpan<byte>(packetData.Buffer, 0, packetData.BytesWritten),
-                IsServerHandled = packetData.IsServerHandled
-            };
-            NativeMessageHandler.ReadMessage(readableMessage);
+            messageBuffer = packetData.BufferSegment;
         }
-        // If its a fragment but not complete, just ignore
+
+        try
+        {
+            NativeMessageHandler.ReadMessage(new ReadableMessage
+            {
+                Buffer = messageBuffer,
+                IsServerHandled = packetData.IsServerHandled
+            });
+        }
+        finally
+        {
+            if (!PacketFragmentation.IsFragment(packetData.Buffer))
+                ReturnBuffer(packetData.Buffer);
+        }
     }
 
-    private struct ReceivedPacketData
+    private readonly struct ReceivedPacketData
     {
-        public byte[] Buffer;
-        public int BytesWritten;
-        public ProductUserId PeerId;
-        public bool IsServerHandled;
+        public readonly ArraySegment<byte> BufferSegment;
+        public readonly ProductUserId PeerId;
+        public readonly bool IsServerHandled;
+
+        public byte[] Buffer => BufferSegment.Array;
+        public int BytesWritten => BufferSegment.Count;
+
+        public ReceivedPacketData(byte[] buffer, int bytesWritten, ProductUserId peerId, bool isServerHandled)
+        {
+            BufferSegment = new ArraySegment<byte>(buffer, 0, bytesWritten);
+            PeerId = peerId;
+            IsServerHandled = isServerHandled;
+        }
     }
 }

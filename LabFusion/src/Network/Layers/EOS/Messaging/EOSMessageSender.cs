@@ -8,17 +8,13 @@ internal static class EOSMessageSender
 {
     internal static void BroadcastToServer(NetworkChannel channel, NetMessage message)
     {
-        Result result = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
+        var result = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
 
         if (result != Result.Success)
         {
-            // Retry once
-            Result retry = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
-
-            if (retry != Result.Success)
-            {
-                throw new Exception($"Failed to send message to server. EOS result: {retry}");
-            }
+            result = EOSSocketHandler.SendPacketToUser(EOSNetworkLayer.HostId, message, channel, true);
+            if (result != Result.Success)
+                throw new Exception($"Failed to send message to server. EOS result: {result}");
         }
     }
 
@@ -35,12 +31,8 @@ internal static class EOSMessageSender
 
         for (uint i = 0; i < memberCount; i++)
         {
-            var memberOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberByIndexOptions
-            {
-                MemberIndex = i
-            };
-            ProductUserId memberId = layer.LobbyDetails.GetMemberByIndex(ref memberOptions);
-
+            var memberOptions = new Epic.OnlineServices.Lobby.LobbyDetailsGetMemberByIndexOptions { MemberIndex = i };
+            var memberId = layer.LobbyDetails.GetMemberByIndex(ref memberOptions);
             EOSSocketHandler.SendPacketToUser(memberId, message, channel, false);
         }
     }
@@ -53,13 +45,8 @@ internal static class EOSMessageSender
             return;
         }
 
-        var targetUserId = ProductUserId.FromString(userId);
-        
-        Result result = EOSSocketHandler.SendPacketToUser(targetUserId, message, channel, false);
-        
+        var result = EOSSocketHandler.SendPacketToUser(ProductUserId.FromString(userId), message, channel, false);
         if (result != Result.Success)
-        {
             FusionLogger.Warn($"Failed to send message to client {userId}: {result}");
-        }
     }
 }

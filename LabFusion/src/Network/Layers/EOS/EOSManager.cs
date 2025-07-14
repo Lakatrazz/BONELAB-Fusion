@@ -55,6 +55,10 @@ internal class EOSManager
             if (logMessage.Message == "FEpicGamesPlatform::GetOnlinePlatformType - unable to map None to EOS_OnlinePlatformType")
                 return;
 
+            // Useless warning triggered by timing issues in EOS
+            if (logMessage.Message == "Lobby attribute inconsistency")
+                return;
+
             FusionLogger.Log(logMessage.Message);
         });
 

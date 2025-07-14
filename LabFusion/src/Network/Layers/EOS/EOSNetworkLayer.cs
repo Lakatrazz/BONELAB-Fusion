@@ -122,7 +122,6 @@ public class EOSNetworkLayer : NetworkLayer
         {
             FusionLogger.Error($"Failed to initialize EOS Network Layer: {e.Message}");
             _isInitialized = false;
-            return;
         }
     }
 
@@ -156,15 +155,13 @@ public class EOSNetworkLayer : NetworkLayer
             return true;
 
         EpicAccountId epicAccountId = EOSUtils.GetAccountIdFromProductId(ProductUserId.FromString(userId));
-
         var getStatusOptions = new GetStatusOptions
         {
             LocalUserId = LocalAccountId,
             TargetUserId = epicAccountId
         };
-        FriendsStatus Result = EOSManager.FriendsInterface.GetStatus(ref getStatusOptions);
 
-        return Result == FriendsStatus.Friends;
+        return EOSManager.FriendsInterface.GetStatus(ref getStatusOptions) == FriendsStatus.Friends;
     }
 
     private void HookEvents()
@@ -258,19 +255,22 @@ public class EOSNetworkLayer : NetworkLayer
     {
         if (IsHost)
         {
-            EOSManager.P2PInterface.RemoveNotifyPeerConnectionRequest(connectionRequestedId);
-            EOSManager.P2PInterface.RemoveNotifyPeerConnectionClosed(connectionClosedId);
-
-            connectionRequestedId = Common.InvalidNotificationid;
-            connectionClosedId = Common.InvalidNotificationid;
+            RemoveNotification(ref connectionRequestedId, EOSManager.P2PInterface.RemoveNotifyPeerConnectionRequest);
+            RemoveNotification(ref connectionClosedId, EOSManager.P2PInterface.RemoveNotifyPeerConnectionClosed);
         }
         else
         {
-            EOSManager.P2PInterface.RemoveNotifyPeerConnectionEstablished(connectionEstablishedId);
-            EOSManager.P2PInterface.RemoveNotifyPeerConnectionClosed(connectionClosedId);
+            RemoveNotification(ref connectionEstablishedId, EOSManager.P2PInterface.RemoveNotifyPeerConnectionEstablished);
+            RemoveNotification(ref connectionClosedId, EOSManager.P2PInterface.RemoveNotifyPeerConnectionClosed);
+        }
+    }
 
-            connectionEstablishedId = Common.InvalidNotificationid;
-            connectionClosedId = Common.InvalidNotificationid;
+    private void RemoveNotification(ref ulong notificationId, Action<ulong> removeAction)
+    {
+        if (notificationId != Common.InvalidNotificationid)
+        {
+            removeAction(notificationId);
+            notificationId = Common.InvalidNotificationid;
         }
     }
 
@@ -302,25 +302,15 @@ public class EOSNetworkLayer : NetworkLayer
 
     private void OnPlayerJoin(PlayerID id)
     {
-        if (VoiceManager == null)
-        {
+        if (VoiceManager == null || id.IsMe)
             return;
-        }
 
-        if (!id.IsMe)
-        {
-            VoiceManager.GetSpeaker(id);
-        }
+        VoiceManager.GetSpeaker(id);
     }
 
     private void OnPlayerLeave(PlayerID id)
     {
-        if (VoiceManager == null)
-        {
-            return;
-        }
-
-        VoiceManager.RemoveSpeaker(id);
+        VoiceManager?.RemoveSpeaker(id);
     }
 
     private void SetLobbyConnectionState(LobbyConnectionState newState)
@@ -335,10 +325,7 @@ public class EOSNetworkLayer : NetworkLayer
 
     public override void StartServer()
     {
-        if (!_isInitialized)
-            return;
-
-        if (LobbyConnectionState == LobbyConnectionState.Connecting)
+        if (!_isInitialized || LobbyConnectionState == LobbyConnectionState.Connecting)
             return;
 
         SetLobbyConnectionState(LobbyConnectionState.Connecting);
@@ -404,61 +391,48 @@ public class EOSNetworkLayer : NetworkLayer
         SetLobbyConnectionState(LobbyConnectionState.Disconnecting);
 
         if (IsHost)
-        {
-            var destroyOptions = new DestroyLobbyOptions
-            {
-                LocalUserId = LocalUserId,
-                LobbyId = _currentLobby.LobbyId
-            };
-
-            EOSManager.LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
-            {
-                RemoveNotifyPeerEvents();
-
-                EOSConnectionManager.Close();
-
-                _isServerActive = false;
-                _isConnectionActive = false;
-                _currentLobby = null;
-                ServerCode = null;
-
-                InternalServerHelpers.OnDisconnect(reason);
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
-            });
-        }
+            DestroyLobby(reason);
         else
+            LeaveLobby(reason);
+    }
+
+    private void DestroyLobby(string reason)
+    {
+        var destroyOptions = new DestroyLobbyOptions
         {
-            var leaveOptions = new LeaveLobbyOptions
-            {
-                LobbyId = _currentLobby.LobbyId,
-                LocalUserId = LocalUserId
-            };
+            LocalUserId = LocalUserId,
+            LobbyId = _currentLobby.LobbyId
+        };
 
-            EOSManager.LobbyInterface.LeaveLobby(ref leaveOptions, null, (ref LeaveLobbyCallbackInfo info) =>
-            {
-                RemoveNotifyPeerEvents();
+        EOSManager.LobbyInterface.DestroyLobby(ref destroyOptions, null, (ref DestroyLobbyCallbackInfo info) => OnDisconnectComplete(reason));
+    }
 
-                EOSConnectionManager.Close();
+    private void LeaveLobby(string reason)
+    {
+        var leaveOptions = new LeaveLobbyOptions
+        {
+            LobbyId = _currentLobby.LobbyId,
+            LocalUserId = LocalUserId
+        };
 
-                _isServerActive = false;
-                _isConnectionActive = false;
-                _currentLobby = null;
-                ServerCode = null;
+        EOSManager.LobbyInterface.LeaveLobby(ref leaveOptions, null, (ref LeaveLobbyCallbackInfo info) => OnDisconnectComplete(reason));
+    }
 
-                InternalServerHelpers.OnDisconnect(reason);
-                SetLobbyConnectionState(LobbyConnectionState.Disconnected);
-            });
-        }
+    private void OnDisconnectComplete(string reason)
+    {
+        RemoveNotifyPeerEvents();
+        EOSConnectionManager.Close();
+        _isServerActive = false;
+        _isConnectionActive = false;
+        _currentLobby = null;
+        ServerCode = null;
+        InternalServerHelpers.OnDisconnect(reason);
+        SetLobbyConnectionState(LobbyConnectionState.Disconnected);
     }
 
     private void OnDisconnect()
     {
-        if (VoiceManager == null)
-        {
-            return;
-        }
-
-        VoiceManager.ClearManager();
+        VoiceManager?.ClearManager();
     }
 
     public void JoinServer(string lobbyId)
@@ -468,7 +442,7 @@ public class EOSNetworkLayer : NetworkLayer
 
         // we can return if we are connected to a lobby. we should have already disconnected/started to when we run Disconnect above
         // may cause the user to need to click join twice, but that is also a thing on steam so idddrrrcccc
-        if (LobbyConnectionState == LobbyConnectionState.Connecting || LobbyConnectionState == LobbyConnectionState.Connected)
+        if (LobbyConnectionState is LobbyConnectionState.Connecting or LobbyConnectionState.Connected)
             return;
 
         SetLobbyConnectionState(LobbyConnectionState.Connecting);
@@ -516,10 +490,7 @@ public class EOSNetworkLayer : NetworkLayer
 
     public string ServerCode { get; private set; } = null;
 
-    public override string GetServerCode()
-    {
-        return ServerCode;
-    }
+    public override string GetServerCode() => ServerCode;
 
     public override void RefreshServerCode()
     {
@@ -546,10 +517,7 @@ public class EOSNetworkLayer : NetworkLayer
         });
     }
 
-    public override string GetServerID()
-    {
-        return _currentLobby.LobbyId;
-    }
+    public override string GetServerID() => _currentLobby.LobbyId;
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
