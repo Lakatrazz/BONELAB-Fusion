@@ -29,7 +29,6 @@ mono_crash.*
 x64/
 x86/
 [Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -360,3 +359,5 @@ Staging/Thunderstore/Plugins
 
 # Auto Generated
 LabFusion/FusionBundles/Assets/AddressableAssetsData
+
+LabFusion/dependencies/EOSSDK/Tools/

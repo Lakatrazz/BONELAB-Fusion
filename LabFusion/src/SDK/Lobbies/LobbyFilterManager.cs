@@ -33,7 +33,7 @@ public static class LobbyFilterManager
         // Friends filter
         var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
         {
-            return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyId);
+            return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyHostId);
         });
 
         AddLobbyFilter(friendsFilter);

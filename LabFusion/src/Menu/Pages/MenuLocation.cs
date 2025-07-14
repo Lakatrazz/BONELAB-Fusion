@@ -604,7 +604,7 @@ public static class MenuLocation
             .WithColor(Color.yellow)
             .Do(() =>
             {
-                NetworkHelper.PardonUser(playerInfo.LongId);
+                NetworkHelper.PardonUser(playerInfo.StringID);
             });
 
         // Disable unnecessary elements

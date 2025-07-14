@@ -27,7 +27,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendDisconnect(ulong userId, string reason = "")
+    public static void SendDisconnect(string userId, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
@@ -40,7 +40,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendConnectionDeny(ulong userId, string reason = "")
+    public static void SendConnectionDeny(string userId, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
@@ -49,7 +49,7 @@ public static class ConnectionSender
             writer.SerializeValue(ref disconnect);
 
             using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
-            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+            MessageSender.SendFromServer(userId.ToString(), NetworkChannel.Reliable, message);
         }
     }
 
@@ -71,7 +71,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendPlayerCatchup(ulong newUser, PlayerID id, string avatar, SerializedAvatarStats stats)
+    public static void SendPlayerCatchup(string newUser, PlayerID id, string avatar, SerializedAvatarStats stats)
     {
         using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, false);

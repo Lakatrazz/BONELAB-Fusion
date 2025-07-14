@@ -22,6 +22,10 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override string Platform => "Steam";
 
+    public override int MaxPlayers => 256;
+
+    public override int MaxLobbies => 50;
+
     public override bool RequiresValidId => true;
 
     public override bool IsHost => _isServerActive;
@@ -74,8 +78,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Get steam information
         SteamId = SteamClient.SteamId;
-        PlayerIDManager.SetLongID(SteamId.Value);
-        LocalPlayer.Username = GetUsername(SteamId.Value);
+        PlayerIDManager.SetStringID(SteamId.Value.ToString());
+        LocalPlayer.Username = GetUsername(SteamId.Value.ToString());
 
         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
 
@@ -206,14 +210,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override string GetUsername(ulong userId)
+    public override string GetUsername(string userId)
     {
-        return new Friend(userId).Name;
+        return new Friend(ulong.Parse(userId)).Name;
     }
 
-    public override bool IsFriend(ulong userId)
+    public override bool IsFriend(string userId)
     {
-        return userId == PlayerIDManager.LocalPlatformID || new Friend(userId).IsFriend;
+        return userId == PlayerIDManager.LocalPlatformID || new Friend(ulong.Parse(userId)).IsFriend;
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
@@ -243,7 +247,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
     {
         // Make sure this is actually the server
         if (!IsHost)
@@ -252,7 +256,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Get the connection from the userid dictionary
-        if (SteamSocket.ConnectedSteamIds.TryGetValue(userId, out var connection))
+        if (SteamSocket.ConnectedSteamIds.TryGetValue(ulong.Parse(userId), out var connection))
         {
             SteamSocket.SendToClient(connection, channel, message);
         }
@@ -274,13 +278,16 @@ public abstract class SteamNetworkLayer : NetworkLayer
         RefreshServerCode();
     }
 
-    public void JoinServer(SteamId serverId)
+    public void JoinServer(string serverId)
     {
         // Leave existing server
         if (_isConnectionActive || _isServerActive)
             Disconnect();
 
-        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+        SteamId steamId = new SteamId();
+        steamId.Value = ulong.Parse(serverId);
+
+        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(steamId, 0);
 
         _isServerActive = false;
         _isConnectionActive = true;

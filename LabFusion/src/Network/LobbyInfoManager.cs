@@ -86,7 +86,7 @@ public static class LobbyInfoManager
         MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
-    internal static void SendLobbyInfo(ulong longId)
+    internal static void SendLobbyInfo(string stringID)
     {
         if (!NetworkInfo.IsHost)
         {
@@ -98,6 +98,6 @@ public static class LobbyInfoManager
         writer.SerializeValue(ref data);
 
         using var message = NetMessage.Create(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
-        MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
+        MessageSender.SendFromServer(stringID, NetworkChannel.Reliable, message);
     }
 }

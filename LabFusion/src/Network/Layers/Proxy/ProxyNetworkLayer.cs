@@ -140,7 +140,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                         break;
                     }
 
-                    PlayerIDManager.SetLongID(SteamId.Value);
+                    PlayerIDManager.SetStringID(SteamId.Value.ToString());
                     NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
                     writer.Put(SteamId.Value);
                     SendToProxyServer(writer);
@@ -157,14 +157,14 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 }
                 break;
             case (ulong)MessageTypes.OnDisconnected:
-                ulong longId = dataReader.GetULong();
-                if (PlayerIDManager.HasPlayerID(longId))
+                string stringID = dataReader.GetString();
+                if (PlayerIDManager.HasPlayerID(stringID))
                 {
                     // Update the mod so it knows this user has left
-                    InternalServerHelpers.OnPlayerLeft(longId);
+                    InternalServerHelpers.OnPlayerLeft(stringID);
 
                     // Send disconnect notif to everyone
-                    ConnectionSender.SendDisconnect(longId);
+                    ConnectionSender.SendDisconnect(stringID);
                 }
                 break;
             case (ulong)MessageTypes.OnMessage:
@@ -184,11 +184,8 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 }
             case (ulong)MessageTypes.JoinServer:
                 {
-                    ulong serverId = dataReader.GetULong();
-                    JoinServer(new SteamId()
-                    {
-                        Value = serverId
-                    });
+                    string serverId = dataReader.GetString();
+                    JoinServer(serverId);
                 }
                 break;
             case (ulong)MessageTypes.StartServer:
@@ -340,9 +337,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     }
 
     public static List<ulong> FriendIds = new();
-    public override bool IsFriend(ulong userId)
+    public override bool IsFriend(string userId)
     {
-        if (FriendIds.Contains(userId))
+        if (FriendIds.Contains(ulong.Parse(userId)))
             return true;
         else
             return false;
@@ -375,7 +372,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
     {
         if (!IsHost)
         {
@@ -395,8 +392,13 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         SendToProxyServer(MessageTypes.StartServer);
     }
 
-    public void JoinServer(SteamId serverId)
+    public void JoinServer(string serverId)
     {
+        SteamId steamId = new SteamId()
+        {
+            Value = ulong.Parse(serverId)
+        };
+
         // Leave existing server
         if (_isConnectionActive || _isServerActive)
             Disconnect();

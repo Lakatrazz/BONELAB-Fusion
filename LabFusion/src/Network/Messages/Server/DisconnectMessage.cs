@@ -6,21 +6,21 @@ namespace LabFusion.Network;
 
 public class DisconnectMessageData : INetSerializable
 {
-    public ulong longId;
+    public string stringID;
     public string reason;
 
-    public static DisconnectMessageData Create(ulong longId, string reason = "")
+    public static DisconnectMessageData Create(string longId, string reason = "")
     {
         return new DisconnectMessageData()
         {
-            longId = longId,
+            stringID = longId,
             reason = reason,
         };
     }
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref longId);
+        serializer.SerializeValue(ref stringID);
         serializer.SerializeValue(ref reason);
     }
 }
@@ -36,14 +36,14 @@ public class DisconnectMessage : NativeMessageHandler
         var data = received.ReadData<DisconnectMessageData>();
 
         // If this is our id, disconnect ourselves
-        if (data.longId == PlayerIDManager.LocalPlatformID)
+        if (data.stringID == PlayerIDManager.LocalPlatformID)
         {
             NetworkHelper.Disconnect(data.reason);
         }
         // Otherwise, disconnect the other person in the lobby
         else
         {
-            InternalServerHelpers.OnPlayerLeft(data.longId);
+            InternalServerHelpers.OnPlayerLeft(data.stringID);
         }
     }
 }

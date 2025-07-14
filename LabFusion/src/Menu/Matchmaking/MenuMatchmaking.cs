@@ -258,7 +258,7 @@ public static class MenuMatchmaking
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyId);
+                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyHostId);
             default:
                 return false;
         }
@@ -657,7 +657,7 @@ public static class MenuMatchmaking
             .WithColor(Color.red)
             .WithInteractability(false);
 
-        element.PlatformIDElement.Value = info.LongId.ToString();
+        element.PlatformIDElement.Value = info.StringID;
 
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
 
