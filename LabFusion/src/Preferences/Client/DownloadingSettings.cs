@@ -1,4 +1,5 @@
 ﻿using MelonLoader;
+using UnityEngine;
 
 namespace LabFusion.Preferences.Client;
 
@@ -20,6 +21,9 @@ public class DownloadingSettings
 
     public FusionPref<bool> DownloadMatureContent { get; private set; }
 
+    public FusionPref<string> ModsPath { get; private set; }
+    public FusionPref<string> RootDownloadPath { get; private set; }
+
     public void CreatePrefs(MelonPreferences_Category category)
     {
         DownloadSpawnables = new FusionPref<bool>(category, "Download Spawnables", true, PrefUpdateMode.IGNORE);
@@ -34,5 +38,8 @@ public class DownloadingSettings
         MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);
 
         DownloadMatureContent = new FusionPref<bool>(category, "Download Mature Content", false, PrefUpdateMode.IGNORE);
+
+        ModsPath = new FusionPref<string>(category, "Mods Path", Application.persistentDataPath + "/Mods", PrefUpdateMode.IGNORE);
+        RootDownloadPath = new FusionPref<string>(category, "Root Download Path", Application.persistentDataPath, PrefUpdateMode.IGNORE);
     }
 }

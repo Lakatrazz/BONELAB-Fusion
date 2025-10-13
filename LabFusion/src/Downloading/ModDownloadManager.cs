@@ -2,23 +2,22 @@
 
 using LabFusion.Downloading.ModIO;
 using LabFusion.Utilities;
+using LabFusion.Preferences.Client;
 
 using MelonLoader;
 
 using System.Collections;
 using System.IO.Compression;
 
-using UnityEngine;
-
 namespace LabFusion.Downloading;
 
 public static class ModDownloadManager
 {
-    public static string ModsPath => Application.persistentDataPath + "/Mods";
+    public static string ModsPath => ClientSettings.Downloading.ModsPath.Value;
 
-    public static string ModsTempPath => Application.persistentDataPath + "/ModsTemp";
+    public static string ModsTempPath => ClientSettings.Downloading.RootDownloadPath.Value + "/ModsTemp";
 
-    public static string StagingPath => Application.persistentDataPath + "/FusionStaging";
+    public static string StagingPath => ClientSettings.Downloading.RootDownloadPath.Value + "/FusionStaging";
 
     public static string DownloadPath => StagingPath + "/Downloads";
 
