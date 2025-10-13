@@ -84,6 +84,36 @@ public static class ModDownloadManager
         return string.Empty;
     }
 
+    public static void ScheduleModLoad(ModIOFile modFile, string jsonPath, DownloadCallback downloadCallback = null)
+    {
+        StringModTargetListingDictionary targets = new();
+        var modIoModTarget = new ModIOModTarget()
+        {
+            GameId = ModIOSettings.GameID,
+            ModId = modFile.ModID,
+            ModfileId = modFile.FileID.Value,
+        };
+        targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
+
+        ModListing listing = new()
+        {
+            Author = null,
+            Barcode = null,
+            Description = null,
+            Repository = null,
+            Targets = targets,
+        };
+
+        var shipment = new ModForklift.PalletShipment()
+        {
+            palletPath = jsonPath,
+            modListing = listing,
+            callback = downloadCallback,
+        };
+
+        ModForklift.SchedulePalletLoad(shipment);
+    }
+
     public static void LoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
         MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, temporary, scheduledCallback, downloadCallback));
@@ -189,32 +219,7 @@ public static class ModDownloadManager
         FusionLogger.Log($"Scheduling pallet for load at path {jsonPath}");
 #endif
 
-        StringModTargetListingDictionary targets = new();
-        var modIoModTarget = new ModIOModTarget()
-        {
-            GameId = ModIOSettings.GameID,
-            ModId = modFile.ModID,
-            ModfileId = modFile.FileID.Value,
-        };
-        targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
-
-        ModListing listing = new()
-        {
-            Author = null,
-            Barcode = null,
-            Description = null,
-            Repository = null,
-            Targets = targets,
-        };
-
-        var shipment = new ModForklift.PalletShipment()
-        {
-            palletPath = jsonPath,
-            modListing = listing,
-            callback = downloadCallback,
-        };
-
-        ModForklift.SchedulePalletLoad(shipment);
+        ScheduleModLoad(modFile, jsonPath, downloadCallback);
 
         // Run scheduled callback
         scheduledCallback?.Invoke();

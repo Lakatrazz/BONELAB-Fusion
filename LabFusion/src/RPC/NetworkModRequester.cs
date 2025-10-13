@@ -110,6 +110,42 @@ public static class NetworkModRequester
                 return;
             }
 
+            // Guess mod path and check if it's already downloaded
+            string guessedPalletName;
+            var firstDot = installInfo.Barcode.IndexOf('.');
+
+            if (firstDot < 0 || firstDot >= installInfo.Barcode.Length - 1)
+            {
+                guessedPalletName = installInfo.Barcode;
+            }
+            else
+            {
+                var secondDot = installInfo.Barcode.IndexOf('.', firstDot + 1);
+
+                if (secondDot < 0)
+                {
+                    guessedPalletName = installInfo.Barcode;
+                }
+                else
+                {
+                    guessedPalletName = installInfo.Barcode[..secondDot];
+                }
+            }
+
+            var cachedModPath = ModDownloadManager.ModsTempPath + "/" + guessedPalletName;
+
+            if (Directory.Exists(cachedModPath))
+            {
+                var palletPath = ModDownloadManager.FindPalletJson(cachedModPath);
+
+                if (!string.IsNullOrEmpty(palletPath))
+                {
+                    ModDownloadManager.ScheduleModLoad(info.ModFile, palletPath, installInfo.FinishDownloadCallback);
+
+                    return;
+                }
+            }
+
             installInfo.BeginDownloadCallback?.Invoke(info);
 
             bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
