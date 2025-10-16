@@ -24,6 +24,8 @@ public class DownloadingSettings
     public FusionPref<string> ModsPath { get; private set; }
     public FusionPref<string> RootDownloadPath { get; private set; }
 
+    public FusionPref<bool> ClearDownloadCache { get; private set; }
+
     public void CreatePrefs(MelonPreferences_Category category)
     {
         DownloadSpawnables = new FusionPref<bool>(category, "Download Spawnables", true, PrefUpdateMode.IGNORE);
@@ -41,5 +43,7 @@ public class DownloadingSettings
 
         ModsPath = new FusionPref<string>(category, "Mods Path", Application.persistentDataPath + "/Mods", PrefUpdateMode.IGNORE);
         RootDownloadPath = new FusionPref<string>(category, "Root Download Path", Application.persistentDataPath, PrefUpdateMode.IGNORE);
+
+        ClearDownloadCache = new FusionPref<bool>(category, "Clear Download Cache", false, PrefUpdateMode.IGNORE);
     }
 }

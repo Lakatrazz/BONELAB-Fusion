@@ -35,6 +35,7 @@ using MelonLoader;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
+using LabFusion.Preferences.Client;
 
 namespace LabFusion;
 
@@ -137,6 +138,13 @@ public class FusionMod : MelonMod
 
         // Create prefs
         FusionPreferences.OnInitializePreferences();
+
+        if (ClientSettings.Downloading.ClearDownloadCache.Value)
+        {
+            ClientSettings.Downloading.ClearDownloadCache.Value = false;
+
+            ModDownloadManager.DeleteTemporaryDirectories();
+        }
 
         FusionPermissions.OnInitializeMelon();
 
