@@ -8,6 +8,7 @@ using LabFusion.Marrow.Patching;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Downloading;
 
 namespace LabFusion.Scene;
 
@@ -57,6 +58,23 @@ public static partial class FusionSceneManager
             // Update loading state
             if (!_wasLoading)
             {
+                if (!NetworkInfo.HasServer)
+                {
+                    if (!ClientSettings.Downloading.KeepDownloadedMods.Value)
+                    {
+                        var warehouse = AssetWarehouse.Instance;
+                        var manifests = warehouse.GetPalletManifests();
+                        var modsTempPath = Path.GetFullPath(ModDownloadManager.ModsTempPath);
+
+                        foreach (var manifest in manifests)
+                        {
+                            if (!Path.GetFullPath(manifest.PalletPath).StartsWith(modsTempPath)) continue;
+
+                            warehouse.UnloadPallet(manifest.PalletBarcode);
+                        }
+                    }
+                }
+
                 LoadSender.SendLoadingState(true);
                 LocalPlayer.Metadata.LevelBarcode.SetValue(Barcode);
 

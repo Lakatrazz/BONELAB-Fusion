@@ -2,23 +2,22 @@
 
 using LabFusion.Downloading.ModIO;
 using LabFusion.Utilities;
+using LabFusion.Preferences.Client;
 
 using MelonLoader;
 
 using System.Collections;
 using System.IO.Compression;
 
-using UnityEngine;
-
 namespace LabFusion.Downloading;
 
 public static class ModDownloadManager
 {
-    public static string ModsPath => Application.persistentDataPath + "/Mods";
+    public static string ModsPath => ClientSettings.Downloading.ModsPath.Value;
 
-    public static string ModsTempPath => Application.persistentDataPath + "/ModsTemp";
+    public static string ModsTempPath => ClientSettings.Downloading.RootDownloadPath.Value + "/ModsTemp";
 
-    public static string StagingPath => Application.persistentDataPath + "/FusionStaging";
+    public static string StagingPath => ClientSettings.Downloading.RootDownloadPath.Value + "/FusionStaging";
 
     public static string DownloadPath => StagingPath + "/Downloads";
 
@@ -82,6 +81,36 @@ public static class ModDownloadManager
         }
 
         return string.Empty;
+    }
+
+    public static void ScheduleModLoad(ModIOFile modFile, string jsonPath, DownloadCallback downloadCallback = null)
+    {
+        StringModTargetListingDictionary targets = new();
+        var modIoModTarget = new ModIOModTarget()
+        {
+            GameId = ModIOSettings.GameID,
+            ModId = modFile.ModID,
+            ModfileId = modFile.FileID.Value,
+        };
+        targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
+
+        ModListing listing = new()
+        {
+            Author = null,
+            Barcode = null,
+            Description = null,
+            Repository = null,
+            Targets = targets,
+        };
+
+        var shipment = new ModForklift.PalletShipment()
+        {
+            palletPath = jsonPath,
+            modListing = listing,
+            callback = downloadCallback,
+        };
+
+        ModForklift.SchedulePalletLoad(shipment);
     }
 
     public static void LoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
@@ -189,32 +218,7 @@ public static class ModDownloadManager
         FusionLogger.Log($"Scheduling pallet for load at path {jsonPath}");
 #endif
 
-        StringModTargetListingDictionary targets = new();
-        var modIoModTarget = new ModIOModTarget()
-        {
-            GameId = ModIOSettings.GameID,
-            ModId = modFile.ModID,
-            ModfileId = modFile.FileID.Value,
-        };
-        targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
-
-        ModListing listing = new()
-        {
-            Author = null,
-            Barcode = null,
-            Description = null,
-            Repository = null,
-            Targets = targets,
-        };
-
-        var shipment = new ModForklift.PalletShipment()
-        {
-            palletPath = jsonPath,
-            modListing = listing,
-            callback = downloadCallback,
-        };
-
-        ModForklift.SchedulePalletLoad(shipment);
+        ScheduleModLoad(modFile, jsonPath, downloadCallback);
 
         // Run scheduled callback
         scheduledCallback?.Invoke();

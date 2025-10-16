@@ -201,6 +201,9 @@ public static class MenuSettings
         generalGroup.AddElement<BoolElement>("Download Mature Content")
             .AsPref(ClientSettings.Downloading.DownloadMatureContent)
             .WithColor(Color.red);
+
+        generalGroup.AddElement<BoolElement>("Clear Download Cache Next Launch")
+            .AsPref(ClientSettings.Downloading.ClearDownloadCache);
     }
 
     private static void PopulateSafetySettings(PageElement page)
