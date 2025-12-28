@@ -56,12 +56,16 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
 
     private static bool IsDestroyed(ObjectDestructible destructible)
     {
-        if (destructible._isDead)
+        bool isDead = destructible._isDead;
+
+        if (isDead)
         {
             return true;
         }
 
-        if (destructible._poolee != null && destructible.IsDespawned)
+        var poolee = destructible._poolee;
+
+        if (poolee != null && poolee.IsInPool && destructible.IsDespawned)
         {
             return true;
         }
