@@ -411,8 +411,8 @@ public static class MenuMatchmaking
         element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = ProfanityFilter.Filter(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName)).RemoveRichTextExceptColor();
-        element.HostNameText.text = ProfanityFilter.Filter(metadata.LobbyInfo.LobbyHostName).RemoveRichTextExceptColor();
+        element.ServerNameText.text = TextFilter.Filter(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
+        element.HostNameText.text = TextFilter.Filter(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -511,10 +511,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = ProfanityFilter.Filter(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName)).RemoveRichTextExceptColor();
+        element.ServerNameElement.Value = TextFilter.Filter(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(ProfanityFilter.Filter(info.LobbyInfo.LobbyHostName));
+            .WithTitle(TextFilter.Filter(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -523,7 +523,7 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = ProfanityFilter.Filter(info.LobbyInfo.LobbyDescription).RemoveRichTextExceptColor();
+        element.DescriptionElement.Value = TextFilter.Filter(info.LobbyInfo.LobbyDescription);
 
         element.MoreElement
             .Cleared()
