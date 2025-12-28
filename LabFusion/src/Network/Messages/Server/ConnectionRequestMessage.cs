@@ -72,7 +72,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         // Make sure the id isn't spoofed.
         if (NetworkInfo.IsSpoofed(data.PlatformID))
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Your player ID does not match the networked ID.");
+            ConnectionSender.SendConnectionDeny(NetworkInfo.LastReceivedUser.Value, "Your player ID does not match the networked ID.");
             return;
         }
 
