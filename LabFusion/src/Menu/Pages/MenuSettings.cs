@@ -197,10 +197,6 @@ public static class MenuSettings
             .AsPref(ClientSettings.Downloading.MaxLevelSize)
             .WithIncrement(100)
             .WithLimits(0, 10000);
-
-        generalGroup.AddElement<BoolElement>("Download Mature Content")
-            .AsPref(ClientSettings.Downloading.DownloadMatureContent)
-            .WithColor(Color.red);
     }
 
     private static void PopulateSafetySettings(PageElement page)

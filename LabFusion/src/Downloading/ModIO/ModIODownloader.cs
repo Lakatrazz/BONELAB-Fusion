@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Preferences.Client;
+using LabFusion.Preferences;
 using LabFusion.Safety;
 using LabFusion.Utilities;
 
@@ -109,7 +109,7 @@ public static class ModIODownloader
             }
 
             // Check for maturity
-            if (info.Data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
+            if (info.Data.Mature && !CommonPreferences.ShowMatureMods)
             {
                 FusionLogger.Warn($"Skipped download of mod {info.Data.NameID} due to it containing mature content.");
 

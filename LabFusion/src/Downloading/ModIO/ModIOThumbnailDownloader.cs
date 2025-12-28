@@ -4,6 +4,8 @@ using UnityEngine;
 
 using System.Collections;
 
+using LabFusion.Preferences;
+
 namespace LabFusion.Downloading.ModIO;
 
 public static class ModIOThumbnailDownloader
@@ -25,9 +27,9 @@ public static class ModIOThumbnailDownloader
         ThumbnailCache.Clear();
     }
 
-    public static void GetThumbnail(int modId, Action<Texture> callback)
+    public static void GetThumbnail(int modID, Action<Texture> callback)
     {
-        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture))
+        if (ThumbnailCache.TryGetValue(modID, out var cachedTexture))
         {
             callback?.Invoke(cachedTexture);
             return;
@@ -35,14 +37,20 @@ public static class ModIOThumbnailDownloader
 
         callback += (texture) =>
         {
-            ThumbnailCache[modId] = texture;
+            ThumbnailCache[modID] = texture;
         };
 
-        ModIOManager.GetMod(modId, OnModReceived);
+        ModIOManager.GetMod(modID, OnModReceived);
 
         void OnModReceived(ModCallbackInfo info)
         {
             if (info.Result != ModResult.SUCCEEDED)
+            {
+                return;
+            }
+
+            // Check maturity
+            if (info.Data.Mature && !CommonPreferences.ShowMatureMods)
             {
                 return;
             }

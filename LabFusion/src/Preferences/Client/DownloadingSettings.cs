@@ -18,8 +18,6 @@ public class DownloadingSettings
     public FusionPref<int> MaxFileSize { get; private set; }
     public FusionPref<int> MaxLevelSize { get; private set; }
 
-    public FusionPref<bool> DownloadMatureContent { get; private set; }
-
     public void CreatePrefs(MelonPreferences_Category category)
     {
         DownloadSpawnables = new FusionPref<bool>(category, "Download Spawnables", true, PrefUpdateMode.IGNORE);
@@ -32,7 +30,5 @@ public class DownloadingSettings
 
         MaxFileSize = new FusionPref<int>(category, "Max File Size", DefaultMaxFileSize, PrefUpdateMode.IGNORE);
         MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);
-
-        DownloadMatureContent = new FusionPref<bool>(category, "Download Mature Content", false, PrefUpdateMode.IGNORE);
     }
 }
