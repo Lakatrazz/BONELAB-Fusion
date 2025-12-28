@@ -199,6 +199,11 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
             amplitude += Math.Abs(sample);
         }
 
+        if (sampleCount > 0)
+        {
+            amplitude /= sampleCount;
+        }
+
         VoiceSourceManager.SetAmplitude(sources, amplitude);
     }
 
