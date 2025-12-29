@@ -132,7 +132,7 @@ public static class PlayerSender
         // Make sure this is the server
         if (!NetworkInfo.IsHost)
         {
-            throw new ExpectedServerException();
+            throw new ExpectedOnServerException();
         }
 
         var data = new PlayerMetadataData()

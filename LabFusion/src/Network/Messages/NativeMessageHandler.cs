@@ -138,14 +138,7 @@ public abstract class NativeMessageHandler : MessageHandler
 
     public sealed override void Handle(ReceivedMessage received)
     {
-        if (ExpectedReceiver == ExpectedReceiverType.ServerOnly && !received.IsServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
-        else if (ExpectedReceiver == ExpectedReceiverType.ClientsOnly && received.IsServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+        CheckExpectedConditions(received);
 
         if (received.IsServerHandled && !OnPreRelayMessage(received))
         {
@@ -161,7 +154,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToServer:
                 if (!received.IsServerHandled)
                 {
-                    throw new ExpectedServerException();
+                    throw new ExpectedOnServerException();
                 }
                 break;
             case RelayType.ToClients:
