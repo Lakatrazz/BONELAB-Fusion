@@ -8,7 +8,7 @@ namespace LabFusion.Data;
 public class PlayerList
 {
     [JsonPropertyName("players")]
-    public PlayerInfo[] Players { get; set; }
+    public PlayerInfo[] Players { get; set; } = Array.Empty<PlayerInfo>();
 
     public void WritePlayers()
     {

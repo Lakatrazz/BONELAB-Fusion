@@ -18,101 +18,101 @@ public class LobbyInfo
 
     // Info
     [JsonPropertyName("lobbyID")]
-    public ulong LobbyID { get; set; }
+    public ulong LobbyID { get; set; } = 0;
 
     [JsonPropertyName("lobbyCode")]
-    public string LobbyCode { get; set; }
+    public string LobbyCode { get; set; } = null;
 
     [JsonPropertyName("lobbyName")]
-    public string LobbyName { get; set; }
+    public string LobbyName { get; set; } = null;
 
     [JsonPropertyName("lobbyDescription")]
-    public string LobbyDescription { get; set; }
+    public string LobbyDescription { get; set; } = null;
 
     [JsonPropertyName("lobbyVersion")]
-    public Version LobbyVersion { get; set; }
+    public Version LobbyVersion { get; set; } = new();
 
     [JsonPropertyName("lobbyHostName")]
-    public string LobbyHostName { get; set; }
+    public string LobbyHostName { get; set; } = null;
 
     [JsonPropertyName("playerCount")]
-    public int PlayerCount { get; set; }
+    public int PlayerCount { get; set; } = 0;
 
     [JsonPropertyName("playerList")]
-    public PlayerList PlayerList { get; set; }
+    public PlayerList PlayerList { get; set; } = new();
 
     // Location
     [JsonPropertyName("levelTitle")]
-    public string LevelTitle { get; set; }
+    public string LevelTitle { get; set; } = null;
 
     [JsonPropertyName("levelBarcode")]
-    public string LevelBarcode { get; set; }
+    public string LevelBarcode { get; set; } = null;
 
     [JsonPropertyName("levelModID")]
     public int LevelModID { get; set; } = -1;
 
     // Gamemode
     [JsonPropertyName("gamemodeTitle")]
-    public string GamemodeTitle { get; set; }
+    public string GamemodeTitle { get; set; } = null;
 
     [JsonPropertyName("gamemodeBarcode")]
-    public string GamemodeBarcode { get; set; }
+    public string GamemodeBarcode { get; set; } = null;
 
     [JsonPropertyName("timeBetweenGamemodeRounds")]
     public int TimeBetweenGamemodeRounds { get; set; } = 30;
 
     // Settings
     [JsonPropertyName("nameTags")]
-    public bool NameTags { get; set; }
+    public bool NameTags { get; set; } = false;
 
     [JsonPropertyName("privacy")]
-    public ServerPrivacy Privacy { get; set; }
+    public ServerPrivacy Privacy { get; set; } = ServerPrivacy.PUBLIC;
 
     [JsonPropertyName("slowMoMode")]
-    public TimeScaleMode SlowMoMode { get; set; }
+    public TimeScaleMode SlowMoMode { get; set; } = TimeScaleMode.DISABLED;
 
     [JsonPropertyName("maxPlayers")]
-    public int MaxPlayers { get; set; }
+    public int MaxPlayers { get; set; } = 0;
 
     [JsonPropertyName("voiceChat")]
-    public bool VoiceChat { get; set; }
+    public bool VoiceChat { get; set; } = false;
 
     [JsonPropertyName("playerConstraining")]
-    public bool PlayerConstraining { get; set; }
+    public bool PlayerConstraining { get; set; } = false;
 
     [JsonPropertyName("mortality")]
-    public bool Mortality { get; set; }
+    public bool Mortality { get; set; } = false;
 
     [JsonPropertyName("friendlyFire")]
-    public bool FriendlyFire { get; set; }
+    public bool FriendlyFire { get; set; } = false;
 
     [JsonPropertyName("knockout")]
-    public bool Knockout { get; set; }
+    public bool Knockout { get; set; } = false;
 
     [JsonPropertyName("knockoutLength")]
-    public int KnockoutLength { get; set; }
+    public int KnockoutLength { get; set; } = 0;
 
     [JsonPropertyName("maxAvatarHeight")]
-    public float MaxAvatarHeight { get; set; }
+    public float MaxAvatarHeight { get; set; } = 0f;
 
     // Permissions
     [JsonPropertyName("devTools")]
-    public PermissionLevel DevTools { get; set; }
+    public PermissionLevel DevTools { get; set; } = PermissionLevel.DEFAULT;
 
     [JsonPropertyName("constrainer")]
-    public PermissionLevel Constrainer { get; set; }
+    public PermissionLevel Constrainer { get; set; } = PermissionLevel.DEFAULT;
 
     [JsonPropertyName("customAvatars")]
-    public PermissionLevel CustomAvatars { get; set; }
+    public PermissionLevel CustomAvatars { get; set; } = PermissionLevel.DEFAULT;
 
     [JsonPropertyName("kicking")]
-    public PermissionLevel Kicking { get; set; }
+    public PermissionLevel Kicking { get; set; } = PermissionLevel.DEFAULT;
 
     [JsonPropertyName("banning")]
-    public PermissionLevel Banning { get; set; }
+    public PermissionLevel Banning { get; set; } = PermissionLevel.DEFAULT;
 
     [JsonPropertyName("teleportation")]
-    public PermissionLevel Teleportation { get; set; }
+    public PermissionLevel Teleportation { get; set; } = PermissionLevel.DEFAULT;
 
     public void WriteLobby()
     {
