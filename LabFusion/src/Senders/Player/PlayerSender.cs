@@ -90,7 +90,10 @@ public static class PlayerSender
             return;
         }
 
-        var data = PlayerVoiceChatData.Create(PlayerIDManager.LocalSmallID, voiceData);
+        var data = new PlayerVoiceChatData()
+        {
+            Bytes = voiceData,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerVoiceChat, CommonMessageRoutes.UnreliableToOtherClients);
     }
