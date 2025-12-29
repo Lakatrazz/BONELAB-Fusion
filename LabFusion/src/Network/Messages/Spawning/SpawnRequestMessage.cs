@@ -4,9 +4,7 @@ using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Network.Serialization;
-using LabFusion.Player;
 using LabFusion.Safety;
-using LabFusion.Scene;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;

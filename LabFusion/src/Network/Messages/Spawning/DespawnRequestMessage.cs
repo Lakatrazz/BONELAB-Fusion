@@ -26,6 +26,8 @@ public class DespawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnRequest;
 
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
+
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<DespawnRequestData>();

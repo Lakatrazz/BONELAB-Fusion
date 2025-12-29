@@ -6,27 +6,16 @@ namespace LabFusion.Network;
 
 public class PlayerVoiceChatData : INetSerializable
 {
-    public byte smallId;
-    public byte[] bytes;
+    public byte[] Bytes;
 
     public int? GetSize()
     {
-        return sizeof(byte) + sizeof(int) + sizeof(byte) * bytes.Length;
+        return sizeof(int) + sizeof(byte) * Bytes.Length;
     }
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref bytes);
-    }
-
-    public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)
-    {
-        return new PlayerVoiceChatData()
-        {
-            smallId = smallId,
-            bytes = voiceData,
-        };
+        serializer.SerializeValue(ref Bytes);
     }
 }
 
@@ -38,6 +27,13 @@ public class PlayerVoiceChatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerVoiceChatData>();
 
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
         // Check if voice chat is active
         if (VoiceInfo.IsDeafened)
         {
@@ -45,11 +41,11 @@ public class PlayerVoiceChatMessage : NativeMessageHandler
         }
 
         // Read the voice chat
-        var id = PlayerIDManager.GetPlayerID(data.smallId);
+        var id = PlayerIDManager.GetPlayerID(sender.Value);
 
         if (id != null)
         {
-            VoiceHelper.OnVoiceDataReceived(id, data.bytes);
+            VoiceHelper.OnVoiceDataReceived(id, data.Bytes);
         }
     }
 }

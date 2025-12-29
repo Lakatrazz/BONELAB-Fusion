@@ -594,7 +594,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             if (playerSettings != null)
             {
                 // Make sure the alpha is 1 so that people cannot create invisible names
-                var color = playerSettings.nametagColor;
+                var color = playerSettings.NametagColor;
                 color.a = 1f;
                 _nametag.Color = color;
             }

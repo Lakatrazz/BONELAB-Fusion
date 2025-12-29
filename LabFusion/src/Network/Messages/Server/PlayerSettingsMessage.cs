@@ -6,24 +6,15 @@ namespace LabFusion.Network;
 
 public class PlayerSettingsData : INetSerializable
 {
-    public const int Size = sizeof(byte) + SerializedPlayerSettings.Size;
+    public const int Size = SerializedPlayerSettings.Size;
 
-    public byte smallId;
-    public SerializedPlayerSettings settings;
+    public SerializedPlayerSettings Settings;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref settings);
-    }
-
-    public static PlayerSettingsData Create(byte smallId, SerializedPlayerSettings settings)
-    {
-        return new PlayerSettingsData()
-        {
-            smallId = smallId,
-            settings = settings,
-        };
+        serializer.SerializeValue(ref Settings);
     }
 }
 
@@ -35,9 +26,16 @@ public class PlayerSettingsMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerSettingsData>();
 
-        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
         {
-            player.SetSettings(data.settings);
+            return;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
+        {
+            player.SetSettings(data.Settings);
         }
     }
 }
