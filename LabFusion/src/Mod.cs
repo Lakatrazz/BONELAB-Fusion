@@ -162,9 +162,7 @@ public class FusionMod : MelonMod
 
     private static void InitializeBaseModules()
     {
-        ModuleManager.RegisterModule<SDKModule>();
-        ModuleManager.RegisterModule<MarrowModule>();
-        ModuleManager.RegisterModule<BonelabModule>();
+        ModuleManager.LoadModules(FusionAssembly);
     }
 
     public override void OnLateInitializeMelon()
