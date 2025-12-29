@@ -22,6 +22,8 @@ public static class ModIOSettings
     private static bool _isLoadingToken = false;
     public static bool IsLoadingToken => _isLoadingToken;
 
+    private static bool _loggedMissingToken = false;
+
     private static Action<string> _tokenLoadCallback = null;
 
     public static string FormatFilePath(int modId, int fileId)
@@ -61,7 +63,11 @@ public static class ModIOSettings
 
         if (!File.Exists(settingsPath))
         {
-            FusionLogger.Error("mod.io token is missing! Please set it in the mods menu!");
+            if (!_loggedMissingToken)
+            {
+                FusionLogger.Error("mod.io token is missing! Please set it in the mods menu!");
+                _loggedMissingToken = true;
+            }
 
             EndLoadToken(null);
 
