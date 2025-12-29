@@ -1,8 +1,5 @@
-﻿using LabFusion.Extensions;
-using LabFusion.Network.Serialization;
-
+﻿using LabFusion.Network.Serialization;
 using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Modules;
 
 namespace LabFusion.Network;
 
@@ -74,6 +71,7 @@ public class DynamicsAssignMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DynamicsAssignment;
 
+    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

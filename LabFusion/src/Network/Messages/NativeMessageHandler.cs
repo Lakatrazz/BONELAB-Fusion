@@ -114,7 +114,12 @@ public abstract class NativeMessageHandler : MessageHandler
         // No existing PlayerID, nothing to validate
         if (playerID == null)
         {
-            sender = null;
+            // Sender has a PlayerID but the PlatformID doesn't! User is spoofing!
+            if (sender.HasValue && PlayerIDManager.HasPlayerID(sender.Value))
+            {
+                return false;
+            }
+
             return true;
         }
 
