@@ -12,7 +12,7 @@ public struct LobbyMetadataInfo
 {
     public LobbyInfo LobbyInfo { get; set; }
 
-    public bool HasServerOpen { get; set; }
+    public bool HasLobbyOpen { get; set; }
 
     public bool ClientHasLevel { get; set; }
 
@@ -35,7 +35,7 @@ public struct LobbyMetadataInfo
         return new LobbyMetadataInfo()
         {
             LobbyInfo = lobbyInfo,
-            HasServerOpen = NetworkInfo.IsHost,
+            HasLobbyOpen = NetworkInfo.IsHost,
             LobbyCode = lobbyInfo.LobbyCode,
             Privacy = lobbyInfo.Privacy,
             Full = lobbyInfo.PlayerCount >= lobbyInfo.MaxPlayers,
@@ -47,7 +47,8 @@ public struct LobbyMetadataInfo
 
     public readonly void Write(INetworkLobby lobby)
     {
-        lobby.SetMetadata(LobbyKeys.HasServerOpenKey, HasServerOpen.ToString());
+        lobby.SetMetadata(LobbyKeys.IdentifierKey, bool.TrueString);
+        lobby.SetMetadata(LobbyKeys.HasLobbyOpenKey, HasLobbyOpen.ToString());
         lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode?.ToUpper());
         lobby.SetMetadata(LobbyKeys.PrivacyKey, ((int)Privacy).ToString());
         lobby.SetMetadata(LobbyKeys.FullKey, Full.ToString());
@@ -64,7 +65,7 @@ public struct LobbyMetadataInfo
     {
         var info = new LobbyMetadataInfo()
         {
-            HasServerOpen = lobby.GetMetadata(LobbyKeys.HasServerOpenKey) == bool.TrueString,
+            HasLobbyOpen = lobby.GetMetadata(LobbyKeys.HasLobbyOpenKey) == bool.TrueString,
             LobbyCode = lobby.GetMetadata(LobbyKeys.LobbyCodeKey),
             Game = lobby.GetMetadata(LobbyKeys.GameKey),
             Full = lobby.GetMetadata(LobbyKeys.FullKey) == bool.TrueString,
@@ -94,12 +95,12 @@ public struct LobbyMetadataInfo
             }
             catch
             {
-                info.HasServerOpen = false;
+                info.HasLobbyOpen = false;
             }
         }
         else
         {
-            info.HasServerOpen = false;
+            info.HasLobbyOpen = false;
         }
 
         // Check if we have the level the host has

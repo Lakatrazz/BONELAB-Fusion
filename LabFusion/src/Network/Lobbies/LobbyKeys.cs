@@ -5,10 +5,20 @@
 /// </summary>
 public static class LobbyKeys
 {
-    private const string _internalPrefix = "BONELAB_FUSION_";
-    public const string HasServerOpenKey = _internalPrefix + "HasServerOpen";
+    /// <summary>
+    /// The key to identify that this is a Fusion lobby.
+    /// </summary>
+    public const string IdentifierKey = "MarrowFusion";
 
-    public const string KeyCollectionKey = _internalPrefix + "KeyCollection";
+    /// <summary>
+    /// The key to identify that the lobby is open and joinable.
+    /// </summary>
+    public const string HasLobbyOpenKey = "HasLobbyOpen";
+
+    /// <summary>
+    /// The key to identify the array containing all keys for the lobby.
+    /// </summary>
+    public const string KeyCollectionKey = "KeyCollection";
 
     /// <summary>
     /// The key for a lobby's code. The value should always be uppercase to allow for case insensitivity.

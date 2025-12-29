@@ -31,7 +31,7 @@ public static class ProxySocketHandler
         }
     }
 
-    public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false)
+    public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false, ulong? platformID = null)
     {
         try
         {
@@ -39,7 +39,7 @@ public static class ProxySocketHandler
             {
                 Buffer = new ReadOnlySpan<byte>(message),
                 IsServerHandled = isServerHandled,
-                PlatformID = null, // TODO: Add platform ID sending for socket messages
+                PlatformID = platformID,
             };
 
             NativeMessageHandler.ReadMessage(readableMessage);

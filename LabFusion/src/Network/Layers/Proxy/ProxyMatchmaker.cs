@@ -93,7 +93,7 @@ public sealed class ProxyMatchmaker : IMatchmaker
                 info = metadata,
             };
 
-            if (!metadata.HasServerOpen)
+            if (!metadata.HasLobbyOpen)
             {
                 continue;
             }

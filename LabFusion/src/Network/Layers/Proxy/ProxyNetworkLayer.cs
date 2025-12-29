@@ -168,7 +168,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             case (ulong)MessageTypes.OnMessage:
                 {
                     byte[] data = dataReader.GetBytesWithLength();
-                    ProxySocketHandler.OnSocketMessageReceived(data, true);
+                    ulong platformID = dataReader.GetULong();
+
+                    ProxySocketHandler.OnSocketMessageReceived(data, true, platformID);
                     break;
                 }
             case (ulong)MessageTypes.OnConnectionDisconnected:
@@ -177,7 +179,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             case (ulong)MessageTypes.OnConnectionMessage:
                 {
                     byte[] data = dataReader.GetBytesWithLength();
-                    ProxySocketHandler.OnSocketMessageReceived(data, false);
+                    ulong platformID = dataReader.GetULong();
+
+                    ProxySocketHandler.OnSocketMessageReceived(data, false, platformID);
                     break;
                 }
             case (ulong)MessageTypes.JoinServer:

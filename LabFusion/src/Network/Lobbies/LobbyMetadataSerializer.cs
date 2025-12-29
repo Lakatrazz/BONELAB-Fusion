@@ -19,7 +19,7 @@ public static class LobbyMetadataSerializer
             FusionLogger.LogException("reading lobby info", e);
 #endif
 
-            return new LobbyMetadataInfo() { HasServerOpen = false };
+            return new LobbyMetadataInfo() { HasLobbyOpen = false };
         }
     }
 }

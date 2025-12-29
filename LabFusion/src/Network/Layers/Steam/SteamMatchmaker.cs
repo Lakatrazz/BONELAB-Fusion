@@ -68,7 +68,7 @@ public sealed class SteamMatchmaker : IMatchmaker
             var networkLobby = new SteamLobby(lobby);
             var metadata = LobbyMetadataSerializer.ReadInfo(networkLobby);
 
-            if (!metadata.HasServerOpen)
+            if (!metadata.HasLobbyOpen)
             {
                 continue;
             }
@@ -114,7 +114,8 @@ public sealed class SteamMatchmaker : IMatchmaker
     {
         return query
             .FilterDistanceWorldwide()
-            .WithKeyValue(LobbyKeys.HasServerOpenKey, bool.TrueString)
+            .WithKeyValue(LobbyKeys.IdentifierKey, bool.TrueString)
+            .WithKeyValue(LobbyKeys.HasLobbyOpenKey, bool.TrueString)
             .WithKeyValue(LobbyKeys.GameKey, GameHelper.GameName);
     }
 
