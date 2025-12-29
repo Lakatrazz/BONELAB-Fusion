@@ -74,7 +74,11 @@ public static class PlayerSender
             return;
         }
 
-        var data = PlayerRepAvatarData.Create(PlayerIDManager.LocalSmallID, stats, barcode);
+        var data = new PlayerRepAvatarData()
+        {
+            Stats = stats,
+            Barcode = barcode,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAvatar, CommonMessageRoutes.ReliableToOtherClients);
     }
@@ -98,7 +102,10 @@ public static class PlayerSender
             return;
         }
 
-        var data = PlayerRepTeleportData.Create(target, position);
+        var data = new PlayerRepTeleportData()
+        {
+            Position = position,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepTeleport, new MessageRoute(target, NetworkChannel.Reliable));
     }
@@ -110,7 +117,11 @@ public static class PlayerSender
 
     public static void SendPlayerDamage(byte target, Attack attack, PlayerDamageReceiver.BodyPart part)
     {
-        var data = PlayerRepDamageData.Create(PlayerIDManager.LocalSmallID, target, attack, part);
+        var data = new PlayerRepDamageData()
+        {
+            Attack = new(attack),
+            Part = part
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, new MessageRoute(target, NetworkChannel.Reliable));
     }
@@ -147,7 +158,11 @@ public static class PlayerSender
 
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
     {
-        var data = PlayerRepActionData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
+        var data = new PlayerRepActionData()
+        {
+            Type = type,
+            OtherPlayer = otherPlayer,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAction, CommonMessageRoutes.ReliableToClients);
     }

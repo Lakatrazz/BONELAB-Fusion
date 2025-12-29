@@ -7,7 +7,12 @@ public static class GamemodeSender
 {
     public static void SendGamemodeTriggerResponse(string gamemodeBarcode, string name, string value = null)
     {
-        var data = GamemodeTriggerResponseData.Create(gamemodeBarcode, name, value);
+        var data = new GamemodeTriggerResponseData()
+        {
+            GamemodeBarcode = gamemodeBarcode,
+            TriggerName = name,
+            TriggerValue = value,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.GamemodeTriggerResponse, CommonMessageRoutes.ReliableToClients);
     }
@@ -17,10 +22,15 @@ public static class GamemodeSender
         // Make sure this is the server
         if (!NetworkInfo.IsHost)
         {
-            throw new ExpectedOnServerException();
+            throw new ExpectedFromServerException();
         }
 
-        var data = GamemodeMetadataSetData.Create(gamemodeBarcode, key, value);
+        var data = new GamemodeMetadataSetData()
+        {
+            GamemodeBarcode = gamemodeBarcode,
+            Key = key,
+            Value = value,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataSet, CommonMessageRoutes.ReliableToClients);
     }
@@ -30,10 +40,14 @@ public static class GamemodeSender
         // Make sure this is the server
         if (!NetworkInfo.IsHost)
         {
-            throw new ExpectedOnServerException();
+            throw new ExpectedFromServerException();
         }
 
-        var data = GamemodeMetadataRemoveData.Create(gamemodeBarcode, key);
+        var data = new GamemodeMetadataRemoveData()
+        {
+            GamemodeBarcode = gamemodeBarcode,
+            Key = key,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.GamemodeMetadataRemove, CommonMessageRoutes.ReliableToClients);
     }

@@ -108,7 +108,12 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, true);
+        var data = new PlayerRepSeatData()
+        {
+            SeatID = entity.ID,
+            SeatIndex = (byte)extender.GetIndex(__instance).Value,
+            IsIngress = true,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }
@@ -142,7 +147,12 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        var data = PlayerRepSeatData.Create(PlayerIDManager.LocalSmallID, entity.ID, (byte)extender.GetIndex(__instance).Value, false);
+        var data = new PlayerRepSeatData()
+        {
+            SeatID = entity.ID,
+            SeatIndex = (byte)extender.GetIndex(__instance).Value,
+            IsIngress = false,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
     }

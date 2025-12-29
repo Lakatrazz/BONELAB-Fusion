@@ -173,7 +173,12 @@ public static class GrabHelper
             // Write the default grip values
             serializedGrab.WriteDefaultGrip(hand, grip);
 
-            var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
+            var data = new PlayerRepGrabData()
+            {
+                Handedness = handedness,
+                Group = group,
+                SerializedGrab = serializedGrab,
+            };
 
             if (target == null)
             {
@@ -205,7 +210,10 @@ public static class GrabHelper
             return;
         }
 
-        var data = PlayerRepReleaseData.Create(PlayerIDManager.LocalSmallID, handedness);
+        var data = new PlayerRepReleaseData()
+        {
+            Handedness = handedness,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, CommonMessageRoutes.ReliableToOtherClients);
     }

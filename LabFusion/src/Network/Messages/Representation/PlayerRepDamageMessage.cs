@@ -4,39 +4,24 @@ using LabFusion.Utilities;
 using LabFusion.Network.Serialization;
 using LabFusion.Marrow.Serialization;
 
-using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 
 public class PlayerRepDamageData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(float);
+    public const int Size = SerializableAttack.Size + sizeof(byte);
 
-    public byte damagerId;
-    public byte damagedId;
+    public SerializableAttack Attack;
 
-    public SerializableAttack attack;
-    public PlayerDamageReceiver.BodyPart part;
+    public PlayerDamageReceiver.BodyPart Part;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref damagerId);
-        serializer.SerializeValue(ref damagedId);
-
-        serializer.SerializeValue(ref attack);
-        serializer.SerializeValue(ref part, Precision.OneByte);
-    }
-
-    public static PlayerRepDamageData Create(byte damagerId, byte damagedId, Attack attack, PlayerDamageReceiver.BodyPart part)
-    {
-        return new PlayerRepDamageData
-        {
-            damagerId = damagerId,
-            damagedId = damagedId,
-            attack = new(attack),
-            part = part,
-        };
+        serializer.SerializeValue(ref Attack);
+        serializer.SerializeValue(ref Part, Precision.OneByte);
     }
 }
 
@@ -49,23 +34,27 @@ public class PlayerRepDamageMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepDamageData>();
 
-        if (data.damagedId != PlayerIDManager.LocalSmallID)
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
         {
-            throw new Exception($"Expected target {data.damagedId}!");
+            return;
         }
+
+        var damagerID = sender.Value;
 
         // Get player health
         var rm = RigData.Refs.RigManager;
         var health = rm.health;
 
         // Get attack and find the collider
-        var attack = data.attack.Attack;
+        var attack = data.Attack.Attack;
 
         // Track the damager
-        FusionPlayer.LastAttacker = data.damagerId;
+        FusionPlayer.LastAttacker = damagerID;
 
-        health.OnReceivedDamage(attack, data.part);
+        health.OnReceivedDamage(attack, data.Part);
 
-        LocalHealth.InvokeAttackedByPlayer(attack, data.part, PlayerIDManager.GetPlayerID(data.damagerId));
+        LocalHealth.InvokeAttackedByPlayer(attack, data.Part, PlayerIDManager.GetPlayerID(damagerID));
     }
 }

@@ -1,38 +1,20 @@
 ﻿using LabFusion.SDK.Points;
 using LabFusion.Player;
-using LabFusion.Extensions;
 using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class PointItemTriggerValueData : INetSerializable
 {
-    public const int DefaultSize = sizeof(byte);
+    public string Barcode;
+    public string Value;
 
-    public byte smallId;
-    public string barcode;
-    public string value;
-
-    public static int GetSize(string barcode, string value)
-    {
-        return DefaultSize + barcode.GetSize() + value.GetSize();
-    }
+    public int? GetSize() => Barcode.GetSize() + Value.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref barcode);
-        serializer.SerializeValue(ref value);
-    }
-
-    public static PointItemTriggerValueData Create(byte smallId, string barcode, string value)
-    {
-        return new PointItemTriggerValueData()
-        {
-            smallId = smallId,
-            barcode = barcode,
-            value = value,
-        };
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref Value);
     }
 }
 
@@ -44,7 +26,14 @@ public class PointItemTriggerValueMessage : NativeMessageHandler
     {
         var data = received.ReadData<PointItemTriggerValueData>();
 
-        var id = PlayerIDManager.GetPlayerID(data.smallId);
-        PointItemManager.Internal_OnTriggerItem(id, data.barcode, data.value);
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        var id = PlayerIDManager.GetPlayerID(sender.Value);
+        PointItemManager.Internal_OnTriggerItem(id, data.Barcode, data.Value);
     }
 }

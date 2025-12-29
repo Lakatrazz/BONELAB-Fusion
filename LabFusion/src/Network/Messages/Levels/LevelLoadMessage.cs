@@ -1,6 +1,5 @@
 ﻿using LabFusion.Network.Serialization;
 using LabFusion.Scene;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -9,6 +8,8 @@ public class LevelLoadData : INetSerializable
     public string LevelBarcode;
 
     public string LoadingScreenBarcode;
+
+    public int? GetSize() => LevelBarcode.GetSize() + LoadingScreenBarcode.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
@@ -30,6 +31,7 @@ public class LevelLoadMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SceneLoad;
 
+    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

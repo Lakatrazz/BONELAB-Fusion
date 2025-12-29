@@ -7,30 +7,19 @@ namespace LabFusion.Network;
 
 public class PlayerRepSeatData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 3 + sizeof(ushort);
+    public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
-    public byte SitterID;
     public ushort SeatID;
     public byte SeatIndex;
     public bool IsIngress;
 
+    public int? GetSize() => Size;
+
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SitterID);
         serializer.SerializeValue(ref SeatID);
         serializer.SerializeValue(ref SeatIndex);
         serializer.SerializeValue(ref IsIngress);
-    }
-
-    public static PlayerRepSeatData Create(byte sitterId, ushort seatId, byte seatIndex, bool isIngress)
-    {
-        return new PlayerRepSeatData
-        {
-            SitterID = sitterId,
-            SeatID = seatId,
-            SeatIndex = seatIndex,
-            IsIngress = isIngress,
-        };
     }
 }
 
@@ -43,7 +32,14 @@ public class PlayerRepSeatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepSeatData>();
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.SitterID, out var player))
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        if (!NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
         {
             return;
         }

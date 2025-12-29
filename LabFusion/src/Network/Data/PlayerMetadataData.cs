@@ -18,20 +18,4 @@ public class PlayerMetadataData : INetSerializable
         serializer.SerializeValue(ref Key);
         serializer.SerializeValue(ref Value);
     }
-
-    public bool HasAuthority(byte? sender)
-    {
-        // Must have a sender to have authority
-        if (!sender.HasValue)
-        {
-            return false;
-        }
-
-        var senderValue = sender.Value;
-
-        bool senderIsHost = senderValue == PlayerIDManager.HostSmallID;
-        bool senderIsPlayer = senderValue == Player.ID;
-
-        return senderIsHost || senderIsPlayer;
-    }
 }

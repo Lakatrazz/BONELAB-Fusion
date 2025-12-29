@@ -3,33 +3,21 @@ using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
 public class PlayerRepAvatarData : INetSerializable
 {
-    public const int DefaultSize = sizeof(byte) + SerializedAvatarStats.Size;
+    public SerializedAvatarStats Stats;
 
-    public byte smallId;
-    public SerializedAvatarStats stats;
-    public string barcode;
+    public string Barcode;
+
+    public int? GetSize() => SerializedAvatarStats.Size + Barcode.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref stats);
-        serializer.SerializeValue(ref barcode);
-    }
-
-    public static PlayerRepAvatarData Create(byte smallId, SerializedAvatarStats stats, string barcode)
-    {
-        return new PlayerRepAvatarData()
-        {
-            smallId = smallId,
-            stats = stats,
-            barcode = barcode
-        };
+        serializer.SerializeValue(ref Stats);
+        serializer.SerializeValue(ref Barcode);
     }
 }
 
@@ -41,7 +29,14 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepAvatarData>();
 
-        string barcode = data.barcode;
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        string barcode = data.Barcode;
 
         // Check for avatar blacklist
         if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
@@ -54,9 +49,9 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
         }
 
         // Swap the avatar for the rep
-        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
         {
-            player.AvatarSetter.SwapAvatar(data.stats, barcode);
+            player.AvatarSetter.SwapAvatar(data.Stats, barcode);
         }
     }
 }

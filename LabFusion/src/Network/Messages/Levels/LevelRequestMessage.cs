@@ -13,25 +13,13 @@ namespace LabFusion.Network;
 
 public class LevelRequestData : INetSerializable
 {
-    public byte smallId;
-    public string barcode;
-    public string title;
+    public string Barcode;
+    public string Title;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref barcode);
-        serializer.SerializeValue(ref title);
-    }
-
-    public static LevelRequestData Create(byte smallId, string barcode, string title)
-    {
-        return new LevelRequestData()
-        {
-            smallId = smallId,
-            barcode = barcode,
-            title = title,
-        };
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref Title);
     }
 }
 
@@ -52,25 +40,32 @@ public class LevelRequestMessage : NativeMessageHandler
             return;
         }
 
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
         _timeOfRequest = TimeUtilities.TimeSinceStartup;
 
         var data = received.ReadData<LevelRequestData>();
 
         // Get player and their username
-        var id = PlayerIDManager.GetPlayerID(data.smallId);
+        var id = PlayerIDManager.GetPlayerID(sender.Value);
 
         if (id != null && id.TryGetDisplayName(out var name))
         {
             Notifier.Send(new Notification()
             {
-                Title = $"{data.title} Load Request",
-                Message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
+                Title = $"{data.Title} Load Request",
+                Message = new NotificationText($"{name} has requested to load {data.Title}.", Color.yellow),
 
                 SaveToMenu = true,
                 ShowPopup = true,
                 OnAccepted = () =>
                 {
-                    SceneStreamer.Load(new Barcode(data.barcode));
+                    SceneStreamer.Load(new Barcode(data.Barcode));
                 },
             });
         }

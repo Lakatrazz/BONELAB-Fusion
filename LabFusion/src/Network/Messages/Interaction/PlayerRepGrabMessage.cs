@@ -1,6 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Player;
-using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Entities;
 
@@ -13,16 +11,14 @@ namespace LabFusion.Network;
 
 public class PlayerRepGrabData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 3;
-
-    public byte SmallID;
     public Handedness Handedness;
     public GrabGroup Group;
     public SerializedGrab SerializedGrab;
 
+    public int? GetSize() => sizeof(byte) * 2 + SerializedGrab.GetSize();
+
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SmallID);
         serializer.SerializeValue(ref Handedness, Precision.OneByte);
         serializer.SerializeValue(ref Group, Precision.OneByte);
 
@@ -32,27 +28,6 @@ public class PlayerRepGrabData : INetSerializable
     public Grip GetGrip()
     {
         return SerializedGrab.GetGrip();
-    }
-
-    public NetworkPlayer GetPlayer()
-    {
-        if (NetworkPlayerManager.TryGetPlayer(SmallID, out var player))
-        {
-            return player;
-        }
-
-        return null;
-    }
-
-    public static PlayerRepGrabData Create(byte smallId, Handedness handedness, GrabGroup group, SerializedGrab serializedGrab)
-    {
-        return new PlayerRepGrabData()
-        {
-            SmallID = smallId,
-            Handedness = handedness,
-            Group = group,
-            SerializedGrab = serializedGrab
-        };
     }
 }
 
@@ -65,21 +40,20 @@ public class PlayerRepGrabMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepGrabData>();
 
-        // Make sure this isn't us
-        if (data.SmallID == PlayerIDManager.LocalSmallID)
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
         {
             return;
         }
 
         // Apply grab
-        ApplyGrip(data);
+        ApplyGrip(sender.Value, data);
     }
 
-    private static void ApplyGrip(PlayerRepGrabData data)
+    private static void ApplyGrip(byte sender, PlayerRepGrabData data)
     {
-        var player = data.GetPlayer();
-
-        if (player == null)
+        if (!NetworkPlayerManager.TryGetPlayer(sender, out var player))
         {
 #if DEBUG
             FusionLogger.Warn("Grab message requested a player to grab that doesn't exist?");

@@ -9,34 +9,24 @@ namespace LabFusion.Network;
 
 public class PlayerRepTeleportData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(float) * 3;
+    public const int Size = sizeof(float) * 3;
 
-    public byte teleportedUser;
-    public Vector3 position;
+    public Vector3 Position;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref teleportedUser);
-
         if (serializer.IsReader)
         {
-            serializer.SerializeValue(ref position);
-            position = NetworkTransformManager.DecodePosition(position);
+            serializer.SerializeValue(ref Position);
+            Position = NetworkTransformManager.DecodePosition(Position);
         }
         else
         {
-            var encodedPosition = NetworkTransformManager.EncodePosition(position);
+            var encodedPosition = NetworkTransformManager.EncodePosition(Position);
             serializer.SerializeValue(ref encodedPosition);
         }
-    }
-
-    public static PlayerRepTeleportData Create(byte teleportedUser, Vector3 position)
-    {
-        return new PlayerRepTeleportData
-        {
-            teleportedUser = teleportedUser,
-            position = position,
-        };
     }
 }
 
@@ -45,19 +35,14 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 
+    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<PlayerRepTeleportData>();
 
-        // Make sure this is us
-        if (data.teleportedUser != PlayerIDManager.LocalSmallID)
-        {
-            return;
-        }
-
         // Teleport the player
-        LocalPlayer.TeleportToPosition(data.position, Vector3Extensions.forward);
+        LocalPlayer.TeleportToPosition(data.Position, Vector3Extensions.forward);
     }
 }

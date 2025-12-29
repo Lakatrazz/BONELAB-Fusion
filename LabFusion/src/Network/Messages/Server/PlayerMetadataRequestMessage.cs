@@ -14,7 +14,7 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
         var data = received.ReadData<PlayerMetadataData>();
 
         // Make sure the message sender is able to modify this player's metadata
-        if (!data.HasAuthority(received.Sender))
+        if (!NetworkAuthorityManager.HasAuthorityOverPlayer(data.Player.ID, received.Sender))
         {
             var descriptor = received.PlatformID.HasValue ? $"{received.PlatformID}" : "with no PlatformID";
             FusionLogger.Warn($"User {descriptor} attempted to modify metadata for player {data.Player.ID}!");

@@ -1,5 +1,4 @@
 ﻿using LabFusion.Entities;
-using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
 
@@ -7,27 +6,20 @@ using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Bonelab.Messages;
 
-public class BodyLogEffectData : INetSerializable
-{
-    public const int Size = sizeof(byte);
-
-    public byte PlayerID;
-
-    public void Serialize(INetSerializer serializer)
-    {
-        serializer.SerializeValue(ref PlayerID);
-    }
-}
-
 [Net.SkipHandleWhileLoading]
 public class BodyLogEffectMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var data = received.ReadData<BodyLogEffectData>();
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
 
         // Play the effect
-        if (NetworkPlayerManager.TryGetPlayer(data.PlayerID, out var player) && !player.NetworkEntity.IsOwner)
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player) && !player.NetworkEntity.IsOwner)
         {
             PlayPullCordEffects(player);
         }

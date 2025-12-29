@@ -8,27 +8,18 @@ namespace LabFusion.Network;
 
 public class PlayerRepActionData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 3;
+    public const int Size = sizeof(byte) * 2;
 
-    public byte smallId;
-    public PlayerActionType type;
-    public byte? otherPlayer;
+    public PlayerActionType Type;
+
+    public byte? OtherPlayer;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-        serializer.SerializeValue(ref otherPlayer);
-    }
-
-    public static PlayerRepActionData Create(byte smallId, PlayerActionType type, byte? otherPlayer = null)
-    {
-        return new PlayerRepActionData
-        {
-            smallId = smallId,
-            type = type,
-            otherPlayer = otherPlayer,
-        };
+        serializer.SerializeValue(ref Type, Precision.OneByte);
+        serializer.SerializeValue(ref OtherPlayer);
     }
 }
 
@@ -40,19 +31,26 @@ public class PlayerRepActionMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepActionData>();
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
         {
             return;
         }
 
-        PlayerID otherPlayer = data.otherPlayer.HasValue ? PlayerIDManager.GetPlayerID(data.otherPlayer.Value) : null;
+        if (!NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
+        {
+            return;
+        }
+
+        PlayerID otherPlayer = data.OtherPlayer.HasValue ? PlayerIDManager.GetPlayerID(data.OtherPlayer.Value) : null;
 
         // If this isn't our rig, call these functions
         if (!player.NetworkEntity.IsOwner && player.HasRig)
         {
             var rm = player.RigRefs.RigManager;
 
-            switch (data.type)
+            switch (data.Type)
             {
                 default:
                 case PlayerActionType.UNKNOWN:
@@ -78,6 +76,6 @@ public class PlayerRepActionMessage : NativeMessageHandler
         }
 
         // Inform the hooks
-        MultiplayerHooking.InvokeOnPlayerAction(player.PlayerID, data.type, otherPlayer);
+        MultiplayerHooking.InvokeOnPlayerAction(player.PlayerID, data.Type, otherPlayer);
     }
 }

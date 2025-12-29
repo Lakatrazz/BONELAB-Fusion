@@ -11,6 +11,11 @@ public static class SizeExtensions
 
     public static int GetSize(this string value, Encoding encoding)
     {
+        if (value == null)
+        {
+            return sizeof(int);
+        }
+
         return encoding.GetByteCount(value) + sizeof(int);
     }
 

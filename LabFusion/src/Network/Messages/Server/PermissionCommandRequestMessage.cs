@@ -16,25 +16,13 @@ public enum PermissionCommandType
 
 public class PermissionCommandRequestData : INetSerializable
 {
-    public byte smallId;
-    public PermissionCommandType type;
-    public byte? otherPlayer;
+    public PermissionCommandType Type;
+    public byte? OtherPlayer;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-        serializer.SerializeValue(ref otherPlayer);
-    }
-
-    public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
-    {
-        return new PermissionCommandRequestData()
-        {
-            smallId = smallId,
-            type = type,
-            otherPlayer = otherPlayer,
-        };
+        serializer.SerializeValue(ref Type, Precision.OneByte);
+        serializer.SerializeValue(ref OtherPlayer);
     }
 }
 
@@ -48,26 +36,27 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<PermissionCommandRequestData>();
 
-        // Get the user
-        PlayerID playerId = PlayerIDManager.GetPlayerID(data.smallId);
+        var sender = received.Sender;
 
-        // Check for spoofing
-        if (NetworkInfo.IsSpoofed(playerId.PlatformID))
+        if (!sender.HasValue)
         {
             return;
         }
 
+        // Get the user
+        var playerID = PlayerIDManager.GetPlayerID(sender.Value);
+
         // Get the user's permissions
         PlayerID otherPlayer = null;
 
-        if (data.otherPlayer.HasValue)
+        if (data.OtherPlayer.HasValue)
         {
-            otherPlayer = PlayerIDManager.GetPlayerID(data.otherPlayer.Value);
+            otherPlayer = PlayerIDManager.GetPlayerID(data.OtherPlayer.Value);
         }
 
-        FusionPermissions.FetchPermissionLevel(playerId, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(playerID, out var level, out _);
 
-        switch (data.type)
+        switch (data.Type)
         {
             case PermissionCommandType.UNKNOWN:
                 break;
@@ -99,13 +88,13 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
                     PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
 
                     if (references != null && references.IsValid)
-                        PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
+                        PlayerSender.SendPlayerTeleport(playerID, references.RigManager.physicsRig.feet.transform.position);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_ME:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    PlayerRepUtilities.TryGetReferences(playerId, out var references);
+                    PlayerRepUtilities.TryGetReferences(playerID, out var references);
 
                     if (references != null && references.IsValid)
                         PlayerSender.SendPlayerTeleport(otherPlayer, references.RigManager.physicsRig.feet.transform.position);

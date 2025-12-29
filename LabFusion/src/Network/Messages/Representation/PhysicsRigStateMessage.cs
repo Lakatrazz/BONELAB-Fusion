@@ -17,8 +17,6 @@ public class PhysicsRigStateData : INetSerializable
 {
     public const int Size = sizeof(byte) * 4;
 
-    public byte EntityID;
-
     public PhysicsRigStateType Type;
     public bool Enabled;
 
@@ -26,7 +24,6 @@ public class PhysicsRigStateData : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref EntityID);
         serializer.SerializeValue(ref Type, Precision.OneByte);
         serializer.SerializeValue(ref Enabled);
         serializer.SerializeValue(ref Left);
@@ -77,11 +74,10 @@ public class PhysicsRigStateData : INetSerializable
         }
     }
 
-    public static PhysicsRigStateData Create(byte entityId, PhysicsRigStateType type, bool enabled, bool left = false)
+    public static PhysicsRigStateData Create(PhysicsRigStateType type, bool enabled, bool left = false)
     {
         return new PhysicsRigStateData
         {
-            EntityID = entityId,
             Type = type,
             Enabled = enabled,
             Left = left,
@@ -96,9 +92,16 @@ public class PhysicsRigStateMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
         var data = received.ReadData<PhysicsRigStateData>();
 
-        if (NetworkPlayerManager.TryGetPlayer(data.EntityID, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
         {
             player.EnqueuePhysicsRigState(data);
         }

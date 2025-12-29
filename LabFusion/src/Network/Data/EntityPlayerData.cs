@@ -10,6 +10,8 @@ public class EntityPlayerData : INetSerializable
     public byte PlayerID;
     public NetworkEntityReference Entity;
 
+    public int? GetSize() => Size;
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref PlayerID);

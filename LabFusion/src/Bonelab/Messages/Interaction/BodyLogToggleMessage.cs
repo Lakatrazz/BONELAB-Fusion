@@ -9,14 +9,14 @@ namespace LabFusion.Bonelab.Messages;
 
 public class BodyLogToggleData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2;
+    public const int Size = sizeof(byte);
 
-    public byte PlayerID;
     public bool IsEnabled;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref PlayerID);
         serializer.SerializeValue(ref IsEnabled);
     }
 }
@@ -28,8 +28,15 @@ public class BodyLogToggleMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BodyLogToggleData>();
 
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
         // Set the enabled state of the body log
-        if (NetworkPlayerManager.TryGetPlayer(data.PlayerID, out var player) && !player.NetworkEntity.IsOwner)
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player) && !player.NetworkEntity.IsOwner)
         {
             SetBallEnabled(player, data.IsEnabled);
         }

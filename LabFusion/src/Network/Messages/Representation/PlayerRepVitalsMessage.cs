@@ -1,8 +1,7 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Bonelab;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -10,84 +9,84 @@ public class SerializedBodyVitals : INetSerializable
 {
     public const int Size = sizeof(float) * 9 + sizeof(byte) * 5 + sizeof(int) * 2;
 
-    public float height;
-    public BodyVitals.MeasurementState measurement;
-    public float chest;
-    public float underbust;
-    public float waist;
-    public float hips;
-    public float wingspan;
-    public float inseam;
+    public float Height;
+    public BodyVitals.MeasurementState Measurement;
+    public float Chest;
+    public float Underbust;
+    public float Waist;
+    public float Hips;
+    public float Wingspan;
+    public float Inseam;
 
-    public bool bodyLogFlipped;
-    public bool bodyLogEnabled;
-    public bool hasBodyLog;
+    public bool BodyLogFlipped;
+    public bool BodyLogEnabled;
+    public bool HasBodyLog;
 
-    public bool isRightHanded;
+    public bool IsRightHanded;
 
-    public int loco_CurveMode;
-    public int loco_Direction;
+    public int Loco_CurveMode;
+    public int Loco_Direction;
 
     public SerializedBodyVitals() { }
 
     public SerializedBodyVitals(BodyVitals vitals)
     {
-        height = vitals.realWorldHeight;
-        measurement = vitals.measurementPresets;
-        chest = vitals.chestCircumference;
-        underbust = vitals.underbustCircumference;
-        waist = vitals.waistCircumference;
-        hips = vitals.hipsCircumference;
-        wingspan = vitals.wingspan;
+        Height = vitals.realWorldHeight;
+        Measurement = vitals.measurementPresets;
+        Chest = vitals.chestCircumference;
+        Underbust = vitals.underbustCircumference;
+        Waist = vitals.waistCircumference;
+        Hips = vitals.hipsCircumference;
+        Wingspan = vitals.wingspan;
 
-        bodyLogFlipped = vitals.bodyLogFlipped;
-        bodyLogEnabled = vitals.bodyLogEnabled;
-        hasBodyLog = vitals.hasBodyLog;
+        BodyLogFlipped = vitals.bodyLogFlipped;
+        BodyLogEnabled = vitals.bodyLogEnabled;
+        HasBodyLog = vitals.hasBodyLog;
 
-        isRightHanded = vitals.isRightHanded;
+        IsRightHanded = vitals.isRightHanded;
 
-        loco_CurveMode = vitals.loco_CurveMode;
-        loco_Direction = vitals.loco_Direction;
+        Loco_CurveMode = vitals.loco_CurveMode;
+        Loco_Direction = vitals.loco_Direction;
     }
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref height);
-        serializer.SerializeValue(ref measurement, Precision.OneByte);
-        serializer.SerializeValue(ref chest);
-        serializer.SerializeValue(ref underbust);
-        serializer.SerializeValue(ref waist);
-        serializer.SerializeValue(ref hips);
-        serializer.SerializeValue(ref wingspan);
+        serializer.SerializeValue(ref Height);
+        serializer.SerializeValue(ref Measurement, Precision.OneByte);
+        serializer.SerializeValue(ref Chest);
+        serializer.SerializeValue(ref Underbust);
+        serializer.SerializeValue(ref Waist);
+        serializer.SerializeValue(ref Hips);
+        serializer.SerializeValue(ref Wingspan);
 
-        serializer.SerializeValue(ref bodyLogFlipped);
-        serializer.SerializeValue(ref bodyLogEnabled);
-        serializer.SerializeValue(ref hasBodyLog);
+        serializer.SerializeValue(ref BodyLogFlipped);
+        serializer.SerializeValue(ref BodyLogEnabled);
+        serializer.SerializeValue(ref HasBodyLog);
 
-        serializer.SerializeValue(ref isRightHanded);
+        serializer.SerializeValue(ref IsRightHanded);
 
-        serializer.SerializeValue(ref loco_CurveMode);
-        serializer.SerializeValue(ref loco_Direction);
+        serializer.SerializeValue(ref Loco_CurveMode);
+        serializer.SerializeValue(ref Loco_Direction);
     }
 
     public void CopyTo(BodyVitals vitals)
     {
-        vitals.realWorldHeight = height;
-        vitals.measurementPresets = measurement;
-        vitals.chestCircumference = chest;
-        vitals.underbustCircumference = underbust;
-        vitals.waistCircumference = waist;
-        vitals.hipsCircumference = hips;
-        vitals.wingspan = wingspan;
+        vitals.realWorldHeight = Height;
+        vitals.measurementPresets = Measurement;
+        vitals.chestCircumference = Chest;
+        vitals.underbustCircumference = Underbust;
+        vitals.waistCircumference = Waist;
+        vitals.hipsCircumference = Hips;
+        vitals.wingspan = Wingspan;
 
-        vitals.bodyLogFlipped = bodyLogFlipped;
-        vitals.bodyLogEnabled = bodyLogEnabled;
-        vitals.hasBodyLog = hasBodyLog;
+        vitals.bodyLogFlipped = BodyLogFlipped;
+        vitals.bodyLogEnabled = BodyLogEnabled;
+        vitals.hasBodyLog = HasBodyLog;
 
-        vitals.isRightHanded = isRightHanded;
+        vitals.isRightHanded = IsRightHanded;
 
-        vitals.loco_CurveMode = loco_CurveMode;
-        vitals.loco_Direction = loco_Direction;
+        vitals.loco_CurveMode = Loco_CurveMode;
+        vitals.loco_Direction = Loco_Direction;
 
         vitals.PROPEGATE();
         vitals.CalibratePlayerBodyScale();
@@ -96,24 +95,15 @@ public class SerializedBodyVitals : INetSerializable
 
 public class PlayerRepVitalsData : INetSerializable
 {
-    public const int Size = SerializedBodyVitals.Size + sizeof(byte);
+    public const int Size = SerializedBodyVitals.Size;
 
-    public byte smallId;
-    public SerializedBodyVitals bodyVitals;
+    public SerializedBodyVitals BodyVitals;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref bodyVitals);
-    }
-
-    public static PlayerRepVitalsData Create(byte smallId, BodyVitals vitals)
-    {
-        return new PlayerRepVitalsData()
-        {
-            smallId = smallId,
-            bodyVitals = new SerializedBodyVitals(vitals)
-        };
+        serializer.SerializeValue(ref BodyVitals);
     }
 }
 
@@ -125,9 +115,16 @@ public class PlayerRepVitalsMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepVitalsData>();
 
-        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
         {
-            player.AvatarSetter.SetVitals(data.bodyVitals);
+            return;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
+        {
+            player.AvatarSetter.SetVitals(data.BodyVitals);
         }
     }
 }

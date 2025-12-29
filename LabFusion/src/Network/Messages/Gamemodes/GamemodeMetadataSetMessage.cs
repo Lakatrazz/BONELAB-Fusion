@@ -1,29 +1,28 @@
 ﻿using LabFusion.Network.Serialization;
 using LabFusion.SDK.Gamemodes;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
 public class GamemodeMetadataSetData : INetSerializable
 {
-    public string gamemodeBarcode;
-    public string key;
-    public string value;
+    public string GamemodeBarcode;
+    public string Key;
+    public string Value;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref gamemodeBarcode);
-        serializer.SerializeValue(ref key);
-        serializer.SerializeValue(ref value);
+        serializer.SerializeValue(ref GamemodeBarcode);
+        serializer.SerializeValue(ref Key);
+        serializer.SerializeValue(ref Value);
     }
 
     public static GamemodeMetadataSetData Create(string gamemodeBarcode, string key, string value)
     {
         return new GamemodeMetadataSetData()
         {
-            gamemodeBarcode = gamemodeBarcode,
-            key = key,
-            value = value,
+            GamemodeBarcode = gamemodeBarcode,
+            Key = key,
+            Value = value,
         };
     }
 }
@@ -32,15 +31,16 @@ public class GamemodeMetadataSetMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataSet;
 
+    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<GamemodeMetadataSetData>();
 
-        if (GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
+        if (GamemodeManager.TryGetGamemode(data.GamemodeBarcode, out var gamemode))
         {
-            gamemode.Metadata.ForceSetLocalMetadata(data.key, data.value);
+            gamemode.Metadata.ForceSetLocalMetadata(data.Key, data.Value);
         }
         else
         {

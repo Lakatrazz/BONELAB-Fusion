@@ -1,15 +1,17 @@
 ﻿using LabFusion.Network;
-using LabFusion.Player;
 
-namespace LabFusion.Senders
+namespace LabFusion.Senders;
+
+public static class PermissionSender
 {
-    public static class PermissionSender
+    public static void SendPermissionRequest(PermissionCommandType type, byte? otherPlayer = null)
     {
-        public static void SendPermissionRequest(PermissionCommandType type, byte? otherPlayer = null)
+        var data = new PermissionCommandRequestData()
         {
-            var data = PermissionCommandRequestData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
+            Type = type,
+            OtherPlayer = otherPlayer,
+        };
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, CommonMessageRoutes.ReliableToServer);
-        }
+        MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, CommonMessageRoutes.ReliableToServer);
     }
 }

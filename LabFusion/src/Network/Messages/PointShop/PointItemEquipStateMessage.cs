@@ -6,25 +6,14 @@ namespace LabFusion.Network;
 
 public class PointItemEquipStateData : INetSerializable
 {
-    public byte smallId;
-    public string barcode;
-    public bool isEquipped;
+    public string Barcode;
+
+    public bool IsEquipped;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref barcode);
-        serializer.SerializeValue(ref isEquipped);
-    }
-
-    public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)
-    {
-        return new PointItemEquipStateData()
-        {
-            smallId = smallId,
-            barcode = barcode,
-            isEquipped = isEquipped,
-        };
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref IsEquipped);
     }
 }
 
@@ -36,11 +25,18 @@ public class PointItemEquipStateMessage : NativeMessageHandler
     {
         var data = received.ReadData<PointItemEquipStateData>();
 
-        if (PointItemManager.TryGetPointItem(data.barcode, out var item))
-        {
-            var id = PlayerIDManager.GetPlayerID(data.smallId);
+        var sender = received.Sender;
 
-            id.ForceSetEquipped(data.barcode, data.isEquipped);
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        if (PointItemManager.TryGetPointItem(data.Barcode, out var item))
+        {
+            var id = PlayerIDManager.GetPlayerID(sender.Value);
+
+            id.ForceSetEquipped(data.Barcode, data.IsEquipped);
         }
     }
 }

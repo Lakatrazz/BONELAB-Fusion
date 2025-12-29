@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.SDK.Points;
+﻿using LabFusion.SDK.Points;
 using LabFusion.Player;
 using LabFusion.Network.Serialization;
 
@@ -7,22 +6,11 @@ namespace LabFusion.Network;
 
 public class PointItemTriggerData : INetSerializable
 {
-    public byte smallId;
-    public string barcode;
+    public string Barcode;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref barcode);
-    }
-
-    public static PointItemTriggerData Create(byte smallId, string barcode)
-    {
-        return new PointItemTriggerData()
-        {
-            smallId = smallId,
-            barcode = barcode,
-        };
+        serializer.SerializeValue(ref Barcode);
     }
 }
 
@@ -34,7 +22,14 @@ public class PointItemTriggerMessage : NativeMessageHandler
     {
         var data = received.ReadData<PointItemTriggerData>();
 
-        var id = PlayerIDManager.GetPlayerID(data.smallId);
-        PointItemManager.Internal_OnTriggerItem(id, data.barcode);
+        var sender = received.Sender;
+
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        var id = PlayerIDManager.GetPlayerID(sender.Value);
+        PointItemManager.Internal_OnTriggerItem(id, data.Barcode);
     }
 }

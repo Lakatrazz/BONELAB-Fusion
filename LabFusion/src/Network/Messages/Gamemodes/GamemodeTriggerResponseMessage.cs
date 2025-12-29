@@ -6,27 +6,17 @@ namespace LabFusion.Network;
 
 public class GamemodeTriggerResponseData : INetSerializable
 {
-    public string gamemodeBarcode;
+    public string GamemodeBarcode;
 
-    public string triggerName;
+    public string TriggerName;
 
-    public string triggerValue;
+    public string TriggerValue;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref gamemodeBarcode);
-        serializer.SerializeValue(ref triggerName);
-        serializer.SerializeValue(ref triggerValue);
-    }
-
-    public static GamemodeTriggerResponseData Create(string gamemodeBarcode, string name, string value = null)
-    {
-        return new GamemodeTriggerResponseData()
-        {
-            gamemodeBarcode = gamemodeBarcode,
-            triggerName = name,
-            triggerValue = value,
-        };
+        serializer.SerializeValue(ref GamemodeBarcode);
+        serializer.SerializeValue(ref TriggerName);
+        serializer.SerializeValue(ref TriggerValue);
     }
 }
 
@@ -38,18 +28,18 @@ public class GamemodeTriggerResponseMessage : NativeMessageHandler
     {
         var data = received.ReadData<GamemodeTriggerResponseData>();
 
-        if (!GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
+        if (!GamemodeManager.TryGetGamemode(data.GamemodeBarcode, out var gamemode))
         {
             return;
         }
 
-        if (!string.IsNullOrWhiteSpace(data.triggerValue))
+        if (!string.IsNullOrWhiteSpace(data.TriggerValue))
         {
-            gamemode.Relay.ForceInvokeLocalTrigger(data.triggerName, data.triggerValue);
+            gamemode.Relay.ForceInvokeLocalTrigger(data.TriggerName, data.TriggerValue);
         }
         else
         {
-            gamemode.Relay.ForceInvokeLocalTrigger(data.triggerName);
+            gamemode.Relay.ForceInvokeLocalTrigger(data.TriggerName);
         }
     }
 }

@@ -38,20 +38,20 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerPoseUpdateData>();
 
-        var playerId = received.Sender.Value;
+        var playerID = received.Sender.Value;
 
         // Make sure this isn't us
-        if (playerId == PlayerIDManager.LocalSmallID)
+        if (playerID == PlayerIDManager.LocalSmallID)
         {
             throw new Exception("Player received a pose for their own player.");
         }
 
         // Get network player
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerId);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerID);
 
         if (entity == null)
         {
-            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {playerId}!");
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {playerID}!");
             return;
         }
 

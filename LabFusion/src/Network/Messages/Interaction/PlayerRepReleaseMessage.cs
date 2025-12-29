@@ -1,41 +1,21 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class PlayerRepReleaseData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2;
+    public const int Size = sizeof(byte);
 
-    public byte smallId;
-    public Handedness handedness;
+    public Handedness Handedness;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref handedness, Precision.OneByte);
-    }
-
-    public NetworkPlayer GetPlayer()
-    {
-        if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
-        {
-            return player;
-        }
-
-        return null;
-    }
-
-    public static PlayerRepReleaseData Create(byte smallId, Handedness handedness)
-    {
-        return new PlayerRepReleaseData()
-        {
-            smallId = smallId,
-            handedness = handedness
-        };
+        serializer.SerializeValue(ref Handedness, Precision.OneByte);
     }
 }
 
@@ -48,9 +28,14 @@ public class PlayerRepReleaseMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepReleaseData>();
 
-        var player = data.GetPlayer();
+        var sender = received.Sender;
 
-        if (player == null)
+        if (!sender.HasValue)
+        {
+            return;
+        }
+
+        if (!NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
         {
             return;
         }
@@ -60,6 +45,6 @@ public class PlayerRepReleaseMessage : NativeMessageHandler
             return;
         }
 
-        player.Grabber.Detach(data.handedness);
+        player.Grabber.Detach(data.Handedness);
     }
 }
