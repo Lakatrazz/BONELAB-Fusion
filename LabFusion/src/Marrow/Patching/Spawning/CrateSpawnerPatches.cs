@@ -146,7 +146,14 @@ public static class CrateSpawnerPatches
             return false;
         }
 
-        if (!spawnable.crateRef.IsValid() || spawnable.crateRef.Crate == null)
+        var crateRef = spawnable.crateRef;
+
+        if (crateRef == null)
+        {
+            return false;
+        }
+
+        if (!crateRef.IsValid() || crateRef.Crate == null)
         {
             return false;
         }
@@ -166,8 +173,9 @@ public static class CrateSpawnerPatches
         {
             return HandleSpawnSpawnableAsync(__instance, isHidden, ref __result);
         }
-        catch
+        catch (Exception e)
         {
+            FusionLogger.LogException("handling CrateSpawner.SpawnSpawnableAsync", e);
             return true;
         }
     }
