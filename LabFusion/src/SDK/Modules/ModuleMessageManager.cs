@@ -46,7 +46,12 @@ public static class ModuleMessageManager
             throw new ArgumentException($"Handler {type.Name} was already registered.");
         }
 
-        long tag = BitMath.MakeLong(type.Assembly.FullName.GetDeterministicHashCode(), type.AssemblyQualifiedName.GetDeterministicHashCode());
+        // Combine the assembly's name and type's name for a unique tag
+        // Do not include the assembly version to allow for forwards/backwards compatibility when possible
+        var assemblyName = type.Assembly.GetName().Name;
+        var typeName = type.FullName;
+
+        long tag = BitMath.MakeLong(assemblyName.GetDeterministicHashCode(), typeName.GetDeterministicHashCode());
 
         if (TagToHandlerLookup.TryGetValue(tag, out var conflictingHandler))
         {

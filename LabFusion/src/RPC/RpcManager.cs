@@ -61,7 +61,9 @@ public static class RpcManager
             return;
         }
 
-        string typeName = method.DeclaringType.AssemblyQualifiedName;
+        // Combine the type's name and method's name with parameters for a unique tag
+        // Do not include the assembly version to allow for forwards/backwards compatibility when possible
+        string typeName = method.DeclaringType.FullName;
         string methodName = method.GetNameWithParameters();
 
         long hash = BitMath.MakeLong(typeName.GetDeterministicHashCode(), methodName.GetDeterministicHashCode());
