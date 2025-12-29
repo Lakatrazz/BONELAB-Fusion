@@ -173,6 +173,11 @@ namespace LabFusion.Marrow.Proxies
                 _powerTransitioning = true;
 
                 MusicSource.UnPause();
+
+                if (!MusicSource.isPlaying)
+                {
+                    MusicSource.Play();
+                }
             }
 
             _startMusicPitch = MusicSource.pitch;
