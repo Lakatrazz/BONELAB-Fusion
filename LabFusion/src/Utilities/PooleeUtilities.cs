@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
-
 using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
 
 namespace LabFusion.Utilities;
 
@@ -33,8 +33,24 @@ public static class PooleeUtilities
                 continue;
             }
 
+            // Don't despawn fixtures
+            if (IsFixture(networkEntity))
+            {
+                continue;
+            }
+
             poolee.Component.Despawn();
         }
+    }
+
+    private static bool IsFixture(NetworkEntity entity)
+    {
+        if (entity.GetExtender<CircuitSocketExtender>() != null)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public static void SendDespawn(ushort entityId, bool despawnEffect)
