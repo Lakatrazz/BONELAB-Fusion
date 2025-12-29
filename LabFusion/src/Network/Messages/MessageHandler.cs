@@ -71,7 +71,7 @@ public abstract class MessageHandler
         }
         catch (Exception e)
         {
-            FusionLogger.LogException("handling message", e);
+            FusionLogger.LogException($"handling message of type {GetType().Name}", e);
         }
     }
 
