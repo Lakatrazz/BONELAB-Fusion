@@ -54,6 +54,9 @@ public class RigAvatarSetter
 
     private void CheckForInstall(string barcode)
     {
+        // Hide the progress bar before checking for a new install
+        ProgressBar.Visible = false;
+
         // Check if we need to install the avatar
         bool hasCrate = CrateFilterer.HasCrate<AvatarCrate>(new(barcode));
 
