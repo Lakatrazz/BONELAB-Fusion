@@ -162,6 +162,18 @@ public static class CrateSpawnerPatches
 
     public static bool SpawnSpawnableAsyncPrefix(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
     {
+        try
+        {
+            return HandleSpawnSpawnableAsync(__instance, isHidden, ref __result);
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    private static bool HandleSpawnSpawnableAsync(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
+    {
         // If this scene is unsynced, the spawner can function as normal.
         if (!NetworkSceneManager.IsLevelNetworked)
         {
