@@ -105,9 +105,11 @@ public static class ModIOSettings
     {
         _loadedToken = token;
 
-        _isLoadingToken = false;
-
         _tokenLoadCallback?.Invoke(token);
         _tokenLoadCallback = null;
+
+        // Make sure that this is set AFTER invoking the callback
+        // Otherwise, not sure why, a stack overflow can be caused!
+        _isLoadingToken = false;
     }
 }
