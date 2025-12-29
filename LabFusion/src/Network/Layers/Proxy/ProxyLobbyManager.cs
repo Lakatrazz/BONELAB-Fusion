@@ -20,7 +20,7 @@ public class ProxyLobbyManager
 
     internal void HandleLobbyMessage(MessageTypes messageType, NetPacketReader packetReader)
     {
-        if (messageType == MessageTypes.LobbyIds)
+        if (messageType == MessageTypes.LobbyIDs)
         {
             MelonLogger.Msg("Got LobbyIds");
             if (_lobbyIdSource == null)
@@ -79,10 +79,15 @@ public class ProxyLobbyManager
         }
     }
 
-    public Task<ulong[]> RequestLobbyIds()
+    public Task<ulong[]> RequestLobbyIDs(ProxyLobbyRequestParameters parameters)
     {
         _lobbyIdSource = new TaskCompletionSource<ulong[]>();
-        _networkLayer.SendToProxyServer(MessageTypes.LobbyIds);
+
+        NetDataWriter writer = ProxyNetworkLayer.NewWriter(MessageTypes.LobbyIDs);
+
+        parameters.Put(writer);
+
+        _networkLayer.SendToProxyServer(writer);
 
         return _lobbyIdSource.Task;
     }

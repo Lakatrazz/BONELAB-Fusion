@@ -1,5 +1,5 @@
-﻿using LabFusion.Utilities;
-using LabFusion.UI.Popups;
+﻿using LabFusion.UI.Popups;
+using LabFusion.Utilities;
 
 using MelonLoader;
 
@@ -16,21 +16,36 @@ public sealed class ProxyMatchmaker : IMatchmaker
         _lobbyManager = lobbyManager;
     }
 
-    public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
-    {
-        MelonCoroutines.Start(FindLobbies(callback));
-    }
+    public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => RequestLobbies(MatchmakerFilters.Empty, callback);
 
     public void RequestLobbies(MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        // TODO: Implement
-        RequestLobbies(callback);
+        var version = FusionMod.Version;
+
+        var parameters = new ProxyLobbyRequestParameters()
+        {
+            Filters = filters,
+            VersionMajor = version.Major,
+            VersionMinor = version.Minor,
+            LobbyCode = null,
+        };
+
+        MelonCoroutines.Start(FindLobbies(parameters, callback));
     }
 
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        // TODO: Implement
-        throw new NotImplementedException();
+        var version = FusionMod.Version;
+
+        var parameters = new ProxyLobbyRequestParameters()
+        {
+            Filters = MatchmakerFilters.Empty,
+            VersionMajor = version.Major,
+            VersionMinor = version.Minor,
+            LobbyCode = code,
+        };
+
+        MelonCoroutines.Start(FindLobbies(parameters, callback));
     }
 
     private static void SendTimeOutNotification()
@@ -44,10 +59,10 @@ public sealed class ProxyMatchmaker : IMatchmaker
         });
     }
 
-    private IEnumerator FindLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    private IEnumerator FindLobbies(ProxyLobbyRequestParameters parameters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         // Fetch lobbies
-        var task = _lobbyManager.RequestLobbyIds();
+        var task = _lobbyManager.RequestLobbyIDs(parameters);
 
         float timeTaken = 0f;
 

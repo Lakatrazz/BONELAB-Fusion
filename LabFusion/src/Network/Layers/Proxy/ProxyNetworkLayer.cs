@@ -204,7 +204,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                     RefreshServerCode();
                     break;
                 }
-            case (ulong)MessageTypes.LobbyIds:
+            case (ulong)MessageTypes.LobbyIDs:
             case (ulong)MessageTypes.LobbyMetadata:
                 {
                     _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
@@ -417,7 +417,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     {
         // Make sure we are currently in a server
         if (!_isServerActive && !_isConnectionActive)
+        {
             return;
+        }
 
         try
         {
@@ -436,7 +438,17 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void DisconnectUser(ulong platformID)
     {
-        // TODO: implement
+        // Make sure we are the host
+        if (!_isServerActive)
+        {
+            return;
+        }
+
+        NetDataWriter writer = NewWriter(MessageTypes.DisconnectUser);
+
+        writer.Put(platformID);
+
+        SendToProxyServer(writer);
     }
 
     public string ServerCode { get; private set; } = null;
@@ -464,25 +476,14 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         FusionLogger.Log($"Searching for servers with code {code}...");
 #endif
 
-        Matchmaker.RequestLobbies((info) =>
+        Matchmaker.RequestLobbiesByCode(code, (info) =>
         {
-            foreach (var lobby in info.Lobbies)
+            if (info.Lobbies.Length <= 0)
             {
-                var lobbyCode = lobby.Metadata.LobbyInfo.LobbyCode;
-                var inputCode = code;
-
-#if DEBUG
-                FusionLogger.Log($"Found server with code {lobbyCode}");
-#endif
-
-                // Case insensitive
-                // Makes it easier to input
-                if (lobbyCode.ToUpper() == code.ToUpper())
-                {
-                    JoinServer(lobby.Metadata.LobbyInfo.LobbyID);
-                    break;
-                }
+                return;
             }
+
+            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
         });
     }
 
