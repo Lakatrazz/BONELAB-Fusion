@@ -1,5 +1,4 @@
-﻿using LabFusion.Utilities;
-using Steamworks;
+﻿using Steamworks;
 using Steamworks.Data;
 
 namespace LabFusion.Network

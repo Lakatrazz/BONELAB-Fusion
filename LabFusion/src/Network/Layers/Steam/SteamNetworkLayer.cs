@@ -22,8 +22,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override string Platform => "Steam";
 
-    public override bool RequiresValidId => true;
-
     public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
 
@@ -252,7 +250,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Get the connection from the userid dictionary
-        if (SteamSocket.ConnectedSteamIds.TryGetValue(userId, out var connection))
+        if (SteamSocket.ConnectedSteamIDs.TryGetValue(userId, out var connection))
         {
             SteamSocket.SendToClient(connection, channel, message);
         }
@@ -309,6 +307,17 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _isConnectionActive = false;
 
         InternalServerHelpers.OnDisconnect(reason);
+    }
+
+    public override void DisconnectUser(ulong platformID)
+    {
+        // Make sure we are hosting a server
+        if (!_isServerActive)
+        {
+            return;
+        }
+
+        SteamSocket.DisconnectUser(platformID);
     }
 
     public string ServerCode { get; private set; } = null;

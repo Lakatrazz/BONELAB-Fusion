@@ -29,8 +29,6 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
 
-    public override bool RequiresValidId => false;
-
     public SteamId SteamId;
 
     private INetworkLobby _currentLobby;
@@ -430,6 +428,11 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         _isConnectionActive = false;
 
         InternalServerHelpers.OnDisconnect(reason);
+    }
+
+    public override void DisconnectUser(ulong platformID)
+    {
+        // TODO: implement
     }
 
     public string ServerCode { get; private set; } = null;

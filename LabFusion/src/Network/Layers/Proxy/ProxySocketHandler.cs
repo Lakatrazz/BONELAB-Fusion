@@ -39,6 +39,7 @@ public static class ProxySocketHandler
             {
                 Buffer = new ReadOnlySpan<byte>(message),
                 IsServerHandled = isServerHandled,
+                PlatformID = null, // TODO: Add platform ID sending for socket messages
             };
 
             NativeMessageHandler.ReadMessage(readableMessage);

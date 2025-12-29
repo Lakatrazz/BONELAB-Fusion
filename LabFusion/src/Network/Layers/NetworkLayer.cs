@@ -84,13 +84,6 @@ public abstract class NetworkLayer
     public virtual IMatchmaker Matchmaker => null;
 
     /// <summary>
-    /// Returns if this NetworkLayer requires valid player IDs. 
-    /// Set this to true if the layer sets <see cref="NetworkInfo.LastReceivedUser"/> upon receiving messages.
-    /// Defaults to false.
-    /// </summary>
-    public virtual bool RequiresValidId => false;
-
-    /// <summary>
     /// Returns true if this NetworkLayer is supported on the current platform.
     /// </summary>
     /// <returns></returns>
@@ -122,6 +115,12 @@ public abstract class NetworkLayer
     /// Disconnects the client from the connection and/or server.
     /// </summary>
     public abstract void Disconnect(string reason = "");
+
+    /// <summary>
+    /// Forcefully closes the connection for a connected user.
+    /// </summary>
+    /// <param name="platformID">The PlatformID of the connected user.</param>
+    public abstract void DisconnectUser(ulong platformID);
 
     /// <summary>
     /// Returns the username of the player with id userId.
@@ -272,13 +271,15 @@ public abstract class NetworkLayer
             LayerLookup.Add(layer.Title, layer);
 
             if (layer.CheckSupported())
+            {
                 SupportedLayers.Add(layer);
+            }
         }
     }
 
     public static bool TryGetLayer<T>(out T layer) where T : NetworkLayer
     {
-        layer = (T)Layers.Find((l) => l.Type == typeof(T));
+        layer = GetLayer<T>();
         return layer != null;
     }
 

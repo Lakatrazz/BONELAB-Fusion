@@ -296,6 +296,8 @@ public class FusionMod : MelonMod
 
         InternalLayerHelpers.OnUpdateLayer();
 
+        NetworkConnectionManager.OnUpdate(deltaTime);
+
         // Update hooks
         MultiplayerHooking.InvokeOnUpdate();
 

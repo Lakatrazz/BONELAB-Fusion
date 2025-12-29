@@ -14,4 +14,9 @@ public ref struct ReadableMessage
     /// Whether or not this message is being handled on the server's end. Not always true for the host, as it could be handled on the host's client.
     /// </summary>
     public bool IsServerHandled { get; set; }
+
+    /// <summary>
+    /// The platform ID of the message's sender provided by the <see cref="NetworkLayer"/>, if available.
+    /// </summary>
+    public ulong? PlatformID { get; set; }
 }

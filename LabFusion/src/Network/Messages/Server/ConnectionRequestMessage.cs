@@ -13,7 +13,7 @@ namespace LabFusion.Network;
 
 public class ConnectionRequestData : INetSerializable
 {
-    public ulong PlatformID;
+    public ulong BackupPlatformID;
     public Version Version;
     public string AvatarBarcode;
     public SerializedAvatarStats AvatarStats;
@@ -28,7 +28,7 @@ public class ConnectionRequestData : INetSerializable
     {
         try
         {
-            serializer.SerializeValue(ref PlatformID);
+            serializer.SerializeValue(ref BackupPlatformID);
             serializer.SerializeValue(ref Version);
             serializer.SerializeValue(ref AvatarBarcode);
             serializer.SerializeValue(ref AvatarStats);
@@ -49,7 +49,7 @@ public class ConnectionRequestData : INetSerializable
 
         return new ConnectionRequestData()
         {
-            PlatformID = longId,
+            BackupPlatformID = longId,
             Version = version,
             AvatarBarcode = avatarBarcode,
             AvatarStats = stats,
@@ -69,55 +69,51 @@ public class ConnectionRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionRequestData>();
 
-        // Make sure the id isn't spoofed.
-        if (NetworkInfo.IsSpoofed(data.PlatformID))
-        {
-            ConnectionSender.SendConnectionDeny(NetworkInfo.LastReceivedUser.Value, "Your player ID does not match the networked ID.");
-            return;
-        }
+        ulong platformID = received.PlatformID ?? data.BackupPlatformID;
 
         var newSmallId = PlayerIDManager.GetUniquePlayerID();
 
         // No unused ids available
         if (!newSmallId.HasValue)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Server ran out of space! Wait for someone to leave.");
+            ConnectionSender.SendConnectionDeny(platformID, "Server ran out of space! Wait for someone to leave.");
             return;
         }
 
         // Player already is in the server?
-        if (PlayerIDManager.GetPlayerID(data.PlatformID) != null)
+        if (PlayerIDManager.GetPlayerID(platformID) != null)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "You attempted to join, but the server detects you as already in it?");
+            ConnectionSender.SendConnectionDeny(platformID, "You attempted to join, but the server detects you as already in it?");
+            return;
         }
 
         // If the connection request is invalid, deny it
         if (!data.IsValid)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Connection request was invalid. You are likely on mismatching versions.");
+            ConnectionSender.SendConnectionDeny(platformID, "Connection request was invalid. You are likely on mismatching versions.");
             return;
         }
 
         // Check if theres too many players
         if (PlayerIDManager.PlayerCount >= byte.MaxValue || PlayerIDManager.PlayerCount >= SavedServerSettings.MaxPlayers.Value)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Server is full! Wait for someone to leave.");
+            ConnectionSender.SendConnectionDeny(platformID, "Server is full! Wait for someone to leave.");
             return;
         }
 
         // Make sure we aren't loading
         if (FusionSceneManager.IsLoading())
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Host is loading.");
+            ConnectionSender.SendConnectionDeny(platformID, "Host is loading.");
             return;
         }
 
         // Verify joining
-        bool isVerified = NetworkVerification.IsClientApproved(data.PlatformID);
+        bool isVerified = NetworkVerification.IsClientApproved(platformID);
 
         if (!isVerified)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Server is private.");
+            ConnectionSender.SendConnectionDeny(platformID, "Server is private.");
             return;
         }
 
@@ -130,13 +126,13 @@ public class ConnectionRequestMessage : NativeMessageHandler
             {
                 default:
                 case VersionResult.Unknown:
-                    ConnectionSender.SendConnectionDeny(data.PlatformID, "Unknown Version Mismatch");
+                    ConnectionSender.SendConnectionDeny(platformID, "Unknown Version Mismatch");
                     break;
                 case VersionResult.Lower:
-                    ConnectionSender.SendConnectionDeny(data.PlatformID, "Server is on an older version. Downgrade your version or notify the host.");
+                    ConnectionSender.SendConnectionDeny(platformID, "Server is on an older version. Downgrade your version or notify the host.");
                     break;
                 case VersionResult.Higher:
-                    ConnectionSender.SendConnectionDeny(data.PlatformID, "Server is on a newer version. Update your version.");
+                    ConnectionSender.SendConnectionDeny(platformID, "Server is on a newer version. Update your version.");
                     break;
             }
 
@@ -144,21 +140,21 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // Get the permission level
-        FusionPermissions.FetchPermissionLevel(data.PlatformID, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(platformID, out var level, out _);
 
         // Check for banning
-        if (NetworkHelper.IsBanned(data.PlatformID))
+        if (NetworkHelper.IsBanned(platformID))
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, "Banned from Server");
+            ConnectionSender.SendConnectionDeny(platformID, "Banned from Server");
             return;
         }
 
         // Check for global banning
-        var globalBanInfo = GlobalBanManager.GetBanInfo(new PlatformInfo(data.PlatformID));
+        var globalBanInfo = GlobalBanManager.GetBanInfo(new PlatformInfo(platformID));
 
         if (globalBanInfo != null && SavedServerSettings.Privacy.Value != ServerPrivacy.FRIENDS_ONLY)
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, globalBanInfo.Reason);
+            ConnectionSender.SendConnectionDeny(platformID, globalBanInfo.Reason);
             return;
         }
 
@@ -166,20 +162,20 @@ public class ConnectionRequestMessage : NativeMessageHandler
         data.InitialMetadata[nameof(PlayerMetadata.PermissionLevel)] = level.ToString();
 
         // Create new PlayerID
-        var playerId = new PlayerID(data.PlatformID, newSmallId.Value, data.InitialMetadata, data.InitialEquippedItems);
+        var playerId = new PlayerID(platformID, newSmallId.Value, data.InitialMetadata, data.InitialEquippedItems);
 
         // Finally, check for dynamic connection disallowing
         if (!MultiplayerHooking.CheckShouldAllowConnection(playerId, out string reason))
         {
-            ConnectionSender.SendConnectionDeny(data.PlatformID, reason);
+            ConnectionSender.SendConnectionDeny(platformID, reason);
             return;
         }
 
         // All checks have succeeded, let the player into the server
-        OnConnectionAllowed(playerId, data);
+        OnConnectionAllowed(playerId, platformID, data);
     }
 
-    private static void OnConnectionAllowed(PlayerID playerID, ConnectionRequestData data)
+    private static void OnConnectionAllowed(PlayerID playerID, ulong platformID, ConnectionRequestData data)
     {
         // Reserve the player's smallID so that other players don't steal it
         PlayerIDManager.ReserveSmallID(playerID.SmallID);
@@ -214,11 +210,11 @@ public class ConnectionRequestMessage : NativeMessageHandler
                 continue;
             }
 
-            ConnectionSender.SendPlayerCatchup(data.PlatformID, id, barcode, stats);
+            ConnectionSender.SendPlayerCatchup(platformID, id, barcode, stats);
         }
 
         // Now, make sure the player loads into the scene
-        LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, data.PlatformID);
+        LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, platformID);
 
         // Send the dynamics list
         var assignData = DynamicsAssignData.Create();
@@ -228,10 +224,10 @@ public class ConnectionRequestMessage : NativeMessageHandler
             assignData.Serialize(writer);
 
             using var message = NetMessage.Create(NativeMessageTag.DynamicsAssignment, writer, CommonMessageRoutes.None);
-            MessageSender.SendFromServer(data.PlatformID, NetworkChannel.Reliable, message);
+            MessageSender.SendFromServer(platformID, NetworkChannel.Reliable, message);
         }
 
         // Send the active server settings
-        LobbyInfoManager.SendLobbyInfo(data.PlatformID);
+        LobbyInfoManager.SendLobbyInfo(platformID);
     }
 }

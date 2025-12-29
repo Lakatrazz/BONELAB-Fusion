@@ -2,6 +2,7 @@
 
 using LabFusion.Exceptions;
 using LabFusion.Network.Serialization;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -46,6 +47,8 @@ public abstract class NativeMessageHandler : MessageHandler
 
     public static unsafe void ReadMessage(ReadableMessage message)
     {
+        bool isServerHandled = message.IsServerHandled;
+
         int size = message.Buffer.Length;
         NetworkInfo.BytesDown += size;
 
@@ -58,6 +61,16 @@ public abstract class NativeMessageHandler : MessageHandler
             MessagePrefix prefix = null;
             reader.SerializeValue(ref prefix);
 
+            byte? sender = prefix.Sender;
+            ulong? platformID = message.PlatformID;
+
+            // Prevent ID spoofing
+            if (isServerHandled && !ValidateReceivedID(ref sender, ref platformID))
+            {
+                NetworkConnectionManager.DisconnectUser(platformID.Value);
+                return;
+            }
+
             var bytes = reader.ReadBytes();
 
             tag = prefix.Tag;
@@ -67,7 +80,8 @@ public abstract class NativeMessageHandler : MessageHandler
                 var payload = new ReceivedMessage()
                 {
                     Route = prefix.Route,
-                    Sender = prefix.Sender,
+                    Sender = sender,
+                    PlatformID = platformID,
                     Bytes = bytes,
                     IsServerHandled = message.IsServerHandled,
                 };
@@ -85,6 +99,41 @@ public abstract class NativeMessageHandler : MessageHandler
         {
             FusionLogger.Error($"Failed handling network message of tag {tag} with reason: {e.Message}\nTrace:{e.StackTrace}");
         }
+    }
+
+    private static bool ValidateReceivedID(ref byte? sender, ref ulong? platformID)
+    {
+        // If we weren't given a PlatformID, there is nothing to validate
+        if (!platformID.HasValue)
+        {
+            return true;
+        }
+
+        var playerID = PlayerIDManager.GetPlayerID(platformID.Value);
+        
+        // No existing PlayerID, nothing to validate
+        if (playerID == null)
+        {
+            sender = null;
+            return true;
+        }
+
+        byte existingSmallID = playerID.SmallID;
+
+        // Sender doesn't have a value, just assign it the existing value
+        if (!sender.HasValue)
+        {
+            sender = existingSmallID;
+            return true;
+        }
+
+        // Received SmallID does not match the actual SmallID! User is spoofing!
+        if (existingSmallID != sender.Value)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public sealed override void Handle(ReceivedMessage received)

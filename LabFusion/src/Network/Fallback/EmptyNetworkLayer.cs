@@ -13,6 +13,8 @@ public class EmptyNetworkLayer : NetworkLayer
 
     public override void Disconnect(string reason = "") { }
 
+    public override void DisconnectUser(ulong platformID) { }
+
     public override void StartServer() { }
 
     public override bool CheckSupported()

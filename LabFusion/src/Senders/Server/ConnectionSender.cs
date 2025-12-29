@@ -23,33 +23,39 @@ public static class ConnectionSender
 
                 using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
                 MessageSender.SendFromServer(id.PlatformID, NetworkChannel.Reliable, message);
+
+                NetworkConnectionManager.TimeoutDisconnect(id.PlatformID);
             }
         }
     }
 
-    public static void SendDisconnect(ulong userId, string reason = "")
+    public static void SendDisconnect(ulong platformID, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
             using var writer = NetWriter.Create();
-            var disconnect = DisconnectMessageData.Create(userId, reason);
+            var disconnect = DisconnectMessageData.Create(platformID, reason);
             writer.SerializeValue(ref disconnect);
 
             using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+
+            NetworkConnectionManager.TimeoutDisconnect(platformID);
         }
     }
 
-    public static void SendConnectionDeny(ulong userId, string reason = "")
+    public static void SendConnectionDeny(ulong platformID, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
             using var writer = NetWriter.Create();
-            var disconnect = DisconnectMessageData.Create(userId, reason);
+            var disconnect = DisconnectMessageData.Create(platformID, reason);
             writer.SerializeValue(ref disconnect);
 
             using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
-            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+            MessageSender.SendFromServer(platformID, NetworkChannel.Reliable, message);
+
+            NetworkConnectionManager.TimeoutDisconnect(platformID);
         }
     }
 

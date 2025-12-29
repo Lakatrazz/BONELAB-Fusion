@@ -115,14 +115,19 @@ public static class PlayerSender
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
-    public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
+    public static void SendPlayerMetadataRequest(byte smallID, string key, string value)
     {
-        var data = PlayerMetadataRequestData.Create(smallId, key, value);
+        var data = new PlayerMetadataData()
+        {
+            Player = new(smallID),
+            Key = key,
+            Value = value,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, CommonMessageRoutes.ReliableToServer);
     }
 
-    public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
+    public static void SendPlayerMetadataResponse(byte smallID, string key, string value)
     {
         // Make sure this is the server
         if (!NetworkInfo.IsHost)
@@ -130,7 +135,12 @@ public static class PlayerSender
             throw new ExpectedServerException();
         }
 
-        var data = PlayerMetadataResponseData.Create(smallId, key, value);
+        var data = new PlayerMetadataData()
+        {
+            Player = new(smallID),
+            Key = key,
+            Value = value,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, CommonMessageRoutes.ReliableToClients);
     }

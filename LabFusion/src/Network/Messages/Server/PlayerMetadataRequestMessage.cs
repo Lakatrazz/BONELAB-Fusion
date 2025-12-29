@@ -1,39 +1,7 @@
 ﻿using LabFusion.Senders;
-using LabFusion.Extensions;
-using LabFusion.Network.Serialization;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
-
-public class PlayerMetadataRequestData : INetSerializable
-{
-    public const int DefaultSize = sizeof(byte);
-
-    public byte smallId;
-    public string key;
-    public string value;
-
-    public static int GetSize(string key, string value)
-    {
-        return DefaultSize + key.GetSize() + value.GetSize();
-    }
-
-    public void Serialize(INetSerializer serializer)
-    {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref key);
-        serializer.SerializeValue(ref value);
-    }
-
-    public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
-    {
-        return new PlayerMetadataRequestData()
-        {
-            smallId = smallId,
-            key = key,
-            value = value,
-        };
-    }
-}
 
 public class PlayerMetadataRequestMessage : NativeMessageHandler
 {
@@ -43,9 +11,17 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var data = received.ReadData<PlayerMetadataRequestData>();
+        var data = received.ReadData<PlayerMetadataData>();
+
+        // Make sure the message sender is able to modify this player's metadata
+        if (!data.HasAuthority(received.Sender))
+        {
+            var descriptor = received.PlatformID.HasValue ? $"{received.PlatformID}" : "with no PlatformID";
+            FusionLogger.Warn($"User {descriptor} attempted to modify metadata for player {data.Player.ID}!");
+            return;
+        }
 
         // Send the response to all clients
-        PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);
+        PlayerSender.SendPlayerMetadataResponse(data.Player.ID, data.Key, data.Value);
     }
 }

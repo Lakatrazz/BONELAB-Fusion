@@ -71,12 +71,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
+                    var platformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = true,
+                        PlatformID = platformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -106,12 +107,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
+                    var platformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
+                        PlatformID = platformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -142,12 +144,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
+                    var platformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
+                        PlatformID = platformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -178,12 +181,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
+                    var platformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
+                        PlatformID = platformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);

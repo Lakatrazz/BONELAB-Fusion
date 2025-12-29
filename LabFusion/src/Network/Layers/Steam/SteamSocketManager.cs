@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Player;
+﻿using LabFusion.Player;
 using LabFusion.Senders;
 
 using Steamworks;
@@ -9,7 +8,17 @@ namespace LabFusion.Network;
 
 public class SteamSocketManager : SocketManager
 {
-    public Dictionary<ulong, Connection> ConnectedSteamIds = new();
+    public Dictionary<ulong, Connection> ConnectedSteamIDs = new();
+
+    public void DisconnectUser(ulong steamID)
+    {
+        if (!ConnectedSteamIDs.TryGetValue(steamID, out var connection))
+        {
+            return;
+        }
+
+        connection.Close();
+    }
 
     public override void OnConnecting(Connection connection, ConnectionInfo data)
     {
@@ -23,9 +32,9 @@ public class SteamSocketManager : SocketManager
 
         // If we aren't in the connected list yet, this is likely us
         // SteamID is always 0 here
-        if (!ConnectedSteamIds.ContainsKey(SteamClient.SteamId))
+        if (!ConnectedSteamIDs.ContainsKey(SteamClient.SteamId))
         {
-            ConnectedSteamIds[SteamClient.SteamId] = connection;
+            ConnectedSteamIDs[SteamClient.SteamId] = connection;
         }
     }
 
@@ -34,19 +43,19 @@ public class SteamSocketManager : SocketManager
         base.OnDisconnected(connection, data);
 
         // Remove connection from list
-        var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
-        var longId = pair.Key;
+        var pair = ConnectedSteamIDs.First((p) => p.Value.Id == connection.Id);
+        var platformID = pair.Key;
 
-        ConnectedSteamIds.Remove(pair.Key);
+        ConnectedSteamIDs.Remove(pair.Key);
 
         // Make sure the user hasn't previously disconnected
-        if (PlayerIDManager.HasPlayerID(longId))
+        if (PlayerIDManager.HasPlayerID(platformID))
         {
             // Update the mod so it knows this user has left
             InternalServerHelpers.OnPlayerLeft(pair.Key);
 
             // Send disconnect notif to everyone
-            ConnectionSender.SendDisconnect(longId);
+            ConnectionSender.SendDisconnect(platformID);
         }
     }
 
@@ -54,10 +63,10 @@ public class SteamSocketManager : SocketManager
     {
         base.OnMessage(connection, identity, data, size, messageNum, recvTime, channel);
 
-        ConnectedSteamIds[identity.steamid] = connection;
+        var platformID = identity.steamid;
 
-        NetworkInfo.LastReceivedUser = identity.steamid;
+        ConnectedSteamIDs[platformID] = connection;
 
-        SteamSocketHandler.OnSocketMessageReceived(data, size, true);
+        SteamSocketHandler.OnSocketMessageReceived(data, size, true, platformID);
     }
 }

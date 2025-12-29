@@ -13,9 +13,14 @@ public struct ReceivedMessage
     public MessageRoute Route { get; set; }
 
     /// <summary>
-    /// The small id of the message sender. Only valid if the <see cref="MessageRoute.Type"/> is NOT <see cref="RelayType.None"/>.
+    /// The small ID of the message sender. Only valid if the <see cref="MessageRoute.Type"/> is NOT <see cref="RelayType.None"/>.
     /// </summary>
     public byte? Sender { get; set; }
+
+    /// <summary>
+    /// The platform ID of the message sender. Only valid if the current <see cref="NetworkLayer"/> provides it.
+    /// </summary>
+    public ulong? PlatformID { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.
