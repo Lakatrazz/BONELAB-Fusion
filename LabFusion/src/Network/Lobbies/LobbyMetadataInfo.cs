@@ -10,6 +10,19 @@ namespace LabFusion.Network;
 
 public struct LobbyMetadataInfo
 {
+    public static readonly LobbyMetadataInfo Empty = new()
+    {
+        LobbyInfo = null,
+        HasLobbyOpen = false,
+        ClientHasLevel = false,
+        LobbyCode = null,
+        Privacy = ServerPrivacy.PUBLIC,
+        Full = false,
+        VersionMajor = 0,
+        VersionMinor = 0,
+        Game = null,
+    };
+
     public LobbyInfo LobbyInfo { get; set; }
 
     public bool HasLobbyOpen { get; set; }
@@ -31,6 +44,11 @@ public struct LobbyMetadataInfo
     public static LobbyMetadataInfo Create()
     {
         var lobbyInfo = LobbyInfoManager.LobbyInfo;
+
+        if (lobbyInfo == null)
+        {
+            return Empty;
+        }
 
         return new LobbyMetadataInfo()
         {
