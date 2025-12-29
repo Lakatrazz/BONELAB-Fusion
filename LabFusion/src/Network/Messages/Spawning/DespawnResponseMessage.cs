@@ -34,7 +34,6 @@ public class DespawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnResponse;
 
-    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

@@ -6,8 +6,6 @@ namespace LabFusion.Network;
 
 public abstract class MessageHandler
 {
-    public virtual ExpectedSenderType ExpectedSender => ExpectedSenderType.Both;
-
     public virtual ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.Both;
 
     public Net.NetAttribute[] NetAttributes { get; set; }
@@ -78,38 +76,22 @@ public abstract class MessageHandler
     internal bool ProcessPreRelayMessage(ReceivedMessage received) => OnPreRelayMessage(received);
 
     /// <summary>
-    /// Throws exceptions if the conditions set by <see cref="ExpectedSender"/> and <see cref="ExpectedReceiver"/> fail.
+    /// Throws exceptions if the conditions set by <see cref="ExpectedReceiver"/> fail.
     /// </summary>
     /// <param name="received"></param>
-    /// <exception cref="ExpectedFromServerException"></exception>
-    /// <exception cref="ExpectedFromClientException"></exception>
-    /// <exception cref="ExpectedOnServerException"></exception>
-    /// <exception cref="ExpectedOnClientException"></exception>
+    /// <exception cref="MessageExpectedServerException"></exception>
+    /// <exception cref="MessageExpectedClientException"></exception>
     public void CheckExpectedConditions(ReceivedMessage received)
     {
-        // Check expected sender
-        var sender = received.Sender;
-        bool sentByServer = sender.HasValue && sender.Value == PlayerIDManager.HostSmallID;
-
-        if (ExpectedSender == ExpectedSenderType.ServerOnly && !sentByServer)
-        {
-            throw new ExpectedFromServerException();
-        }
-        else if (ExpectedSender == ExpectedSenderType.ClientsOnly && sentByServer)
-        {
-            throw new ExpectedFromClientException();
-        }
-
-        // Check expected receiver
         bool isServerHandled = received.IsServerHandled;
 
         if (ExpectedReceiver == ExpectedReceiverType.ServerOnly && !isServerHandled)
         {
-            throw new ExpectedOnServerException();
+            throw new MessageExpectedServerException();
         }
         else if (ExpectedReceiver == ExpectedReceiverType.ClientsOnly && isServerHandled)
         {
-            throw new ExpectedOnClientException();
+            throw new MessageExpectedClientException();
         }
     }
 

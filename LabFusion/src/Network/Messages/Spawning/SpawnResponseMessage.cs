@@ -67,7 +67,6 @@ public class SpawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnResponse;
 
-    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

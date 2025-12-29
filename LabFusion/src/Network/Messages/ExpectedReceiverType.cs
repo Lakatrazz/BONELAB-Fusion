@@ -1,5 +1,9 @@
 ﻿namespace LabFusion.Network;
 
+/// <summary>
+/// The receiver that a message is expected to be handled on. 
+/// This is checked before the message is relayed and can be used for validating sender authority.
+/// </summary>
 public enum ExpectedReceiverType
 {
     /// <summary>

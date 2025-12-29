@@ -159,7 +159,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToServer:
                 if (!received.IsServerHandled)
                 {
-                    throw new ExpectedOnServerException();
+                    throw new MessageExpectedServerException();
                 }
                 break;
             case RelayType.ToClients:

@@ -38,7 +38,6 @@ public class ConnectionResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionResponse;
 
-    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

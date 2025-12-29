@@ -71,7 +71,6 @@ public class DynamicsAssignMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DynamicsAssignment;
 
-    public override ExpectedSenderType ExpectedSender => ExpectedSenderType.ServerOnly;
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
