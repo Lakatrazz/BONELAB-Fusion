@@ -5,7 +5,6 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
-using UnityEngine;
 
 namespace LabFusion.Marrow.Extenders;
 

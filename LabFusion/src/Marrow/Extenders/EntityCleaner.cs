@@ -2,10 +2,11 @@
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.MonoBehaviours;
+using LabFusion.Entities;
 
 using UnityEngine;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 using System;
 

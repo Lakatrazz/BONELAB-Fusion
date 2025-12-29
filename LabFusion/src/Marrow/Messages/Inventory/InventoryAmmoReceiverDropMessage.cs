@@ -2,6 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
 namespace LabFusion.Marrow.Messages;
 

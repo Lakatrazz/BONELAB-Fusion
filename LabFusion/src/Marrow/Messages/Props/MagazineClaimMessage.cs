@@ -3,6 +3,7 @@ using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Interaction;
 

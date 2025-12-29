@@ -4,8 +4,9 @@ using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
 using LabFusion.Network;
+using LabFusion.Marrow.Extenders;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(GunManager))]
 public static class GunManagerPatches

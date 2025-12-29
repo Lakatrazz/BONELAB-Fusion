@@ -1,4 +1,5 @@
 ﻿using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
 using LabFusion.Network.Serialization;

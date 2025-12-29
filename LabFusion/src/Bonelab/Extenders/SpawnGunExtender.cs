@@ -1,6 +1,7 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Network;
 using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Pool;

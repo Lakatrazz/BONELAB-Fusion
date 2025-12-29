@@ -3,7 +3,6 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
-using LabFusion.Entities;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.RPC;

@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Scene;
 using LabFusion.RPC;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Interaction;

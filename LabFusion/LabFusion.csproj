@@ -441,6 +441,7 @@
 
   <ItemGroup>
     <Folder Include="src\Data\Containers\Levels\" />
+    <Folder Include="src\Entities\Components\Singular\" />
   </ItemGroup>
 
 </Project>

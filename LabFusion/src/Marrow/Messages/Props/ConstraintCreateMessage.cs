@@ -8,6 +8,7 @@ using LabFusion.Entities;
 using LabFusion.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Data.Serializables;
+using LabFusion.Marrow.Extenders;
 using LabFusion.SDK.Modules;
 using LabFusion.Safety;
 

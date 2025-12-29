@@ -10,10 +10,10 @@ using LabFusion.Preferences.Client;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
 using LabFusion.Marrow.Pool;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Interaction;
 
 using Il2CppSLZ.Marrow.VFX;

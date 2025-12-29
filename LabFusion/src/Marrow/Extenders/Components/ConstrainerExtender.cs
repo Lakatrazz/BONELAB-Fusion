@@ -1,10 +1,11 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Pool;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class ConstrainerExtender : EntityComponentExtender<Constrainer>
 {

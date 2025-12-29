@@ -2,11 +2,12 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Marrow.Messages;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class MagazineExtender : EntityComponentExtender<Magazine>
 {

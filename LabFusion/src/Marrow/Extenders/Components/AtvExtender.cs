@@ -1,20 +1,16 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class AtvExtender : EntityComponentExtender<Atv>
 {
-    public static readonly FusionComponentCache<Atv, NetworkEntity> Cache = new();
-
     private Il2CppSystem.Action _onSeatRegistered = null;
     private Il2CppSystem.Action _onSeatDeregistered = null;
 
     protected override void OnRegister(NetworkEntity entity, Atv component)
     {
-        Cache.Add(component, entity);
-
         var driverSeat = component.driverSeat;
 
         if (driverSeat != null)
@@ -29,8 +25,6 @@ public class AtvExtender : EntityComponentExtender<Atv>
 
     protected override void OnUnregister(NetworkEntity entity, Atv component)
     {
-        Cache.Remove(component);
-
         var driverSeat = component.driverSeat;
 
         if (driverSeat != null)

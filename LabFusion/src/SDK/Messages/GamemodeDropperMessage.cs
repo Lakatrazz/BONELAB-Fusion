@@ -3,6 +3,7 @@ using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.Entities;
 using LabFusion.SDK.MonoBehaviours;
+using LabFusion.Marrow.Extenders;
 
 namespace LabFusion.SDK.Messages;
 
