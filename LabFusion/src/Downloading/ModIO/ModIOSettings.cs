@@ -105,8 +105,15 @@ public static class ModIOSettings
     {
         _loadedToken = token;
 
-        _tokenLoadCallback?.Invoke(token);
-        _tokenLoadCallback = null;
+        try
+        {
+            _tokenLoadCallback?.Invoke(token);
+            _tokenLoadCallback = null;
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("invoking token load callback", e);
+        }
 
         // Make sure that this is set AFTER invoking the callback
         // Otherwise, not sure why, a stack overflow can be caused!
