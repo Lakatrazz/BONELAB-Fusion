@@ -82,7 +82,7 @@ namespace LabFusion.Marrow.Proxies
                 ModFile = new ModIOFile(ModReferences.FusionCosmeticsId),
                 Callback = (info) =>
                 {
-                    if (info.result != Downloading.ModResult.SUCCEEDED)
+                    if (info.Result != Downloading.ModResult.SUCCEEDED)
                     {
                         Notifier.Send(new Notification()
                         {

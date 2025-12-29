@@ -113,7 +113,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
             void OnModDownloaded(DownloadCallbackInfo info)
             {
-                if (info.result != ModResult.SUCCEEDED)
+                if (info.Result != ModResult.SUCCEEDED)
                 {
                     FusionLogger.Warn($"Failed downloading spawnable {barcode}!");
                     return;

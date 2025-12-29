@@ -139,7 +139,7 @@ public static class MenuCreator
         {
             _isDownloadingContent = false;
 
-            if (info.result != ModResult.SUCCEEDED)
+            if (info.Result != ModResult.SUCCEEDED)
             {
                 Notifier.Send(new Notification()
                 {

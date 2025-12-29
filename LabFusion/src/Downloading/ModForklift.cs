@@ -70,8 +70,8 @@ public static class ModForklift
             // Invoke complete callback
             var info = new DownloadCallbackInfo()
             {
-                pallet = pallet,
-                result = ModResult.SUCCEEDED,
+                Pallet = pallet,
+                Result = ModResult.SUCCEEDED,
             };
 
             shipment.callback?.Invoke(info);

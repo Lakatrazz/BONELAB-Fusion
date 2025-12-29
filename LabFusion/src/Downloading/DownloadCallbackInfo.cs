@@ -8,16 +8,16 @@ public struct DownloadCallbackInfo
 {
     public static readonly DownloadCallbackInfo FailedCallback = new()
     {
-        pallet = null,
-        result = ModResult.FAILED,
+        Pallet = null,
+        Result = ModResult.FAILED,
     };
 
     public static readonly DownloadCallbackInfo CanceledCallback = new()
     {
-        pallet = null,
-        result = ModResult.CANCELED,
+        Pallet = null,
+        Result = ModResult.CANCELED,
     };
 
-    public Pallet pallet;
-    public ModResult result;
+    public Pallet Pallet;
+    public ModResult Result;
 }

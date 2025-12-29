@@ -81,13 +81,13 @@ public static class LevelDownloaderManager
         _downloadingLevel = false;
         _downloadingFile = new ModIOFile(-1);
 
-        if (info.result == ModResult.CANCELED)
+        if (info.Result == ModResult.CANCELED)
         {
             _downloadingInfo.OnDownloadCanceled?.Invoke();
             return;
         }
 
-        if (info.result == ModResult.FAILED)
+        if (info.Result == ModResult.FAILED)
         {
             _downloadingInfo.OnDownloadFailed?.Invoke();
             return;
