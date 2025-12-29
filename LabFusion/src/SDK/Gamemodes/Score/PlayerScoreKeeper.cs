@@ -96,6 +96,11 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
     /// <returns></returns>
     public int GetPlace(PlayerID playerID)
     {
+        if (playerID == null)
+        {
+            return -1;
+        }
+
         var players = GetPlacedPlayers();
 
         if (players == null)
@@ -114,11 +119,43 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
         return -1;
     }
 
-    public void SetScore(PlayerID playerID, int score) => SetScore(playerID.SmallID, score);
+    public void SetScore(PlayerID playerID, int score)
+    {
+        if (playerID == null)
+        {
+            return;
+        }
 
-    public int GetScore(PlayerID playerID) => GetScore(playerID.SmallID);
+        SetScore(playerID.SmallID, score); 
+    }
 
-    public void AddScore(PlayerID playerID, int amount = 1) => AddScore(playerID.SmallID, amount);
+    public int GetScore(PlayerID playerID) 
+    { 
+        if (playerID == null)
+        {
+            return 0;
+        }
 
-    public void SubtractScore(PlayerID playerID, int amount = 1) => SubtractScore(playerID.SmallID, amount);
+        return GetScore(playerID.SmallID); 
+    }
+
+    public void AddScore(PlayerID playerID, int amount = 1) 
+    { 
+        if (playerID == null)
+        {
+            return;
+        }
+
+        AddScore(playerID.SmallID, amount); 
+    }
+
+    public void SubtractScore(PlayerID playerID, int amount = 1) 
+    { 
+        if (playerID == null)
+        {
+            return;
+        }
+
+        SubtractScore(playerID.SmallID, amount); 
+    }
 }
