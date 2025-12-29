@@ -4,6 +4,8 @@ public interface IMatchmaker
 {
     public struct MatchmakerCallbackInfo
     {
+        public static readonly MatchmakerCallbackInfo Empty = new() { Lobbies = Array.Empty<LobbyInfo>() };
+
         public LobbyInfo[] Lobbies;
     }
 

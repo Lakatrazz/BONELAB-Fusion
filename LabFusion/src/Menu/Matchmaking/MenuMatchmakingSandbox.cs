@@ -40,7 +40,7 @@ public static class MenuMatchmakingSandbox
 
         if (matchmaker != null)
         {
-            matchmaker.RequestLobbies(OnLobbiesRequested);
+            matchmaker.RequestLobbies(MatchmakerFilters.Default, OnLobbiesRequested);
         }
         else
         {

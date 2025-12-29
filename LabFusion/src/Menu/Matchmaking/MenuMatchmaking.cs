@@ -248,7 +248,7 @@ public static class MenuMatchmaking
 
         _isSearchingLobbies = true;
 
-        NetworkLayerManager.Layer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
+        NetworkLayerManager.Layer.Matchmaker?.RequestLobbies(LobbyFilterManager.CreateMatchmakerFilters(), OnLobbiesRequested);
     }
 
     private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)

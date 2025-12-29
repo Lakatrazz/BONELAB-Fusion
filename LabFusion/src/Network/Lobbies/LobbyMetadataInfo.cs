@@ -48,7 +48,7 @@ public struct LobbyMetadataInfo
     public readonly void Write(INetworkLobby lobby)
     {
         lobby.SetMetadata(LobbyKeys.HasServerOpenKey, HasServerOpen.ToString());
-        lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode.ToUpper());
+        lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode?.ToUpper());
         lobby.SetMetadata(LobbyKeys.PrivacyKey, ((int)Privacy).ToString());
         lobby.SetMetadata(LobbyKeys.FullKey, Full.ToString());
         lobby.SetMetadata(LobbyKeys.VersionMajorKey, VersionMajor.ToString());

@@ -32,12 +32,28 @@ public sealed class SteamMatchmaker : IMatchmaker
         // Fetch lobbies
         var task = searchDelegate(filters);
 
+        // Wait for the lobby search to complete
         while (!task.IsCompleted)
         {
             yield return null;
         }
 
+        // If the lobby search errored, return an empty list and log the reason why
+        if (!task.IsCompletedSuccessfully)
+        {
+            FusionLogger.LogException("searching for lobbies", task.Exception);
+            callback?.Invoke(IMatchmaker.MatchmakerCallbackInfo.Empty);
+            yield break;
+        }
+
         var lobbies = task.Result;
+
+        // Steam can return null if none are available
+        if (lobbies == null)
+        {
+            callback?.Invoke(IMatchmaker.MatchmakerCallbackInfo.Empty);
+            yield break;
+        }
 
         List<IMatchmaker.LobbyInfo> netLobbies = new();
 
@@ -86,7 +102,10 @@ public sealed class SteamMatchmaker : IMatchmaker
 
     private static Task<Lobby[]> FetchLobbiesByCode(string code)
     {
-        return AddPersistentFilters(SteamMatchmaking.LobbyList)
+        var query = SteamMatchmaking.LobbyList;
+        query = AddPersistentFilters(query);
+
+        return query
             .WithKeyValue(LobbyKeys.LobbyCodeKey, code.ToUpper())
             .RequestAsync();
     }
