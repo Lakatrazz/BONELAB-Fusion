@@ -27,8 +27,10 @@ public static class MenuLogIn
 
         var layoutOptions = layerPanel.Find("layout_Options");
 
-        var targetLayerLabel = layoutOptions.Find("label_TargetLayer").GetComponent<LabelElement>()
-            .WithTitle($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}");
+        var targetLayerLabel = layoutOptions.Find("label_TargetLayer").GetComponent<LabelElement>();
+
+        var targetLayer = NetworkLayerManager.GetTargetLayer();
+        targetLayerLabel.Title = targetLayer != null ? $"Target Layer: {targetLayer.Title}" : "No Target Layer";
 
         ChangeLayerElement = layoutOptions.Find("button_CycleLayer").GetComponent<FunctionElement>()
             .WithTitle("Change Layer")
