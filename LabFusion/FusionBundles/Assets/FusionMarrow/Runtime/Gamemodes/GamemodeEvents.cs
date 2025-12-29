@@ -31,6 +31,11 @@ namespace LabFusion.Marrow.Integration
         {
             GamemodeManager.OnGamemodeStarted += OnGamemodeStarted;
             GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
+
+            if (GamemodeManager.IsGamemodeStarted)
+            {
+                OnGamemodeStarted();
+            }
         }
 
         private void OnDestroy()
