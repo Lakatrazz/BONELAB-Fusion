@@ -31,15 +31,15 @@ public static class RandomObjectPatches
 
         var extender = entity.GetExtender<RandomObjectExtender>();
 
-        // If we're the server, manually determine an object from the list and sync it
-        if (NetworkInfo.IsHost)
+        // If we're the owner of this RandomObject, manually determine an object from the list and sync it
+        if (entity.IsOwner)
         {
             ushort objectIndex = (ushort)Random.Range(0, __instance.Objects.Count);
 
             // Send the message to sync it
             var data = RandomObjectData.Create(entity.ID, extender.GetIndex(__instance).Value, objectIndex);
 
-            MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, CommonMessageRoutes.ReliableToOtherClients);
+            MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, CommonMessageRoutes.ReliableToClients);
         }
 
         // On any synced RandomObjects, always return false. It's manually applied by the message.
