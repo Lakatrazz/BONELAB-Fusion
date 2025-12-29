@@ -102,7 +102,7 @@ public static class MenuSettings
 
         voiceChatGroup.AddElement<FloatElement>("Global Volume")
             .AsPref(ClientSettings.VoiceChat.GlobalVolume)
-            .WithLimits(0f, 3f)
+            .WithLimits(0f, 1f)
             .WithIncrement(0.1f);
 
         var inputDeviceGroup = page.AddElement<GroupElement>("Input Device");

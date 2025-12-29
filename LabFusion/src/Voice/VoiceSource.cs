@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Audio;
+using LabFusion.Marrow;
 
 using MelonLoader;
 
@@ -212,8 +213,9 @@ public class VoiceSource : MonoBehaviour
     {
         AudioSource.loop = true;
         AudioSource.playOnAwake = false;
-        AudioSource.outputAudioMixerGroup = null;
+        AudioSource.outputAudioMixerGroup = LocalAudioPlayer.Vocals;
 
+        // Regular reverb zones apply before audio filters, so they don't work for the voice filter
         AudioSource.bypassReverbZones = true;
         AudioSource.reverbZoneMix = 0f;
 

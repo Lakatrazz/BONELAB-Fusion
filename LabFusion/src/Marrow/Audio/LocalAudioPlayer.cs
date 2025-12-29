@@ -47,6 +47,8 @@ public static class LocalAudioPlayer
 
     public static AudioMixerGroup InHead => Audio3dManager.inHead;
 
+    public static AudioMixerGroup Vocals => Audio3dManager.npcVocals;
+
     public const float MusicVolume = 0.2f;
 
     public static void Play2dOneShot(AudioClip clip, AudioPlayerSettings settings)

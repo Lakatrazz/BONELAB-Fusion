@@ -25,6 +25,8 @@ public sealed class AudioStreamFilter : MonoBehaviour
     [HideFromIl2Cpp]
     public float SampleMultiplier { get; set; } = 1f;
 
+    public const float NormalizationThreshold = 1f;
+
     [HideFromIl2Cpp]
     public void Enqueue(float sample)
     {
@@ -48,6 +50,8 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
         int count = length / channels;
 
+        float max = 0f;
+
         for (var i = 0; i < count; i++)
         {
             float output = 0f;
@@ -58,6 +62,15 @@ public sealed class AudioStreamFilter : MonoBehaviour
             }
 
             ReadingArray[i] = output;
+
+            max = MathF.Max(max, MathF.Abs(output));
+        }
+
+        float voiceNormalizer = 1f;
+
+        if (max > NormalizationThreshold)
+        {
+            voiceNormalizer = NormalizationThreshold / max;
         }
 
         int position = 0;
@@ -75,7 +88,9 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
                 var value = InteropUtilities.FloatArrayFastRead(pointer, pointerSize, index);
 
-                InteropUtilities.FloatArrayFastWrite(pointer, pointerSize, index, value * output);
+                var result = value * output * AudioInfo.ToneNormalizer * voiceNormalizer;
+
+                InteropUtilities.FloatArrayFastWrite(pointer, pointerSize, index, result);
             }
         }
     }
