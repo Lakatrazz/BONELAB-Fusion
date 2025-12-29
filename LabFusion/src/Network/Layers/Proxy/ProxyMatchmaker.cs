@@ -21,6 +21,12 @@ public sealed class ProxyMatchmaker : IMatchmaker
         MelonCoroutines.Start(FindLobbies(callback));
     }
 
+    public void RequestLobbies(MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    {
+        // TODO: Implement
+        RequestLobbies(callback);
+    }
+
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         // TODO: Implement

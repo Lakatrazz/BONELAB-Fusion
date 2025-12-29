@@ -146,7 +146,7 @@ public static class NetworkHelper
         // Check the ban list
         foreach (var ban in BanManager.BanList.Bans)
         {
-            if (ban.Player.LongId == longId)
+            if (ban.Player.PlatformID == longId)
             {
                 return true;
             }

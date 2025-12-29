@@ -1,15 +1,14 @@
 ﻿using LabFusion.Network;
 
-namespace LabFusion.SDK.Lobbies
+namespace LabFusion.SDK.Lobbies;
+
+public interface ILobbyFilter
 {
-    public interface ILobbyFilter
-    {
-        string GetTitle();
+    string GetTitle();
 
-        bool IsActive();
+    bool IsActive();
 
-        void SetActive(bool active);
+    void SetActive(bool active);
 
-        bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info);
-    }
+    bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info);
 }

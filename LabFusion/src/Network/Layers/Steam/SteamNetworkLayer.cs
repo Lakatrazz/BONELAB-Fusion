@@ -343,7 +343,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
                 return;
             }
 
-            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyId);
+            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
         });
     }
 

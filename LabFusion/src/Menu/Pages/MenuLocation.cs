@@ -549,7 +549,7 @@ public static class MenuLocation
             };
 
             // Apply icon
-            ElementIconHelper.SetProfileResultIcon(banResult, player.AvatarTitle, player.AvatarModId);
+            ElementIconHelper.SetProfileResultIcon(banResult, player.AvatarTitle, player.AvatarModID);
         }
     }
 
@@ -590,7 +590,7 @@ public static class MenuLocation
         // Apply icon
         var avatarTitle = playerInfo.AvatarTitle;
 
-        ElementIconHelper.SetProfileIcon(element, avatarTitle, playerInfo.AvatarModId);
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, playerInfo.AvatarModID);
 
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
@@ -604,7 +604,7 @@ public static class MenuLocation
             .WithColor(Color.yellow)
             .Do(() =>
             {
-                NetworkHelper.PardonUser(playerInfo.LongId);
+                NetworkHelper.PardonUser(playerInfo.PlatformID);
             });
 
         // Disable unnecessary elements

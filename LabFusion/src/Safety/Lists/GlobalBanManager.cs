@@ -59,7 +59,7 @@ public static class GlobalBanManager
             game,
         };
 
-        var platform = new PlatformInfo(playerInfo.LongId);
+        var platform = new PlatformInfo(playerInfo.PlatformID);
         var platforms = new List<PlatformInfo>
         {
             platform
@@ -110,13 +110,33 @@ public static class GlobalBanManager
 
     public static bool IsBanned(LobbyInfo lobby)
     {
-        var platform = new PlatformInfo(lobby.LobbyId);
-
-        if (!IsBanned(platform))
+        // Always show friends only lobbies
+        // Banned users can still host and access them
+        if (lobby.Privacy == ServerPrivacy.FRIENDS_ONLY)
         {
             return false;
         }
 
-        return lobby.Privacy != ServerPrivacy.FRIENDS_ONLY;
+        // Check if the host is banned
+        var lobbyPlatformInfo = new PlatformInfo(lobby.LobbyID);
+
+        if (IsBanned(lobbyPlatformInfo))
+        {
+            return true;
+        }
+
+        // Check if any users are banned
+        // This prevents banned users from joining friends only servers and then changing the status to public
+        foreach (var player in lobby.PlayerList.Players)
+        {
+            var playerPlatformInfo = new PlatformInfo(player.PlatformID);
+
+            if (IsBanned(playerPlatformInfo))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

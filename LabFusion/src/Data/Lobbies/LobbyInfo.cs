@@ -17,8 +17,8 @@ public class LobbyInfo
     public static readonly LobbyInfo Empty = new();
 
     // Info
-    [JsonPropertyName("lobbyId")]
-    public ulong LobbyId { get; set; }
+    [JsonPropertyName("lobbyID")]
+    public ulong LobbyID { get; set; }
 
     [JsonPropertyName("lobbyCode")]
     public string LobbyCode { get; set; }
@@ -48,8 +48,8 @@ public class LobbyInfo
     [JsonPropertyName("levelBarcode")]
     public string LevelBarcode { get; set; }
 
-    [JsonPropertyName("levelModId")]
-    public int LevelModId { get; set; } = -1;
+    [JsonPropertyName("levelModID")]
+    public int LevelModID { get; set; } = -1;
 
     // Gamemode
     [JsonPropertyName("gamemodeTitle")]
@@ -117,7 +117,7 @@ public class LobbyInfo
     public void WriteLobby()
     {
         // Info
-        LobbyId = PlayerIDManager.LocalPlatformID;
+        LobbyID = PlayerIDManager.LocalPlatformID;
         LobbyCode = NetworkHelper.GetServerCode();
         LobbyName = SavedServerSettings.ServerName.Value;
         LobbyDescription = SavedServerSettings.ServerDescription.Value;
@@ -134,7 +134,7 @@ public class LobbyInfo
         LevelTitle = FusionSceneManager.Title;
         LevelBarcode = FusionSceneManager.Barcode;
 
-        LevelModId = CrateFilterer.GetModID(FusionSceneManager.Level.Pallet);
+        LevelModID = CrateFilterer.GetModID(FusionSceneManager.Level.Pallet);
 
         // Gamemode
         GamemodeTitle = string.Empty;

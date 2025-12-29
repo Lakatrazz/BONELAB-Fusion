@@ -10,33 +10,30 @@ public static class LobbyFilterManager
 
     public static event Action<ILobbyFilter> OnAddedFilter;
 
+    public static GenericLobbyFilter FullFilter { get; } = new("Hide Full Lobbies", (l, i) =>
+    {
+        return i.LobbyInfo.MaxPlayers > i.LobbyInfo.PlayerCount;
+    });
+
+    public static GenericLobbyFilter MismatchingVersionsFilter { get; } = new("Hide Mismatching Versions", (l, i) =>
+    {
+        return NetworkVerification.CompareVersion(i.LobbyInfo.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
+    });
+
+    public static GenericLobbyFilter FriendsFilter { get; } = new("Friends Only", (l, i) =>
+    {
+        return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyID);
+    });
+
     public static void LoadBuiltInFilters()
     {
-        // Lobby length filter
-        var lengthFilter = new GenericLobbyFilter("Hide Full Lobbies", (l, i) =>
-        {
-            return i.LobbyInfo.MaxPlayers > i.LobbyInfo.PlayerCount;
-        });
-        lengthFilter.SetActive(true);
+        FullFilter.SetActive(true);
+        AddLobbyFilter(FullFilter);
 
-        AddLobbyFilter(lengthFilter);
+        MismatchingVersionsFilter.SetActive(true);
+        AddLobbyFilter(MismatchingVersionsFilter);
 
-        // Outdated filter
-        var outdatedFilter = new GenericLobbyFilter("Hide Mismatching Versions", (l, i) =>
-        {
-            return NetworkVerification.CompareVersion(i.LobbyInfo.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
-        });
-        outdatedFilter.SetActive(true);
-
-        AddLobbyFilter(outdatedFilter);
-
-        // Friends filter
-        var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
-        {
-            return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyId);
-        });
-
-        AddLobbyFilter(friendsFilter);
+        AddLobbyFilter(FriendsFilter);
     }
 
     public static void AddLobbyFilter(ILobbyFilter filter)
@@ -67,5 +64,14 @@ public static class LobbyFilterManager
         }
 
         return true;
+    }
+
+    public static MatchmakerFilters CreateMatchmakerFilters()
+    {
+        return new MatchmakerFilters()
+        {
+            FilterFull = FullFilter.IsActive(),
+            FilterMismatchingVersions = MismatchingVersionsFilter.IsActive(),
+        };
     }
 }

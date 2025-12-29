@@ -258,7 +258,7 @@ public static class MenuMatchmaking
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyId);
+                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyID);
             default:
                 return false;
         }
@@ -420,7 +420,7 @@ public static class MenuMatchmaking
         element.VersionText.text = string.Format($"v{metadata.LobbyInfo.LobbyVersion}");
         element.VersionText.color = versionColor;
 
-        ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle, metadata.LobbyInfo.LevelModId);
+        ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle, metadata.LobbyInfo.LevelModID);
 
         // Gamemode icon
         var gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.SandboxIconTitle);
@@ -530,7 +530,7 @@ public static class MenuMatchmaking
             .WithTitle("More...")
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
-        ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle, info.LobbyInfo.LevelModId);
+        ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle, info.LobbyInfo.LevelModID);
         ElementIconHelper.SetGamemodeIcon(element, info.LobbyInfo.GamemodeTitle);
 
         // Fill out lists
@@ -624,7 +624,7 @@ public static class MenuMatchmaking
                 OnShowPlayer(player);
             };
 
-            ElementIconHelper.SetProfileResultIcon(playerResult, player.AvatarTitle, player.AvatarModId);
+            ElementIconHelper.SetProfileResultIcon(playerResult, player.AvatarTitle, player.AvatarModID);
         }
 
         // Disable unnecessary buttons
@@ -657,9 +657,9 @@ public static class MenuMatchmaking
             .WithColor(Color.red)
             .WithInteractability(false);
 
-        element.PlatformIDElement.Value = info.LongId.ToString();
+        element.PlatformIDElement.Value = info.PlatformID.ToString();
 
-        ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
+        ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModID);
 
         // Disable unnecessary elements
         element.VolumeElement.gameObject.SetActive(false);

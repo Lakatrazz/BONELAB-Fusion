@@ -20,6 +20,12 @@ public struct LobbyMetadataInfo
 
     public ServerPrivacy Privacy { get; set; }
 
+    public bool Full { get; set; }
+
+    public int VersionMajor { get; set; }
+
+    public int VersionMinor { get; set; }
+
     public string Game { get; set; }
 
     public static LobbyMetadataInfo Create()
@@ -32,15 +38,21 @@ public struct LobbyMetadataInfo
             HasServerOpen = NetworkInfo.IsHost,
             LobbyCode = lobbyInfo.LobbyCode,
             Privacy = lobbyInfo.Privacy,
+            Full = lobbyInfo.PlayerCount >= lobbyInfo.MaxPlayers,
+            VersionMajor = lobbyInfo.LobbyVersion.Major,
+            VersionMinor = lobbyInfo.LobbyVersion.Minor,
             Game = GameHelper.GameName,
         };
     }
 
-    public void Write(INetworkLobby lobby)
+    public readonly void Write(INetworkLobby lobby)
     {
         lobby.SetMetadata(LobbyKeys.HasServerOpenKey, HasServerOpen.ToString());
-        lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode);
+        lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode.ToUpper());
         lobby.SetMetadata(LobbyKeys.PrivacyKey, ((int)Privacy).ToString());
+        lobby.SetMetadata(LobbyKeys.FullKey, Full.ToString());
+        lobby.SetMetadata(LobbyKeys.VersionMajorKey, VersionMajor.ToString());
+        lobby.SetMetadata(LobbyKeys.VersionMinorKey, VersionMinor.ToString());
         lobby.SetMetadata(LobbyKeys.GameKey, Game);
         lobby.SetMetadata(nameof(LobbyInfo), JsonSerializer.Serialize(LobbyInfo));
 
@@ -55,11 +67,22 @@ public struct LobbyMetadataInfo
             HasServerOpen = lobby.GetMetadata(LobbyKeys.HasServerOpenKey) == bool.TrueString,
             LobbyCode = lobby.GetMetadata(LobbyKeys.LobbyCodeKey),
             Game = lobby.GetMetadata(LobbyKeys.GameKey),
+            Full = lobby.GetMetadata(LobbyKeys.FullKey) == bool.TrueString,
         };
 
         if (lobby.TryGetMetadata(LobbyKeys.PrivacyKey, out var rawPrivacy) && int.TryParse(rawPrivacy, out var privacyInt)) 
         {
             info.Privacy = (ServerPrivacy)privacyInt;
+        }
+
+        if (lobby.TryGetMetadata(LobbyKeys.VersionMajorKey, out var rawVersionMajor) && int.TryParse(rawVersionMajor, out var versionMajorInt))
+        {
+            info.VersionMajor = versionMajorInt;
+        }
+
+        if (lobby.TryGetMetadata(LobbyKeys.VersionMinorKey, out var rawVersionMinor) && int.TryParse(rawVersionMinor, out var versionMinorInt))
+        {
+            info.VersionMinor = versionMinorInt;
         }
 
         // Check if we can get the main lobby info
@@ -85,11 +108,11 @@ public struct LobbyMetadataInfo
         return info;
     }
 
-    public Action CreateJoinDelegate(INetworkLobby lobby)
+    public readonly Action CreateJoinDelegate(INetworkLobby lobby)
     {
         // If the user does not have the host's level, it will automatically download
         // If it fails, the user will be disconnected
         // So, we no longer need to check if the client has the level here
-        return lobby.CreateJoinDelegate(LobbyInfo.LobbyId);
+        return lobby.CreateJoinDelegate(LobbyInfo.LobbyID);
     }
 }

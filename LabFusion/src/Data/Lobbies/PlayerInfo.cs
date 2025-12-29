@@ -10,8 +10,8 @@ namespace LabFusion.Data;
 [Serializable]
 public class PlayerInfo
 {
-    [JsonPropertyName("longId")]
-    public ulong LongId { get; set; }
+    [JsonPropertyName("platformID")]
+    public ulong PlatformID { get; set; }
 
     [JsonPropertyName("username")]
     public string Username { get; set; }
@@ -28,14 +28,14 @@ public class PlayerInfo
     [JsonPropertyName("avatarTitle")]
     public string AvatarTitle { get; set; }
 
-    [JsonPropertyName("avatarModId")]
-    public int AvatarModId { get; set; } = -1;
+    [JsonPropertyName("avatarModID")]
+    public int AvatarModID { get; set; } = -1;
 
     public PlayerInfo() { }
 
     public PlayerInfo(PlayerID playerId)
     {
-        LongId = playerId.PlatformID;
+        PlatformID = playerId.PlatformID;
 
         Username = playerId.Metadata.Username.GetValue();
         Nickname = playerId.Metadata.Nickname.GetValue();
@@ -51,6 +51,6 @@ public class PlayerInfo
         }
 
         AvatarTitle = playerId.Metadata.AvatarTitle.GetValue();
-        AvatarModId = playerId.Metadata.AvatarModID.GetValue();
+        AvatarModID = playerId.Metadata.AvatarModID.GetValue();
     }
 }

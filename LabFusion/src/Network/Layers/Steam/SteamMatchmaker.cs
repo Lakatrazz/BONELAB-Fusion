@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+﻿using LabFusion.Utilities;
+
+using MelonLoader;
 
 using Steamworks;
 using Steamworks.Data;
@@ -9,24 +11,26 @@ namespace LabFusion.Network;
 
 public sealed class SteamMatchmaker : IMatchmaker
 {
-    private delegate Task<Lobby[]> LobbySearchDelegate();
+    private delegate Task<Lobby[]> LobbySearchDelegate(MatchmakerFilters filters);
 
-    public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    public void RequestLobbies(Action<IMatchmaker.MatchmakerCallbackInfo> callback) => RequestLobbies(MatchmakerFilters.Empty, callback);
+
+    public void RequestLobbies(MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        MelonCoroutines.Start(FindLobbies(FetchLobbies, callback));
+        MelonCoroutines.Start(FindLobbies(FetchLobbies, filters, callback));
     }
 
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        MelonCoroutines.Start(FindLobbies(FetchLobbies, callback));
+        MelonCoroutines.Start(FindLobbies(FetchLobbies, MatchmakerFilters.Empty, callback));
 
-        Task<Lobby[]> FetchLobbies() => FetchLobbiesByCode(code);
+        Task<Lobby[]> FetchLobbies(MatchmakerFilters filters) => FetchLobbiesByCode(code);
     }
 
-    private static IEnumerator FindLobbies(LobbySearchDelegate searchDelegate, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    private static IEnumerator FindLobbies(LobbySearchDelegate searchDelegate, MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         // Fetch lobbies
-        var task = searchDelegate();
+        var task = searchDelegate(filters);
 
         while (!task.IsCompleted)
         {
@@ -68,11 +72,13 @@ public sealed class SteamMatchmaker : IMatchmaker
         callback?.Invoke(info);
     }
 
-    private static Task<Lobby[]> FetchLobbies()
+    private static Task<Lobby[]> FetchLobbies(MatchmakerFilters filters)
     {
-        return SteamMatchmaking.LobbyList
-            .FilterDistanceWorldwide()
-            .WithKeyValue(LobbyKeys.HasServerOpenKey, bool.TrueString)
+        var query = SteamMatchmaking.LobbyList;
+        query = AddPersistentFilters(query);
+        query = AddMatchmakingFilters(query, filters);
+
+        return query
             .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.PRIVATE)
             .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.LOCKED)
             .RequestAsync();
@@ -80,10 +86,37 @@ public sealed class SteamMatchmaker : IMatchmaker
 
     private static Task<Lobby[]> FetchLobbiesByCode(string code)
     {
-        return SteamMatchmaking.LobbyList
+        return AddPersistentFilters(SteamMatchmaking.LobbyList)
+            .WithKeyValue(LobbyKeys.LobbyCodeKey, code.ToUpper())
+            .RequestAsync();
+    }
+
+    private static LobbyQuery AddPersistentFilters(LobbyQuery query)
+    {
+        return query
             .FilterDistanceWorldwide()
             .WithKeyValue(LobbyKeys.HasServerOpenKey, bool.TrueString)
-            .WithKeyValue(LobbyKeys.LobbyCodeKey, code)
-            .RequestAsync();
+            .WithKeyValue(LobbyKeys.GameKey, GameHelper.GameName);
+    }
+
+    private static LobbyQuery AddMatchmakingFilters(LobbyQuery query, MatchmakerFilters filters)
+    {
+        if (filters.FilterFull)
+        {
+            query = query.WithKeyValue(LobbyKeys.FullKey, bool.FalseString);
+        }
+
+        if (filters.FilterMismatchingVersions)
+        {
+            var version = FusionMod.Version;
+            var versionMajor = version.Major;
+            var versionMinor = version.Minor;
+
+            query = query
+                .WithEqual(LobbyKeys.VersionMajorKey, versionMajor)
+                .WithEqual(LobbyKeys.VersionMinorKey, versionMinor);
+        }
+
+        return query;
     }
 }

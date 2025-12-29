@@ -1,41 +1,40 @@
 ﻿using LabFusion.Network;
 
-namespace LabFusion.SDK.Lobbies
+namespace LabFusion.SDK.Lobbies;
+
+public delegate bool GenericLobbyDelegate(INetworkLobby lobby, LobbyMetadataInfo info);
+
+public class GenericLobbyFilter : ILobbyFilter
 {
-    public delegate bool GenericLobbyDelegate(INetworkLobby lobby, LobbyMetadataInfo info);
+    public GenericLobbyDelegate OnFilter;
 
-    public class GenericLobbyFilter : ILobbyFilter
+    public string Title;
+
+    private bool _active = false;
+
+    public GenericLobbyFilter(string title, GenericLobbyDelegate onFilter)
     {
-        public GenericLobbyDelegate onFilter;
+        this.Title = title;
+        this.OnFilter = onFilter;
+    }
 
-        public string title;
+    public bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info)
+    {
+        return OnFilter(lobby, info);
+    }
 
-        private bool _active = false;
+    public string GetTitle()
+    {
+        return Title;
+    }
 
-        public GenericLobbyFilter(string title, GenericLobbyDelegate onFilter)
-        {
-            this.title = title;
-            this.onFilter = onFilter;
-        }
+    public bool IsActive()
+    {
+        return _active;
+    }
 
-        public bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info)
-        {
-            return onFilter(lobby, info);
-        }
-
-        public string GetTitle()
-        {
-            return title;
-        }
-
-        public bool IsActive()
-        {
-            return _active;
-        }
-
-        public void SetActive(bool active)
-        {
-            _active = active;
-        }
+    public void SetActive(bool active)
+    {
+        _active = active;
     }
 }

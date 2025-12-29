@@ -473,9 +473,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
                 // Case insensitive
                 // Makes it easier to input
-                if (lobbyCode.ToLower() == code.ToLower())
+                if (lobbyCode.ToUpper() == code.ToUpper())
                 {
-                    JoinServer(lobby.Metadata.LobbyInfo.LobbyId);
+                    JoinServer(lobby.Metadata.LobbyInfo.LobbyID);
                     break;
                 }
             }
