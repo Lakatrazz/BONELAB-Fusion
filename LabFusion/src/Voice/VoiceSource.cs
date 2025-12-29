@@ -214,6 +214,9 @@ public class VoiceSource : MonoBehaviour
         AudioSource.playOnAwake = false;
         AudioSource.outputAudioMixerGroup = null;
 
+        AudioSource.bypassReverbZones = true;
+        AudioSource.reverbZoneMix = 0f;
+
         StreamFilter = gameObject.AddComponent<AudioStreamFilter>();
 
         AudioSource.clip = AudioInfo.CreateToneClip();
