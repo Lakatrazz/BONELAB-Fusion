@@ -29,7 +29,11 @@ namespace LabFusion.Network
         public override void OnMessage(IntPtr data, int size, long messageNum, long recvTime, int channel)
         {
             base.OnMessage(data, size, messageNum, recvTime, channel);
-            SteamSocketHandler.OnSocketMessageReceived(data, size, false);
+
+            var steamID = ConnectionInfo.Identity.SteamId;
+            ulong? platformID = steamID.IsValid ? steamID.Value : null;
+
+            SteamSocketHandler.OnSocketMessageReceived(data, size, false, platformID);
         }
     }
 }

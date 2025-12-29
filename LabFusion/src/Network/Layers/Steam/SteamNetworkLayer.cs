@@ -42,12 +42,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
     protected bool _isServerActive = false;
     protected bool _isConnectionActive = false;
 
-    protected ulong _targetServerId;
-
-    protected string _targetJoinId;
-
-    protected bool _isInitialized = false;
-
     // A local reference to a lobby
     // This isn't actually used for joining servers, just for matchmaking
     protected Lobby _localLobby;
@@ -86,9 +80,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _voiceManager.Enable();
 
         _matchmaker = new SteamMatchmaker();
-
-        // Set initialized
-        _isInitialized = true;
     }
 
     public override void OnDeinitializeLayer()
