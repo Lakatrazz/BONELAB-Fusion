@@ -120,6 +120,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 return false;
             }
 
+            sender = null;
             return true;
         }
 
