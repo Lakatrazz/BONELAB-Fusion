@@ -44,9 +44,9 @@ public class Juggernaut : Gamemode
 
         public const float JuggernautVitality = 10f;
 
-        public const float SurvivorHeight = 1.76f;
+        public const float SurvivorHeight = MarrowConstants.StandardHeight;
 
-        public const float JuggernautHeight = 2.288f;
+        public const float JuggernautHeight = MarrowConstants.StandardHeight * 1.3f;
 
         public const int MaxPoints = 20;
 

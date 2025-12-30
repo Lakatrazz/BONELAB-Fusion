@@ -44,7 +44,7 @@ public class BouncingStrong : Achievement
         if (player.IsMe && type == PlayerActionType.JUMP)
         {
             // Check current avatar
-            if (RigData.RigAvatarId == BonelabAvatarReferences.StrongBarcode)
+            if (RigData.RigAvatarId == BonelabAvatarReferences.StrongReference.Barcode.ID)
             {
                 IncrementTask();
             }

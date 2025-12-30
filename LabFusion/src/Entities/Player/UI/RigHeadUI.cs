@@ -162,7 +162,7 @@ public class RigHeadUI
             return;
         }
 
-        float height = avatar.height / 1.76f;
+        float height = avatar.height / MarrowConstants.StandardHeight;
         _layoutTransform.localScale = Vector3Extensions.one * height;
     }
 

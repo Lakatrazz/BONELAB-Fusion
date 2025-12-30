@@ -1,5 +1,6 @@
 ﻿using LabFusion.Audio;
 using LabFusion.Data;
+using LabFusion.Marrow;
 using LabFusion.Math;
 using LabFusion.Utilities;
 using LabFusion.Voice;
@@ -102,7 +103,7 @@ public class RigVoiceSource
 
     public void SetVoiceRange(float avatarHeight)
     {
-        float heightMult = avatarHeight / 1.76f;
+        float heightMult = avatarHeight / MarrowConstants.StandardHeight;
 
         MinMicrophoneDistance = 3f * MathF.Sqrt(heightMult);
         MaxMicrophoneDistance = 30f * MathF.Sqrt(heightMult);

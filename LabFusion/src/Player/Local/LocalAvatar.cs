@@ -2,7 +2,6 @@
 
 using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Bonelab;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -76,7 +75,7 @@ public static class LocalAvatar
 
     public static string? AvatarBarcode { get; private set; } = null;
 
-    public static float AvatarHeight { get; private set; } = 1.76f;
+    public static float AvatarHeight { get; private set; } = MarrowConstants.StandardHeight;
 
     public static float AvatarMass { get; private set; } = 84f;
 
@@ -151,7 +150,7 @@ public static class LocalAvatar
 
         if (!CheckAvatarPrivileges(crate))
         {
-            SwapAvatarCrate(BonelabAvatarReferences.PolyBlankBarcode);
+            SwapAvatarCrate(MarrowGameReferences.CalibrationAvatarReference.Barcode.ID);
             return;
         }
 
@@ -234,22 +233,22 @@ public static class LocalAvatar
         var rigManager = RigData.Refs.RigManager;
         rigManager.SwapAvatarCrate(new(barcode), true, (Action<bool>)(success =>
         {
-            // Swap to PolyBlank in case of failure
+            // Swap to the calibration avatar in case of failure
             if (!success)
             {
-                rigManager.SwapAvatarCrate(new(BonelabAvatarReferences.PolyBlankBarcode), true);
+                rigManager.SwapAvatarCrate(MarrowGameReferences.CalibrationAvatarReference.Barcode, true);
             }
         }));
     }
 
     /// <summary>
-    /// Checks if an avatar barcode matches a target avatar. If the barcode is PolyBlank, it will also return true in case the avatar is not available.
+    /// Checks if an avatar barcode matches a target avatar. If the barcode is the calibration avatar, it will also return true in case the avatar is not available.
     /// </summary>
     /// <param name="barcode">The barcode to check.</param>
     /// <param name="target">The target avatar.</param>
     /// <returns>If the avatars match.</returns>
     public static bool IsMatchingAvatar(string barcode, string target)
     {
-        return barcode == target || barcode == BonelabAvatarReferences.PolyBlankBarcode;
+        return barcode == target || barcode == MarrowGameReferences.CalibrationAvatarReference.Barcode.ID;
     }
 }

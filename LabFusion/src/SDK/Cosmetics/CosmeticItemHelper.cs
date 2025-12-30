@@ -1,5 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Marrow.Integration;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow;
 
@@ -134,8 +135,8 @@ public static class CosmeticItemHelper
     {
         return mode switch
         {
-            CosmeticScaleMode.HEIGHT => Vector3Extensions.one * (avatar.height / 1.76f),
-            CosmeticScaleMode.HEAD => Vector3Extensions.one * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / 1.76f,
+            CosmeticScaleMode.HEIGHT => Vector3Extensions.one * (avatar.height / MarrowConstants.StandardHeight),
+            CosmeticScaleMode.HEAD => Vector3Extensions.one * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / MarrowConstants.StandardHeight,
             _ => Vector3Extensions.one,
         };
     }

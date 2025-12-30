@@ -6,6 +6,7 @@ using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Player;
+using LabFusion.Marrow;
 
 namespace LabFusion.Bonelab.Extenders;
 
@@ -17,6 +18,9 @@ public static class BonelabPlayerManager
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoined;
         MultiplayerHooking.OnJoinedServer += OnJoinedServer;
+
+        MarrowGameReferences.CalibrationAvatarReference = BonelabAvatarReferences.PolyBlankReference;
+        MarrowGameReferences.CalibrationAvatarHeight = MarrowConstants.StandardHeight;
     }
 
     public static void Uninitialize()

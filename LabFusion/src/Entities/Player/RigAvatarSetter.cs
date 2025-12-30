@@ -134,7 +134,7 @@ public class RigAvatarSetter
 
         if (!success)
         {
-            _references.SwapAvatarCrate(BonelabAvatarReferences.PolyBlankBarcode, OnSwapFallback, OnPrepareAvatar);
+            _references.SwapAvatarCrate(MarrowGameReferences.CalibrationAvatarReference.Barcode.ID, OnSwapFallback, OnPrepareAvatar);
         }
         else
         {
@@ -155,10 +155,10 @@ public class RigAvatarSetter
             Transform transform = avatar.transform;
 
             // Polyblank should just scale based on the custom avatar height
-            if (barcode == BonelabAvatarReferences.PolyBlankBarcode)
+            if (barcode == MarrowGameReferences.CalibrationAvatarReference.Barcode.ID)
             {
                 float newHeight = _stats.height;
-                transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);
+                transform.localScale = Vector3Extensions.one * (newHeight / MarrowGameReferences.CalibrationAvatarHeight);
             }
             // Otherwise, apply the synced scale
             else
