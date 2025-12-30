@@ -21,5 +21,6 @@ Added:
 - Zone reverb support for voice chat with no more audio ducking
 - Function to load modules from assembly
 - GamemodeEvents now trigger on late join
+- Body settings are synced again
 Improved:
 - Voice chat volume
