@@ -49,10 +49,12 @@ public class BonelabModule : Module
         BonelabSpawnableReferences.RegisterBlacklist();
 
         BonelabPlayerManager.Initialize();
+        BonelabBitMartManager.Initialize();
     }
 
     protected override void OnModuleUnregistered()
     {
         BonelabPlayerManager.Uninitialize();
+        BonelabBitMartManager.Uninitialize();
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Bonelab;
 using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Extensions;

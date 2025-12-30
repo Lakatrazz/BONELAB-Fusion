@@ -7,18 +7,12 @@ using LabFusion.Menu;
 using LabFusion.Scene;
 using LabFusion.SDK.Points;
 using LabFusion.Extensions;
-using LabFusion.Bonelab;
 using LabFusion.Utilities;
 using LabFusion.Math;
-using LabFusion.Marrow.Pool;
 
 using Il2CppInterop.Runtime.Attributes;
 
 using Il2CppSLZ.Marrow.Audio;
-using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Props;
-using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow;
 #endif
 
@@ -33,6 +27,8 @@ namespace LabFusion.Marrow.Proxies
         public BitMart(IntPtr intPtr) : base(intPtr) { }
 
         public const float PowerTransitionLength = 0.5f;
+
+        public static event Action<BitMart, PointItem> ItemPurchased;
 
         public BitMartElement BitMartElement { get; set; } = null;
 
@@ -205,7 +201,7 @@ namespace LabFusion.Marrow.Proxies
         {
             PushDoor(100f);
 
-            SpawnGacha(item.Barcode);
+            ItemPurchased?.InvokeSafe(this, item, "invoking ItemPurchased hook");
         }
 
         [HideFromIl2Cpp]
@@ -229,42 +225,6 @@ namespace LabFusion.Marrow.Proxies
         private void PushDoor(float force = 10f)
         {
             DoorRigidbody.AddRelativeTorque(Vector3Extensions.left * force, ForceMode.Impulse);
-        }
-
-        private void SpawnGacha(string barcode)
-        {
-            if (ItemSpawnPoint == null)
-            {
-                return;
-            }
-
-            var gachaSpawnable = LocalAssetSpawner.CreateSpawnable(BonelabSpawnableReferences.GachaCapsuleReference);
-
-            LocalAssetSpawner.Register(gachaSpawnable);
-
-            LocalAssetSpawner.Spawn(gachaSpawnable, ItemSpawnPoint.position, ItemSpawnPoint.rotation, (poolee) =>
-            {
-                var gachaCapsule = poolee.GetComponent<GachaCapsule>();
-
-                if (gachaCapsule == null)
-                {
-                    return;
-                }
-
-                gachaCapsule.selectedCrate = new GenericCrateReference(barcode);
-                gachaCapsule.SetPreviewMesh();
-
-                // Add a bunch of torque to get the ball out
-                var rigidbody = poolee.GetComponentInChildren<Rigidbody>();
-
-                if (rigidbody == null)
-                {
-                    return;
-                }
-
-                rigidbody.velocity = ItemSpawnPoint.forward * 0.1f;
-                rigidbody.angularVelocity = ItemSpawnPoint.right * 150f;
-            });
         }
 #else
         public void TurnOn()
