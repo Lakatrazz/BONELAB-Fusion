@@ -1,11 +1,11 @@
-﻿using LabFusion.Bonelab;
+﻿using LabFusion.SDK.Achievements;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
-namespace LabFusion.SDK.Achievements;
+namespace LabFusion.Bonelab.Achievements;
 
 public class BouncingStrong : Achievement
 {
@@ -36,7 +36,9 @@ public class BouncingStrong : Achievement
     {
         // Make sure there's other players
         if (!PlayerIDManager.HasOtherPlayers)
+        {
             return;
+        }
 
         // Make sure this is us, and that we jumped
         if (player.IsMe && type == PlayerActionType.JUMP)

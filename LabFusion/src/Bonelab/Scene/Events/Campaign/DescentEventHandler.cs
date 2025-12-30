@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Bonelab.Messages;
 using LabFusion.SDK.Scene;
+using LabFusion.Bonelab.Achievements;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;

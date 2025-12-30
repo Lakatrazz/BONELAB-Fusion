@@ -10,6 +10,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Scene;
+using LabFusion.Bonelab.Achievements;
 
 namespace LabFusion.Bonelab.Scene;
 

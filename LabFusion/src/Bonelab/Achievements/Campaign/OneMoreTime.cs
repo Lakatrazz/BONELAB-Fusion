@@ -1,4 +1,6 @@
-﻿namespace LabFusion.SDK.Achievements;
+﻿using LabFusion.SDK.Achievements;
+
+namespace LabFusion.Bonelab.Achievements;
 
 public class OneMoreTime : Achievement
 {

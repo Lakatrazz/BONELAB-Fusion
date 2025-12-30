@@ -5,7 +5,6 @@ using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
-using LabFusion.Bonelab.Data;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
