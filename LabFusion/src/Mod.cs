@@ -32,7 +32,6 @@ using MelonLoader;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Utilities;
 
 namespace LabFusion;
 
