@@ -36,6 +36,8 @@ public class BonelabModule : Module
         ModuleMessageManager.RegisterHandler<TimeTrialGameControllerMessage>();
         ModuleMessageManager.RegisterHandler<TrialSpawnerEventsMessage>();
 
+        ModuleMessageManager.RegisterHandler<BodyVitalsMessage>();
+
         ModuleMessageManager.RegisterHandler<BoardGeneratorMessage>();
         ModuleMessageManager.RegisterHandler<FlashlightToggleMessage>();
         ModuleMessageManager.RegisterHandler<KeySlotMessage>();
@@ -46,11 +48,11 @@ public class BonelabModule : Module
 
         BonelabSpawnableReferences.RegisterBlacklist();
 
-        BonelabPlayerCreator.HookNetworkPlayer();
+        BonelabPlayerManager.Initialize();
     }
 
     protected override void OnModuleUnregistered()
     {
-        BonelabPlayerCreator.UnhookNetworkPlayer();
+        BonelabPlayerManager.Uninitialize();
     }
 }

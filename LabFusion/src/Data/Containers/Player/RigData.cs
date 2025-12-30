@@ -56,8 +56,6 @@ public static class RigData
         Refs = new RigRefs(manager);
         Refs.RigManager.remapHeptaRig.onPlayerJump += (Il2CppSystem.Action)OnJump;
 
-        PlayerRefs.Instance.PlayerBodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
-
         // Notify hooks
         LocalPlayer.OnLocalRigCreated?.InvokeSafe(manager, "executing OnLocalRigCreated hook");
 
@@ -66,23 +64,6 @@ public static class RigData
         {
             LocalAvatar.InvokeAvatarChanged(manager._avatar, manager.AvatarCrate.Barcode.ID);
         }
-    }
-
-    public static void OnSendVitals()
-    {
-        // Make sure we have a server
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        // Send body vitals to network
-        var data = new PlayerRepVitalsData()
-        {
-            BodyVitals = new SerializedBodyVitals(PlayerRefs.Instance.PlayerBodyVitals),
-        };
-
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static string GetAvatarBarcode()

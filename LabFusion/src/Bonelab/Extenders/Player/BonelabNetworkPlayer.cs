@@ -8,6 +8,8 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
 
     public NetworkPlayer NetworkPlayer { get; private set; } = null;
 
+    public BonelabRigVitals RigVitals { get; } = new();
+
     public static BonelabNetworkPlayer CreatePlayer(NetworkEntity networkEntity, NetworkPlayer networkPlayer)
     {
         var bonelabPlayer = new BonelabNetworkPlayer(networkEntity, networkPlayer);
@@ -55,6 +57,6 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
             return;
         }
 
-        // TODO: Process BodyVitals here
+        RigVitals.Resolve(NetworkPlayer.RigRefs);
     }
 }

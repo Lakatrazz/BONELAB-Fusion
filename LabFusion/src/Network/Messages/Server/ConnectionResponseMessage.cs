@@ -66,12 +66,6 @@ public class ConnectionResponseMessage : NativeMessageHandler
             networkPlayer.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
         }
 
-        // Update our vitals to everyone
-        if (RigData.HasPlayer)
-        {
-            RigData.OnSendVitals();
-        }
-
         // Send catchup messages now that the user is registered
         if (NetworkInfo.IsHost)
         {

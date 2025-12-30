@@ -5,7 +5,7 @@ using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
-using LabFusion.Network;
+using LabFusion.Bonelab.Data;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
@@ -25,9 +25,6 @@ public class RigAvatarSetter
     public SerializedAvatarStats AvatarStats => _stats;
 
     public string AvatarBarcode => _avatarBarcode;
-
-    private bool _isVitalsDirty = false;
-    private SerializedBodyVitals _vitals = null;
 
     private RigRefs _references = null;
 
@@ -109,26 +106,14 @@ public class RigAvatarSetter
         SetAvatarDirty();
     }
 
-    public void SetVitals(SerializedBodyVitals vitals)
-    {
-        this._vitals = vitals;
-        SetVitalsDirty();
-    }
-
     public void SetAvatarDirty()
     {
         _isAvatarDirty = true;
     }
 
-    public void SetVitalsDirty()
-    {
-        _isVitalsDirty = true;
-    }
-
     public void SetDirty()
     {
         SetAvatarDirty();
-        SetVitalsDirty();
     }
 
     public void Resolve(RigRefs references)
@@ -140,13 +125,6 @@ public class RigAvatarSetter
             references.SwapAvatarCrate(AvatarBarcode, OnSwapAvatar, OnPrepareAvatar);
 
             _isAvatarDirty = false;
-        }
-
-        if (_isVitalsDirty)
-        {
-            //_vitals?.CopyTo(references.RigManager.GetComponentInChildren<BodyVitals>());
-
-            _isVitalsDirty = false;
         }
     }
 
