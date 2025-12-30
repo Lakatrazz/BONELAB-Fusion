@@ -80,7 +80,7 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            SyncAnimator();
+            SyncLayers();
         }
 
         [HideFromIl2Cpp]
@@ -89,10 +89,18 @@ namespace LabFusion.Marrow.Integration
             Animator.Play(data.StateNameHash, data.Layer, data.NormalizedTime);
         }
 
-        private void SyncAnimator(int layer = 0)
+        private void SyncLayers()
         {
             _syncTime = 0.1f;
 
+            for (var i = 0; i < Animator.layerCount; i++)
+            {
+                SyncLayer(i);
+            }
+        }
+
+        private void SyncLayer(int layer)
+        {
             var currentState = Animator.GetCurrentAnimatorStateInfo(layer);
 
             var nameHash = currentState.shortNameHash;
