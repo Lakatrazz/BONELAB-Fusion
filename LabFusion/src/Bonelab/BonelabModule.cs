@@ -52,6 +52,7 @@ public class BonelabModule : Module
         BonelabPlayerManager.Initialize();
         BonelabBitMartManager.Initialize();
         BonelabMusicManager.Initialize();
+        BonelabBacklotManager.Initialize();
     }
 
     protected override void OnModuleUnregistered()

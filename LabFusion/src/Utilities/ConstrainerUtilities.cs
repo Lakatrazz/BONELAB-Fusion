@@ -6,7 +6,6 @@ using Il2CppSLZ.Marrow;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Marrow;
-using LabFusion.Bonelab;
 
 namespace LabFusion.Utilities;
 
@@ -24,7 +23,7 @@ public static class ConstrainerUtilities
     public static void OnMainSceneInitialized()
     {
         // Get the constrainer crate so we can create a global constrainer
-        var crate = CrateFilterer.GetCrate<SpawnableCrate>(BonelabSpawnableReferences.ConstrainerReference.Barcode);
+        var crate = CrateFilterer.GetCrate<SpawnableCrate>(BacklotReferences.ConstrainerReference.Barcode);
 
         if (crate == null)
         {
