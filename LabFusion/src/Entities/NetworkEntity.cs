@@ -262,6 +262,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
             return;
         }
 
+        if (_ownerID == ownerID)
+        {
+            return;
+        }
+
         _ownerID = ownerID;
 
         OnEntityOwnershipTransfer?.Invoke(this, ownerID);
@@ -274,6 +279,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 #if DEBUG
             FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {ID}, but it was locked!");
 #endif
+            return;
+        }
+
+        if (_ownerID == null)
+        {
             return;
         }
 
