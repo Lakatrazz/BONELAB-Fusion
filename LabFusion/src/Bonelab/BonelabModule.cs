@@ -1,6 +1,7 @@
 ﻿using LabFusion.SDK.Modules;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Bonelab.Extenders;
+using LabFusion.Bonelab.SDK;
 
 namespace LabFusion.Bonelab;
 
@@ -50,6 +51,7 @@ public class BonelabModule : Module
 
         BonelabPlayerManager.Initialize();
         BonelabBitMartManager.Initialize();
+        BonelabMusicManager.Initialize();
     }
 
     protected override void OnModuleUnregistered()
