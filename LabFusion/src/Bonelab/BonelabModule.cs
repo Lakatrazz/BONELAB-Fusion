@@ -1,5 +1,6 @@
 ﻿using LabFusion.SDK.Modules;
 using LabFusion.Bonelab.Messages;
+using LabFusion.Bonelab.Extenders;
 
 namespace LabFusion.Bonelab;
 
@@ -44,10 +45,12 @@ public class BonelabModule : Module
         ModuleMessageManager.RegisterHandler<RandomObjectMessage>();
 
         BonelabSpawnableReferences.RegisterBlacklist();
+
+        BonelabPlayerCreator.HookNetworkPlayer();
     }
 
     protected override void OnModuleUnregistered()
     {
-        
+        BonelabPlayerCreator.UnhookNetworkPlayer();
     }
 }

@@ -2,6 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Data;
 
 using MelonLoader;
 
@@ -14,14 +15,8 @@ public static class NetworkEntityManager
     private static readonly EntityIDManager<NetworkEntity> _idManager = new();
     public static EntityIDManager<NetworkEntity> IDManager => _idManager;
 
-    private static readonly EntityUpdateList<IEntityUpdatable> _updateManager = new();
-    public static EntityUpdateList<IEntityUpdatable> UpdateManager => _updateManager;
-
-    private static readonly EntityUpdateList<IEntityFixedUpdatable> _fixedUpdateManager = new();
-    public static EntityUpdateList<IEntityFixedUpdatable> FixedUpdateManager => _fixedUpdateManager;
-
-    private static readonly EntityUpdateList<IEntityLateUpdatable> _lateUpdateManager = new();
-    public static EntityUpdateList<IEntityLateUpdatable> LateUpdateManager => _lateUpdateManager;
+    private static readonly EntityUpdatableManager _updatableManager = new();
+    public static EntityUpdatableManager UpdatableManager => _updatableManager;
 
     private static readonly EntityValidationList _ownershipTransferValidators = new();
     public static EntityValidationList OwnershipTransferValidators => _ownershipTransferValidators;
@@ -159,47 +154,17 @@ public static class NetworkEntityManager
 
     public static void OnUpdate(float deltaTime)
     {
-        foreach (var entity in UpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running entity Update", e);
-            }
-        }
+        UpdatableManager.OnEntityUpdate(deltaTime);
     }
 
     public static void OnFixedUpdate(float deltaTime)
     {
-        foreach (var entity in FixedUpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityFixedUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running entity FixedUpdate", e);
-            }
-        }
+        UpdatableManager.OnEntityFixedUpdate(deltaTime);
     }
 
     public static void OnLateUpdate(float deltaTime)
     {
-        foreach (var entity in LateUpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityLateUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running entity LateUpdate", e);
-            }
-        }
+        UpdatableManager.OnEntityLateUpdate(deltaTime);
     }
 
     public static void RequestUnqueue(ushort queuedID)

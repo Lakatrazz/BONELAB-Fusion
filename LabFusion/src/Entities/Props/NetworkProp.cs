@@ -454,18 +454,18 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (NetworkEntity.IsOwner)
         {
-            NetworkEntityManager.UpdateManager.Register(this);
+            NetworkEntityManager.UpdatableManager.UpdateManager.Register(this);
         }
         else
         {
-            NetworkEntityManager.FixedUpdateManager.Register(this);
+            NetworkEntityManager.UpdatableManager.FixedUpdateManager.Register(this);
         }
     }
 
     private void OnUnregisterUpdates()
     {
-        NetworkEntityManager.UpdateManager.Unregister(this);
-        NetworkEntityManager.FixedUpdateManager.Unregister(this);
+        NetworkEntityManager.UpdatableManager.UpdateManager.Unregister(this);
+        NetworkEntityManager.UpdatableManager.FixedUpdateManager.Unregister(this);
     }
 
     private Action _onReadyCallback = null;

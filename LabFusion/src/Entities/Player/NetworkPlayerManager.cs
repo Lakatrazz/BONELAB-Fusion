@@ -3,19 +3,14 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Data;
 
 namespace LabFusion.Entities;
 
 public static class NetworkPlayerManager
 {
-    private static readonly EntityUpdateList<IEntityUpdatable> _updateManager = new();
-    public static EntityUpdateList<IEntityUpdatable> UpdateManager => _updateManager;
-
-    private static readonly EntityUpdateList<IEntityFixedUpdatable> _fixedUpdateManager = new();
-    public static EntityUpdateList<IEntityFixedUpdatable> FixedUpdateManager => _fixedUpdateManager;
-
-    private static readonly EntityUpdateList<IEntityLateUpdatable> _lateUpdateManager = new();
-    public static EntityUpdateList<IEntityLateUpdatable> LateUpdateManager => _lateUpdateManager;
+    private static readonly EntityUpdatableManager _updatableManager = new();
+    public static EntityUpdatableManager UpdatableManager => _updatableManager;
 
     public static void OnInitializeManager()
     {
@@ -97,7 +92,7 @@ public static class NetworkPlayerManager
     public static NetworkPlayer CreateNetworkPlayer(PlayerID playerID)
     {
         NetworkEntity networkEntity = new();
-        NetworkPlayer networkPlayer = new(networkEntity, playerID);
+        NetworkPlayer networkPlayer = NetworkPlayer.CreatePlayer(networkEntity, playerID);
 
         NetworkEntityManager.IDManager.RegisterEntity(playerID.SmallID, networkEntity);
 
@@ -106,46 +101,16 @@ public static class NetworkPlayerManager
 
     public static void OnUpdate(float deltaTime)
     {
-        foreach (var entity in UpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running player Update", e);
-            }
-        }
+        UpdatableManager.OnEntityUpdate(deltaTime);
     }
 
     public static void OnFixedUpdate(float deltaTime)
     {
-        foreach (var entity in FixedUpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityFixedUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running player FixedUpdate", e);
-            }
-        }
+        UpdatableManager.OnEntityFixedUpdate(deltaTime);
     }
 
     public static void OnLateUpdate(float deltaTime)
     {
-        foreach (var entity in LateUpdateManager.Entities)
-        {
-            try
-            {
-                entity.OnEntityLateUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running player LateUpdate", e);
-            }
-        }
+        UpdatableManager.OnEntityLateUpdate(deltaTime);
     }
 }

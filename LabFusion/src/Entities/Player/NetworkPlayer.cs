@@ -27,6 +27,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public static readonly HashSet<NetworkPlayer> Players = new();
 
     /// <summary>
+    /// Invoked when a new NetworkPlayer is registered. This is also invoked for the Local Player's NetworkPlayer.
+    /// </summary>
+    public static event Action<NetworkPlayer> OnNetworkPlayerRegistered;
+
+    /// <summary>
     /// Invoked when a NetworkPlayer's RigManager is created. This is also invoked for the Local Player's RigManager.
     /// </summary>
     public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
@@ -163,10 +168,24 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public float DistanceSqr { get; private set; }
 
+    /// <summary>
+    /// The manager for adding custom Update, FixedUpdate, and LateUpdate events for a NetworkPlayer.
+    /// </summary>
+    public PlayerUpdatableManager UpdatableManager { get; } = new();
+
     private readonly JawFlapper _jawFlapper = new();
     public JawFlapper JawFlapper => _jawFlapper;
 
-    public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerID)
+    public static NetworkPlayer CreatePlayer(NetworkEntity networkEntity, PlayerID playerID)
+    {
+        var networkPlayer = new NetworkPlayer(networkEntity, playerID);
+
+        networkPlayer.Initialize();
+
+        return networkPlayer;
+    }
+
+    private NetworkPlayer(NetworkEntity networkEntity, PlayerID playerID)
     {
         _networkEntity = networkEntity;
         _playerID = playerID;
@@ -206,9 +225,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         HeadUI.RegisterElement(_icon);
         HeadUI.RegisterElement(_healthBar);
         HeadUI.RegisterElement(_livesBar);
+    }
 
-        networkEntity.HookOnRegistered(OnPlayerRegistered);
-        networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
+    private void Initialize()
+    {
+        NetworkEntity.HookOnRegistered(OnPlayerRegistered);
+        NetworkEntity.OnEntityUnregistered += OnPlayerUnregistered;
     }
 
     public void FindRigManager()
@@ -475,6 +497,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Update metadata
         OnMetadataChanged();
+
+        // Invoke hook
+        OnNetworkPlayerRegistered?.InvokeSafe(this, "executing OnNetworkPlayerRegistered hook");
     }
 
     private void OnPlayerUnregistered(NetworkEntity entity)
@@ -513,6 +538,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnEntityUpdate(float deltaTime)
     {
+        OnPlayerUpdate(deltaTime);
+
+        UpdatableManager.OnPlayerUpdate(deltaTime);
+    }
+
+    private void OnPlayerUpdate(float deltaTime)
+    {
         if (!HasRig)
         {
             return;
@@ -544,6 +576,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnEntityFixedUpdate(float deltaTime)
     {
+        OnPlayerFixedUpdate(deltaTime);
+
+        UpdatableManager.OnPlayerFixedUpdate(deltaTime);
+    }
+
+    private void OnPlayerFixedUpdate(float deltaTime)
+    {
         if (!HasRig)
         {
             return;
@@ -556,6 +595,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     }
 
     public void OnEntityLateUpdate(float deltaTime)
+    {
+        OnPlayerLateUpdate(deltaTime);
+
+        UpdatableManager.OnPlayerLateUpdate(deltaTime);
+    }
+
+    private void OnPlayerLateUpdate(float deltaTime)
     {
         if (NetworkEntity.IsOwner)
         {
@@ -690,16 +736,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         OnUnregisterUpdates();
 
-        NetworkPlayerManager.UpdateManager.Register(this);
-        NetworkPlayerManager.FixedUpdateManager.Register(this);
-        NetworkPlayerManager.LateUpdateManager.Register(this);
+        var updatableManager = NetworkPlayerManager.UpdatableManager;
+
+        updatableManager.UpdateManager.Register(this);
+        updatableManager.FixedUpdateManager.Register(this);
+        updatableManager.LateUpdateManager.Register(this);
     }
 
     private void OnUnregisterUpdates()
     {
-        NetworkPlayerManager.UpdateManager.Unregister(this);
-        NetworkPlayerManager.FixedUpdateManager.Unregister(this);
-        NetworkPlayerManager.LateUpdateManager.Unregister(this);
+        var updatableManager = NetworkPlayerManager.UpdatableManager;
+
+        updatableManager.UpdateManager.Unregister(this);
+        updatableManager.FixedUpdateManager.Unregister(this);
+        updatableManager.LateUpdateManager.Unregister(this);
     }
 
     public void TeleportToPose()

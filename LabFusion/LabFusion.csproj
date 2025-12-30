@@ -44,6 +44,7 @@
     <Compile Remove="FusionHelper\Resources\**" />
     <Compile Remove="FusionHelper\Steamworks.NET\**" />
     <Compile Remove="FusionHelper\Steamworks\**" />
+    <Compile Remove="src\Data\Containers\Levels\**" />
     <Compile Remove="src\Data\Interfaces\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Achievements\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\AddressableAssetsData\**" />
@@ -72,6 +73,7 @@
     <EmbeddedResource Remove="FusionHelper\Resources\**" />
     <EmbeddedResource Remove="FusionHelper\Steamworks.NET\**" />
     <EmbeddedResource Remove="FusionHelper\Steamworks\**" />
+    <EmbeddedResource Remove="src\Data\Containers\Levels\**" />
     <EmbeddedResource Remove="src\Data\Interfaces\**" />
     <None Remove="FusionBundles\Assets\Achievements\**" />
     <None Remove="FusionBundles\Assets\AddressableAssetsData\**" />
@@ -100,6 +102,7 @@
     <None Remove="FusionHelper\Resources\**" />
     <None Remove="FusionHelper\Steamworks.NET\**" />
     <None Remove="FusionHelper\Steamworks\**" />
+    <None Remove="src\Data\Containers\Levels\**" />
     <None Remove="src\Data\Interfaces\**" />
   </ItemGroup>
 
@@ -440,7 +443,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Data\Containers\Levels\" />
+    <Folder Include="src\Bonelab\Data\" />
   </ItemGroup>
 
 </Project>
