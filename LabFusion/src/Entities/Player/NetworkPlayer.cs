@@ -166,10 +166,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private readonly JawFlapper _jawFlapper = new();
     public JawFlapper JawFlapper => _jawFlapper;
 
-    public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerId)
+    public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerID)
     {
         _networkEntity = networkEntity;
-        _playerID = playerId;
+        _playerID = playerID;
 
         _pelvisPDController = new();
 
@@ -177,7 +177,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _nametag = new()
         {
-            CrownVisible = playerId.IsHost,
+            CrownVisible = playerID.IsHost,
         };
 
         _headUI = new();

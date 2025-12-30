@@ -36,9 +36,9 @@ public static class NetworkPlayerManager
         return !player.NetworkEntity.IsOwner;
     }
 
-    public static bool HasExternalPlayer(byte playerId)
+    public static bool HasExternalPlayer(byte playerID)
     {
-        if (!TryGetPlayer(playerId, out var player))
+        if (!TryGetPlayer(playerID, out var player))
         {
             return false;
         }
@@ -94,12 +94,12 @@ public static class NetworkPlayerManager
         return CreateNetworkPlayer(PlayerIDManager.LocalID);
     }
 
-    public static NetworkPlayer CreateNetworkPlayer(PlayerID playerId)
+    public static NetworkPlayer CreateNetworkPlayer(PlayerID playerID)
     {
         NetworkEntity networkEntity = new();
-        NetworkPlayer networkPlayer = new(networkEntity, playerId);
+        NetworkPlayer networkPlayer = new(networkEntity, playerID);
 
-        NetworkEntityManager.IDManager.RegisterEntity(playerId.SmallID, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity(playerID.SmallID, networkEntity);
 
         return networkPlayer;
     }
