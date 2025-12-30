@@ -22,6 +22,7 @@ using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.UI.Popups;
 using LabFusion.Safety;
+using LabFusion.Support;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -58,7 +59,6 @@ public class FusionMod : MelonMod
     public const string ModAuthor = "Lakatrazz";
 
     public const string GameDeveloper = "Stress Level Zero";
-    public const string GameName = "BONELAB";
 
     public static readonly Version Version = new(FusionVersion.VersionMajor, FusionVersion.VersionMinor, FusionVersion.VersionPatch);
 
@@ -160,6 +160,8 @@ public class FusionMod : MelonMod
     private static void InitializeBaseModules()
     {
         ModuleManager.LoadModules(FusionAssembly);
+
+        SupportManager.LoadGameModule(FusionAssembly);
     }
 
     public override void OnLateInitializeMelon()

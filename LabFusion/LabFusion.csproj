@@ -268,6 +268,7 @@
     <None Remove="src\Marrow\Audio\AudioReference.cs~RF202ddfa1.TMP" />
     <None Remove="src\Menu\MenuPageHelper.cs~RF7c939358.TMP" />
     <None Remove="src\SDK\Gamemodes\Music\MusicPlaylist.cs~RF2046160e.TMP" />
+    <None Remove="SupportModules\BonelabSupport.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -306,6 +307,7 @@
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_02.txt" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_03.txt" />
     <EmbeddedResource Include="dependencies\resources\text\raw_changelog.txt" />
+    <EmbeddedResource Include="SupportModules\BonelabSupport.dll" />
   </ItemGroup>
 
   <ItemGroup>

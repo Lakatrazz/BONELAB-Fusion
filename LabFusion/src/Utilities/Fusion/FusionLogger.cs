@@ -51,7 +51,9 @@ internal static class FusionLogger
     internal static void LogException(string task, Exception e)
     {
         if (e.InnerException != null)
+        {
             e = e.InnerException;
+        }
 
         Error($"Failed {task} with reason: {e.Message}\nTrace:{e.StackTrace}");
     }

@@ -21,7 +21,7 @@ namespace LabFusion.Data
 
         private static string ReadFromPath(string resourcePath, string filePath)
         {
-            File.WriteAllBytes(filePath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, resourcePath));
+            File.WriteAllBytes(filePath, EmbeddedResource.LoadBytesFromAssembly(FusionMod.FusionAssembly, resourcePath));
 
             var lines = File.ReadAllLines(filePath);
 

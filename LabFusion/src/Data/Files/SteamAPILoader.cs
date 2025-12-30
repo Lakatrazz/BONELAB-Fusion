@@ -61,7 +61,7 @@ public static class SteamAPILoader
     {
         if (!File.Exists(path) || overwrite)
         {
-            File.WriteAllBytes(path, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
+            File.WriteAllBytes(path, EmbeddedResource.LoadBytesFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
         }
         else
         {

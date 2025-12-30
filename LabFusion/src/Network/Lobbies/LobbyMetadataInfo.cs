@@ -2,7 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.Marrow;
-using LabFusion.Utilities;
+using LabFusion.Support;
 
 using System.Text.Json;
 
@@ -59,7 +59,7 @@ public struct LobbyMetadataInfo
             Full = lobbyInfo.PlayerCount >= lobbyInfo.MaxPlayers,
             VersionMajor = lobbyInfo.LobbyVersion.Major,
             VersionMinor = lobbyInfo.LobbyVersion.Minor,
-            Game = GameHelper.GameName,
+            Game = Support.GameInfo.GameName,
         };
     }
 

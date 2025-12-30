@@ -1,4 +1,5 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Support;
 
 using MelonLoader;
 
@@ -116,7 +117,7 @@ public sealed class SteamMatchmaker : IMatchmaker
             .FilterDistanceWorldwide()
             .WithKeyValue(LobbyKeys.IdentifierKey, bool.TrueString)
             .WithKeyValue(LobbyKeys.HasLobbyOpenKey, bool.TrueString)
-            .WithKeyValue(LobbyKeys.GameKey, GameHelper.GameName);
+            .WithKeyValue(LobbyKeys.GameKey, GameInfo.GameName);
     }
 
     private static LobbyQuery AddMatchmakingFilters(LobbyQuery query, MatchmakerFilters filters)
