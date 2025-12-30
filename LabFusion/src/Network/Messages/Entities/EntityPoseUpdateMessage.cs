@@ -1,39 +1,22 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class EntityPoseUpdateData : INetSerializable
 {
-    public const int DefaultSize = sizeof(byte) + sizeof(ushort);
-    public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
+    public NetworkEntityReference Entity;
+    public EntityPose Pose;
 
-    public ushort entityId;
-    public EntityPose pose;
+    public int? GetSize() => NetworkEntityReference.Size + Pose.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref pose);
+        serializer.SerializeValue(ref Entity);
+        serializer.SerializeValue(ref Pose);
     }
 
-    public NetworkEntity GetEntity()
-    {
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(entityId);
-        return entity;
-    }
-
-    public static EntityPoseUpdateData Create(ushort entityId, EntityPose pose)
-    {
-        var data = new EntityPoseUpdateData
-        {
-            entityId = entityId,
-            pose = pose,
-        };
-
-        return data;
-    }
+    public NetworkEntity GetEntity() => Entity.GetEntity();
 }
 
 [Net.SkipHandleWhileLoading]
@@ -62,6 +45,6 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
             return;
         }
 
-        networkProp.OnReceivePose(data.pose);
+        networkProp.OnReceivePose(data.Pose);
     }
 }

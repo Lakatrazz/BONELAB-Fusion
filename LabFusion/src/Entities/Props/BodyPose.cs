@@ -9,30 +9,32 @@ public class BodyPose : INetSerializable
 {
     public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size + SerializedSmallVector3.Size * 2;
 
-    public Vector3 position = Vector3.zero;
-    public Quaternion rotation = Quaternion.identity;
+    public Vector3 Position = Vector3.zero;
+    public Quaternion Rotation = Quaternion.identity;
 
-    public Vector3 velocity = Vector3.zero;
-    public Vector3 angularVelocity = Vector3.zero;
+    public Vector3 Velocity = Vector3.zero;
+    public Vector3 AngularVelocity = Vector3.zero;
 
     private Vector3 _positionPrediction = Vector3.zero;
 
-    public Vector3 PredictedPosition => position + _positionPrediction;
+    public Vector3 PredictedPosition => Position + _positionPrediction;
+
+    public int? GetSize() => Size;
 
     public void ReadFrom(Rigidbody rigidbody)
     {
-        position = rigidbody.position;
-        rotation = rigidbody.rotation;
-        velocity = rigidbody.velocity;
-        angularVelocity = rigidbody.angularVelocity;
+        Position = rigidbody.position;
+        Rotation = rigidbody.rotation;
+        Velocity = rigidbody.velocity;
+        AngularVelocity = rigidbody.angularVelocity;
     }
 
     public void CopyTo(BodyPose target)
     {
-        target.position = position;
-        target.rotation = rotation;
-        target.velocity = velocity;
-        target.angularVelocity = angularVelocity;
+        target.Position = Position;
+        target.Rotation = Rotation;
+        target.Velocity = Velocity;
+        target.AngularVelocity = AngularVelocity;
 
         target.ResetPrediction();
     }
@@ -44,7 +46,7 @@ public class BodyPose : INetSerializable
 
     public void PredictPosition(float deltaTime)
     {
-        _positionPrediction += velocity * deltaTime;
+        _positionPrediction += Velocity * deltaTime;
     }
 
     public void Serialize(INetSerializer serializer)
@@ -56,10 +58,10 @@ public class BodyPose : INetSerializable
 
         if (!serializer.IsReader)
         {
-            position = SerializedShortVector3.Compress(this.position);
-            rotation = SerializedSmallQuaternion.Compress(this.rotation);
-            velocity = SerializedSmallVector3.Compress(this.velocity);
-            angularVelocity = SerializedSmallVector3.Compress(this.angularVelocity);
+            position = SerializedShortVector3.Compress(this.Position);
+            rotation = SerializedSmallQuaternion.Compress(this.Rotation);
+            velocity = SerializedSmallVector3.Compress(this.Velocity);
+            angularVelocity = SerializedSmallVector3.Compress(this.AngularVelocity);
         }
 
         serializer.SerializeValue(ref position);
@@ -69,10 +71,10 @@ public class BodyPose : INetSerializable
 
         if (serializer.IsReader)
         {
-            this.position = position.Expand();
-            this.rotation = rotation.Expand();
-            this.velocity = velocity.Expand();
-            this.angularVelocity = angularVelocity.Expand();
+            this.Position = position.Expand();
+            this.Rotation = rotation.Expand();
+            this.Velocity = velocity.Expand();
+            this.AngularVelocity = angularVelocity.Expand();
         }
     }
 }

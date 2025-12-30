@@ -814,19 +814,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Check for stability teleport
         float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
-        if (distSqr > (2f * (pelvisPose.velocity.magnitude + 1f)))
+        if (distSqr > (2f * (pelvisPose.Velocity.magnitude + 1f)))
         {
             TeleportToPose();
             return;
         }
 
         // Apply forces
-        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
+        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.Velocity), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
         {
-            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
+            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.Rotation, pelvisPose.AngularVelocity), ForceMode.Acceleration);
         }
         else
         {

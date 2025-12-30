@@ -4,30 +4,32 @@ namespace LabFusion.Entities;
 
 public class EntityPose : INetSerializable   
 {
-    public BodyPose[] bodies;
+    public BodyPose[] Bodies;
+
+    public int? GetSize() => sizeof(byte) + BodyPose.Size * Bodies.Length;
 
     public EntityPose() { }
 
     public EntityPose(int bodyCount)
     {
-        bodies = new BodyPose[bodyCount];
+        Bodies = new BodyPose[bodyCount];
 
         for (var i = 0; i < bodyCount; i++)
         {
-            bodies[i] = new BodyPose();
+            Bodies[i] = new BodyPose();
         }
     }
 
     public void CopyTo(EntityPose target)
     {
-        if (target.bodies.Length != bodies.Length) 
+        if (target.Bodies.Length != Bodies.Length) 
         {
             return;
         }
 
-        for (var i = 0; i < target.bodies.Length; i++)
+        for (var i = 0; i < target.Bodies.Length; i++)
         {
-            bodies[i].CopyTo(target.bodies[i]);
+            Bodies[i].CopyTo(target.Bodies[i]);
         }
     }
 
@@ -45,13 +47,13 @@ public class EntityPose : INetSerializable
 
     public void Serialize(NetWriter writer)
     {
-        byte length = (byte)bodies.Length;
+        byte length = (byte)Bodies.Length;
 
         writer.Write(length);
 
         for (var i = 0; i < length; i++)
         {
-            writer.SerializeValue(ref bodies[i]);
+            writer.SerializeValue(ref Bodies[i]);
         }
     }
 
@@ -59,11 +61,11 @@ public class EntityPose : INetSerializable
     {
         byte length = reader.ReadByte();
 
-        bodies = new BodyPose[length];
+        Bodies = new BodyPose[length];
 
         for (var i = 0; i < length; i++)
         {
-            reader.SerializeValue(ref bodies[i]);
+            reader.SerializeValue(ref Bodies[i]);
         }
     }
 }

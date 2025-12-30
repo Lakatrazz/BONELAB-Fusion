@@ -136,12 +136,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            var pose = _pose.bodies[i];
+            var pose = _pose.Bodies[i];
 
             rigidbody.position = pose.PredictedPosition;
-            rigidbody.rotation = pose.rotation;
-            rigidbody.velocity = pose.velocity;
-            rigidbody.angularVelocity = pose.angularVelocity;
+            rigidbody.rotation = pose.Rotation;
+            rigidbody.velocity = pose.Velocity;
+            rigidbody.angularVelocity = pose.AngularVelocity;
         }
     }
 
@@ -158,14 +158,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            var pose = _pose.bodies[i];
+            var pose = _pose.Bodies[i];
 
             var rigidbody = body._rigidbody;
 
-            pose.position = rigidbody.position;
-            pose.rotation = rigidbody.rotation;
-            pose.velocity = rigidbody.velocity;
-            pose.angularVelocity = rigidbody.angularVelocity;
+            pose.Position = rigidbody.position;
+            pose.Rotation = rigidbody.rotation;
+            pose.Velocity = rigidbody.velocity;
+            pose.AngularVelocity = rigidbody.angularVelocity;
 
             pose.ResetPrediction();
         }
@@ -262,10 +262,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private bool HasBodyMoved(int index)
     {
-        var currentPose = _pose.bodies[index];
-        var sentPose = _sentPose.bodies[index];
+        var currentPose = _pose.Bodies[index];
+        var sentPose = _sentPose.Bodies[index];
 
-        return (sentPose.position - currentPose.position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.rotation, currentPose.rotation) > MinMoveAngle; 
+        return (sentPose.Position - currentPose.Position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.Rotation, currentPose.Rotation) > MinMoveAngle; 
     }
 
     private void Sleep()
@@ -343,7 +343,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Send pose
-        var data = EntityPoseUpdateData.Create(NetworkEntity.ID, EntityPose);
+        var data = new EntityPoseUpdateData()
+        {
+            Entity = new(NetworkEntity),
+            Pose = EntityPose,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
 
@@ -407,7 +411,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             return;
         }
 
-        var pose = EntityPose.bodies[index];
+        var pose = EntityPose.Bodies[index];
 
         // Don't over predict
         if (timeSinceMessage <= 0.6f)
@@ -416,8 +420,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Add proper forces
-        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.velocity);
-        pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.rotation, pose.angularVelocity);
+        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity);
+        pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity);
 
         rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);
         rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
