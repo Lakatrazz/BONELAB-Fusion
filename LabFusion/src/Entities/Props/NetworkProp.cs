@@ -315,12 +315,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void Freeze()
     {
         IsSleeping = true;
-
-        // Only freeze if unculled, otherwise its pointless and will cause issues
-        if (!IsCulled)
-        {
-            Freezer.Freeze(_bodies);
-        }
+        Freezer.Freeze(_bodies);
     }
 
     public void Unfreeze() 
@@ -501,6 +496,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Culled
         if (isInactive)
         {
+            Freezer.Unfreeze();
             OnUnregisterUpdates();
             return;
         }
@@ -511,6 +507,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         if (!isOwner && hasOwner)
         {
             TeleportToPose();
+
+            if (IsSleeping)
+            {
+                Freezer.Freeze(_bodies);
+            }
+            else
+            {
+                Freezer.Unfreeze();
+            }
 
             // Unculled for us but still culled for the owner, we can take ownership
             if (IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
