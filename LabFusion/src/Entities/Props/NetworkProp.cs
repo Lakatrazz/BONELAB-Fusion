@@ -30,8 +30,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private bool _receivedPose = false;
     private float _lastReceivedTime = 0f;
 
-    private float _lastSentTime = 0f;
-
     private DestroySensor _destroySensor = null;
 
     public bool IsSleeping { get; private set; } = false;
@@ -344,19 +342,18 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Copy all body positions to current position
         CopyBodiesToPose();
 
-        // Update sleeping
-        bool sleeping = CheckOwnedSleeping();
+        bool wasSleeping = IsSleeping;
+        IsSleeping = CheckOwnedSleeping();
 
-        if (!sleeping)
+        // No change in sleep state
+        if (wasSleeping && IsSleeping)
         {
-            IsSleeping = false;
-            _lastSentTime = TimeUtilities.TimeSinceStartup;
+            return;
         }
-
-        // If a rigidbody has not moved within half a second, stop sending
-        if (TimeUtilities.TimeSinceStartup - _lastSentTime >= 0.5f)
+        
+        // Just slept this frame
+        if (!wasSleeping && IsSleeping)
         {
-            IsSleeping = true;
             SendEntityPose(CommonMessageRoutes.ReliableToOtherClients);
             return;
         }
