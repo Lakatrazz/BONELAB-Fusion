@@ -155,10 +155,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
+            var transform = rigidbody.transform;
+
             var pose = EntityPose.Bodies[i];
 
-            rigidbody.position = pose.PredictedPosition;
-            rigidbody.rotation = pose.Rotation;
+            transform.position = pose.PredictedPosition;
+            transform.rotation = pose.Rotation;
             rigidbody.velocity = pose.Velocity;
             rigidbody.angularVelocity = pose.AngularVelocity;
         }
