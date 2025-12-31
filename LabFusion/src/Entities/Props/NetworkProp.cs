@@ -34,8 +34,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private DestroySensor _destroySensor = null;
 
-    private bool _isSleeping = false;
-    public bool IsSleeping => _isSleeping;
+    public bool IsSleeping { get; private set; } = false;
 
     public EntityFreezer Freezer { get; } = new();
 
@@ -75,6 +74,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         OnReregisterUpdates();
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
+    {
+        if (entity.IsOwner)
+        {
+            SendEntityPose(new MessageRoute(player.SmallID, NetworkChannel.Reliable));
+        }
     }
 
     private void InitializeBodies()
@@ -202,6 +209,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         entity.ConnectExtender(this);
 
         entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
 
         OnReregisterUpdates();
 
@@ -231,6 +239,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         entity.DisconnectExtender(this);
 
         entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
 
         _networkEntity = null;
         _marrowEntity = null;
@@ -286,20 +295,18 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void Freeze()
     {
-        _isSleeping = true;
+        IsSleeping = true;
         Freezer.Freeze(_bodies); 
     }
 
     public void Unfreeze() 
     {
-        _isSleeping = false;
+        IsSleeping = false;
         Freezer.Unfreeze(); 
     }
 
-    private void CheckSleeping()
+    private bool CheckOwnedSleeping()
     {
-        _isSleeping = true;
-
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -319,10 +326,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             if (!rb.IsSleeping() && HasBodyMoved(i))
             {
-                _isSleeping = false;
-                break;
+                return false;
             }
         }
+
+        return true;
     }
 
     private void OnOwnedUpdate()
@@ -337,30 +345,35 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         CopyBodiesToPose();
 
         // Update sleeping
-        CheckSleeping();
+        bool sleeping = CheckOwnedSleeping();
 
-        // Update send time
-        if (!IsSleeping)
+        if (!sleeping)
         {
+            IsSleeping = false;
             _lastSentTime = TimeUtilities.TimeSinceStartup;
         }
 
         // If a rigidbody has not moved within half a second, stop sending
         if (TimeUtilities.TimeSinceStartup - _lastSentTime >= 0.5f)
         {
+            IsSleeping = true;
+            SendEntityPose(CommonMessageRoutes.ReliableToOtherClients);
             return;
         }
 
-        // Send pose
+        SendEntityPose(CommonMessageRoutes.UnreliableToOtherClients);
+    }
+
+    private void SendEntityPose(MessageRoute route)
+    {
         var data = new EntityPoseUpdateData()
         {
             Entity = new(NetworkEntity),
             Pose = EntityPose,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, route);
 
-        // Update sent pose
         EntityPose.CopyTo(_sentPose);
     }
 
