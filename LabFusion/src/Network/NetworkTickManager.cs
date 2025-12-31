@@ -8,7 +8,7 @@ public static class NetworkTickManager
     
     public static readonly float SecondsBetweenTicks = 1f / TickRate;
 
-    public static readonly float InterpolationDecayRate = 24f;
+    public static readonly float InterpolationDecayRate = 36f;
 
     private static float _tickElapsed = 0f;
 

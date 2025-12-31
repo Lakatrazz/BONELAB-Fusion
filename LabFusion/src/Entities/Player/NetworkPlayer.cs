@@ -57,6 +57,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigSkeleton _rigSkeleton = null;
     public RigSkeleton RigSkeleton => _rigSkeleton;
 
+    private ManagedTransform[] _smoothTrackedTransforms = null;
+    public ManagedTransform[] SmoothTrackedTransforms => _smoothTrackedTransforms;
+
     private RigPose _pose = null;
     public RigPose RigPose => _pose;
 
@@ -550,7 +553,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var remapRig = RigSkeleton.remapRig;
+        var remapRig = RigSkeleton.RemapRig;
 
         // SLZ doesn't clamp this by default, so it can create large values that make your rig go insanely fast
         // Usually occurs after getting your legs stuck in the ground
@@ -571,6 +574,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             remapRig._crouchTarget = RigPose.CrouchTarget;
             remapRig._feetOffset = RigPose.FeetOffset;
+
+            // Update the playspace rotation
+            var trackedPlayspace = RigSkeleton.TrackedPlayspace;
+
+            trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.InterpolationTime);
         }
     }
 
@@ -762,7 +770,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Find the target centerOfPressure position and teleport
         var targetPelvis = RigPose.PelvisPose.PredictedPosition;
-        var offset = targetPelvis - RigSkeleton.physicsPelvis.transform.position;
+        var offset = targetPelvis - RigSkeleton.PhysicsPelvis.transform.position;
         var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
 
         RigRefs.RigManager.TeleportToPosition(newPosition, true);
@@ -811,7 +819,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var pelvis = RigSkeleton.physicsPelvis;
+        var pelvis = RigSkeleton.PhysicsPelvis;
         var pelvisPosition = pelvis.position;
         var pelvisRotation = pelvis.rotation;
 
@@ -855,17 +863,29 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             _receivedPose = true;
             TeleportToPose();
+            CopyPosePointsToSmoothPoints();
         }
-
-        // Update the playspace rotation
-        RigSkeleton.trackedPlayspace.rotation = RigPose.TrackedPlayspace.Expand();
 
         // Update the health
         HealthBar.Health = pose.Health;
         HealthBar.MaxHealth = pose.MaxHealth;
 
-        RigSkeleton.health.curr_Health = pose.Health;
-        RigSkeleton.health.max_Health = pose.MaxHealth;
+        RigSkeleton.Health.curr_Health = pose.Health;
+        RigSkeleton.Health.max_Health = pose.MaxHealth;
+    }
+
+    private void CopyPosePointsToSmoothPoints()
+    {
+        if (!ReceivedPose)
+        {
+            return;
+        }
+
+        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+        {
+            var posePoint = RigPose.TrackedPoints[i];
+            SmoothTrackedTransforms[i] = new ManagedTransform(posePoint.position, posePoint.rotation);
+        }
     }
 
     public void OnOverrideControllerRig()
@@ -880,10 +900,17 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
-            var trackedPoint = RigSkeleton.trackedPoints[i];
             var posePoint = RigPose.TrackedPoints[i];
 
-            trackedPoint.SetLocalPositionAndRotation(posePoint.position, posePoint.rotation);
+            var smoothPoint = SmoothTrackedTransforms[i];
+            smoothPoint = new ManagedTransform(
+                Vector3.Lerp(smoothPoint.Position, posePoint.position, NetworkTickManager.InterpolationTime),
+                Quaternion.Slerp(smoothPoint.Rotation, posePoint.rotation, NetworkTickManager.InterpolationTime));
+            SmoothTrackedTransforms[i] = smoothPoint;
+
+            var trackedPoint = RigSkeleton.TrackedPoints[i];
+
+            trackedPoint.SetLocalPositionAndRotation(smoothPoint.Position, smoothPoint.Rotation);
         }
     }
 
@@ -903,6 +930,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _rigSkeleton = new(rigManager);
         _rigRefs = new(rigManager);
+
+        _smoothTrackedTransforms = new ManagedTransform[RigAbstractor.TransformSyncCount];
 
         _rigRefs.HookOnDestroy(OnRigDestroyed);
 

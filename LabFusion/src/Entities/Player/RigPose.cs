@@ -2,6 +2,7 @@
 using LabFusion.Marrow.Serialization;
 using LabFusion.Network.Serialization;
 using LabFusion.Representation;
+using UnityEngine;
 
 namespace LabFusion.Entities;
 
@@ -16,6 +17,8 @@ public class RigPose : INetSerializable
     public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
 
     public SerializedSmallQuaternion TrackedPlayspace = SerializedSmallQuaternion.Default;
+
+    public Quaternion TrackedPlayspaceExpanded = Quaternion.identity;
 
     public BodyPose PelvisPose = new();
 
@@ -37,24 +40,26 @@ public class RigPose : INetSerializable
         // Read tracked points
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
-            TrackedPoints[i] = new SerializedLocalTransform(skeleton.trackedPoints[i]);
+            TrackedPoints[i] = new SerializedLocalTransform(skeleton.TrackedPoints[i]);
         }
 
         // Read playspace
-        TrackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.rotation);
+        TrackedPlayspaceExpanded = skeleton.TrackedPlayspace.rotation;
+
+        TrackedPlayspace = SerializedSmallQuaternion.Compress(TrackedPlayspaceExpanded);
 
         // Read bodies
-        PelvisPose.ReadFrom(skeleton.physicsPelvis);
+        PelvisPose.ReadFrom(skeleton.PhysicsPelvis);
 
         // Read hands
-        LeftController = new(skeleton.physicsLeftHand.Controller);
-        RightController = new(skeleton.physicsRightHand.Controller);
+        LeftController = new(skeleton.PhysicsLeftHand.Controller);
+        RightController = new(skeleton.PhysicsRightHand.Controller);
 
         // Read extra info
-        CrouchTarget = skeleton.remapRig._crouchTarget;
-        FeetOffset = skeleton.remapRig._feetOffset;
-        Health = skeleton.health.curr_Health;
-        MaxHealth = skeleton.health.max_Health;
+        CrouchTarget = skeleton.RemapRig._crouchTarget;
+        FeetOffset = skeleton.RemapRig._feetOffset;
+        Health = skeleton.Health.curr_Health;
+        MaxHealth = skeleton.Health.max_Health;
     }
 
     public void Serialize(INetSerializer serializer)
@@ -69,6 +74,11 @@ public class RigPose : INetSerializable
         }
 
         serializer.SerializeValue(ref TrackedPlayspace);
+
+        if (serializer.IsReader)
+        {
+            TrackedPlayspaceExpanded = TrackedPlayspace.Expand();
+        }
 
         serializer.SerializeValue(ref PelvisPose);
 

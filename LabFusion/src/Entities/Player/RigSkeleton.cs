@@ -8,34 +8,34 @@ namespace LabFusion.Entities;
 
 public class RigSkeleton
 {
-    public Transform[] trackedPoints = null;
+    public Transform[] TrackedPoints = null;
 
-    public Transform trackedPlayspace = null;
+    public Transform TrackedPlayspace = null;
 
-    public Rigidbody physicsPelvis = null;
+    public Rigidbody PhysicsPelvis = null;
 
-    public Hand physicsLeftHand = null;
-    public Hand physicsRightHand = null;
+    public Hand PhysicsLeftHand = null;
+    public Hand PhysicsRightHand = null;
 
-    public RemapRig remapRig = null;
+    public RemapRig RemapRig = null;
 
-    public Health health = null;
+    public Health Health = null;
 
     public RigSkeleton(RigManager rigManager)
     {
-        RigAbstractor.FillTransformArray(ref trackedPoints, rigManager);
+        RigAbstractor.FillTransformArray(ref TrackedPoints, rigManager);
 
-        trackedPlayspace = rigManager.GetSmoothTurnTransform();
+        TrackedPlayspace = rigManager.GetSmoothTurnTransform();
 
         var physicsRig = rigManager.physicsRig;
 
-        physicsPelvis = physicsRig.m_pelvis.GetComponent<Rigidbody>();
+        PhysicsPelvis = physicsRig.m_pelvis.GetComponent<Rigidbody>();
 
-        physicsLeftHand = physicsRig.leftHand;
-        physicsRightHand = physicsRig.rightHand;
+        PhysicsLeftHand = physicsRig.leftHand;
+        PhysicsRightHand = physicsRig.rightHand;
 
-        remapRig = rigManager.remapHeptaRig;
+        RemapRig = rigManager.remapHeptaRig;
 
-        health = rigManager.health;
+        Health = rigManager.health;
     } 
 }

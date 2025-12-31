@@ -5,8 +5,8 @@ using UnityEngine;
 namespace LabFusion.Representation;
 
 /// <summary>
-    /// Helper class for abstracting synced transforms between rigs for easy updating.
-    /// </summary>
+/// Helper class for abstracting synced transforms between rigs for easy updating.
+/// </summary>
 public static class RigAbstractor
 {
     public const int TransformSyncCount = 3;
