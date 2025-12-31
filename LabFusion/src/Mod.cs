@@ -71,8 +71,6 @@ public class FusionMod : MelonMod
 
     private static bool _hasAutoUpdater = false;
 
-    private static int _nextSyncableSendRate = 1;
-
     public override void OnEarlyInitializeMelon()
     {
         Instance = this;
@@ -270,21 +268,16 @@ public class FusionMod : MelonMod
         // Update popups
         PopupManager.OnUpdate();
 
-        // Update network players
+        // Update tick rate
         float deltaTime = TimeUtilities.DeltaTime;
 
+        NetworkTickRateManager.OnUpdate(deltaTime);
+
+        // Update network players
         NetworkPlayerManager.OnUpdate(deltaTime);
 
-        // Update network entities based on byte amount
-        if (TimeUtilities.IsMatchingFrame(_nextSyncableSendRate))
-        {
-            var lastBytes = NetworkInfo.BytesUp;
-
-            NetworkEntityManager.OnUpdate(deltaTime);
-
-            var byteDifference = NetworkInfo.BytesUp - lastBytes;
-            _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
-        }
+        // Update network entities
+        NetworkEntityManager.OnUpdate(deltaTime);
 
         FusionPlayer.OnUpdate();
 

@@ -773,6 +773,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnOwnedUpdate()
     {
+        // Only send if on our tick rate
+        if (!NetworkTickRateManager.IsTickThisFrame)
+        {
+            return;
+        }
+
         RigPose.ReadSkeleton(RigSkeleton);
 
         var data = PlayerPoseUpdateData.Create(RigPose);
