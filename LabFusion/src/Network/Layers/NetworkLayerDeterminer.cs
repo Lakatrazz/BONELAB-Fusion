@@ -21,7 +21,7 @@ public static class NetworkLayerDeterminer
 
     public static NetworkLayer VerifyLayer(NetworkLayer layer)
     {
-        if (layer.CheckValidation())
+        if (layer.CheckSupported() && layer.CheckValidation())
         {
             return layer;
         }
