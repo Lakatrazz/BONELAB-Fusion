@@ -12,7 +12,7 @@ namespace LabFusion.Marrow.Serialization;
 
 public class SerializedController : INetSerializable
 {
-    public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
+    public const int Size = sizeof(float) * 3 + sizeof(byte) * 10;
 
     public float IndexCurl;
     public float MiddleCurl;
@@ -24,8 +24,6 @@ public class SerializedController : INetSerializable
     public float PrimaryAxis;
 
     public XRControllerType ControllerType;
-    public BaseController.GesturePose GesturePose;
-    public float GesturePoseIntensity;
 
     public bool PrimaryInteractionButton;
     public bool SecondaryInteractionButton;
@@ -33,6 +31,8 @@ public class SerializedController : INetSerializable
     public Vector2 ThumbstickAxis;
 
     public const float PRECISION_MULTIPLIER = 255f;
+
+    public int? GetSize() => Size;
 
     public SerializedController() { }
 
@@ -48,8 +48,6 @@ public class SerializedController : INetSerializable
         PrimaryAxis = controller._primaryAxis;
 
         ControllerType = controller.Type;
-        GesturePose = controller._gesturePose;
-        GesturePoseIntensity = controller._gesturePoseIntensity;
 
         PrimaryInteractionButton = controller._primaryInteractionButton;
         SecondaryInteractionButton = controller._secondaryInteractionButton;
@@ -69,8 +67,6 @@ public class SerializedController : INetSerializable
         controller._primaryAxis = PrimaryAxis;
 
         controller.Type = ControllerType;
-        controller._gesturePose = GesturePose;
-        controller._gesturePoseIntensity = GesturePoseIntensity;
 
         // Primary interaction button
         bool primaryUp = controller._primaryInteractionButtonUp;
@@ -143,8 +139,6 @@ public class SerializedController : INetSerializable
         SerializeCompressedFloat(serializer, ref PrimaryAxis);
 
         serializer.SerializeValue(ref ControllerType, Precision.OneByte);
-        serializer.SerializeValue(ref GesturePose, Precision.OneByte);
-        SerializeCompressedFloat(serializer, ref GesturePoseIntensity);
 
         serializer.SerializeValue(ref PrimaryInteractionButton);
         serializer.SerializeValue(ref SecondaryInteractionButton);
