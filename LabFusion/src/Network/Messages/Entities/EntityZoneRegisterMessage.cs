@@ -4,7 +4,6 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Entities;
 using LabFusion.Marrow.Zones;
-using LabFusion.Network.Serialization;
 
 using MelonLoader;
 
