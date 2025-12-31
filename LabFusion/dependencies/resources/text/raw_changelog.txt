@@ -13,6 +13,8 @@ Fixed:
 - Gamemode score keeper throwing errors with null IDs
 - Target network layer not showing properly if unavailable
 - BitMart birthday music not functioning properly
+- Syncing with rigidbodies that have frozen rotation
+- LaserCursors adding network player controllers
 Removed:
 - Mature mod auto download toggle (mature mods are now manual installs only)
 Added:
@@ -22,5 +24,9 @@ Added:
 - Function to load modules from assembly
 - GamemodeEvents now trigger on late join
 - Body settings are synced again
+- Bonelab code is now dynamically loaded in preparation for Boneworks
+- Unculling objects can take ownership if needed
+- Synced all layers for AnimatorSyncer
 Improved:
 - Voice chat volume
+- Prop sleeping
