@@ -85,13 +85,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
     {
-        if (entity.IsOwner)
-        {
-            var route = new MessageRoute(player.SmallID, NetworkChannel.Reliable);
+        var route = new MessageRoute(player.SmallID, NetworkChannel.Reliable);
 
-            SendEntityPose(route);
-            SendCullStatus(IsCulled, route);
-        }
+        SendEntityPose(route);
+        SendCullStatus(IsCulled, route);
     }
 
     private void InitializeBodies()
