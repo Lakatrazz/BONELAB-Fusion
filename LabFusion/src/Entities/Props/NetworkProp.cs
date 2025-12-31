@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
+using LabFusion.Marrow.Utilities;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -36,6 +37,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private bool _isSleeping = false;
     public bool IsSleeping => _isSleeping;
 
+    public EntityFreezer Freezer { get; } = new();
+
     private static int _globalSleepOffset = 0;
     private int _sleepFrameOffset = 0;
     private const int _sleepCheckInterval = 20;
@@ -66,6 +69,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
+        if (player.IsMe)
+        {
+            Unfreeze();
+        }
+
         OnReregisterUpdates();
     }
 
@@ -113,7 +121,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void UpdateReceiveTime()
     {
-        _isSleeping = false;
+        Unfreeze();
+
         _receivedPose = true;
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
@@ -221,6 +230,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _networkEntity = null;
         _marrowEntity = null;
 
+        Unfreeze();
+
         RemoveDestroySensor();
 
         OnUnregisterUpdates();
@@ -268,23 +279,16 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         return (sentPose.Position - currentPose.Position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.Rotation, currentPose.Rotation) > MinMoveAngle; 
     }
 
-    private void Sleep()
+    public void Freeze()
     {
         _isSleeping = true;
+        Freezer.Freeze(_bodies); 
+    }
 
-        for (var i = 0; i < _bodies.Length; i++)
-        {
-            var body = _bodies[i];
-
-            if (!body.HasRigidbody)
-            {
-                continue;
-            }
-
-            var rb = body._rigidbody;
-
-            rb.Sleep();
-        }
+    public void Unfreeze() 
+    {
+        _isSleeping = false;
+        Freezer.Unfreeze(); 
     }
 
     private void CheckSleeping()
@@ -380,7 +384,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (timeSinceMessage >= 1f)
         {
-            Sleep();
+            Freeze();
             return;
         }
 
