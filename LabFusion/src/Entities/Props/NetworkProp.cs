@@ -525,12 +525,33 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             TeleportToPose();
 
-            // Unculled for us but still culled for the owner, we can take ownership
-            if (InitialCull && IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
-            {
-                NetworkEntityManager.TakeOwnership(NetworkEntity);
-            }
+            TryTakeUncullOwnership();
         }
+    }
+
+    private void TryTakeUncullOwnership()
+    {
+        if (!InitialCull)
+        {
+            return;
+        }
+
+        if (IsCulled)
+        {
+            return;
+        }
+
+        if (!IsCulledForOwner)
+        {
+            return;
+        }
+
+        if (NetworkEntity.IsOwnerLocked)
+        {
+            return;
+        }
+
+        NetworkEntityManager.TakeOwnership(NetworkEntity);
     }
 
     private void OnReregisterUpdates()
