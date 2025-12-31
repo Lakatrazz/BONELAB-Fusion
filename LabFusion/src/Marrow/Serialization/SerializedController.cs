@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace LabFusion.Marrow.Serialization;
 
-public class SerializableController : INetSerializable
+public class SerializedController : INetSerializable
 {
     public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
 
@@ -34,9 +34,9 @@ public class SerializableController : INetSerializable
 
     public const float PRECISION_MULTIPLIER = 255f;
 
-    public SerializableController() { }
+    public SerializedController() { }
 
-    public SerializableController(BaseController controller)
+    public SerializedController(BaseController controller)
     {
         IndexCurl = controller._processedIndex;
         MiddleCurl = controller._processedMiddle;

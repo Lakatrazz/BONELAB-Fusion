@@ -1,7 +1,8 @@
 ﻿using Il2CppSLZ.Bonelab;
 
-using MarrowFusion.Bonelab.Data;
+using MarrowFusion.Bonelab.Serialization;
 using MarrowFusion.Bonelab.Messages;
+
 using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Utilities;

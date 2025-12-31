@@ -1,8 +1,9 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Network;
-using MarrowFusion.Bonelab.Data;
-using MarrowFusion.Bonelab.Extenders;
 using LabFusion.SDK.Modules;
+
+using MarrowFusion.Bonelab.Serialization;
+using MarrowFusion.Bonelab.Extenders;
 
 namespace MarrowFusion.Bonelab.Messages;
 

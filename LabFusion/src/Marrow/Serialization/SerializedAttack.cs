@@ -8,15 +8,15 @@ using UnityEngine;
 
 namespace LabFusion.Marrow.Serialization;
 
-public class SerializableAttack : INetSerializable
+public class SerializedAttack : INetSerializable
 {
     public const int Size = + sizeof(float) * 10 + sizeof(int);
 
     public Attack Attack;
 
-    public SerializableAttack() { }
+    public SerializedAttack() { }
 
-    public SerializableAttack(Attack attack)
+    public SerializedAttack(Attack attack)
     {
         this.Attack = attack;
     }

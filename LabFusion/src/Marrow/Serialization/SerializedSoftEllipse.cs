@@ -4,7 +4,7 @@ using LabFusion.Network.Serialization;
 
 namespace LabFusion.Marrow.Serialization;
 
-public struct SerializableSoftEllipse : INetSerializable
+public struct SerializedSoftEllipse : INetSerializable
 {
     public const int Size = sizeof(float) * 4;
 
@@ -18,14 +18,14 @@ public struct SerializableSoftEllipse : INetSerializable
         serializer.SerializeValue(ref Ellipse.ZBias);
     }
 
-    public static implicit operator Avatar.SoftEllipse(SerializableSoftEllipse ellipse)
+    public static implicit operator Avatar.SoftEllipse(SerializedSoftEllipse ellipse)
     {
         return ellipse.Ellipse;
     }
 
-    public static implicit operator SerializableSoftEllipse(Avatar.SoftEllipse ellipse)
+    public static implicit operator SerializedSoftEllipse(Avatar.SoftEllipse ellipse)
     {
-        return new SerializableSoftEllipse()
+        return new SerializedSoftEllipse()
         {
             Ellipse = ellipse,
         };

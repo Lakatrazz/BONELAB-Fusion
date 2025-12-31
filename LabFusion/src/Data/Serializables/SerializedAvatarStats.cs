@@ -12,7 +12,7 @@ namespace LabFusion.Data;
 // This has a LOT of data, so this should ONLY be sent when necessary!
 public class SerializedAvatarStats : INetSerializable
 {
-    public const int Size = sizeof(float) * 73 + SerializableSoftEllipse.Size * 8;
+    public const int Size = sizeof(float) * 73 + SerializedSoftEllipse.Size * 8;
 
     public int? GetSize() => Size;
 
@@ -54,14 +54,14 @@ public class SerializedAvatarStats : INetSerializable
     public float hipsEllipseNegZ;
 
     // Soft ellipses
-    public SerializableSoftEllipse thighUpperEllipse;
-    public SerializableSoftEllipse kneeEllipse;
-    public SerializableSoftEllipse calfEllipse;
-    public SerializableSoftEllipse ankleEllipse;
-    public SerializableSoftEllipse upperarmEllipse;
-    public SerializableSoftEllipse elbowEllipse;
-    public SerializableSoftEllipse forearmEllipse;
-    public SerializableSoftEllipse wristEllipse;
+    public SerializedSoftEllipse thighUpperEllipse;
+    public SerializedSoftEllipse kneeEllipse;
+    public SerializedSoftEllipse calfEllipse;
+    public SerializedSoftEllipse ankleEllipse;
+    public SerializedSoftEllipse upperarmEllipse;
+    public SerializedSoftEllipse elbowEllipse;
+    public SerializedSoftEllipse forearmEllipse;
+    public SerializedSoftEllipse wristEllipse;
 
     // Proportions
     public float eyeHeight;

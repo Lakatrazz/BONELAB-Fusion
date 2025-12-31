@@ -1,7 +1,8 @@
 ﻿using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 
-using MarrowFusion.Bonelab.Data;
+using MarrowFusion.Bonelab.Serialization;
+
 using LabFusion.Entities;
 
 namespace MarrowFusion.Bonelab.Extenders;

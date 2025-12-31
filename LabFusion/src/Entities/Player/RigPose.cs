@@ -10,7 +10,7 @@ public class RigPose : INetSerializable
     public const int Size = SerializedLocalTransform.Size * RigAbstractor.TransformSyncCount +
         SerializedSmallQuaternion.Size +
         BodyPose.Size +
-        SerializableController.Size * 2 +
+        SerializedController.Size * 2 +
         sizeof(float) * 4;
 
     public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
@@ -19,8 +19,8 @@ public class RigPose : INetSerializable
 
     public BodyPose PelvisPose = new();
 
-    public SerializableController LeftController = null;
-    public SerializableController RightController = null;
+    public SerializedController LeftController = null;
+    public SerializedController RightController = null;
 
     public float CrouchTarget = 0f;
 

@@ -2,7 +2,7 @@
 
 using LabFusion.Network.Serialization;
 
-namespace MarrowFusion.Bonelab.Data;
+namespace MarrowFusion.Bonelab.Serialization;
 
 public class SerializedBodyVitals : INetSerializable
 {

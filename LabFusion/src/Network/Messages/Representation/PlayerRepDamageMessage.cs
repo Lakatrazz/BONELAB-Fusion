@@ -10,9 +10,9 @@ namespace LabFusion.Network;
 
 public class PlayerRepDamageData : INetSerializable
 {
-    public const int Size = SerializableAttack.Size + sizeof(byte);
+    public const int Size = SerializedAttack.Size + sizeof(byte);
 
-    public SerializableAttack Attack;
+    public SerializedAttack Attack;
 
     public PlayerDamageReceiver.BodyPart Part;
 
