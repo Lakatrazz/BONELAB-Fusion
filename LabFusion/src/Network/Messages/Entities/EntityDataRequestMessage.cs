@@ -10,13 +10,13 @@ public class EntityDataRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityPlayerData>();
 
-        var playerId = PlayerIDManager.GetPlayerID(data.PlayerID);
+        var playerID = PlayerIDManager.GetPlayerID(data.PlayerID);
 
-        if (playerId == null)
+        if (playerID == null)
         {
             return;
         }
 
-        CatchupManager.InvokeEntityDataCatchup(playerId, data.Entity);
+        CatchupManager.InvokeEntityDataCatchup(playerID, data.Entity);
     }
 }
