@@ -30,6 +30,11 @@ public sealed class EntityFreezer
                 continue;
             }
 
+            if (body._rigidbody.isKinematic)
+            {
+                continue;
+            }
+
             var joint = body.gameObject.AddComponent<ConfigurableJoint>();
             joint.xMotion = joint.yMotion = joint.zMotion
                 = joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Locked;
