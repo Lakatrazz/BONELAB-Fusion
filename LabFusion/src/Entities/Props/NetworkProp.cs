@@ -42,6 +42,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private int _sleepFrameOffset = 0;
     private const int _sleepCheckInterval = 20;
 
+    public bool InitialCull { get; private set; } = false;
+
     public bool IsCulled { get; private set; } = false;
 
     public bool IsCulledForOwner { get; private set; } = false;
@@ -136,13 +138,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void OnReceiveCullStatus(bool isCulled)
     {
         IsCulledForOwner = isCulled;
-
-        // If it became culled for the owner but not for us, we can take ownership
-        bool canTakeOwnership = !NetworkEntity.IsOwner && !NetworkEntity.IsOwnerLocked;
-        if (canTakeOwnership && IsCulledForOwner && !IsCulled)
-        {
-            NetworkEntityManager.TakeOwnership(NetworkEntity);
-        }
     }
 
     private void UpdateReceiveTime()
@@ -238,6 +233,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         // Cull the entity if it needs to be
         OnEntityCull(MarrowEntity.IsCulled);
+
+        InitialCull = true;
 
         // Cycle sleep offset
         _sleepFrameOffset = _globalSleepOffset;
@@ -529,7 +526,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             TeleportToPose();
 
             // Unculled for us but still culled for the owner, we can take ownership
-            if (IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
+            if (InitialCull && IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
             {
                 NetworkEntityManager.TakeOwnership(NetworkEntity);
             }
