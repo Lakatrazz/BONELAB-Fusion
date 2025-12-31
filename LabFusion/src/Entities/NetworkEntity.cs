@@ -262,7 +262,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
             return;
         }
 
-        if (_ownerID == ownerID)
+        if (OwnerID == ownerID)
         {
             return;
         }
@@ -282,7 +282,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
             return;
         }
 
-        if (_ownerID == null)
+        if (OwnerID == null)
         {
             return;
         }
