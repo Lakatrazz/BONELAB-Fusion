@@ -531,8 +531,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             TeleportToPose();
 
-            Unfreeze();
-
             // Unculled for us but still culled for the owner, we can take ownership
             if (IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
             {
