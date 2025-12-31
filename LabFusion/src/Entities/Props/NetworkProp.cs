@@ -40,7 +40,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private int _sleepFrameOffset = 0;
     private const int _sleepCheckInterval = 20;
 
-    private bool _isCulled = false;
+    public bool IsCulled { get; private set; } = false;
+
+    public bool IsCulledForOwner { get; private set; } = false;
 
     private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
@@ -69,6 +71,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         if (entity.IsOwner)
         {
             Unfreeze();
+
+            IsCulledForOwner = IsCulled;
+            SendCullStatus(IsCulled, CommonMessageRoutes.ReliableToOtherClients);
         }
 
         OnReregisterUpdates();
@@ -78,7 +83,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (entity.IsOwner)
         {
-            SendEntityPose(new MessageRoute(player.SmallID, NetworkChannel.Reliable));
+            var route = new MessageRoute(player.SmallID, NetworkChannel.Reliable);
+
+            SendEntityPose(route);
+            SendCullStatus(IsCulled, route);
         }
     }
 
@@ -122,6 +130,17 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         pose.CopyTo(EntityPose);
 
         UpdateReceiveTime();
+    }
+
+    public void OnReceiveCullStatus(bool isCulled)
+    {
+        IsCulledForOwner = isCulled;
+
+        // If it became culled for the owner but not for us, we can take ownership
+        if (!NetworkEntity.IsOwner && IsCulledForOwner && !IsCulled)
+        {
+            NetworkEntityManager.TakeOwnership(NetworkEntity);
+        }
     }
 
     private void UpdateReceiveTime()
@@ -296,7 +315,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void Freeze()
     {
         IsSleeping = true;
-        Freezer.Freeze(_bodies); 
+
+        // Only freeze if unculled, otherwise its pointless and will cause issues
+        if (!IsCulled)
+        {
+            Freezer.Freeze(_bodies);
+        }
     }
 
     public void Unfreeze() 
@@ -376,6 +400,17 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         EntityPose.CopyTo(_sentPose);
     }
 
+    private void SendCullStatus(bool isCulled, MessageRoute route)
+    {
+        var data = new EntityCullStatusData()
+        {
+            Entity = new(NetworkEntity),
+            IsCulled = isCulled,
+        };
+
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityCullStatus, route);
+    }
+
     public void OnEntityFixedUpdate(float deltaTime)
     {
         // OnEntityFixedUpdate is only registered when we do not own the prop
@@ -452,7 +487,16 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityCull(bool isInactive)
     {
-        _isCulled = isInactive;
+        IsCulled = isInactive;
+
+        bool isOwner = NetworkEntity.IsOwner;
+        bool hasOwner = NetworkEntity.HasOwner;
+
+        if (isOwner)
+        {
+            IsCulledForOwner = IsCulled;
+            SendCullStatus(IsCulled, CommonMessageRoutes.ReliableToOtherClients);
+        }
 
         // Culled
         if (isInactive)
@@ -464,9 +508,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Unculled
         OnReregisterUpdates();
 
-        if (!NetworkEntity.IsOwner && NetworkEntity.HasOwner)
+        if (!isOwner && hasOwner)
         {
             TeleportToPose();
+
+            // Unculled for us but still culled for the owner, we can take ownership
+            if (IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
+            {
+                NetworkEntityManager.TakeOwnership(NetworkEntity);
+            }
         }
     }
 
@@ -474,7 +524,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         OnUnregisterUpdates();
 
-        if (_isCulled)
+        if (IsCulled)
         {
             return;
         }

@@ -62,6 +62,7 @@ public static class NativeMessageTag
         ModInfoResponse = 78,
 
         EntityDataRequest = 79,
+        EntityCullStatus = 80,
 
         // SDK messages
         // Module setup
