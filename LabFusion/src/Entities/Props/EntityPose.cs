@@ -33,6 +33,14 @@ public class EntityPose : INetSerializable
         }
     }
 
+    public void ResetPrediction()
+    {
+        foreach (var body in Bodies)
+        {
+            body.ResetPrediction();
+        }
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         if (serializer is NetWriter writer)

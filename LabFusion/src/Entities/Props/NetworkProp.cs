@@ -127,6 +127,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
 
+    public void ResetPrediction()
+    {
+        EntityPose.ResetPrediction();
+    }
+
     public void TeleportToPose()
     {
         for (var i = 0; i < _bodies.Length; i++)
@@ -145,7 +150,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            var pose = _pose.Bodies[i];
+            var pose = EntityPose.Bodies[i];
 
             rigidbody.position = pose.PredictedPosition;
             rigidbody.rotation = pose.Rotation;
@@ -384,6 +389,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (timeSinceMessage >= 1f)
         {
+            ResetPrediction();
+            TeleportToPose();
             Freeze();
             return;
         }
