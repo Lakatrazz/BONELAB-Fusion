@@ -472,12 +472,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             pose.PredictPosition(deltaTime);
         }
 
-        // Add proper forces
         pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity);
-        pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity);
-
         rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);
-        rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+
+        // Don't add torque if rotation is frozen
+        if (!rigidbody.freezeRotation)
+        {
+            pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity);
+            rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+        }
     }
 
     public void OnEntityCull(bool isInactive)
