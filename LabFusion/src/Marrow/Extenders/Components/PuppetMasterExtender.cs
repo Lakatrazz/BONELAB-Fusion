@@ -14,11 +14,22 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 
     public static NetworkEntity LastKilled { get; set; } = null;
 
+    public bool DefaultUpdateJointAnchors { get; set; } = true;
+
     protected override void OnRegister(NetworkEntity entity, PuppetMaster component)
     {
         Cache.Add(component, entity);
 
+        DefaultUpdateJointAnchors = component.updateJointAnchors;
+
+        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
         entity.OnEntityDataCatchup += OnEntityDataCatchup;
+
+        // Update puppet drives if there's already an owner
+        if (entity.HasOwner)
+        {
+            OnEntityOwnershipTransfer(entity, entity.OwnerID);
+        }
     }
 
     protected override void OnUnregister(NetworkEntity entity, PuppetMaster component)
@@ -26,6 +37,26 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         Cache.Remove(component);
 
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+    }
+
+    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
+    {
+        bool isOwner = entity.IsOwner;
+
+        // Restore defaults
+        if (isOwner)
+        {
+            Component.updateJointAnchors = DefaultUpdateJointAnchors;
+            Component.muscleSpring = Component._defaultMuscleSpring;
+            Component.muscleDamper = Component._defaultMuscleDamper;
+        }
+        // Remove all weights
+        else
+        {
+            Component.updateJointAnchors = false;
+            Component.muscleSpring = 0f;
+            Component.muscleDamper = 0f;
+        }
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
