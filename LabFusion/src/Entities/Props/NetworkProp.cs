@@ -30,6 +30,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private bool _receivedPose = false;
     private float _lastReceivedTime = 0f;
 
+    private float _ownerSleepElapsed = 0f;
+
     private DestroySensor _destroySensor = null;
 
     public bool IsSleeping { get; private set; } = false;
@@ -51,6 +53,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public const float MinMoveMagnitude = 0.005f;
     public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
     public const float MinMoveAngle = 0.15f;
+
+    public const float SleepTimer = 0.5f;
 
     public NetworkProp(NetworkEntity networkEntity, MarrowEntity marrowEntity)
     {
@@ -137,7 +141,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         IsCulledForOwner = isCulled;
 
         // If it became culled for the owner but not for us, we can take ownership
-        if (!NetworkEntity.IsOwner && IsCulledForOwner && !IsCulled)
+        bool canTakeOwnership = !NetworkEntity.IsOwner && !NetworkEntity.IsOwnerLocked;
+        if (canTakeOwnership && IsCulledForOwner && !IsCulled)
         {
             NetworkEntityManager.TakeOwnership(NetworkEntity);
         }
@@ -301,7 +306,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void OnEntityUpdate(float deltaTime)
     {
         // OnEntityUpdate is only registered when we own the prop
-        OnOwnedUpdate();
+        OnOwnedUpdate(deltaTime);
     }
 
     private bool HasBodyMoved(int index)
@@ -352,7 +357,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         return true;
     }
 
-    private void OnOwnedUpdate()
+    private void OnOwnedUpdate(float deltaTime)
     {
         // If we were sleeping last frame, only check so often
         if (IsSleeping && !TimeUtilities.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
@@ -364,19 +369,35 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         CopyBodiesToPose();
 
         bool wasSleeping = IsSleeping;
-        IsSleeping = CheckOwnedSleeping();
+        bool sleeping = CheckOwnedSleeping();
 
         // No change in sleep state
-        if (wasSleeping && IsSleeping)
+        if (wasSleeping && sleeping)
         {
             return;
         }
-        
-        // Just slept this frame
-        if (!wasSleeping && IsSleeping)
+
+        // Woke up
+        if (wasSleeping && !sleeping)
         {
-            SendEntityPose(CommonMessageRoutes.ReliableToOtherClients);
-            return;
+            _ownerSleepElapsed = 0f;
+            IsSleeping = false;
+        }
+        
+        // Starting to sleep
+        if (!wasSleeping && sleeping)
+        {
+            _ownerSleepElapsed += deltaTime;
+
+            // Fully fell asleep
+            if (_ownerSleepElapsed >= SleepTimer)
+            {
+                IsSleeping = sleeping;
+                _ownerSleepElapsed = 0f;
+
+                SendEntityPose(CommonMessageRoutes.ReliableToOtherClients);
+                return;
+            }
         }
 
         SendEntityPose(CommonMessageRoutes.UnreliableToOtherClients);
@@ -429,7 +450,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Check if this hasn't received an update in a while
         float timeSinceMessage = TimeUtilities.TimeSinceStartup - _lastReceivedTime;
 
-        if (timeSinceMessage >= 1f)
+        if (timeSinceMessage >= SleepTimer)
         {
             ResetPrediction();
             TeleportToPose();
@@ -499,7 +520,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Culled
         if (isInactive)
         {
-            Freezer.Unfreeze();
             OnUnregisterUpdates();
             return;
         }
@@ -511,14 +531,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             TeleportToPose();
 
-            if (IsSleeping)
-            {
-                Freezer.Freeze(_bodies);
-            }
-            else
-            {
-                Freezer.Unfreeze();
-            }
+            Unfreeze();
 
             // Unculled for us but still culled for the owner, we can take ownership
             if (IsCulledForOwner && !NetworkEntity.IsOwnerLocked)
