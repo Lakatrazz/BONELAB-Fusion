@@ -36,6 +36,7 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
     {
         Cache.Remove(component);
 
+        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
