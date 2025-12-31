@@ -395,7 +395,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Only send if on our tick rate
-        if (!NetworkTickRateManager.IsTickThisFrame)
+        if (!NetworkTickManager.IsTickThisFrame)
         {
             return;
         }

@@ -774,7 +774,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnOwnedUpdate()
     {
         // Only send if on our tick rate
-        if (!NetworkTickRateManager.IsTickThisFrame)
+        if (!NetworkTickManager.IsTickThisFrame)
         {
             return;
         }

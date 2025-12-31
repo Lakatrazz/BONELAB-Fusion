@@ -271,7 +271,7 @@ public class FusionMod : MelonMod
         // Update tick rate
         float deltaTime = TimeUtilities.DeltaTime;
 
-        NetworkTickRateManager.OnUpdate(deltaTime);
+        NetworkTickManager.OnUpdate(deltaTime);
 
         // Update network players
         NetworkPlayerManager.OnUpdate(deltaTime);

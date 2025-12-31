@@ -2,6 +2,7 @@
 using LabFusion.Math;
 using LabFusion.Network.Serialization;
 using LabFusion.Data;
+using LabFusion.Network;
 
 using Il2CppSLZ.Marrow.Input;
 using Il2CppSLZ.Marrow;
@@ -90,8 +91,8 @@ public class SerializedController : INetSerializable
 
         controller._secondaryInteractionButton = SecondaryInteractionButton;
 
-        // Thumbstick
-        controller._thumbstickAxis = ThumbstickAxis;
+        // Thumbstick with interpolation
+        controller._thumbstickAxis = Vector2.Lerp(controller._thumbstickAxis, ThumbstickAxis, NetworkTickManager.InterpolationTime);
 
         // Update hovering so that grips solve properly
         controller._lastTimeGrabbed = TimeUtilities.TimeSinceStartup;
