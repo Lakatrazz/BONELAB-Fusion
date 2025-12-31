@@ -1,7 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
-using LabFusion.Marrow.Utilities;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -35,8 +34,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private DestroySensor _destroySensor = null;
 
     public bool IsSleeping { get; private set; } = false;
-
-    public EntityFreezer Freezer { get; } = new();
 
     private static int _globalSleepOffset = 0;
     private int _sleepFrameOffset = 0;
@@ -314,13 +311,13 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void Freeze()
     {
         IsSleeping = true;
-        Freezer.Freeze(_bodies);
+        MarrowEntity.Hibernate(true, MarrowEntity.HibernationSources.Default);
     }
 
     public void Unfreeze() 
     {
         IsSleeping = false;
-        Freezer.Unfreeze(); 
+        MarrowEntity.Hibernate(false, MarrowEntity.HibernationSources.Default);
     }
 
     private bool CheckOwnedSleeping()
