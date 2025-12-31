@@ -27,6 +27,8 @@ Added:
 - Bonelab code is now dynamically loaded in preparation for Boneworks
 - Unculling objects can take ownership if needed
 - Synced all layers for AnimatorSyncer
+- Player controller interpolation
 Improved:
 - Voice chat volume
 - Prop sleeping
+- Send rate of objects (now consistent and not way too often)
