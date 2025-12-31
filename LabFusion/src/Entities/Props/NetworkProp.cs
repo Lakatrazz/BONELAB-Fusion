@@ -249,6 +249,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnPropUnregistered(NetworkEntity entity)
     {
+        Unfreeze();
+
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
         entity.DisconnectExtender(this);
@@ -258,8 +260,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         _networkEntity = null;
         _marrowEntity = null;
-
-        Unfreeze();
 
         RemoveDestroySensor();
 
@@ -311,13 +311,21 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void Freeze()
     {
         IsSleeping = true;
-        MarrowEntity.Hibernate(true, MarrowEntity.HibernationSources.Default);
+
+        if (MarrowEntity != null)
+        {
+            MarrowEntity.Hibernate(true, MarrowEntity.HibernationSources.Default);
+        }
     }
 
     public void Unfreeze() 
     {
         IsSleeping = false;
-        MarrowEntity.Hibernate(false, MarrowEntity.HibernationSources.Default);
+
+        if (MarrowEntity != null)
+        {
+            MarrowEntity.Hibernate(false, MarrowEntity.HibernationSources.Default);
+        }
     }
 
     private bool CheckOwnedSleeping()
