@@ -34,10 +34,6 @@ public sealed class EntityFreezer
             joint.xMotion = joint.yMotion = joint.zMotion
                 = joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Locked;
 
-            joint.projectionMode = JointProjectionMode.PositionAndRotation;
-            joint.projectionDistance = 0f;
-            joint.projectionAngle = 0f;
-
             FreezeJoints[i] = joint;
         }
     }
