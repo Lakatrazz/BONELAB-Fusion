@@ -9,9 +9,9 @@ public class RigPose : INetSerializable
 {
     public const int Size = SerializedLocalTransform.Size * RigAbstractor.TransformSyncCount +
         SerializedSmallQuaternion.Size +
-        BodyPose.Size * 2 +
+        BodyPose.Size +
         SerializableController.Size * 2 +
-        sizeof(float) * 2;
+        sizeof(float) * 4;
 
     public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
 
@@ -29,6 +29,8 @@ public class RigPose : INetSerializable
     public float Health = 100f;
 
     public float MaxHealth = 100f;
+
+    public int? GetSize() => Size;
 
     public void ReadSkeleton(RigSkeleton skeleton)
     {
