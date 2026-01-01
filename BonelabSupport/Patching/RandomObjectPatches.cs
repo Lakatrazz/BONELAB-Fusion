@@ -3,8 +3,10 @@
 using Il2CppSLZ.Bonelab;
 
 using MarrowFusion.Bonelab.Extenders;
-using LabFusion.Network;
 using MarrowFusion.Bonelab.Messages;
+
+using LabFusion.Network;
+using LabFusion.Scene;
 
 using Random = UnityEngine.Random;
 
@@ -17,7 +19,7 @@ public static class RandomObjectPatches
     [HarmonyPatch(nameof(RandomObject.Randomizer))]
     public static bool RandomizerPrefix(RandomObject __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
