@@ -35,8 +35,6 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public bool IsOwner { get; set; } = false;
 
-        private float _syncTime = 0f;
-
         private void Awake()
         {
             Animator = GetComponent<Animator>();
@@ -74,9 +72,8 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            if (_syncTime > 0f)
+            if (!NetworkTickManager.IsTickThisFrame)
             {
-                _syncTime -= Time.deltaTime;
                 return;
             }
 
@@ -91,8 +88,6 @@ namespace LabFusion.Marrow.Integration
 
         private void SyncLayers()
         {
-            _syncTime = 0.1f;
-
             for (var i = 0; i < Animator.layerCount; i++)
             {
                 SyncLayer(i);
