@@ -34,6 +34,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private DestroySensor _destroySensor = null;
 
     public bool IsSleeping { get; private set; } = false;
+    public bool IsFrozen { get; private set; } = false;
 
     private static int _globalSleepOffset = 0;
     private int _sleepFrameOffset = 0;
@@ -312,6 +313,13 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         IsSleeping = true;
 
+        if (IsFrozen)
+        {
+            return;
+        }
+
+        IsFrozen = true;
+
         if (MarrowEntity != null)
         {
             MarrowEntity.Hibernate(true, MarrowEntity.HibernationSources.Default);
@@ -321,6 +329,13 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public void Unfreeze() 
     {
         IsSleeping = false;
+
+        if (!IsFrozen)
+        {
+            return;
+        }
+
+        IsFrozen = false;
 
         if (MarrowEntity != null)
         {
