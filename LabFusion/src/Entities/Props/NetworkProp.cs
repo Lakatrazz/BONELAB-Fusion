@@ -72,6 +72,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
+        _receivedPose = false;
+
         if (entity.IsOwner)
         {
             Unfreeze();
