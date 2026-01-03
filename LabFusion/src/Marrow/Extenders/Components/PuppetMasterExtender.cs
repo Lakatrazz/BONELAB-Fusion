@@ -38,26 +38,39 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 
         entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+
+        if (component != null)
+        {
+            RestoreWeights(component);
+        }
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
         bool isOwner = entity.IsOwner;
 
-        // Restore defaults
         if (isOwner)
         {
-            Component.updateJointAnchors = DefaultUpdateJointAnchors;
-            Component.muscleSpring = Component._defaultMuscleSpring;
-            Component.muscleDamper = Component._defaultMuscleDamper;
+            RestoreWeights(Component);
         }
-        // Remove all weights
         else
         {
-            Component.updateJointAnchors = false;
-            Component.muscleSpring = 0f;
-            Component.muscleDamper = 0f;
+            RemoveWeights(Component);
         }
+    }
+
+    private void RestoreWeights(PuppetMaster puppetMaster)
+    {
+        puppetMaster.updateJointAnchors = DefaultUpdateJointAnchors;
+        puppetMaster.muscleSpring = puppetMaster._defaultMuscleSpring;
+        puppetMaster.muscleDamper = puppetMaster._defaultMuscleDamper;
+    }
+
+    private void RemoveWeights(PuppetMaster puppetMaster)
+    {
+        puppetMaster.updateJointAnchors = false;
+        puppetMaster.muscleSpring = 0f;
+        puppetMaster.muscleDamper = 0f;
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
