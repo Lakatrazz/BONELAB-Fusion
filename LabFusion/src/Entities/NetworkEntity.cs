@@ -7,7 +7,10 @@ public delegate void NetworkEntityDelegate(NetworkEntity entity);
 
 public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerID player);
 
-public class NetworkEntity : INetworkRegistrable, INetworkOwnable
+/// <summary>
+/// An entity that is synchronized on the network with a given ID.
+/// </summary>
+public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
     private ushort _id = 0;
     private ushort _queueID = 0;
@@ -18,26 +21,56 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private bool _isOwnerLocked = false;
 
-    public ushort ID => _id;
-
     private PlayerID _ownerID = null;
 
+    /// <summary>
+    /// The identifier for this entity.
+    /// </summary>
+    public ushort ID => _id;
+
+    /// <summary>
+    /// If the entity has not been registered yet and is waiting for an ID from the server, a queue ID is given.
+    /// </summary>
     public ushort QueueID => _queueID;
 
+    /// <summary>
+    /// Whether or not this entity is registered and ready.
+    /// </summary>
     public bool IsRegistered => _isRegistered;
 
+    /// <summary>
+    /// Whether or not this entity is waiting for an ID from the server.
+    /// </summary>
     public bool IsQueued => _isQueued;
 
+    /// <summary>
+    /// Whether or not this entity has been destroyed and is no longer valid.
+    /// </summary>
     public bool IsDestroyed => _isDestroyed;
 
+    /// <summary>
+    /// The owner of this entity that manages simulation.
+    /// </summary>
     public PlayerID OwnerID => _ownerID;
 
+    /// <summary>
+    /// Whether or not the local player owns this entity.
+    /// </summary>
     public bool IsOwner => HasOwner && OwnerID.IsMe;
 
+    /// <summary>
+    /// Whether or not this entity has a valid owner.
+    /// </summary>
     public bool HasOwner => OwnerID != null;
 
+    /// <summary>
+    /// Whether or not the owner of this entity can be changed.
+    /// </summary>
     public bool IsOwnerLocked => _isOwnerLocked;
 
+    /// <summary>
+    /// The source of the entity's creation.
+    /// </summary>
     public EntitySource Source { get; set; } = EntitySource.None;
 
     /// <summary>
