@@ -115,19 +115,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
     }
 
-    private int _receivedFrame = 0;
-
     public void OnReceivePose(EntityPose pose)
     {
-        var frameCount = TimeUtilities.FrameCount;
-
-        if (_receivedFrame == frameCount)
-        {
-            return;
-        }
-
-        _receivedFrame = frameCount;
-
         pose.CopyTo(EntityPose);
 
         UpdateReceiveTime();
