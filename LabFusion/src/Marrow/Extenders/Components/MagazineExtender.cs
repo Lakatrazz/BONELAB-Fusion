@@ -35,6 +35,11 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
 
     private void RegisterCleaner()
     {
+        if (NetworkEntity.Source != EntitySource.Player)
+        {
+            return;
+        }
+
         _cleaner = new();
         _cleaner.Register(NetworkEntity, Component.interactableHost, Component._poolee);
     }

@@ -38,6 +38,8 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public bool IsOwnerLocked => _isOwnerLocked;
 
+    public EntitySource Source { get; set; } = EntitySource.None;
+
     /// <summary>
     /// Invoked when the entity is unregistered.
     /// </summary>

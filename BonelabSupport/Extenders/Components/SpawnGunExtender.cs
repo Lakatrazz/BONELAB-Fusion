@@ -53,6 +53,11 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
 
     private void RegisterCleaner()
     {
+        if (NetworkEntity.Source != EntitySource.Player)
+        {
+            return;
+        }
+
         _cleaner = new();
         _cleaner.Register(NetworkEntity, Component.host, Component._poolee);
     }

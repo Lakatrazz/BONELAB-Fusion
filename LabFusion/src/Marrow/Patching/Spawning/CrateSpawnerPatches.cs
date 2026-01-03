@@ -7,6 +7,7 @@ using LabFusion.Data;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Extenders;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
@@ -74,6 +75,7 @@ public static class CrateSpawnerPatches
             {
                 OnNetworkSpawn(spawner, info, source);
             },
+            SpawnSource = EntitySource.Scene,
         });
     }
 

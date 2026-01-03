@@ -50,6 +50,11 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
 
     private void RegisterCleaner()
     {
+        if (NetworkEntity.Source != EntitySource.Player)
+        {
+            return;
+        }
+
         _cleaner = new();
         _cleaner.Register(NetworkEntity, Component._host, Component._host.marrowEntity._poolee);
     }

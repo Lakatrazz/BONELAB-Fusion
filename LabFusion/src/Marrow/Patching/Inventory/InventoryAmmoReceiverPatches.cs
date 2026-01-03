@@ -63,7 +63,8 @@ public static class InventoryAmmoReceiverPatches
                 SpawnCallback = (info) =>
                 {
                     OnMagazineSpawned(info, handedness);
-                }
+                },
+                SpawnSource = EntitySource.Player,
             };
 
             NetworkAssetSpawner.Spawn(info);

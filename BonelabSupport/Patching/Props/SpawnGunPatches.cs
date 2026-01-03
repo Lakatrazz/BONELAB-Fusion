@@ -13,6 +13,8 @@ using LabFusion.RPC;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Entities;
+
 using MarrowFusion.Bonelab.Messages;
 using MarrowFusion.Bonelab.Extenders;
 
@@ -175,6 +177,7 @@ public static class SpawnGunPatches
             Position = transform.position,
             Rotation = transform.rotation,
             SpawnEffect = true,
+            SpawnSource = EntitySource.Player,
         };
 
         NetworkAssetSpawner.Spawn(info);
@@ -227,7 +230,11 @@ public static class SpawnGunPatches
 
         if (PooleeExtender.Cache.TryGet(poolee, out var entity) && entity.IsRegistered)
         {
-            PooleeUtilities.RequestDespawn(entity.ID, true);
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityID = entity.ID,
+                DespawnEffect = true,
+            });
         }
 
         // Flash the spawn gun

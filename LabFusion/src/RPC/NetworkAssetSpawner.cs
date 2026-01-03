@@ -1,8 +1,9 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
-using LabFusion.Entities;
+﻿using Il2CppSLZ.Marrow.Data;
 
-using Il2CppSLZ.Marrow.Data;
+using LabFusion.Data;
+using LabFusion.Entities;
+using LabFusion.Marrow.Serialization;
+using LabFusion.Network;
 
 using UnityEngine;
 
@@ -28,6 +29,8 @@ public static class NetworkAssetSpawner
         public Action<SpawnCallbackInfo> SpawnCallback;
 
         public bool SpawnEffect;
+
+        public EntitySource SpawnSource;
     }
 
     public struct DespawnRequestInfo
@@ -52,18 +55,33 @@ public static class NetworkAssetSpawner
 
     public static void Spawn(SpawnRequestInfo info)
     {
-        uint trackerId = _lastTrackedSpawnable++;
+        uint trackerID = _lastTrackedSpawnable++;
 
         if (info.SpawnCallback != null)
         {
-            _callbackQueue.Add(trackerId, info.SpawnCallback);
+            _callbackQueue.Add(trackerID, info.SpawnCallback);
         }
 
-        PooleeUtilities.RequestSpawn(info.Spawnable.crateRef.Barcode.ID, new SerializedTransform(info.Position, info.Rotation), trackerId, info.SpawnEffect);
+        var data = new SerializedSpawnData()
+        {
+            Barcode = info.Spawnable.crateRef.Barcode.ID,
+            SerializedTransform = new SerializedTransform(info.Position, info.Rotation),
+            SpawnEffect = info.SpawnEffect,
+            TrackerID = trackerID,
+            SpawnSource = info.SpawnSource,
+        };
+
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void Despawn(DespawnRequestInfo info)
     {
-        PooleeUtilities.RequestDespawn(info.EntityID, info.DespawnEffect);
+        var data = new DespawnRequestData()
+        {
+            Entity = new NetworkEntityReference(info.EntityID),
+            DespawnEffect = info.DespawnEffect,
+        };
+
+        MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, CommonMessageRoutes.ReliableToServer);
     }
 }

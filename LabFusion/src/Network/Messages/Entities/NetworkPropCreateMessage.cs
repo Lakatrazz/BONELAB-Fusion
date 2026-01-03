@@ -57,7 +57,11 @@ public class NetworkPropCreateMessage : NativeMessageHandler
         }
 
         // Create a new network entity and network prop
-        NetworkEntity networkEntity = new();
+        NetworkEntity networkEntity = new()
+        {
+            Source = EntitySource.Scene,
+        };
+
         NetworkProp networkProp = new(networkEntity, marrowEntity);
 
         // Register the entity with the sent id

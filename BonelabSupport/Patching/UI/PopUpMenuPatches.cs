@@ -2,6 +2,7 @@
 
 using LabFusion.RPC;
 using LabFusion.Scene;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Bonelab;
@@ -67,14 +68,16 @@ public static class PopUpMenuViewPatches
         {
             Spawnable = spawnGun,
             Position = transform.position,
-            Rotation = transform.rotation
+            Rotation = transform.rotation,
+            SpawnSource = EntitySource.Player,
         };
 
         var nimbusGunInfo = new NetworkAssetSpawner.SpawnRequestInfo()
         {
             Spawnable = nimbusGun,
             Position = transform.position,
-            Rotation = transform.rotation
+            Rotation = transform.rotation,
+            SpawnSource = EntitySource.Player,
         };
 
         NetworkAssetSpawner.Spawn(spawnGunInfo);

@@ -97,11 +97,14 @@ public static class PropSender
             }
 
             // Create entity
-            newEntity = new();
+            newEntity = new()
+            {
+                Source = EntitySource.Scene,
+            };
             newProp = new(newEntity, info.marrowEntity);
 
-            ushort queuedId = NetworkEntityManager.IDManager.QueueEntity(newEntity);
-            NetworkEntityManager.RequestUnqueue(queuedId);
+            ushort queuedID = NetworkEntityManager.IDManager.QueueEntity(newEntity);
+            NetworkEntityManager.RequestUnqueue(queuedID);
 
             newEntity.HookOnRegistered((entity) =>
             {
