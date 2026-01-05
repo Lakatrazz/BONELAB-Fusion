@@ -3,6 +3,7 @@ using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -42,7 +43,7 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
         if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
         {
 #if DEBUG
-            FusionLogger.Warn($"Switching player avatar from {data.barcode} to the calibration avatar because it is blacklisted!");
+            FusionLogger.Warn($"Switching player avatar from {data.Barcode} to the calibration avatar because it is blacklisted!");
 #endif
 
             barcode = MarrowGameReferences.CalibrationAvatarReference.Barcode.ID;

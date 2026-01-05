@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Grabbables;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;

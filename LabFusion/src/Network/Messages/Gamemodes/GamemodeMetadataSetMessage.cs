@@ -1,5 +1,6 @@
 ﻿using LabFusion.Network.Serialization;
 using LabFusion.SDK.Gamemodes;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -44,7 +45,7 @@ public class GamemodeMetadataSetMessage : NativeMessageHandler
         else
         {
 #if DEBUG
-            FusionLogger.Warn($"Failed to find a Gamemode with barcode {data.gamemodeBarcode}!");
+            FusionLogger.Warn($"Failed to find a Gamemode with barcode {data.GamemodeBarcode}!");
 #endif
         }
     }

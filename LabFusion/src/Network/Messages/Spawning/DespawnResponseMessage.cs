@@ -3,6 +3,7 @@ using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Marrow.Patching;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.VFX;
 

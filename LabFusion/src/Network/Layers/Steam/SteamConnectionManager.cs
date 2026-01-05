@@ -1,6 +1,8 @@
 ﻿using Steamworks;
 using Steamworks.Data;
 
+using LabFusion.Utilities;
+
 namespace LabFusion.Network
 {
     public class SteamConnectionManager : ConnectionManager

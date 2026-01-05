@@ -64,7 +64,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
         {
 #if DEBUG
-            FusionLogger.Warn($"Blocking client spawn of spawnable {data.Barcode} because it is blacklisted!");
+            FusionLogger.Warn($"Blocking client spawn of spawnable {data.SpawnData.Barcode} because it is blacklisted!");
 #endif
 
             return;
