@@ -5,10 +5,11 @@ CONTRIBUTORS
 - trevtv
 - <size=68%>Someone Somewhere<size=100%>
 
-TESTERS
+<size=90%>TESTERS
 - Alfi
 - Ethi
 - AlexTheBaba
 - nptnk
 - Mr. Gaming
 - Riggle
+- Elijoe<size=100%>

@@ -35,6 +35,8 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public bool IsOwner { get; set; } = false;
 
+        public const float MaxDesyncSeconds = 0.05f;
+
         private void Awake()
         {
             Animator = GetComponent<Animator>();
@@ -83,6 +85,27 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public void ApplyAnimationState(AnimationStateData data)
         {
+            var stateNameHash = data.StateNameHash;
+            var layer = data.Layer;
+            var normalizedTime = data.NormalizedTime;
+
+            var currentState = Animator.GetCurrentAnimatorStateInfo(layer);
+
+            // If the current state matches the target state, then we can compare the desync of the normalized time
+            // If its not too large, then we don't need to update the animator state
+            // That way, animators can stay smooth, but sync back up when needed
+            if (currentState.shortNameHash == stateNameHash)
+            {
+                float length = currentState.length;
+
+                float desyncSeconds = MathF.Abs((normalizedTime - currentState.normalizedTime) * length);
+
+                if (desyncSeconds <= MaxDesyncSeconds)
+                {
+                    return;
+                }
+            }
+
             Animator.Play(data.StateNameHash, data.Layer, data.NormalizedTime);
         }
 
