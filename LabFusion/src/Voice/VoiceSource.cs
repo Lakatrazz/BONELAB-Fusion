@@ -129,9 +129,13 @@ public class VoiceSource : MonoBehaviour
             return;
         }
 
+        float deltaTime = Time.deltaTime;
+
+        StreamFilter.TickPeak(deltaTime);
+
         if (StreamFilter.ReadingQueue.Count <= 0)
         {
-            _timeSinceInput += Time.deltaTime;
+            _timeSinceInput += deltaTime;
         }
 
         if (_timeSinceInput > 1f)
@@ -173,7 +177,7 @@ public class VoiceSource : MonoBehaviour
         AudioSource.Stop();
         StreamFilter.enabled = false;
 
-        StreamFilter.ReadingQueue.Clear();
+        StreamFilter.ClearValues();
 
         Amplitude = 0f;
     }

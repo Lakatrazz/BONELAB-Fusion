@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
+using LabFusion.Math;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -25,6 +26,9 @@ public sealed class AudioStreamFilter : MonoBehaviour
     [HideFromIl2Cpp]
     public float SampleMultiplier { get; set; } = 1f;
 
+    [HideFromIl2Cpp]
+    public float Peak { get; set; } = 1f;
+
     public const float NormalizationThreshold = 1f;
 
     [HideFromIl2Cpp]
@@ -36,6 +40,19 @@ public sealed class AudioStreamFilter : MonoBehaviour
         }
 
         ReadingQueue.Enqueue(sample);
+    }
+
+    [HideFromIl2Cpp]
+    public void TickPeak(float deltaTime)
+    {
+        Peak = ManagedMathf.Lerp(Peak, 1f, Smoothing.CalculateDecay(4f, deltaTime));
+    }
+
+    [HideFromIl2Cpp]
+    public void ClearValues()
+    {
+        ReadingQueue.Clear();
+        Peak = 1f;
     }
 
     private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
@@ -50,8 +67,6 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
         int count = length / channels;
 
-        float max = 0f;
-
         for (var i = 0; i < count; i++)
         {
             float output = 0f;
@@ -63,14 +78,14 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
             ReadingArray[i] = output;
 
-            max = MathF.Max(max, MathF.Abs(output));
+            Peak = MathF.Max(Peak, MathF.Abs(output));
         }
 
         float voiceNormalizer = 1f;
 
-        if (max > NormalizationThreshold)
+        if (Peak > NormalizationThreshold)
         {
-            voiceNormalizer = NormalizationThreshold / max;
+            voiceNormalizer = NormalizationThreshold / Peak;
         }
 
         int position = 0;

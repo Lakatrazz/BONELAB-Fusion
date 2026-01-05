@@ -2,3 +2,4 @@ Fixed:
 - Outdated credits
 Improved:
 - Animator syncer smoothness
+- Voice chat peaking logic

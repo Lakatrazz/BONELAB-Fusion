@@ -3,6 +3,7 @@
 - Outdated credits
 #### Improved:
 - Animator syncer smoothness
+- Voice chat peaking logic
 
 ## **Fusion Auto Updater**
 - No changes
