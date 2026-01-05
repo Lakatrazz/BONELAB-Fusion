@@ -651,7 +651,7 @@ public static class MenuLocation
                 .Cleared()
                 .WithTitle("Volume")
                 .WithIncrement(0.1f)
-                .WithLimits(0f, 2f);
+                .WithLimits(0f, 1f);
 
             volumeElement.gameObject.SetActive(true);
 

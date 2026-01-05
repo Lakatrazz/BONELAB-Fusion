@@ -64,6 +64,8 @@ public static class LaserCursorUtilities
             prismaticSFX.sourceMinDistance = 1f;
             prismaticSFX.pitchMod = 1f;
             prismaticSFX.loopClips = true;
+            prismaticSFX.audioEvents = Array.Empty<PrismaticSFX.AudioEvent>();
+            prismaticSFX.modulatedClips = Array.Empty<AudioClip>();
 
             AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LaserPrismaticSFXReference, (clip) => { prismaticSFX.modulatedClips = new AudioClip[] { clip }; });
 
