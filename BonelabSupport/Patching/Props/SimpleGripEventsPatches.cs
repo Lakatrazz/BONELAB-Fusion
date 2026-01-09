@@ -46,7 +46,8 @@ public static class SimpleGripEventsPatches
                 SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
             }
 
-            return false;
+            // Execute locally first, then sync to other clients
+            return true;
         }
 
         return true;
@@ -87,7 +88,8 @@ public static class SimpleGripEventsPatches
 
             SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
 
-            return false;
+            // Execute locally first, then sync to other clients
+            return true;
         }
 
         return true;
@@ -119,7 +121,8 @@ public static class SimpleGripEventsPatches
                 SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
             }
 
-            return false;
+            // Execute locally first, then sync to other clients
+            return true;
         }
 
         return true;
@@ -183,6 +186,7 @@ public static class SimpleGripEventsPatches
             Type = type,
         };
 
-        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, CommonMessageRoutes.ReliableToClients);
+        // Use ToOtherClients since we execute locally first
+        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }
