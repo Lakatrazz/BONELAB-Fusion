@@ -73,7 +73,7 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
             if (ReadingQueue.Count > 0)
             {
-                output = ReadingQueue.Dequeue() * SampleMultiplier;
+                output = ReadingQueue.Dequeue();
             }
 
             ReadingArray[i] = output;
@@ -103,7 +103,8 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
                 var value = InteropUtilities.FloatArrayFastRead(pointer, pointerSize, index);
 
-                var result = value * output * AudioInfo.ToneNormalizer * voiceNormalizer;
+                // Apply SampleMultiplier after normalization so volume boost actually works
+                var result = value * output * AudioInfo.ToneNormalizer * voiceNormalizer * SampleMultiplier;
 
                 InteropUtilities.FloatArrayFastWrite(pointer, pointerSize, index, result);
             }
