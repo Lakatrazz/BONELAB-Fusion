@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 
+using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
@@ -139,6 +140,12 @@ public class InventorySlotReceiverPatches
         if (!InventorySlotReceiverExtender.Cache.TryGet(__instance, out var slotEntity))
         {
             return;
+        }
+
+        // Transfer ownership of the weapon when inserting into your own holster
+        if (slotEntity.IsOwner)
+        {
+            NetworkEntityManager.TakeOwnership(weaponEntity);
         }
 
         var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
