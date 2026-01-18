@@ -18,7 +18,7 @@ public class LobbyInfo
 
     // Info
     [JsonPropertyName("lobbyID")]
-    public ulong LobbyID { get; set; } = 0;
+    public string LobbyID { get; set; } = "";
 
     [JsonPropertyName("lobbyCode")]
     public string LobbyCode { get; set; } = null;

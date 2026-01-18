@@ -43,7 +43,7 @@ public static class FusionPermissions
         LocalPlayer.Metadata.PermissionLevel.SetValue(permissionLevel);
     }
 
-    public static void FetchPermissionLevel(ulong longId, out PermissionLevel level, out Color color)
+    public static void FetchPermissionLevel(string stringID, out PermissionLevel level, out Color color)
     {
         level = PermissionLevel.DEFAULT;
         color = Color.white;
@@ -51,7 +51,7 @@ public static class FusionPermissions
         // Get server level permissions
         if (NetworkInfo.IsHost)
         {
-            if (longId == PlayerIDManager.LocalPlatformID)
+            if (stringID == PlayerIDManager.LocalPlatformID)
             {
                 level = PermissionLevel.OWNER;
             }
@@ -59,7 +59,7 @@ public static class FusionPermissions
             {
                 foreach (var tuple in PermissionList.PermittedUsers)
                 {
-                    if (tuple.Item1 == longId)
+                    if (tuple.Item1 == stringID)
                     {
                         level = tuple.Item3;
                     }
@@ -69,7 +69,7 @@ public static class FusionPermissions
         // Get client side permissions
         else
         {
-            var id = PlayerIDManager.GetPlayerID(longId);
+            var id = PlayerIDManager.GetPlayerID(stringID);
 
             if (id == null)
             {
@@ -82,13 +82,13 @@ public static class FusionPermissions
         }
     }
 
-    public static void TrySetPermission(ulong longId, string username, PermissionLevel level)
+    public static void TrySetPermission(string stringID, string username, PermissionLevel level)
     {
         // Set in file
-        PermissionList.SetPermission(longId, username, level);
+        PermissionList.SetPermission(stringID, username, level);
 
         // Set in server
-        var playerId = PlayerIDManager.GetPlayerID(longId);
+        var playerId = PlayerIDManager.GetPlayerID(stringID);
 
         if (playerId != null && NetworkInfo.IsHost)
         {

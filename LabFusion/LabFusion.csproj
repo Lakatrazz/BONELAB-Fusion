@@ -8,12 +8,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
