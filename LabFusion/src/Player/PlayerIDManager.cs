@@ -91,6 +91,9 @@ public static class PlayerIDManager
 
     public static PlayerID GetPlayerID(string platformID)
     {
+        if (string.IsNullOrWhiteSpace(platformID))
+            return null;
+        
         if (PlatformIDLookup.TryGetValue(platformID, out var playerID))
         {
             return playerID;
@@ -123,8 +126,8 @@ public static class PlayerIDManager
         LocalID = null;
     }
 
-    public static void SetStringID(string longID)
+    public static void SetPlatformID(string platformID)
     {
-        LocalPlatformID = longID;
+        LocalPlatformID = platformID;
     }
 }

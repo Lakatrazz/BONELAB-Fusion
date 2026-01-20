@@ -127,7 +127,7 @@ public abstract class NetworkLayer
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public virtual string GetUsername(ulong userId) => "Unknown";
+    public virtual string GetUsername(string userId) => "Unknown";
 
     /// <summary>
     /// Returns true if this is a friend (ex. steam friends).

@@ -1,4 +1,4 @@
-﻿using LabFusion.Network.Proxy;
+﻿using LabFusion.Network.EpicGames;
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
@@ -13,7 +13,7 @@ public static class NetworkLayerDeterminer
     {
         if (PlatformHelper.IsAndroid)
         {
-            return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
+            return NetworkLayer.GetLayer<EpicGamesNetworkLayer>();
         }
 
         return NetworkLayer.GetLayer<SteamVRNetworkLayer>();

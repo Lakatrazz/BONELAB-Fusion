@@ -1,15 +1,15 @@
-﻿using Epic.OnlineServices.Connect;
+﻿using Epic.OnlineServices;
+using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.Lobby;
 using Epic.OnlineServices.Logging;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices.Platform;
-using Epic.OnlineServices;
 
 using LabFusion.Utilities;
 
-using System.Collections;
-
 using MelonLoader;
+
+using System.Collections;
 
 namespace LabFusion.Network.EpicGames;
 
@@ -19,15 +19,15 @@ internal class EOSManager
     {
         authManager = eosAuthManager;
     }
-    
+
     private EOSAuthManager authManager;
-    
+
     internal static PlatformInterface PlatformInterface;
     internal static ConnectInterface ConnectInterface;
     internal static P2PInterface P2PInterface;
     internal static LobbyInterface LobbyInterface;
-    
-    private static IEnumerator Ticker()
+
+    private IEnumerator Ticker()
     {
         float timePassed = 0f;
         while (PlatformInterface != null)
@@ -43,63 +43,95 @@ internal class EOSManager
 
         yield break;
     }
-    
-    internal static IEnumerator Initialize(System.Action<bool> onComplete)
+
+    internal IEnumerator InitializeAsync(System.Action<bool> onComplete)
     {
-        LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Info);
-        LoggingInterface.SetCallback(((ref LogMessage message) =>
-        {
-            FusionLogger.Log("EOS -> " + message.Message);
-        }));
-        
         if (!InitializeInterfaces())
         {
             onComplete?.Invoke(false);
             yield break;
         }
-        
+
         MelonCoroutines.Start(Ticker());
+
+        bool loginComplete = false;
+        bool loginSuccess = false;
+
+        MelonCoroutines.Start(authManager.LoginAsync((success) =>
+        {
+            loginSuccess = success;
+            loginComplete = true;
+        }));
+
+        while (!loginComplete)
+            yield return null;
+
+        if (!loginSuccess)
+        {
+            ShutdownEOS();
+            onComplete?.Invoke(false);
+            yield break;
+        }
+
+        // EOSSocketHandler.ConfigureP2P();
+
+        onComplete.Invoke(true);
     }
 
-    private static bool InitializeInterfaces()
+    private bool InitializeInterfaces()
     {
         var initializeOptions = new InitializeOptions();
 
-        initializeOptions.ProductName = AuthCredentials.ProductName;
-        initializeOptions.ProductVersion = AuthCredentials.ProductVersion;
+        initializeOptions.ProductName = EOSAuthCredentials.ProductName;
+        initializeOptions.ProductVersion = EOSAuthCredentials.ProductVersion;
 
         Result initializeResult = PlatformInterface.Initialize(ref initializeOptions);
-        
+
         if (initializeResult != Result.Success && initializeResult != Result.AlreadyConfigured)
         {
             FusionLogger.Error($"Failed to initialize EOS Platform: {initializeResult}");
             return false;
         }
-        
+
+        LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Info);
+        LoggingInterface.SetCallback((ref LogMessage message) =>
+        {
+            FusionLogger.Log("EOS -> " + message.Message);
+        });
+
         Options options = new Options()
         {
-            ProductId = AuthCredentials.ProductId,
-            SandboxId = AuthCredentials.SandboxId,
-            DeploymentId = AuthCredentials.DeploymentId,
+            ProductId = EOSAuthCredentials.ProductId,
+            SandboxId = EOSAuthCredentials.SandboxId,
+            DeploymentId = EOSAuthCredentials.DeploymentId,
             ClientCredentials = new ClientCredentials()
             {
-                ClientId = AuthCredentials.ClientId,
-                ClientSecret = AuthCredentials.ClientSecret
+                ClientId = EOSAuthCredentials.ClientId,
+                ClientSecret = EOSAuthCredentials.ClientSecret
             },
             Flags = PlatformFlags.DisableOverlay | PlatformFlags.DisableSocialOverlay
         };
-        
+
         PlatformInterface = PlatformInterface.Create(ref options);
         if (PlatformInterface == null)
         {
             FusionLogger.Error("Failed to create EOS Platform Interface");
             return false;
         }
-        
+
         ConnectInterface = PlatformInterface.GetConnectInterface();
         P2PInterface = PlatformInterface.GetP2PInterface();
         LobbyInterface = PlatformInterface.GetLobbyInterface();
-        
+
         return true;
+    }
+
+    internal void ShutdownEOS()
+    {
+        PlatformInterface?.Release();
+        PlatformInterface = null;
+        ConnectInterface = null;
+        P2PInterface = null;
+        LobbyInterface = null;
     }
 }
