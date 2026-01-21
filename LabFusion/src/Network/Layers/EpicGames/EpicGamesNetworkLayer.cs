@@ -147,7 +147,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
         EOSMessenger.Reset();
     }
-    
+
     public override string GetUsername(string platformId)
     {
         return EOSUsernameDeterminer.GetRandomUsername(platformId);

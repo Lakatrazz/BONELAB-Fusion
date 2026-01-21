@@ -48,7 +48,7 @@ internal class EOSManager
             onComplete?.Invoke(false);
             yield break;
         }
-        
+
 #if DEBUG
         ConfigureLogging();
 #endif

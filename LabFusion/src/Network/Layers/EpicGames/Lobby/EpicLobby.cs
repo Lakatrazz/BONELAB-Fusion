@@ -1,21 +1,21 @@
 ﻿using Epic.OnlineServices;
-using Epic.OnlineServices. Lobby;
+using Epic.OnlineServices.Lobby;
 
 using LabFusion.Player;
-using LabFusion. Utilities;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network.EpicGames;
 
 /// <summary>
 /// Represents an EOS lobby with metadata management.
 /// </summary>
-public class EpicLobby :  NetworkLobby
+public class EpicLobby : NetworkLobby
 {
     private LobbyDetails _lobbyDetails;
     private readonly Dictionary<string, string> _metadataCache = new();
     private readonly Dictionary<string, string> _pendingMetadata = new();
     private readonly object _lock = new();
-    
+
     private bool _isUpdating;
     private bool _hasPendingChanges;
 
@@ -23,7 +23,7 @@ public class EpicLobby :  NetworkLobby
 
     public EpicLobby(LobbyDetails lobbyDetails, string lobbyId)
     {
-        _lobbyDetails = lobbyDetails ??  throw new ArgumentNullException(nameof(lobbyDetails));
+        _lobbyDetails = lobbyDetails ?? throw new ArgumentNullException(nameof(lobbyDetails));
         LobbyId = lobbyId ?? throw new ArgumentNullException(nameof(lobbyId));
     }
 
@@ -34,7 +34,7 @@ public class EpicLobby :  NetworkLobby
 
     internal void Release()
     {
-        _lobbyDetails?. Release();
+        _lobbyDetails?.Release();
         _lobbyDetails = null;
     }
 
@@ -45,7 +45,7 @@ public class EpicLobby :  NetworkLobby
 
         value ??= string.Empty;
 
-        if (! NetworkInfo.IsHost)
+        if (!NetworkInfo.IsHost)
             return;
 
         lock (_lock)
@@ -77,7 +77,7 @@ public class EpicLobby :  NetworkLobby
 
         lock (_lock)
         {
-            if (! _hasPendingChanges || _pendingMetadata.Count == 0)
+            if (!_hasPendingChanges || _pendingMetadata.Count == 0)
                 return;
 
             _isUpdating = true;
@@ -93,15 +93,15 @@ public class EpicLobby :  NetworkLobby
 
     private void ApplyMetadataBatch(Dictionary<string, string> changes)
     {
-        var lobbyInterface = EOSInterfaces. Lobby;
+        var lobbyInterface = EOSInterfaces.Lobby;
         if (lobbyInterface == null)
         {
-            FusionLogger. Error("LobbyInterface is null, cannot set metadata");
+            FusionLogger.Error("LobbyInterface is null, cannot set metadata");
             CompleteUpdate(success: false, changes);
             return;
         }
 
-        var localUserId = ProductUserId. FromString(PlayerIDManager.LocalPlatformID);
+        var localUserId = ProductUserId.FromString(PlayerIDManager.LocalPlatformID);
         if (localUserId == null)
         {
             FusionLogger.Error("Local user ID is null, cannot set metadata");
@@ -194,7 +194,7 @@ public class EpicLobby :  NetworkLobby
         }
         else
         {
-            FusionLogger.Error($"Failed to update lobby metadata: {info. ResultCode}");
+            FusionLogger.Error($"Failed to update lobby metadata: {info.ResultCode}");
         }
 
         CompleteUpdate(info.ResultCode == Result.Success, changes);
@@ -228,10 +228,10 @@ public class EpicLobby :  NetworkLobby
 
         var result = _lobbyDetails.CopyAttributeByKey(ref options, out var attribute);
 
-        if (result == Result.Success && attribute. HasValue)
+        if (result == Result.Success && attribute.HasValue)
         {
-            value = attribute.Value.Data?. Value. AsUtf8 ?? string. Empty;
-            return ! string.IsNullOrEmpty(value);
+            value = attribute.Value.Data?.Value.AsUtf8 ?? string.Empty;
+            return !string.IsNullOrEmpty(value);
         }
 
         return false;
