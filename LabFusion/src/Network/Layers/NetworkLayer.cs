@@ -232,6 +232,12 @@ public abstract class NetworkLayer
     public virtual void RefreshServerCode()
     {
     }
+    
+    // Useful for layers that may use an id for the server that is different from the host's platform id
+    public virtual string GetServerID()
+    {
+        return PlayerIDManager.LocalPlatformID;
+    }
 
     public virtual void JoinServerByCode(string code)
     {

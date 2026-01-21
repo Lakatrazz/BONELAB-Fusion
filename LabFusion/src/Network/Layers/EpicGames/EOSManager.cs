@@ -51,6 +51,8 @@ internal class EOSManager
             onComplete?.Invoke(false);
             yield break;
         }
+        
+        ConfigureP2P();
 
         MelonCoroutines.Start(Ticker());
 
@@ -73,14 +75,12 @@ internal class EOSManager
             yield break;
         }
 
-        // EOSSocketHandler.ConfigureP2P();
-
         onComplete.Invoke(true);
     }
 
     private bool InitializeInterfaces()
     {
-        var initializeOptions = new InitializeOptions();
+        InitializeOptions initializeOptions = new InitializeOptions();
 
         initializeOptions.ProductName = EOSAuthCredentials.ProductName;
         initializeOptions.ProductVersion = EOSAuthCredentials.ProductVersion;
@@ -133,5 +133,32 @@ internal class EOSManager
         ConnectInterface = null;
         P2PInterface = null;
         LobbyInterface = null;
+    }
+
+    internal void ConfigureP2P()
+    {
+        SetPortRange();
+        ConfigureRelayControl();
+        
+        void SetPortRange()
+        {
+            SetPortRangeOptions portRangeOptions = new SetPortRangeOptions()
+            {
+                Port = 7777,
+                MaxAdditionalPortsToTry = 99
+            };
+            
+            P2PInterface.SetPortRange(ref portRangeOptions);
+        }
+
+        void ConfigureRelayControl()
+        {
+            SetRelayControlOptions relayControlOptions = new SetRelayControlOptions()
+            {
+                RelayControl = RelayControl.ForceRelays
+            };
+
+            P2PInterface.SetRelayControl(ref relayControlOptions);
+        }
     }
 }

@@ -59,6 +59,22 @@ public static class NetworkHelper
     {
         NetworkLayerManager.Layer.RefreshServerCode();
     }
+    
+    /// <summary>
+    ///  Gets the ID of the server. Defaults to the host's platform ID if not implemented by the layer.
+    /// </summary>
+    /// <returns>The server ID.</returns>
+    public static string GetSeverID()
+    {
+        var layer = NetworkLayerManager.Layer;
+
+        if (layer == null)
+        {
+            return null;
+        }
+
+        return layer.GetServerID();
+    }
 
     /// <summary>
     /// Returns true if this user is friended on the active network platform.

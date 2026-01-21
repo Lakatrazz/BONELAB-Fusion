@@ -19,19 +19,6 @@ internal static class EOSUsernameDeterminer
     private static bool _oculusDone;
     private static string _oculusUsername;
 
-    internal static Platform GetPlatform()
-    {
-        if (PlatformHelper.IsAndroid)
-            return Platform.Quest;
-
-        if (MelonEnvironment.GameExecutableName == "BONELAB_Steam_Windows64")
-            return Platform.Steam;
-        else if (MelonEnvironment.GameExecutableName == "BONELAB_Oculus_Windows64")
-            return Platform.Rift;
-        else
-            return Platform.Unknown;
-    }
-
     internal static IEnumerator GetUsernameAsync(System.Action<string> onComplete)
     {
         switch (GetPlatform())
@@ -52,6 +39,20 @@ internal static class EOSUsernameDeterminer
                 onComplete.Invoke("Unknown");
                 yield break;
         }
+    }
+    
+    internal static Platform GetPlatform()
+    {
+        if (PlatformHelper.IsAndroid)
+            return Platform.Quest;
+
+        if (MelonEnvironment.GameExecutableName == "BONELAB_Steam_Windows64")
+            return Platform.Steam;
+        
+        if (MelonEnvironment.GameExecutableName == "BONELAB_Oculus_Windows64")
+            return Platform.Rift;
+        
+        return Platform.Unknown;
     }
 
     private static IEnumerator GetUsernameOculus(string appId, System.Action<string> onComplete)
