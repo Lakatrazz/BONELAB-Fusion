@@ -1,6 +1,6 @@
 ﻿namespace LabFusion.Network.EpicGames;
 
-internal static class EOSAuthCredentials
+internal static class EOSCredentials
 {
     internal const string ProductName = "Fusion";
     internal const string ProductVersion = "0.0.1";
