@@ -35,6 +35,9 @@ internal class EOSManager
             onComplete?.Invoke(true);
             yield break;
         }
+        
+        if (PlatformHelper.IsAndroid)
+            EOSJNI.Initialize();
 
         if (!InitializePlatform())
         {
