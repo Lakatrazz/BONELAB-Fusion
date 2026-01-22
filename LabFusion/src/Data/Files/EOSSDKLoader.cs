@@ -6,7 +6,7 @@ public static class EOSSDKLoader
 {
     public static bool HasEOSSDK { get; private set; } = false;
     
-    private static IntPtr _libraryPtr;
+    internal static IntPtr LibraryPtr { get; private set; } = IntPtr.Zero;
 
     public static async Task OnLoadEOSSDK()
     {
@@ -20,17 +20,17 @@ public static class EOSSDKLoader
             await LoadLinuxBionicARM64();
         else
             await LoadWin64();
-        
-        if (_libraryPtr == IntPtr.Zero)
+
+        if (LibraryPtr == IntPtr.Zero)
         {
-            FusionLogger.Error($"Failed to load EOSSDK-Win64-Shipping.dll into the application!");
-            return;
+            FusionLogger.Error($"Failed to load EOSSDK into the application!");
         }
         else
         {
-            FusionLogger.Log("Successfully loaded EOSSDK-Win64-Shipping.dll into the application!");
+            FusionLogger.Log($"Successfully loaded EOSSDK into the application!");
             HasEOSSDK = true;
         }
+      
 
         async Task LoadWin64()
         {
@@ -50,12 +50,40 @@ public static class EOSSDKLoader
                 FusionLogger.Log("EOSSDK-Win64-Shipping.dll already exists, skipping download.");
             }
             
-            _libraryPtr = MelonLoader.NativeLibrary.LoadLib(sdkPath);
+            LibraryPtr = MelonLoader.NativeLibrary.LoadLib(sdkPath);
         }
 
         async Task LoadLinuxBionicARM64()
         {
-            // Later   
+            string sdkPath = PersistentData.GetPath("libEOSSDK.so");
+            string cppPath = PersistentData.GetPath("libc++_shared.so");
+
+            if (!File.Exists(sdkPath))
+            {
+                bool eosDownloadSuccess = await DownloadLibraryAsync(DownloadCatalog.EOSSDKLinuxBionicARM64, sdkPath);
+                if (!eosDownloadSuccess)
+                {
+                    FusionLogger.Error("Failed to download libEOSSDK.so");
+                    return;
+                }
+            }
+
+            if (!File.Exists(cppPath))
+            {
+                bool cppDownloadSuccess = await DownloadLibraryAsync(DownloadCatalog.CppShared, cppPath);
+                if (!cppDownloadSuccess)
+                {
+                    FusionLogger.Error("Failed to download libc++_shared.so");
+                    return;
+                }
+            }
+
+            if (MelonLoader.NativeLibrary.LoadLib(cppPath) == IntPtr.Zero)
+                FusionLogger.Error($"Failed to load libc++_shared.so into the application!");
+            else
+                FusionLogger.Log($"Successfully loaded libc++_shared.so into the application!");
+
+            LibraryPtr = MelonLoader.NativeLibrary.LoadLib(sdkPath);
         }
     }
 
@@ -65,9 +93,9 @@ public static class EOSSDKLoader
             return;
         
         if (PlatformHelper.IsAndroid)
-            DllTools.dlclose(_libraryPtr);
+            DllTools.dlclose(LibraryPtr);
         else
-            DllTools.FreeLibrary(_libraryPtr);
+            DllTools.FreeLibrary(LibraryPtr);
         
         HasEOSSDK = false;
     }

@@ -140,7 +140,7 @@ internal class EOSManager
 
     private void ConfigureLogging()
     {
-        LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Info);
+        LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Off);
         LoggingInterface.SetCallback((ref LogMessage message) =>
         {
             FusionLogger.Log($"EOS -> {message.Message}");

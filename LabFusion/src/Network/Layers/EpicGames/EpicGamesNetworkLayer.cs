@@ -35,6 +35,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     private EOSAuthManager _authManager;
     private EOSLobbyManager _lobbyManager;
     private EOSP2PManager _p2pManager;
+    private EOSConnectionStateManager  _connectionStateManager;
     private EOSConnectionHandler _connectionHandler;
     private EOSNotificationManager _notificationManager;
 
@@ -111,8 +112,9 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
         _matchmaker = null;
 
-        UnhookEvents();
         CleanupManagers();
+
+        UnhookEvents();
 
         _eosManager?.Shutdown();
         _eosManager = null;
@@ -131,7 +133,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         _lobbyManager = new EOSLobbyManager(LocalUserId);
         _p2pManager = new EOSP2PManager(LocalUserId, EOSMessenger.SocketId);
-        _connectionHandler = new EOSConnectionHandler(_p2pManager, OnDisconnectedFromHost);
+        _connectionStateManager = new EOSConnectionStateManager();
+        _connectionHandler = new EOSConnectionHandler(_p2pManager, _connectionStateManager, OnDisconnectedFromHost);
         _notificationManager = new EOSNotificationManager(LocalUserId, EOSMessenger.SocketId, _connectionHandler);
 
         _p2pManager.Configure();
@@ -141,6 +144,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         _notificationManager?.UnregisterAllNotifications();
         _notificationManager = null;
+        _connectionStateManager = null;
         _connectionHandler = null;
         _p2pManager = null;
         _lobbyManager = null;
@@ -193,7 +197,12 @@ public class EpicGamesNetworkLayer : NetworkLayer
             FusionLogger.Error("Cannot start server: LocalUserId is null");
             return;
         }
+        
+        if (!_connectionStateManager.CanStartServer())
+            return;
 
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connecting);
+        
         _lobbyManager.CreateLobby(OnLobbyCreated);
     }
 
@@ -202,6 +211,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (lobby == null)
         {
             FusionLogger.Error("Failed to create lobby");
+            _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
             return;
         }
 
@@ -209,6 +219,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
         _isConnectionActive = true;
 
         InternalServerHelpers.OnStartServer();
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connected);
 
         _notificationManager.RegisterHostNotifications();
 
@@ -228,9 +240,12 @@ public class EpicGamesNetworkLayer : NetworkLayer
         }
 
         if (_isConnectionActive || _isServerActive)
-        {
             Disconnect();
-        }
+        
+        if (!_connectionStateManager.CanJoinServer())
+            return;
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connecting);
 
         if (LocalUserId == null)
         {
@@ -246,6 +261,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (lobby == null)
         {
             FusionLogger.Error("Failed to join lobby");
+            _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
             return;
         }
 
@@ -271,6 +287,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         if (!_isServerActive && !_isConnectionActive)
             return;
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnecting);
 
         if (IsHost)
         {
@@ -284,7 +302,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     private void OnDisconnectedFromHost()
     {
-        Disconnect("Disconnected from host");
+        Disconnect("Lobby closed");
     }
 
     private void OnDisconnectComplete(string reason)
@@ -297,6 +315,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
         _serverCode = string.Empty;
 
         InternalServerHelpers.OnDisconnect(reason);
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
 
 #if DEBUG
         FusionLogger.Log($"Disconnected: {(string.IsNullOrEmpty(reason) ? "No reason" : reason)}");
@@ -379,12 +399,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     private void OnUpdateLobby()
     {
         if (Lobby == null)
-        {
-#if DEBUG
-            FusionLogger.Warn("Tried updating the EOS lobby, but it was null!");
-#endif
             return;
-        }
 
         LobbyMetadataSerializer.WriteInfo(Lobby);
     }

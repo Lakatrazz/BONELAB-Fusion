@@ -384,6 +384,9 @@
     <Reference Include="Il2CppZString">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppZString.dll</HintPath>
 	</Reference>
+    <Reference Include="JNISharp">
+      <HintPath>dependencies\JNISharp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(BONELAB_DIR)\MelonLoader\net6\Newtonsoft.Json.dll</HintPath>
     </Reference>

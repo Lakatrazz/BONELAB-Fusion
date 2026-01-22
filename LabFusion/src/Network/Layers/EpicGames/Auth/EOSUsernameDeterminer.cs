@@ -66,6 +66,14 @@ internal static class EOSUsernameDeterminer
     {
         try
         {
+            // Fusion's Steamworks
+            if (Steamworks.SteamClient.IsValid)
+                Steamworks.SteamClient.Shutdown();
+            
+            // Game's Steamworks
+            if (!Il2CppSteamworks.SteamClient.IsValid)
+                Il2CppSteamworks.SteamClient.Init(1592190, false);
+            
             return new Il2CppSteamworks.Friend(Il2CppSteamworks.SteamClient.SteamId).Name;
         }
         catch

@@ -13,11 +13,13 @@ namespace LabFusion.Network.EpicGames;
 internal class EOSConnectionHandler
 {
     private readonly EOSP2PManager _p2pManager;
+    private readonly EOSConnectionStateManager _connectionStateManager;
     private readonly Action _onDisconnectedFromHost;
 
-    public EOSConnectionHandler(EOSP2PManager p2pManager, Action onDisconnectedFromHost)
+    public EOSConnectionHandler(EOSP2PManager p2pManager, EOSConnectionStateManager connectionStateManager, Action onDisconnectedFromHost)
     {
         _p2pManager = p2pManager ?? throw new ArgumentNullException(nameof(p2pManager));
+        _connectionStateManager = connectionStateManager ?? throw new ArgumentNullException(nameof(connectionStateManager));
         _onDisconnectedFromHost = onDisconnectedFromHost;
     }
 
@@ -46,6 +48,8 @@ internal class EOSConnectionHandler
 #endif
 
         ConnectionSender.SendConnectionRequest();
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connected);
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ namespace LabFusion.Network.EpicGames;
 public class EOSMatchmaker : IMatchmaker
 {
     private const int DefaultMaxResults = 200;
-    private const int CodeSearchMaxResults = 10;
+    private const int CodeSearchMaxResults = 1;
     private const float CacheValiditySeconds = 5f;
 
     // Cache
