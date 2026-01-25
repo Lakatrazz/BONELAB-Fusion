@@ -400,7 +400,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         if (Lobby == null)
             return;
-
+        
+        if (_lobbyManager.GetLobbyOwner() != LocalUserId)
+            return;
+        
         LobbyMetadataSerializer.WriteInfo(Lobby);
     }
 }

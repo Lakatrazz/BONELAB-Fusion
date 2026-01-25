@@ -11,12 +11,7 @@ public static class NetworkLayerDeterminer
 
     public static NetworkLayer GetDefaultLayer()
     {
-        if (PlatformHelper.IsAndroid)
-        {
-            return NetworkLayer.GetLayer<EpicGamesNetworkLayer>();
-        }
-
-        return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
+        return NetworkLayer.GetLayer<EpicGamesNetworkLayer>();
     }
 
     public static NetworkLayer VerifyLayer(NetworkLayer layer)

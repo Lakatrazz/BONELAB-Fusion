@@ -90,7 +90,7 @@ internal class EOSAuthManager
             {
                 case Result.Success:
                     LocalUserId = data.LocalUserId;
-                    FusionLogger.Log($"Logged in successfully!  PUID = {LocalUserId}");
+                    FusionLogger.Log($"Logged in successfully! PUID = {LocalUserId}");
                     success = true;
                     finished = true;
                     break;
@@ -100,7 +100,7 @@ internal class EOSAuthManager
                     break;
 
                 default:
-                    FusionLogger.Error($"Login failed:  {data.ResultCode}");
+                    FusionLogger.Error($"Login failed: {data.ResultCode}");
                     finished = true;
                     break;
             }

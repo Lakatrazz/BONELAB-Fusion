@@ -118,6 +118,11 @@
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_03.txt" />
     <None Remove="dependencies\resources\text\raw_changelog.txt" />
+      <None Remove="dependencies\resources\dex\androidx.dex" />
+      <None Remove="dependencies\resources\dex\eossdk.dex" />
+      <None Remove="dependencies\resources\dex\util.dex" />
+      <None Remove="dependencies\resources\lib\arm64\libEOSSDK.so" />
+      <None Remove="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
     <None Remove="FusionBundles\.gitignore" />
     <None Remove="FusionBundles\.vsconfig" />
     <None Remove="FusionBundles\Assets\Achievements.meta" />
@@ -308,6 +313,11 @@
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_03.txt" />
     <EmbeddedResource Include="dependencies\resources\text\raw_changelog.txt" />
     <EmbeddedResource Include="SupportModules\BonelabSupport.dll" />
+      <EmbeddedResource Include="dependencies\resources\dex\androidx.dex" />
+      <EmbeddedResource Include="dependencies\resources\dex\eossdk.dex" />
+      <EmbeddedResource Include="dependencies\resources\dex\util.dex" />
+      <EmbeddedResource Include="dependencies\resources\lib\arm64\libEOSSDK.so" />
+      <EmbeddedResource Include="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
   </ItemGroup>
 
   <ItemGroup>

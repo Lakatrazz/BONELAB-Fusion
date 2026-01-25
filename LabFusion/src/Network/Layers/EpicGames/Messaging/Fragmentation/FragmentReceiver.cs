@@ -106,7 +106,9 @@ internal class FragmentReceiver
 
             if (keysToRemove.Count > 0)
             {
+#if DEBUG
                 FusionLogger.Log($"Cleaned up {keysToRemove.Count} stale fragment collections");
+#endif
             }
         }
     }

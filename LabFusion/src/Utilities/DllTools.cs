@@ -16,7 +16,7 @@ namespace LabFusion.Utilities
         public static extern UInt32 GetLastError();
         
         [DllImport("libdl.so")]
-        public static extern IntPtr dlopen(string filename, int flags);
+        public static extern IntPtr dlopen(string filename, int flags = 2);
 
         [DllImport("libdl.so")]
         public static extern int dlclose(IntPtr handle);
