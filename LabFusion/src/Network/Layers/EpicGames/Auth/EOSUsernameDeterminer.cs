@@ -11,6 +11,8 @@ namespace LabFusion.Network.EpicGames;
 /// </summary>
 internal static class EOSUsernameDeterminer
 {
+    public static string CachedUsername { get; private set; }
+    
     public enum Platform
     {
         Steam,
@@ -73,8 +75,10 @@ internal static class EOSUsernameDeterminer
             // Game's Steamworks
             if (!Il2CppSteamworks.SteamClient.IsValid)
                 Il2CppSteamworks.SteamClient.Init(1592190, false);
+
+            CachedUsername = new Il2CppSteamworks.Friend(Il2CppSteamworks.SteamClient.SteamId).Name;
             
-            return new Il2CppSteamworks.Friend(Il2CppSteamworks.SteamClient.SteamId).Name;
+            return CachedUsername;
         }
         catch
         {
@@ -103,8 +107,10 @@ internal static class EOSUsernameDeterminer
 
         while (!_oculusRequestComplete)
             yield return null;
+        
+        CachedUsername = _oculusUsername;
 
-        onComplete?.Invoke(_oculusUsername);
+        onComplete?.Invoke(CachedUsername);
     }
 
     private static void OnOculusUserReceived(Il2CppOculus.Platform.Message<Il2CppOculus.Platform.Models.User> msg)

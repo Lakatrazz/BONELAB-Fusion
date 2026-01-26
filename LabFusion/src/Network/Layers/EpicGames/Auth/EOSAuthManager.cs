@@ -39,6 +39,9 @@ internal class EOSAuthManager
         bool loginSuccess = false;
 
         yield return LoginWithDeviceIdAsync(success => loginSuccess = success);
+        
+        if (loginSuccess)
+            RegisterAuthExpiration();
 
         onComplete?.Invoke(loginSuccess);
     }
@@ -162,5 +165,42 @@ internal class EOSAuthManager
             yield return null;
 
         onComplete?.Invoke(success);
+    }
+
+    private static void RegisterAuthExpiration()
+    {
+        var notifyAuthExpirationOptions = new AddNotifyAuthExpirationOptions();
+        EOSInterfaces.Connect.AddNotifyAuthExpiration(ref notifyAuthExpirationOptions, null, AuthExpirationCallback);
+    } 
+    
+    private static void AuthExpirationCallback(ref AuthExpirationCallbackInfo data)
+    {
+        var loginOptions = new LoginOptions
+        {
+            Credentials = new Credentials
+            {
+                Type = ExternalCredentialType.DeviceidAccessToken,
+                Token = null,
+            },
+            UserLoginInfo = new UserLoginInfo
+            {
+                DisplayName = EOSUsernameDeterminer.CachedUsername
+            },
+        };
+        
+        EOSInterfaces.Connect.Login(ref loginOptions, null, (ref LoginCallbackInfo data) =>
+        {
+            switch (data.ResultCode)
+            {
+                case Result.Success:
+#if DEBUG
+                    FusionLogger.Log("Token refreshed!");
+#endif
+                    break;
+                default:
+                    FusionLogger.Error($"Token refresh failed with result: {data.ResultCode}");
+                    break;
+            }
+        });
     }
 }
