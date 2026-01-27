@@ -93,7 +93,9 @@ internal class EOSAuthManager
             {
                 case Result.Success:
                     LocalUserId = data.LocalUserId;
+#if DEBUG
                     FusionLogger.Log($"Logged in successfully! PUID = {LocalUserId}");
+#endif
                     success = true;
                     finished = true;
                     break;

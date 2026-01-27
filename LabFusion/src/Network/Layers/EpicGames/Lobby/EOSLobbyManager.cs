@@ -62,7 +62,7 @@ internal class EOSLobbyManager
             CrossplayOptOut = false,
             LobbyId = lobbyId,
             LocalUserId = _localUserId,
-            PresenceEnabled = true,
+            PresenceEnabled = false,
         };
 
         EOSInterfaces.Lobby.JoinLobbyById(ref joinOptions, null, (ref JoinLobbyByIdCallbackInfo info) =>
@@ -147,7 +147,9 @@ internal class EOSLobbyManager
         {
             if (info.ResultCode != Result.Success)
             {
+#if DEBUG
                 FusionLogger.Error($"Failed to kick member: {info.ResultCode}");
+#endif
             }
             onComplete?.Invoke(info.ResultCode == Result.Success);
         });
