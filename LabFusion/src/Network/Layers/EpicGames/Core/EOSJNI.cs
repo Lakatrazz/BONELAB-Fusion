@@ -63,7 +63,7 @@ internal static class EOSJNI
             return true;
 
         FusionLogger.Error("EOSSDK class not found!");
-        FusionLogger.Error("Did the user use the plugin when installing LemonLoader?");
+        FusionLogger.Error("Did dex injection succeed?");
         return false;
     }
     
@@ -91,7 +91,6 @@ internal static class EOSJNI
         }
 
         var lastVmPtrField = jniType.GetField("lastVmPtr", HarmonyLib.AccessTools.all);
-
         if (lastVmPtrField == null)
         {
             FusionLogger.Error("JNISharp lastVmPtr field not found!");
@@ -99,7 +98,6 @@ internal static class EOSJNI
         }
 
         _javaVM = (IntPtr)lastVmPtrField.GetValue(null);
-
         if (_javaVM == IntPtr.Zero)
         {
             FusionLogger.Error("Failed to retrieve JavaVM pointer from JNISharp!");
@@ -153,7 +151,6 @@ internal static class EOSJNI
 
         JFieldID activityField = JNI.GetStaticFieldID(_unityPlayerClass, "currentActivity", "Landroid/app/Activity;");
         JObject activity = JNI.GetStaticObjectField<JObject>(_unityPlayerClass, activityField);
-
         if (!activity.Valid())
         {
             FusionLogger.Error("Failed to retrieve UnityPlayer.currentActivity!");

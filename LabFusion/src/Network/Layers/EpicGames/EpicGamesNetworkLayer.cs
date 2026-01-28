@@ -1,5 +1,5 @@
 ﻿using Epic.OnlineServices;
-
+using Epic.OnlineServices.Lobby;
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
@@ -231,14 +231,14 @@ public class EpicGamesNetworkLayer : NetworkLayer
 #endif
     }
 
-    public void JoinServer(string lobbyId)
+    public void JoinServer(LobbyDetails lobbyDetails)
     {
-        if (string.IsNullOrEmpty(lobbyId))
+        if (lobbyDetails == null)
         {
-            FusionLogger.Error("Cannot join server: lobbyId is null or empty");
+            FusionLogger.Error("Cannot join server: lobbyDetails is null");
             return;
         }
-
+        
         if (_isConnectionActive || _isServerActive)
             Disconnect();
         
@@ -246,14 +246,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
             return;
         
         _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connecting);
-
-        if (LocalUserId == null)
-        {
-            FusionLogger.Error("Cannot join server: LocalUserId is null");
-            return;
-        }
-
-        _lobbyManager.JoinLobby(lobbyId, OnLobbyJoined);
+        
+        _lobbyManager.JoinLobby(lobbyDetails, OnLobbyJoined);
     }
 
     private void OnLobbyJoined(EpicLobby lobby)
@@ -358,7 +352,11 @@ public class EpicGamesNetworkLayer : NetworkLayer
                 return;
             }
 
-            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
+            var epicLobby = info.Lobbies[0].Lobby as EpicLobby;
+            if (epicLobby == null)
+                return;
+            
+            JoinServer(epicLobby.LobbyDetails);
         });
     }
 

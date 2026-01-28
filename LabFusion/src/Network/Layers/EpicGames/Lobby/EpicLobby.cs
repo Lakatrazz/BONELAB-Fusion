@@ -20,16 +20,12 @@ public class EpicLobby : NetworkLobby
     private bool _hasPendingChanges;
 
     public string LobbyId { get; }
+    public LobbyDetails LobbyDetails => _lobbyDetails;
 
     public EpicLobby(LobbyDetails lobbyDetails, string lobbyId)
     {
         _lobbyDetails = lobbyDetails ?? throw new ArgumentNullException(nameof(lobbyDetails));
         LobbyId = lobbyId ?? throw new ArgumentNullException(nameof(lobbyId));
-    }
-
-    internal void UpdateLobbyDetails(LobbyDetails newDetails)
-    {
-        _lobbyDetails = newDetails;
     }
 
     internal void Release()
@@ -247,7 +243,7 @@ public class EpicLobby : NetworkLobby
     {
         if (NetworkLayerManager.Layer is EpicGamesNetworkLayer eosLayer)
         {
-            return () => eosLayer.JoinServer(lobbyId);
+            return () => eosLayer.JoinServer(_lobbyDetails);
         }
         return null;
     }

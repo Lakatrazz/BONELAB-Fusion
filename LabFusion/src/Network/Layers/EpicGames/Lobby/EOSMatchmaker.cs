@@ -52,12 +52,12 @@ public class EOSMatchmaker : IMatchmaker
             return;
         }
 
-        MelonCoroutines.Start(SearchLobbiesOptimized(null, filters, callback));
+        MelonCoroutines.Start(SearchLobbies(null, filters, callback));
     }
 
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        MelonCoroutines.Start(SearchByCodeOptimized(code, callback));
+        MelonCoroutines.Start(SearchByCode(code, callback));
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class EOSMatchmaker : IMatchmaker
         }
     }
 
-    private IEnumerator SearchByCodeOptimized(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    private IEnumerator SearchByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
@@ -165,7 +165,7 @@ public class EOSMatchmaker : IMatchmaker
         callback?.Invoke(result);
     }
 
-    private IEnumerator SearchLobbiesOptimized(string code, MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
+    private IEnumerator SearchLobbies(string code, MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
         // Prevent concurrent searches
         lock (_cacheLock)

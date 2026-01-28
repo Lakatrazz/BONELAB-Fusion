@@ -49,23 +49,36 @@ internal class EOSLobbyManager
                 onComplete?.Invoke(null);
                 return;
             }
+            
+            var copyOptions = new CopyLobbyDetailsHandleOptions
+            {
+                LobbyId = info.LobbyId,
+                LocalUserId = _localUserId,
+            };
+            
+            var result = EOSInterfaces.Lobby.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
+            if (result != Result.Success || lobbyDetails == null)
+            {
+                FusionLogger.Error($"Failed to copy lobby details handle: {result}");
+                return;
+            }
 
-            var lobby = CreateLobbyFromInfo(info.LobbyId);
+            var lobby = CreateLobbyFromInfo(lobbyDetails, info.LobbyId);
             onComplete?.Invoke(lobby);
         });
     }
 
-    public void JoinLobby(string lobbyId, Action<EpicLobby> onComplete)
+    public void JoinLobby(LobbyDetails lobbyDetails, Action<EpicLobby> onComplete)
     {
-        var joinOptions = new JoinLobbyByIdOptions
+        var joinOptions = new JoinLobbyOptions
         {
             CrossplayOptOut = false,
-            LobbyId = lobbyId,
+            LobbyDetailsHandle = lobbyDetails,
             LocalUserId = _localUserId,
             PresenceEnabled = false,
         };
-
-        EOSInterfaces.Lobby.JoinLobbyById(ref joinOptions, null, (ref JoinLobbyByIdCallbackInfo info) =>
+        
+        EOSInterfaces.Lobby.JoinLobby(ref joinOptions, null, (ref JoinLobbyCallbackInfo info) =>
         {
             if (info.ResultCode != Result.Success)
             {
@@ -74,7 +87,7 @@ internal class EOSLobbyManager
                 return;
             }
 
-            var lobby = CreateLobbyFromInfo(info.LobbyId);
+            var lobby = CreateLobbyFromInfo(lobbyDetails, info.LobbyId);
             onComplete?.Invoke(lobby);
         });
     }
@@ -164,21 +177,8 @@ internal class EOSLobbyManager
         return CurrentLobbyDetails.GetLobbyOwner(ref ownerOptions);
     }
 
-    private EpicLobby CreateLobbyFromInfo(string lobbyId)
+    private EpicLobby CreateLobbyFromInfo(LobbyDetails lobbyDetails, string lobbyId)
     {
-        var copyOptions = new CopyLobbyDetailsHandleOptions
-        {
-            LobbyId = lobbyId,
-            LocalUserId = _localUserId,
-        };
-
-        var result = EOSInterfaces.Lobby.CopyLobbyDetailsHandle(ref copyOptions, out var lobbyDetails);
-        if (result != Result.Success || lobbyDetails == null)
-        {
-            FusionLogger.Error($"Failed to copy lobby details handle: {result}");
-            return null;
-        }
-
         CurrentLobbyDetails = lobbyDetails;
         CurrentLobby = new EpicLobby(lobbyDetails, lobbyId);
 
