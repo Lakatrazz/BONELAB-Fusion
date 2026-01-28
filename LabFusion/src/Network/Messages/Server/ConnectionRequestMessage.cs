@@ -13,7 +13,7 @@ namespace LabFusion.Network;
 
 public class ConnectionRequestData : INetSerializable
 {
-    public ulong BackupPlatformID;
+    public string BackupPlatformID;
     public Version Version;
     public string AvatarBarcode;
     public SerializedAvatarStats AvatarStats;
@@ -43,13 +43,13 @@ public class ConnectionRequestData : INetSerializable
         }
     }
 
-    public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
+    public static ConnectionRequestData Create(string stringID, Version version, string avatarBarcode, SerializedAvatarStats stats)
     {
         LocalPlayer.InvokeApplyInitialMetadata();
 
         return new ConnectionRequestData()
         {
-            BackupPlatformID = longId,
+            BackupPlatformID = stringID,
             Version = version,
             AvatarBarcode = avatarBarcode,
             AvatarStats = stats,
@@ -69,7 +69,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionRequestData>();
 
-        ulong platformID = received.PlatformID ?? data.BackupPlatformID;
+        string platformID = received.PlatformID ?? data.BackupPlatformID;
 
         var newSmallId = PlayerIDManager.GetUniquePlayerID();
 
@@ -175,7 +175,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         OnConnectionAllowed(playerId, platformID, data);
     }
 
-    private static void OnConnectionAllowed(PlayerID playerID, ulong platformID, ConnectionRequestData data)
+    private static void OnConnectionAllowed(PlayerID playerID, string platformID, ConnectionRequestData data)
     {
         // Reserve the player's smallID so that other players don't steal it
         PlayerIDManager.ReserveSmallID(playerID.SmallID);

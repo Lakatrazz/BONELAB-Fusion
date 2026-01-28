@@ -24,7 +24,7 @@ public static class LoadSender
         MessageRelay.RelayNative(data, NativeMessageTag.LevelRequest, CommonMessageRoutes.ReliableToServer);
     }
 
-    public static void SendLevelLoad(string barcode, string loadBarcode, ulong userId)
+    public static void SendLevelLoad(string barcode, string loadBarcode, string userId)
     {
         if (!NetworkInfo.IsHost)
         {
