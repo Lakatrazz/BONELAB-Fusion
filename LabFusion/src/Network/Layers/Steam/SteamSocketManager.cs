@@ -8,9 +8,9 @@ namespace LabFusion.Network;
 
 public class SteamSocketManager : SocketManager
 {
-    public Dictionary<ulong, Connection> ConnectedSteamIDs = new();
+    public Dictionary<string, Connection> ConnectedSteamIDs = new();
 
-    public void DisconnectUser(ulong steamID)
+    public void DisconnectUser(string steamID)
     {
         if (!ConnectedSteamIDs.TryGetValue(steamID, out var connection))
         {
@@ -32,9 +32,9 @@ public class SteamSocketManager : SocketManager
 
         // If we aren't in the connected list yet, this is likely us
         // SteamID is always 0 here
-        if (!ConnectedSteamIDs.ContainsKey(SteamClient.SteamId))
+        if (!ConnectedSteamIDs.ContainsKey(SteamClient.SteamId.ToString()))
         {
-            ConnectedSteamIDs[SteamClient.SteamId] = connection;
+            ConnectedSteamIDs[SteamClient.SteamId.ToString()] = connection;
         }
     }
 
@@ -63,7 +63,7 @@ public class SteamSocketManager : SocketManager
     {
         base.OnMessage(connection, identity, data, size, messageNum, recvTime, channel);
 
-        var platformID = identity.steamid;
+        var platformID = identity.steamid.ToString();
 
         ConnectedSteamIDs[platformID] = connection;
 

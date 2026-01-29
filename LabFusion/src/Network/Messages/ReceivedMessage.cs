@@ -20,7 +20,7 @@ public struct ReceivedMessage
     /// <summary>
     /// The platform ID of the message sender. Only valid if the current <see cref="NetworkLayer"/> provides it.
     /// </summary>
-    public ulong? PlatformID { get; set; }
+    public string PlatformID { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.

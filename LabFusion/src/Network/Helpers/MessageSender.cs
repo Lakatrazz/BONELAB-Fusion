@@ -29,10 +29,10 @@ public static class MessageSender
     /// <summary>
     /// Sends the message to the specified user if this is a server.
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="userID"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public static void SendFromServer(string userID, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
@@ -43,7 +43,7 @@ public static class MessageSender
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(userID, channel, message);
         }
     }
 
@@ -165,7 +165,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(string userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;

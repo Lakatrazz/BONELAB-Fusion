@@ -57,9 +57,9 @@ public static class BanManager
         WriteFile();
     }
 
-    public static void Pardon(ulong longId)
+    public static void Pardon(string stringId)
     {
-        BanList.Bans.RemoveAll((info) => info.Player.PlatformID == longId);
+        BanList.Bans.RemoveAll((info) => info.Player.PlatformID == stringId);
 
         WriteFile();
     }
