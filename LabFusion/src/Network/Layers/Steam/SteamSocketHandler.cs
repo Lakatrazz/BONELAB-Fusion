@@ -79,7 +79,7 @@ public static class SteamSocketHandler
         }
     }
 
-    public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize, bool isServerHandled = false, ulong? platformID = null)
+    public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize, bool isServerHandled = false, string platformID = null)
     {
         try
         {

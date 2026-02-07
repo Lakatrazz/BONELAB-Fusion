@@ -4,7 +4,7 @@ public static class NetworkConnectionManager
 {
     private class DisconnectTimeout
     {
-        public ulong PlatformID;
+        public string PlatformID;
 
         public float TimeRemaining;
     }
@@ -16,7 +16,7 @@ public static class NetworkConnectionManager
     /// </summary>
     /// <param name="platformID"></param>
     /// <param name="duration"></param>
-    public static void TimeoutDisconnect(ulong platformID, float duration = 1f)
+    public static void TimeoutDisconnect(string platformID, float duration = 1f)
     {
         if (!NetworkInfo.IsHost)
         {
@@ -34,7 +34,7 @@ public static class NetworkConnectionManager
     /// Forcefully closes the connection for a connected user.
     /// </summary>
     /// <param name="platformID"></param>
-    public static void DisconnectUser(ulong platformID)
+    public static void DisconnectUser(string platformID)
     {
         if (!NetworkInfo.IsHost)
         {

@@ -18,5 +18,5 @@ public ref struct ReadableMessage
     /// <summary>
     /// The platform ID of the message's sender provided by the <see cref="NetworkLayer"/>, if available.
     /// </summary>
-    public ulong? PlatformID { get; set; }
+    public string PlatformID { get; set; }
 }

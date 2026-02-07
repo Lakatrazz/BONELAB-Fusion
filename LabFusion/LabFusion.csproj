@@ -8,12 +8,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <DefineConstants>$(DefineConstants);MELONLOADER;EOS_PLATFORM_ANDROID;EOS_PLATFORM_WINDOWS_64</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -118,6 +118,11 @@
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_03.txt" />
     <None Remove="dependencies\resources\text\raw_changelog.txt" />
+      <None Remove="dependencies\resources\dex\androidx.dex" />
+      <None Remove="dependencies\resources\dex\eossdk.dex" />
+      <None Remove="dependencies\resources\dex\util.dex" />
+      <None Remove="dependencies\resources\lib\arm64\libEOSSDK.so" />
+      <None Remove="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
     <None Remove="FusionBundles\.gitignore" />
     <None Remove="FusionBundles\.vsconfig" />
     <None Remove="FusionBundles\Assets\Achievements.meta" />
@@ -308,6 +313,11 @@
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_03.txt" />
     <EmbeddedResource Include="dependencies\resources\text\raw_changelog.txt" />
     <EmbeddedResource Include="SupportModules\BonelabSupport.dll" />
+      <EmbeddedResource Include="dependencies\resources\dex\androidx.dex" />
+      <EmbeddedResource Include="dependencies\resources\dex\eossdk.dex" />
+      <EmbeddedResource Include="dependencies\resources\dex\util.dex" />
+      <EmbeddedResource Include="dependencies\resources\lib\arm64\libEOSSDK.so" />
+      <EmbeddedResource Include="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -384,6 +394,9 @@
     <Reference Include="Il2CppZString">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppZString.dll</HintPath>
 	</Reference>
+    <Reference Include="JNISharp">
+      <HintPath>dependencies\JNISharp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(BONELAB_DIR)\MelonLoader\net6\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -441,6 +454,12 @@
     <Reference Include="UnityEngine.VideoModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
+      <Reference Include="Il2CppOculus.Platform">
+          <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppOculus.Platform.dll</HintPath>
+      </Reference>
+      <Reference Include="Il2CppOculus.VR">
+          <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppOculus.VR.dll</HintPath>
+      </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -6,14 +6,14 @@ namespace LabFusion.Network;
 
 public class DisconnectMessageData : INetSerializable
 {
-    public ulong PlatformID;
+    public string PlatformID;
     public string Reason;
 
-    public static DisconnectMessageData Create(ulong longId, string reason = "")
+    public static DisconnectMessageData Create(string stringID, string reason = "")
     {
         return new DisconnectMessageData()
         {
-            PlatformID = longId,
+            PlatformID = stringID,
             Reason = reason,
         };
     }

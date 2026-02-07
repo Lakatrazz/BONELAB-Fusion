@@ -16,11 +16,11 @@ public static class FusionMasterList
 {
     public struct MasterPlayer
     {
-        public ulong id;
+        public string id;
         public string name;
         public bool unique;
 
-        public MasterPlayer(ulong id, string name, bool unique = true)
+        public MasterPlayer(string id, string name, bool unique = true)
         {
             this.id = id;
             this.name = name;
@@ -30,18 +30,18 @@ public static class FusionMasterList
 
     private static readonly MasterPlayer[] _steamPlayers = new MasterPlayer[] {
         // Fusion testers
-        new(76561198198752494, "Lakatrazz"),
-        new(76561198097630377, "AlexTheBaBa"),
-        new(76561198222917852, "Mr.Gaming"),
-        new(76561198096586464, "brwok"),
-        new(76561198143565238, "Riggle"),
-        new(76561198233973112, "Alfie", false),
-        new(76561198061847729, "zz0000"),
-        new(76561198837064193, "172", false),
-        new(76561198147092613, "Eli", false),
+        new("76561198198752494", "Lakatrazz"),
+        new("76561198097630377", "AlexTheBaBa"),
+        new("76561198222917852", "Mr.Gaming"),
+        new("76561198096586464", "brwok"),
+        new("76561198143565238", "Riggle"),
+        new("76561198233973112", "Alfie", false),
+        new("76561198061847729", "zz0000"),
+        new("76561198837064193", "172", false),
+        new("76561198147092613", "Eli", false),
     };
 
-    public static FusionMasterResult VerifyPlayer(ulong id, string name)
+    public static FusionMasterResult VerifyPlayer(string id, string name)
     {
         if (NetworkLayerManager.Layer is SteamNetworkLayer)
         {
@@ -51,7 +51,7 @@ public static class FusionMasterList
         return FusionMasterResult.NORMAL;
     }
 
-    private static FusionMasterResult VerifyPlayer(MasterPlayer[] players, ulong id, string name)
+    private static FusionMasterResult VerifyPlayer(MasterPlayer[] players, string id, string name)
     {
         for (var i = 0; i < players.Length; i++)
         {

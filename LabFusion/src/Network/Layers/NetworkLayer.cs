@@ -120,21 +120,21 @@ public abstract class NetworkLayer
     /// Forcefully closes the connection for a connected user.
     /// </summary>
     /// <param name="platformID">The PlatformID of the connected user.</param>
-    public abstract void DisconnectUser(ulong platformID);
+    public abstract void DisconnectUser(string platformID);
 
     /// <summary>
     /// Returns the username of the player with id userId.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public virtual string GetUsername(ulong userId) => "Unknown";
+    public virtual string GetUsername(string userId) => "Unknown";
 
     /// <summary>
     /// Returns true if this is a friend (ex. steam friends).
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public virtual bool IsFriend(ulong userId) => false;
+    public virtual bool IsFriend(string userId) => false;
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.
@@ -150,7 +150,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message) { }
+    public virtual void SendFromServer(string userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the dedicated server.
@@ -189,7 +189,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(string userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
@@ -231,6 +231,12 @@ public abstract class NetworkLayer
 
     public virtual void RefreshServerCode()
     {
+    }
+    
+    // Useful for layers that may use an id for the server that is different from the host's platform id
+    public virtual string GetServerID()
+    {
+        return PlayerIDManager.LocalPlatformID;
     }
 
     public virtual void JoinServerByCode(string code)

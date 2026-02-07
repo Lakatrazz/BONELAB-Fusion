@@ -18,7 +18,7 @@ public class LobbyInfo
 
     // Info
     [JsonPropertyName("lobbyID")]
-    public ulong LobbyID { get; set; } = 0;
+    public string LobbyID { get; set; } = "";
 
     [JsonPropertyName("lobbyCode")]
     public string LobbyCode { get; set; } = null;
@@ -34,6 +34,9 @@ public class LobbyInfo
 
     [JsonPropertyName("lobbyHostName")]
     public string LobbyHostName { get; set; } = null;
+    
+    [JsonPropertyName("lobbyHostID")]
+    public string LobbyHostID { get; set; } = null;
 
     [JsonPropertyName("playerCount")]
     public int PlayerCount { get; set; } = 0;
@@ -117,12 +120,13 @@ public class LobbyInfo
     public void WriteLobby()
     {
         // Info
-        LobbyID = PlayerIDManager.LocalPlatformID;
+        LobbyID = NetworkHelper.GetSeverID();
         LobbyCode = NetworkHelper.GetServerCode();
         LobbyName = SavedServerSettings.ServerName.Value;
         LobbyDescription = SavedServerSettings.ServerDescription.Value;
         LobbyVersion = FusionMod.Version;
         LobbyHostName = LocalPlayer.Username;
+        LobbyHostID = PlayerIDManager.LocalPlatformID;
 
         PlayerCount = PlayerIDManager.PlayerCount;
 

@@ -59,13 +59,29 @@ public static class NetworkHelper
     {
         NetworkLayerManager.Layer.RefreshServerCode();
     }
+    
+    /// <summary>
+    ///  Gets the ID of the server. Defaults to the host's platform ID if not implemented by the layer.
+    /// </summary>
+    /// <returns>The server ID.</returns>
+    public static string GetSeverID()
+    {
+        var layer = NetworkLayerManager.Layer;
+
+        if (layer == null)
+        {
+            return null;
+        }
+
+        return layer.GetServerID();
+    }
 
     /// <summary>
     /// Returns true if this user is friended on the active network platform.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public static bool IsFriend(ulong userId)
+    public static bool IsFriend(string userId)
     {
         if (NetworkLayerManager.Layer != null)
             return NetworkLayerManager.Layer.IsFriend(userId);
@@ -137,16 +153,16 @@ public static class NetworkHelper
     /// </summary>
     /// <param name="longId"></param>
     /// <returns></returns>
-    public static bool IsBanned(ulong longId)
+    public static bool IsBanned(string stringID)
     {
         // Check if the user is blessed
-        if (FusionBlessings.IsBlessed(longId))
+        if (FusionBlessings.IsBlessed(stringID))
             return false;
 
         // Check the ban list
         foreach (var ban in BanManager.BanList.Bans)
         {
-            if (ban.Player.PlatformID == longId)
+            if (ban.Player.PlatformID == stringID)
             {
                 return true;
             }
@@ -158,9 +174,9 @@ public static class NetworkHelper
     /// <summary>
     /// Pardons a user from the ban list.
     /// </summary>
-    /// <param name="longId"></param>
-    public static void PardonUser(ulong longId)
+    /// <param name="stringID"></param>
+    public static void PardonUser(string stringID)
     {
-        BanManager.Pardon(longId);
+        BanManager.Pardon(stringID);
     }
 }

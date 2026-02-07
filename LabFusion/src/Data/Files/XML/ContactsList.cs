@@ -7,7 +7,7 @@ namespace LabFusion.Data;
 
 public sealed class Contact
 {
-    public ulong id;
+    public string id;
     public string username;
     public float volume;
 
@@ -36,14 +36,10 @@ public sealed class Contact
 
     public Contact(XElement element)
     {
-        id = 0;
         username = string.Empty;
         volume = 1f;
 
-        if (element.TryGetAttribute(nameof(id), out var rawId))
-        {
-            ulong.TryParse(rawId, out id);
-        }
+        element.TryGetAttribute(nameof(id), out id);
 
         if (element.TryGetAttribute(nameof(username), out var rawUser))
         {
