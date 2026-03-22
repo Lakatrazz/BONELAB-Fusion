@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Senders;
-using LabFusion.Representation;
 using LabFusion.UI.Popups;
+using LabFusion.Permissions;
 
 namespace LabFusion.Network;
 
@@ -79,8 +79,8 @@ public static class NetworkHelper
     /// <param name="id"></param>
     public static void KickUser(PlayerID id)
     {
-        // Don't kick blessed users
-        if (FusionBlessings.IsBlessed(id))
+        // Don't kick master users
+        if (MasterPermissionsManager.IsMaster(id))
         {
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
@@ -108,8 +108,8 @@ public static class NetworkHelper
     /// <param name="id"></param>
     public static void BanUser(PlayerID id)
     {
-        // Don't ban blessed users
-        if (FusionBlessings.IsBlessed(id))
+        // Don't ban master users
+        if (MasterPermissionsManager.IsMaster(id))
         {
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
@@ -135,18 +135,18 @@ public static class NetworkHelper
     /// <summary>
     /// Checks if a user is banned.
     /// </summary>
-    /// <param name="longId"></param>
+    /// <param name="longID"></param>
     /// <returns></returns>
-    public static bool IsBanned(ulong longId)
+    public static bool IsBanned(ulong longID)
     {
-        // Check if the user is blessed
-        if (FusionBlessings.IsBlessed(longId))
+        // Check if the user is a master
+        if (MasterPermissionsManager.IsMaster(longID))
             return false;
 
         // Check the ban list
         foreach (var ban in BanManager.BanList.Bans)
         {
-            if (ban.Player.PlatformID == longId)
+            if (ban.Player.PlatformID == longID)
             {
                 return true;
             }
