@@ -411,8 +411,8 @@ public static class MenuMatchmaking
         element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = TextFilter.Filter(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
-        element.HostNameText.text = TextFilter.Filter(metadata.LobbyInfo.LobbyHostName);
+        element.ServerNameText.text = TextFilter.FilterCommon(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
+        element.HostNameText.text = TextFilter.FilterCommon(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -511,10 +511,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = TextFilter.Filter(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
+        element.ServerNameElement.Value = TextFilter.FilterCommon(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(TextFilter.Filter(info.LobbyInfo.LobbyHostName));
+            .WithTitle(TextFilter.FilterCommon(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -523,7 +523,7 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = TextFilter.Filter(info.LobbyInfo.LobbyDescription);
+        element.DescriptionElement.Value = TextFilter.FilterCommon(info.LobbyInfo.LobbyDescription);
 
         element.MoreElement
             .Cleared()
@@ -634,14 +634,14 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = TextFilter.Filter(info.Username);
+        element.UsernameElement.Title = TextFilter.FilterCommon(info.Username);
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.Filter(info.Nickname);
+        element.NicknameElement.Value = TextFilter.FilterCommon(info.Nickname);
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.Filter(info.Description);
+        element.DescriptionElement.Value = TextFilter.FilterCommon(info.Description);
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         element.PermissionsElement

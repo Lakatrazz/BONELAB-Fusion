@@ -614,16 +614,16 @@ public static class MenuLocation
     private static void ApplyPlayerToElement(PlayerElement element, PlayerID player)
     {
         // Apply name and description
-        var username = TextFilter.Filter(player.Metadata.Username.GetValue());
+        var username = TextFilter.FilterCommon(player.Metadata.Username.GetValue());
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.Nickname.GetValue());
+        element.NicknameElement.Value = TextFilter.FilterCommon(player.Metadata.Nickname.GetValue());
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.Description.GetValue());
+        element.DescriptionElement.Value = TextFilter.FilterCommon(player.Metadata.Description.GetValue());
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 

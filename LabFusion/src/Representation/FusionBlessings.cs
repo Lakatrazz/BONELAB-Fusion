@@ -11,7 +11,7 @@
 
         public static bool IsBlessed(ulong id)
         {
-            return FusionMasterList.VerifyPlayer(id, string.Empty) == FusionMasterResult.MASTER;
+            return TrustedListManager.VerifyPlayer(id, string.Empty) == FusionMasterResult.MASTER;
         }
 
         public static BlessingLevel GetBlessingLevel(ulong id)

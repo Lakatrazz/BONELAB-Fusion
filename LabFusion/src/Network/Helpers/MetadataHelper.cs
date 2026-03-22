@@ -28,16 +28,16 @@ public static class MetadataHelper
         var username = id.Metadata.Username.GetValue();
         var nickname = id.Metadata.Nickname.GetValue();
 
-        username = TextFilter.Filter(username);
-        nickname = TextFilter.Filter(nickname);
+        username = TextFilter.FilterCommon(username);
+        nickname = TextFilter.FilterCommon(nickname);
 
         // Check validity
-        if (FusionMasterList.VerifyPlayer(id.PlatformID, username) == FusionMasterResult.IMPERSONATOR)
+        if (TrustedListManager.VerifyPlayer(id.PlatformID, username) == TrustedStatus.Impersonator)
         {
             username = $"{username} (FAKE)";
         }
 
-        if (FusionMasterList.VerifyPlayer(id.PlatformID, nickname) == FusionMasterResult.IMPERSONATOR)
+        if (TrustedListManager.VerifyPlayer(id.PlatformID, nickname) == TrustedStatus.Impersonator)
         {
             nickname = $"{nickname} (FAKE)";
         }
