@@ -18,7 +18,11 @@ public static class TextFilter
     /// <returns>The filtered text.</returns>
     public static string FilterCommon(string text)
     {
-        return ProfanityFilter.Filter(text.RemoveRichTextExceptColor());
+        return 
+            LinkFilter.Filter(
+            ProfanityFilter.Filter(
+            text.RemoveRichTextExceptColor()
+            ));
     }
 
     /// <summary>
@@ -28,7 +32,12 @@ public static class TextFilter
     /// <returns></returns>
     public static string RemoveNonAlphanumeric(string text)
     {
-        return Regex.Replace(text, "[^a-zA-Z0-9]", string.Empty);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text;
+        }
+
+        return Regex.Replace(text, NonAlphanumericExpression, string.Empty);
     }
 
     /// <summary>
