@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 
-using LabFusion.Network;
 using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
-
-using LabFusion.Network.Serialization;
 
 using System;
 
 public class SerializedQuaternion : INetSerializable
 {
+    public const int Size = sizeof(short) * 3 + sizeof(byte);
+
+    public int? GetSize() => Size;
+
     public short c1, c2, c3;
     public byte loss; // Lost component in compression
-
-    public const ushort Size = sizeof(short) * 3 + sizeof(byte);
 
     // The amount we multiply / divide by to preserve precision when using shorts
     public const float PRECISION_OFFSET = 10000.0f;

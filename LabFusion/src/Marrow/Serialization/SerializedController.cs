@@ -13,7 +13,7 @@ namespace LabFusion.Marrow.Serialization;
 
 public class SerializedController : INetSerializable
 {
-    public const int Size = sizeof(float) * 3 + sizeof(byte) * 10;
+    public const int Size = SerializedSmallVector2.Size + sizeof(byte) * 10;
 
     public float IndexCurl;
     public float MiddleCurl;
@@ -144,18 +144,18 @@ public class SerializedController : INetSerializable
         serializer.SerializeValue(ref PrimaryInteractionButton);
         serializer.SerializeValue(ref SecondaryInteractionButton);
 
-        SerializedSmallDirection2D thumbstickAxis = null;
+        SerializedSmallVector2 thumbstickVector = null;
 
         if (!serializer.IsReader)
         {
-            thumbstickAxis = SerializedSmallDirection2D.Compress(this.ThumbstickAxis);
+            thumbstickVector = SerializedSmallVector2.Compress(this.ThumbstickAxis);
         }
 
-        serializer.SerializeValue(ref thumbstickAxis);
+        serializer.SerializeValue(ref thumbstickVector);
 
         if (serializer.IsReader)
         {
-            this.ThumbstickAxis = thumbstickAxis.Expand();
+            this.ThumbstickAxis = thumbstickVector.Expand();
         }
     }
 

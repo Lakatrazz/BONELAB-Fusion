@@ -8,6 +8,8 @@ public class SerializedShortVector3 : INetSerializable
 {
     public const int Size = sizeof(short) * 3 + sizeof(float);
 
+    public int? GetSize() => Size;
+
     public short x, y, z;
     public float magnitude;
 

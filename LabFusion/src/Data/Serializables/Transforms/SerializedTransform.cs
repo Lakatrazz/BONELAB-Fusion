@@ -11,6 +11,8 @@ public class SerializedTransform : INetSerializable
     public const ushort Size = sizeof(float) * 3 + SerializedQuaternion.Size;
     public static readonly SerializedTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
 
+    public int? GetSize() => Size;
+
     public Vector3 position;
     public Quaternion rotation;
 

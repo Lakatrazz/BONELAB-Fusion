@@ -11,6 +11,8 @@ public class SerializedSmallQuaternion : INetSerializable
     public const int Size = sizeof(byte) * 4;
     public static readonly SerializedSmallQuaternion Default = Compress(QuaternionExtensions.identity);
 
+    public int? GetSize() => Size;
+
     public sbyte c1, c2, c3, c4;
 
     public void Serialize(INetSerializer serializer)

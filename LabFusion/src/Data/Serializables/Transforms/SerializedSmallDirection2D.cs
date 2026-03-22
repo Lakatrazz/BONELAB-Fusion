@@ -9,6 +9,8 @@ public class SerializedSmallDirection2D : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
+    public int? GetSize() => Size;
+
     public sbyte x, y;
 
     public void Serialize(INetSerializer serializer)
