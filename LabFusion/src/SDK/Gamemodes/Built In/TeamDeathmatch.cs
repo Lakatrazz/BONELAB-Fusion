@@ -522,7 +522,7 @@ public class TeamDeathmatch : Gamemode
             SetTeams();
         }
 
-        _timeOfStart = TimeUtilities.TimeSinceStartup;
+        _timeOfStart = TimeReferences.TimeSinceStartup;
         _oneMinuteLeft = false;
 
         // Apply overrides
@@ -619,7 +619,7 @@ public class TeamDeathmatch : Gamemode
 
     public float GetTimeElapsed()
     {
-        return TimeUtilities.TimeSinceStartup - _timeOfStart;
+        return TimeReferences.TimeSinceStartup - _timeOfStart;
     }
 
     public float GetMinutesLeft()

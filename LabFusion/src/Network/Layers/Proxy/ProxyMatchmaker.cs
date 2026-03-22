@@ -70,7 +70,7 @@ public sealed class ProxyMatchmaker : IMatchmaker
         {
             yield return null;
 
-            timeTaken += TimeUtilities.DeltaTime;
+            timeTaken += TimeReferences.DeltaTime;
 
             if (timeTaken >= 20f)
             {
@@ -93,7 +93,7 @@ public sealed class ProxyMatchmaker : IMatchmaker
             while (!metadataTask.IsCompleted)
             {
                 yield return null;
-                timeTaken += TimeUtilities.DeltaTime;
+                timeTaken += TimeReferences.DeltaTime;
 
                 if (timeTaken >= 20f)
                 {

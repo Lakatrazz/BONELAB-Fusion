@@ -78,7 +78,7 @@ public static class NetworkModRequester
         // Wait for timeout
         while (!receivedCallback && elapsed < 5f)
         {
-            elapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
             yield return null;
         }
 

@@ -260,7 +260,7 @@ public class FusionMod : MelonMod
         ModIODownloader.UpdateQueue();
 
         // Update Time before running any functions
-        TimeUtilities.OnEarlyUpdate();
+        TimeReferences.OnEarlyUpdate();
 
         // Update the level loading checks
         FusionSceneManager.Internal_UpdateScene();
@@ -269,11 +269,13 @@ public class FusionMod : MelonMod
         PopupManager.OnUpdate();
 
         // Update tick rate
-        float deltaTime = TimeUtilities.DeltaTime;
+        float unscaledDeltaTime = TimeReferences.UnscaledDeltaTime;
 
-        NetworkTickManager.OnUpdate(deltaTime);
+        NetworkTickManager.OnUpdate(unscaledDeltaTime);
 
         // Update network players
+        float deltaTime = TimeReferences.DeltaTime;
+
         NetworkPlayerManager.OnUpdate(deltaTime);
 
         // Update network entities
@@ -300,13 +302,13 @@ public class FusionMod : MelonMod
 
     public override void OnFixedUpdate()
     {
-        TimeUtilities.OnEarlyFixedUpdate();
+        TimeReferences.OnEarlyFixedUpdate();
 
         LocalPlayer.OnFixedUpdate();
 
         PDController.OnFixedUpdate();
 
-        var deltaTime = TimeUtilities.FixedDeltaTime;
+        var deltaTime = TimeReferences.FixedDeltaTime;
 
         NetworkPlayerManager.OnFixedUpdate(deltaTime);
 
@@ -322,7 +324,7 @@ public class FusionMod : MelonMod
     public override void OnLateUpdate()
     {
         // Update players and entity late updates
-        float deltaTime = TimeUtilities.DeltaTime;
+        float deltaTime = TimeReferences.DeltaTime;
         NetworkPlayerManager.OnLateUpdate(deltaTime);
         NetworkEntityManager.OnLateUpdate(deltaTime);
 

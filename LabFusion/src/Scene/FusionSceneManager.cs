@@ -106,7 +106,7 @@ public static partial class FusionSceneManager
         }
         else if (_loadingTimer <= LEVEL_LOAD_WINDOW)
         {
-            _loadingTimer += TimeUtilities.DeltaTime;
+            _loadingTimer += TimeReferences.DeltaTime;
             _isDelayedLoading = true;
         }
         else if (_isDelayedLoading)

@@ -134,7 +134,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         Unfreeze();
 
         _receivedPose = true;
-        _lastReceivedTime = TimeUtilities.TimeSinceStartup;
+        _lastReceivedTime = TimeReferences.TimeSinceStartup;
     }
 
     public void ResetPrediction()
@@ -365,7 +365,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void OnOwnedUpdate(float deltaTime)
     {
         // If we were sleeping last frame, only check so often
-        if (IsSleeping && !TimeUtilities.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
+        if (IsSleeping && !TimeReferences.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
         {
             return;
         }
@@ -459,7 +459,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Check if this hasn't received an update in a while
-        float timeSinceMessage = TimeUtilities.TimeSinceStartup - _lastReceivedTime;
+        float timeSinceMessage = TimeReferences.TimeSinceStartup - _lastReceivedTime;
 
         if (timeSinceMessage >= SleepTimer)
         {

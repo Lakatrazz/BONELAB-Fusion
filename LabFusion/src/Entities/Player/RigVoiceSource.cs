@@ -96,7 +96,7 @@ public class RigVoiceSource
 
         TargetFrequency = HighFrequency * OcclusionMultiplier;
 
-        Frequency = ManagedMathf.Lerp(Frequency, TargetFrequency, Smoothing.CalculateDecay(24f, TimeUtilities.DeltaTime));
+        Frequency = ManagedMathf.Lerp(Frequency, TargetFrequency, Smoothing.CalculateDecay(24f, TimeReferences.DeltaTime));
 
         LowPassFilter.cutoffFrequency = Frequency;
     }

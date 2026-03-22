@@ -350,7 +350,7 @@ public class Deathmatch : Gamemode
         });
 
         // Reset time
-        _timeOfStart = TimeUtilities.TimeSinceStartup;
+        _timeOfStart = TimeReferences.TimeSinceStartup;
         _oneMinuteLeft = false;
 
         // Reset death status
@@ -505,7 +505,7 @@ public class Deathmatch : Gamemode
         LocalControls.DisableSlowMo = false;
     }
 
-    public float GetTimeElapsed() => TimeUtilities.TimeSinceStartup - _timeOfStart;
+    public float GetTimeElapsed() => TimeReferences.TimeSinceStartup - _timeOfStart;
     public float GetMinutesLeft()
     {
         float elapsed = GetTimeElapsed();

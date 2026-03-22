@@ -36,7 +36,7 @@ public static class AchievementPopup
 
     private static void DequeueAchievement()
     {
-        _timeOfPopup = TimeUtilities.TimeSinceStartup;
+        _timeOfPopup = TimeReferences.TimeSinceStartup;
         var achievement = _queuedAchievements.Dequeue();
 
         var camera = RigData.Refs.ControllerRig.m_head;
@@ -73,7 +73,7 @@ public static class AchievementPopup
 
     internal static bool IsPlayingPopup()
     {
-        return TimeUtilities.TimeSinceStartup - _timeOfPopup <= (DefaultDuration + 0.1f);
+        return TimeReferences.TimeSinceStartup - _timeOfPopup <= (DefaultDuration + 0.1f);
     }
 
     internal static void OnInitializeMelon()

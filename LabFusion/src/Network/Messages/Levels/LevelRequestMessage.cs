@@ -35,7 +35,7 @@ public class LevelRequestMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Prevent request spamming
-        if (TimeUtilities.TimeSinceStartup - _timeOfRequest <= _requestCooldown)
+        if (TimeReferences.TimeSinceStartup - _timeOfRequest <= _requestCooldown)
         {
             return;
         }
@@ -47,7 +47,7 @@ public class LevelRequestMessage : NativeMessageHandler
             return;
         }
 
-        _timeOfRequest = TimeUtilities.TimeSinceStartup;
+        _timeOfRequest = TimeReferences.TimeSinceStartup;
 
         var data = received.ReadData<LevelRequestData>();
 

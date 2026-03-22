@@ -104,7 +104,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 client.PollEvents();
 
                 // Tick time
-                timeElapsed += TimeUtilities.DeltaTime;
+                timeElapsed += TimeReferences.DeltaTime;
                 yield return null;
             }
         }

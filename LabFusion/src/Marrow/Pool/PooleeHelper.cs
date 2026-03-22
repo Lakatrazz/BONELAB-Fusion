@@ -20,7 +20,7 @@ public static class PooleeHelper
         float elapsed = 0f;
         while (elapsed < seconds)
         {
-            elapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
             yield return null;
         }
 

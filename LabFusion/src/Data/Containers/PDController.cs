@@ -65,7 +65,7 @@ public class PDController
 
     public static void OnFixedUpdate()
     {
-        float dt = TimeUtilities.FixedDeltaTime;
+        float dt = TimeReferences.FixedDeltaTime;
 
         // Make sure the deltaTime has changed
         if (ManagedMathf.Approximately(dt, _lastFixedDelta))

@@ -95,7 +95,7 @@ public class SerializedController : INetSerializable
         controller._thumbstickAxis = Vector2.Lerp(controller._thumbstickAxis, ThumbstickAxis, NetworkTickManager.InterpolationTime);
 
         // Update hovering so that grips solve properly
-        controller._lastTimeGrabbed = TimeUtilities.TimeSinceStartup;
+        controller._lastTimeGrabbed = TimeReferences.TimeSinceStartup;
     }
 
     public static void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)

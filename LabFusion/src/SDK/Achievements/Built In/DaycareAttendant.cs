@@ -52,7 +52,7 @@ public class DaycareAttendant : Achievement
         // If we haven't already given the achievement, and there is more than 1 player, increment the timer
         if (!_oneHourPassed && PlayerIDManager.HasOtherPlayers)
         {
-            _timeElapsed += TimeUtilities.DeltaTime;
+            _timeElapsed += TimeReferences.DeltaTime;
 
             // 3600 seconds in an hour
             if (_timeElapsed >= 3600f)

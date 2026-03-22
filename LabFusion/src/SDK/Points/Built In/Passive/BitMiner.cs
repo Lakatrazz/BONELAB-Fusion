@@ -69,7 +69,7 @@ public class BitMiner : PointItem
             return;
         }
 
-        _bitTime += TimeUtilities.DeltaTime;
+        _bitTime += TimeReferences.DeltaTime;
 
         if (_bitTime > 60f)
         {

@@ -365,7 +365,7 @@ public class HideAndSeek : Gamemode
 
         while (notificationWait < 4f)
         {
-            notificationWait += TimeUtilities.DeltaTime;
+            notificationWait += TimeReferences.DeltaTime;
             yield return null;
         }
 
@@ -418,8 +418,8 @@ public class HideAndSeek : Gamemode
             }
 
             // Tick timer
-            elapsed += TimeUtilities.DeltaTime;
-            totalElapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
+            totalElapsed += TimeReferences.DeltaTime;
 
             // If a second passed, send the notification next frame
             if (elapsed >= 1f)
@@ -516,7 +516,7 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        _elapsedTime += TimeUtilities.DeltaTime;
+        _elapsedTime += TimeReferences.DeltaTime;
 
         Playlist.Update();
 

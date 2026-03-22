@@ -80,7 +80,7 @@ public class RigPuppet
 
         while (elapsed < 0.2f)
         {
-            elapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
             yield return null;
         }
 
