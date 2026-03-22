@@ -9,6 +9,11 @@ public static class LinkFilter
 {
     public const string LinkExpression = @"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\\=]*)";
 
+    /// <summary>
+    /// Replaces all links in a string with <see cref="FilterSettings.CensorCharacter"/>.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     public static string Filter(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -16,6 +21,6 @@ public static class LinkFilter
             return text;
         }
 
-        return Regex.Replace(text, LinkExpression, string.Empty);
+        return Regex.Replace(text, LinkExpression, match => FilterSettings.CensorString(match.Length));
     }
 }
