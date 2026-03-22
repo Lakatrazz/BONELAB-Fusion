@@ -25,8 +25,8 @@ public static class MetadataHelper
 
     public static bool TryGetDisplayName(this PlayerID id, out string name)
     {
-        var username = id.Metadata.Username.GetValue();
-        var nickname = id.Metadata.Nickname.GetValue();
+        var username = id.Metadata.Username.GetValueOrEmpty();
+        var nickname = id.Metadata.Nickname.GetValueOrEmpty();
 
         username = TextFilter.FilterCommon(username);
         nickname = TextFilter.FilterCommon(nickname);

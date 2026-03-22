@@ -126,17 +126,17 @@ namespace LabFusion.Marrow.Integration
         {
             if (!NetworkInfo.HasServer)
             {
-                return null;
+                return string.Empty;
             }
 
             var player = PlayerIDManager.GetPlayerID((byte)playerID);
 
             if (player == null)
             {
-                return null;
+                return string.Empty;
             }
 
-            return player.Metadata.Username.GetValue();
+            return player.Metadata.Username.GetValueOrEmpty();
         }
 
         public int GetLocalPlayerID()

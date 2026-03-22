@@ -614,21 +614,21 @@ public static class MenuLocation
     private static void ApplyPlayerToElement(PlayerElement element, PlayerID player)
     {
         // Apply name and description
-        var username = TextFilter.FilterCommon(player.Metadata.Username.GetValue());
+        var username = TextFilter.FilterCommon(player.Metadata.Username.GetValueOrEmpty());
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.FilterCommon(player.Metadata.Nickname.GetValue());
+        element.NicknameElement.Value = TextFilter.FilterCommon(player.Metadata.Nickname.GetValueOrEmpty());
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.FilterCommon(player.Metadata.Description.GetValue());
+        element.DescriptionElement.Value = TextFilter.FilterCommon(player.Metadata.Description.GetValueOrEmpty());
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         // Apply icon
-        var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+        var avatarTitle = player.Metadata.AvatarTitle.GetValueOrEmpty();
         var modId = player.Metadata.AvatarModID.GetValue();
 
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);

@@ -31,7 +31,7 @@ public sealed class Contact
     public void Update(PlayerID id)
     {
         this.id = id;
-        username = id.Metadata.Username.GetValue();
+        username = id.Metadata.Username.GetValueOrEmpty();
     }
 
     public Contact(XElement element)
