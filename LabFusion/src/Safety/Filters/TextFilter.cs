@@ -12,16 +12,32 @@ public static class TextFilter
     public const string NonAlphanumericExpression = "[^a-zA-Z0-9]";
 
     /// <summary>
+    /// Filters a text with multiple common safety filters, but removes all rich text including color.
+    /// This should be used when a valid input should not include rich text, such as a raw username.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public static string FilterCommonAndRichText(string text)
+    {
+        return ApplyCommonFilters(text.RemoveRichText());
+    }
+
+    /// <summary>
     /// Filters a text with multiple common safety filters.
     /// </summary>
     /// <param name="text">The text to filter.</param>
     /// <returns>The filtered text.</returns>
     public static string FilterCommon(string text)
     {
-        return 
+        return ApplyCommonFilters(text.RemoveRichTextExceptColor());
+    }
+
+    private static string ApplyCommonFilters(string text)
+    {
+        return
             LinkFilter.Filter(
             ProfanityFilter.Filter(
-            text.RemoveRichTextExceptColor()
+            text
             ));
     }
 

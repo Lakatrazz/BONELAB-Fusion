@@ -28,7 +28,7 @@ public static class MetadataHelper
         var username = id.Metadata.Username.GetValueOrEmpty();
         var nickname = id.Metadata.Nickname.GetValueOrEmpty();
 
-        username = TextFilter.FilterCommon(username);
+        username = TextFilter.FilterCommonAndRichText(username);
         nickname = TextFilter.FilterCommon(nickname);
 
         // Check validity

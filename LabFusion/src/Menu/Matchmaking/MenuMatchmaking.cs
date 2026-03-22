@@ -412,7 +412,7 @@ public static class MenuMatchmaking
         element.LevelNameText.color = levelColor;
 
         element.ServerNameText.text = TextFilter.FilterCommon(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
-        element.HostNameText.text = TextFilter.FilterCommon(metadata.LobbyInfo.LobbyHostName);
+        element.HostNameText.text = TextFilter.FilterCommonAndRichText(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -442,7 +442,7 @@ public static class MenuMatchmaking
     {
         if (string.IsNullOrWhiteSpace(serverName))
         {
-            serverName = $"{hostName}'s Server";
+            serverName = $"{hostName.RemoveRichText()}'s Server";
         }
 
         return serverName;
@@ -514,7 +514,7 @@ public static class MenuMatchmaking
         element.ServerNameElement.Value = TextFilter.FilterCommon(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(TextFilter.FilterCommon(info.LobbyInfo.LobbyHostName));
+            .WithTitle(TextFilter.FilterCommonAndRichText(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -611,11 +611,13 @@ public static class MenuMatchmaking
 
         foreach (var player in info.LobbyInfo.PlayerList.Players)
         {
-            var playerResult = playerListPage.AddElement<PlayerResultElement>(player.Username);
+            var username = TextFilter.FilterCommonAndRichText(player.Username);
+            
+            var playerResult = playerListPage.AddElement<PlayerResultElement>(username);
 
             playerResult.GetReferences();
 
-            playerResult.PlayerNameText.text = player.Username;
+            playerResult.PlayerNameText.text = username;
 
             playerResult.RoleText.text = player.PermissionLevel.ToString();
 
@@ -634,7 +636,7 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = TextFilter.FilterCommon(info.Username);
+        element.UsernameElement.Title = TextFilter.FilterCommonAndRichText(info.Username);
 
         element.NicknameElement.Title = "Nickname";
         element.NicknameElement.Value = TextFilter.FilterCommon(info.Nickname);
