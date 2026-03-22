@@ -61,11 +61,13 @@ public abstract class NativeMessageHandler : MessageHandler
             MessagePrefix prefix = null;
             reader.SerializeValue(ref prefix);
 
+            MessageRoute route = prefix.Route;
+
             byte? sender = prefix.Sender;
             ulong? platformID = message.PlatformID;
 
             // Prevent ID spoofing
-            if (isServerHandled && !ValidateReceivedID(ref sender, ref platformID))
+            if (isServerHandled && !ValidateReceivedID(route.Type, ref sender, ref platformID))
             {
                 NetworkConnectionManager.DisconnectUser(platformID.Value);
                 return;
@@ -79,7 +81,7 @@ public abstract class NativeMessageHandler : MessageHandler
             {
                 var payload = new ReceivedMessage()
                 {
-                    Route = prefix.Route,
+                    Route = route,
                     Sender = sender,
                     PlatformID = platformID,
                     Bytes = bytes,
@@ -101,7 +103,7 @@ public abstract class NativeMessageHandler : MessageHandler
         }
     }
 
-    private static bool ValidateReceivedID(ref byte? sender, ref ulong? platformID)
+    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref ulong? platformID)
     {
         // If we weren't given a PlatformID, there is nothing to validate
         if (!platformID.HasValue)
@@ -114,6 +116,13 @@ public abstract class NativeMessageHandler : MessageHandler
         // No existing PlayerID, nothing to validate
         if (playerID == null)
         {
+            // If this isn't a relay message, then we can allow the message to go through as its normal for the PlayerID to not be established
+            // However, relay messages should NOT go through! Otherwise, the user can impact the lobby without visibly being in it.
+            if (relayType != RelayType.None)
+            {
+                return false;
+            }
+
             // Sender has a PlayerID but the PlatformID doesn't! User is spoofing!
             if (sender.HasValue && PlayerIDManager.HasPlayerID(sender.Value))
             {
