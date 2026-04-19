@@ -1,35 +1,27 @@
-﻿using LabFusion.Entities;
-using LabFusion.Marrow.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
 using LabFusion.Marrow.Extenders;
 
+using Il2CppSLZ.Marrow;
+
 namespace LabFusion.Marrow.Messages;
 
 public class GunShotData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = sizeof(byte) + ComponentIndexData.Size;
 
-    public byte ammoCount;
-    public ushort gunId;
-    public byte gunIndex;
+    public byte AmmoCount;
+
+    public ComponentIndexData Gun;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref ammoCount);
-        serializer.SerializeValue(ref gunId);
-        serializer.SerializeValue(ref gunIndex);
-    }
-
-    public static GunShotData Create(byte ammoCount, ushort gunId, byte gunIndex)
-    {
-        return new GunShotData()
-        {
-            ammoCount = ammoCount,
-            gunId = gunId,
-            gunIndex = gunIndex,
-        };
+        serializer.SerializeValue(ref AmmoCount);
+        serializer.SerializeValue(ref Gun);
     }
 }
 
@@ -40,39 +32,54 @@ public class GunShotMessage : ModuleMessageHandler
     {
         var data = received.ReadData<GunShotData>();
 
-        var gun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.gunId);
+        var gunEntity = data.Gun.Entity.GetEntity();
 
-        if (gun == null)
+        if (gunEntity == null)
         {
             return;
         }
 
-        var extender = gun.GetExtender<GunExtender>();
+        var gunExtender = gunEntity.GetExtender<GunExtender>();
 
-        if (extender == null)
+        if (gunExtender == null)
         {
             return;
         }
 
         // Fire the gun, make sure it has ammo in its mag so it can fire properly
-        var comp = extender.GetComponent(data.gunIndex);
+        var gun = gunExtender.GetComponent(data.Gun.ComponentIndex);
 
-        comp.hasFiredOnce = false;
-        comp.isTriggerPulledOnAttach = false;
+        gun.hasFiredOnce = false;
+        gun.isTriggerPulledOnAttach = false;
 
-        if (comp._magState != null)
+        var magState = gun.MagazineState;
+        bool hasMagState = magState != null;
+
+        // If there is a magazine, we can modify the ammo count
+        if (hasMagState)
         {
-            comp._magState.SetCartridge(data.ammoCount + 1);
+            magState.SetCartridge(data.AmmoCount + 1);
         }
 
-        comp.CeaseFire();
-        comp.Charge();
+        gun.CeaseFire();
+        gun.Charge();
 
-        if (!comp.allowFireOnSlideGrabbed)
-            comp.SlideGrabbedReleased();
+        // If no magazine is available, we still want the gun to fire
+        // So we can forcefully insert the default cartridge
+        if (!hasMagState)
+        {
+            gun.chamberedCartridge = gun.defaultCartridge;
+            gun.cartridgeState = Gun.CartridgeStates.UNSPENT;
+            gun.isCharged = true;
+        }
+
+        if (!gun.allowFireOnSlideGrabbed)
+        {
+            gun.SlideGrabbedReleased();
+        }
 
         GunPatches.IgnorePatches = true;
-        comp.Fire();
+        gun.Fire();
         GunPatches.IgnorePatches = false;
     }
 }

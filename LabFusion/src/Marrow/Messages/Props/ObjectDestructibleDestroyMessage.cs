@@ -1,7 +1,6 @@
 ﻿using LabFusion.Marrow.Patching;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Extensions;
-using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
@@ -15,7 +14,7 @@ public class ObjectDestructibleDestroyMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ComponentIndexData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityID);
+        var entity = data.Entity.GetEntity();
 
         if (entity == null)
         {

@@ -1,27 +1,28 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class ComponentIndexData : INetSerializable
 {
-    public const int Size = sizeof(ushort) * 2;
+    public const int Size = NetworkEntityReference.Size + sizeof(ushort);
 
-    public ushort EntityID;
+    public NetworkEntityReference Entity;
     public ushort ComponentIndex;
 
     public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref Entity);
         serializer.SerializeValue(ref ComponentIndex);
     }
 
-    public static ComponentIndexData Create(ushort entityId, ushort componentIndex)
+    public static ComponentIndexData Create(ushort entityID, ushort componentIndex)
     {
         return new ComponentIndexData()
         {
-            EntityID = entityId,
+            Entity = new(entityID),
             ComponentIndex = componentIndex,
         };
     }
