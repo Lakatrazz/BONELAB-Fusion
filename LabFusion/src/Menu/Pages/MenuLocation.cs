@@ -173,7 +173,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle(info.LobbyHostName);
+            .WithTitle(info.LobbyHostName.RemoveRichText());
 
         element.DescriptionElement
             .Cleared()
@@ -535,11 +535,13 @@ public static class MenuLocation
         {
             var player = ban.Player;
 
-            var banResult = banListPage.AddElement<PlayerResultElement>(player.Username);
+            string username = player.Username.RemoveRichText();
+
+            var banResult = banListPage.AddElement<PlayerResultElement>(username);
 
             banResult.GetReferences();
 
-            banResult.PlayerNameText.text = player.Username;
+            banResult.PlayerNameText.text = username;
 
             banResult.RoleText.text = "Banned";
 
@@ -575,8 +577,8 @@ public static class MenuLocation
     private static void ApplyBannedPlayerToElement(PlayerElement element, PlayerInfo playerInfo)
     {
         // Apply name and description
-        var username = playerInfo.Username;
-        element.UsernameElement.Title = username.RemoveRichTextExceptColor();
+        var username = playerInfo.Username.RemoveRichText();
+        element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
         element.NicknameElement.Value = playerInfo.Nickname.RemoveRichTextExceptColor();
@@ -614,21 +616,21 @@ public static class MenuLocation
     private static void ApplyPlayerToElement(PlayerElement element, PlayerID player)
     {
         // Apply name and description
-        var username = TextFilter.Filter(player.Metadata.Username.GetValue());
+        var username = TextFilter.FilterCommonAndRichText(player.Metadata.Username.GetValueOrEmpty());
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.Nickname.GetValue());
+        element.NicknameElement.Value = TextFilter.FilterCommon(player.Metadata.Nickname.GetValueOrEmpty());
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.Description.GetValue());
+        element.DescriptionElement.Value = TextFilter.FilterCommon(player.Metadata.Description.GetValueOrEmpty());
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         // Apply icon
-        var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+        var avatarTitle = player.Metadata.AvatarTitle.GetValueOrEmpty();
         var modId = player.Metadata.AvatarModID.GetValue();
 
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);

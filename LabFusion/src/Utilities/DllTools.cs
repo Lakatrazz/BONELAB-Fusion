@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
 
 //https://stackoverflow.com/questions/16518943/dllimport-or-loadlibrary-for-best-performance
 //https://newbedev.com/how-can-i-specify-a-dllimport-path-at-runtime
@@ -14,5 +15,33 @@ namespace LabFusion.Utilities
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern UInt32 GetLastError();
+        
+        [DllImport("libdl.so")]
+        public static extern IntPtr dlopen(string filename, int flags = 2);
+
+        [DllImport("libdl.so")]
+        public static extern int dlclose(IntPtr handle);
+
+        [DllImport("libdl.so")]
+        public static extern IntPtr dlerror();
+            
+        public static void RedirectDllImport(string originalDll, string newDll)
+        {
+            IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) 
+            {
+                if (!libraryName.Equals(originalDll, StringComparison.OrdinalIgnoreCase)) return IntPtr.Zero;
+            
+                try
+                {
+                    return NativeLibrary.Load(newDll, assembly, searchPath);
+                }
+                catch
+                {
+                    return IntPtr.Zero;
+                }
+            }
+            
+            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), ImportResolver);
+        }
     }
 }

@@ -25,7 +25,7 @@ public class LimitedActivityTracker
 
         public float LastActivityTime { get; private set; } = 0f;
 
-        public float TimeSinceActivity => TimeUtilities.TimeSinceStartup - LastActivityTime;
+        public float TimeSinceActivity => TimeReferences.TimeSinceStartup - LastActivityTime;
 
         public float ActivityPeriod { get; set; } = 1f;
 
@@ -36,7 +36,7 @@ public class LimitedActivityTracker
             if (PastActivityPeriod)
             {
                 _counter = 0;
-                LastActivityTime = TimeUtilities.TimeSinceStartup;
+                LastActivityTime = TimeReferences.TimeSinceStartup;
             }
 
             _counter++;

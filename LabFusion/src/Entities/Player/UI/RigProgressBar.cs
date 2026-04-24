@@ -68,7 +68,7 @@ public class RigProgressBar : IPopupLayoutElement, IProgress<float>
 
         while (elapsed < time)
         {
-            elapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
             yield return null;
         }
 

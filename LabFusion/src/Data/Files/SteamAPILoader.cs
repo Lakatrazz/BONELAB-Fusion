@@ -1,4 +1,6 @@
-﻿using LabFusion.Utilities;
+﻿using System.Reflection;
+using System.Security.Cryptography;
+using LabFusion.Utilities;
 
 namespace LabFusion.Data;
 
@@ -59,14 +61,26 @@ public static class SteamAPILoader
 
     private static void ExtractAPI(string path, bool overwrite = false)
     {
-        if (!File.Exists(path) || overwrite)
+        byte[] embeddedBytes = EmbeddedResource.LoadBytesFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath);
+
+        if (!File.Exists(path) || overwrite || !FilesMatch(path, embeddedBytes))
         {
-            File.WriteAllBytes(path, EmbeddedResource.LoadBytesFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
+            File.WriteAllBytes(path, embeddedBytes);
         }
         else
         {
             FusionLogger.Log("steam_api64.dll already exists, skipping extraction.");
         }
+    }
+    
+    private static bool FilesMatch(string filePath, byte[] embeddedBytes)
+    {
+        using var sha256 = SHA256.Create();
+        using var stream = File.OpenRead(filePath);
+        byte[] diskHash = sha256.ComputeHash(stream);
+        byte[] embeddedHash = sha256.ComputeHash(embeddedBytes);
+
+        return diskHash.SequenceEqual(embeddedHash);
     }
 
     private static bool TryLoadAPI(string path, out IntPtr libraryPtr, out uint errorCode)
@@ -92,5 +106,11 @@ public static class SteamAPILoader
 
         FusionLogger.Log("Successfully loaded steam_api64.dll into the application!");
         HasSteamAPI = true;
+    }
+
+    internal static void LoadFacepunchSteamworks()
+    {
+        var bytes = EmbeddedResource.LoadBytesFromAssembly(FusionMod.FusionAssembly, ResourcePaths.FacepunchSteamworksPath);
+        Assembly.Load(bytes);
     }
 }

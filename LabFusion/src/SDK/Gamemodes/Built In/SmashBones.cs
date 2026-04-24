@@ -34,7 +34,7 @@ public class SmashBones : Gamemode
     public struct DamageInfo
     {
         [JsonPropertyName("platformID")]
-        public ulong PlatformID { get; set; }
+        public string PlatformID { get; set; }
 
         [JsonPropertyName("damage")]
         public float Damage { get; set; }
@@ -44,7 +44,7 @@ public class SmashBones : Gamemode
     public struct DeathInfo
     {
         [JsonPropertyName("platformID")]
-        public ulong PlatformID { get; set; }
+        public string PlatformID { get; set; }
 
         [JsonPropertyName("position")]
         public JsonVector3 Position { get; set; }
@@ -881,7 +881,7 @@ public class SmashBones : Gamemode
 
     private static void UpdateItemDroppers()
     {
-        _itemDropTimer += TimeUtilities.DeltaTime;
+        _itemDropTimer += TimeReferences.DeltaTime;
 
         if (_itemDropTimer < Defaults.ItemFrequency)
         {
@@ -972,7 +972,7 @@ public class SmashBones : Gamemode
             return;
         }
 
-        _airTime += TimeUtilities.DeltaTime;
+        _airTime += TimeReferences.DeltaTime;
 
         if (_airTime <= Defaults.ExtraJumpCooldown)
         {
@@ -1015,7 +1015,7 @@ public class SmashBones : Gamemode
 
         if (_dashCooldown > 0f)
         {
-            _dashCooldown -= TimeUtilities.DeltaTime;
+            _dashCooldown -= TimeReferences.DeltaTime;
             return;
         }
 

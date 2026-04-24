@@ -11,12 +11,12 @@ public readonly struct FrameBool
     private readonly int _frame;
     public int Frame => _frame;
 
-    public bool Valid => TimeUtilities.FrameCount == Frame;
+    public bool Valid => TimeReferences.FrameCount == Frame;
 
     public FrameBool(bool value)
     {
         _value = value;
-        _frame = TimeUtilities.FrameCount;
+        _frame = TimeReferences.FrameCount;
     }
 
     public static implicit operator bool(FrameBool value) => value.Value;

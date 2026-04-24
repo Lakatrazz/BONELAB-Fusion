@@ -1,9 +1,6 @@
 ## **Fusion**
-#### Fixed:
-- Outdated credits
 #### Improved:
-- Animator syncer smoothness
-- Voice chat peaking logic
+- Additional changes to impersonation check
 
 ## **Fusion Auto Updater**
 - No changes

@@ -11,7 +11,7 @@ namespace LabFusion.Data;
 public class PlayerInfo
 {
     [JsonPropertyName("platformID")]
-    public ulong PlatformID { get; set; }
+    public string PlatformID { get; set; }
 
     [JsonPropertyName("username")]
     public string Username { get; set; }
@@ -37,9 +37,9 @@ public class PlayerInfo
     {
         PlatformID = playerId.PlatformID;
 
-        Username = playerId.Metadata.Username.GetValue();
-        Nickname = playerId.Metadata.Nickname.GetValue();
-        Description = playerId.Metadata.Description.GetValue();
+        Username = playerId.Metadata.Username.GetValueOrEmpty();
+        Nickname = playerId.Metadata.Nickname.GetValueOrEmpty();
+        Description = playerId.Metadata.Description.GetValueOrEmpty();
 
         playerId.TryGetPermissionLevel(out var level);
         PermissionLevel = level;

@@ -465,7 +465,7 @@ public static class GamemodeManager
         // Countdown timer
         if (!FusionSceneManager.IsLoading() && !IsGamemodeStarted && IsGamemodeReady && _startTimerActive)
         {
-            StartTimer -= TimeUtilities.DeltaTime;
+            StartTimer -= TimeReferences.DeltaTime;
 
             if (StartTimer <= 0f)
             {

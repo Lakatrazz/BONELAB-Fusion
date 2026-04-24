@@ -25,19 +25,19 @@ public static class MetadataHelper
 
     public static bool TryGetDisplayName(this PlayerID id, out string name)
     {
-        var username = id.Metadata.Username.GetValue();
-        var nickname = id.Metadata.Nickname.GetValue();
+        var username = id.Metadata.Username.GetValueOrEmpty();
+        var nickname = id.Metadata.Nickname.GetValueOrEmpty();
 
-        username = TextFilter.Filter(username);
-        nickname = TextFilter.Filter(nickname);
+        username = TextFilter.FilterCommonAndRichText(username);
+        nickname = TextFilter.FilterCommon(nickname);
 
         // Check validity
-        if (FusionMasterList.VerifyPlayer(id.PlatformID, username) == FusionMasterResult.IMPERSONATOR)
+        if (TrustedListManager.VerifyPlayer(id.PlatformID, username) == TrustedStatus.Impersonator)
         {
             username = $"{username} (FAKE)";
         }
 
-        if (FusionMasterList.VerifyPlayer(id.PlatformID, nickname) == FusionMasterResult.IMPERSONATOR)
+        if (TrustedListManager.VerifyPlayer(id.PlatformID, nickname) == TrustedStatus.Impersonator)
         {
             nickname = $"{nickname} (FAKE)";
         }

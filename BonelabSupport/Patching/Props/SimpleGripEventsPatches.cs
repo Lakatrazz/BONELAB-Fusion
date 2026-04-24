@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using MarrowFusion.Bonelab.Messages;
 using LabFusion.Utilities;
 using LabFusion.Entities;
-using MarrowFusion.Bonelab.Extenders;
 using LabFusion.Marrow.Integration;
 using LabFusion.Scene;
+
+using MarrowFusion.Bonelab.Messages;
+using MarrowFusion.Bonelab.Extenders;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
@@ -14,6 +15,8 @@ using Il2CppSLZ.Marrow;
 
 namespace MarrowFusion.Bonelab.Patching;
 
+// SimpleGripEvents send only to other clients and execute normally locally.
+// This is for the best possible latency when interacting with objects, and if a mod needs server validation it can use RPC events.
 [HarmonyPatch(typeof(SimpleGripEvents))]
 public static class SimpleGripEventsPatches
 {
@@ -26,7 +29,7 @@ public static class SimpleGripEventsPatches
             return true;
         }
 
-        if (IsPlayerRep(__instance, hand))
+        if (IsExternalPlayer(__instance, hand))
         {
             return false;
         }
@@ -45,8 +48,6 @@ public static class SimpleGripEventsPatches
             {
                 SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
             }
-
-            return false;
         }
 
         return true;
@@ -61,7 +62,7 @@ public static class SimpleGripEventsPatches
             return true;
         }
 
-        if (IsPlayerRep(__instance, hand))
+        if (IsExternalPlayer(__instance, hand))
         {
             return false;
         }
@@ -86,8 +87,6 @@ public static class SimpleGripEventsPatches
             }
 
             SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
-
-            return false;
         }
 
         return true;
@@ -102,7 +101,7 @@ public static class SimpleGripEventsPatches
             return true;
         }
 
-        if (IsPlayerRep(__instance, hand))
+        if (IsExternalPlayer(__instance, hand))
         {
             return false;
         }
@@ -118,14 +117,12 @@ public static class SimpleGripEventsPatches
             {
                 SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
             }
-
-            return false;
         }
 
         return true;
     }
 
-    private static bool IsPlayerRep(SimpleGripEvents __instance, Hand hand)
+    private static bool IsExternalPlayer(SimpleGripEvents __instance, Hand hand)
     {
         if (!NetworkInfo.HasServer)
         {
@@ -183,6 +180,6 @@ public static class SimpleGripEventsPatches
             Type = type,
         };
 
-        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, CommonMessageRoutes.ReliableToClients);
+        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

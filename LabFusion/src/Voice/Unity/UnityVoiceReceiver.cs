@@ -211,11 +211,11 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
     {
         if (isTalking)
         {
-            _lastTalkTime = TimeUtilities.TimeSinceStartup;
+            _lastTalkTime = TimeReferences.TimeSinceStartup;
             return;
         }
 
-        isTalking = TimeUtilities.TimeSinceStartup - _lastTalkTime <= VoiceVolume.TalkTimeoutTime;
+        isTalking = TimeReferences.TimeSinceStartup - _lastTalkTime <= VoiceVolume.TalkTimeoutTime;
     }
 
     public void Enable()

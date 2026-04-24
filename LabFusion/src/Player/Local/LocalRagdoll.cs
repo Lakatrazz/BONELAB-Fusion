@@ -122,7 +122,7 @@ public static class LocalRagdoll
 
         while (elapsed <= length)
         {
-            elapsed += TimeUtilities.DeltaTime;
+            elapsed += TimeReferences.DeltaTime;
 
             float eyeStart = Mathf.Max(length - eyeLength, 0f);
 

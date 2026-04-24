@@ -46,10 +46,10 @@ public struct FusionVersion
     public const string VersionString = "0.0.0";
 #else
     public const byte VersionMajor = 1;
-    public const byte VersionMinor = 13;
+    public const byte VersionMinor = 14;
     public const short VersionPatch = 1;
 
-    public const string VersionString = "1.13.1";
+    public const string VersionString = "1.14.1";
 #endif
 }
 
@@ -83,7 +83,10 @@ public class FusionMod : MelonMod
         PersistentData.OnPathInitialize();
         
         // Load APIs
+        // LoadFacepunchSteamworks MUST be called on all platforms. LemonLoader on Android crashes without having the assembly loaded.
+        SteamAPILoader.LoadFacepunchSteamworks();
         SteamAPILoader.OnLoadSteamAPI();
+        EOSSDKLoader.OnLoadEOSSDK();
 
         // Initialize data and hooks
         PDController.OnInitializeMelon();
@@ -201,6 +204,7 @@ public class FusionMod : MelonMod
 
         // Free APIs
         SteamAPILoader.OnFreeSteamAPI();
+        EOSSDKLoader.OnFreeEOSSDK();
     }
 
     public override void OnPreferencesLoaded()
@@ -260,7 +264,7 @@ public class FusionMod : MelonMod
         ModIODownloader.UpdateQueue();
 
         // Update Time before running any functions
-        TimeUtilities.OnEarlyUpdate();
+        TimeReferences.OnEarlyUpdate();
 
         // Update the level loading checks
         FusionSceneManager.Internal_UpdateScene();
@@ -269,11 +273,13 @@ public class FusionMod : MelonMod
         PopupManager.OnUpdate();
 
         // Update tick rate
-        float deltaTime = TimeUtilities.DeltaTime;
+        float unscaledDeltaTime = TimeReferences.UnscaledDeltaTime;
 
-        NetworkTickManager.OnUpdate(deltaTime);
+        NetworkTickManager.OnUpdate(unscaledDeltaTime);
 
         // Update network players
+        float deltaTime = TimeReferences.DeltaTime;
+
         NetworkPlayerManager.OnUpdate(deltaTime);
 
         // Update network entities
@@ -300,13 +306,13 @@ public class FusionMod : MelonMod
 
     public override void OnFixedUpdate()
     {
-        TimeUtilities.OnEarlyFixedUpdate();
+        TimeReferences.OnEarlyFixedUpdate();
 
         LocalPlayer.OnFixedUpdate();
 
         PDController.OnFixedUpdate();
 
-        var deltaTime = TimeUtilities.FixedDeltaTime;
+        var deltaTime = TimeReferences.FixedDeltaTime;
 
         NetworkPlayerManager.OnFixedUpdate(deltaTime);
 
@@ -322,7 +328,7 @@ public class FusionMod : MelonMod
     public override void OnLateUpdate()
     {
         // Update players and entity late updates
-        float deltaTime = TimeUtilities.DeltaTime;
+        float deltaTime = TimeReferences.DeltaTime;
         NetworkPlayerManager.OnLateUpdate(deltaTime);
         NetworkEntityManager.OnLateUpdate(deltaTime);
 

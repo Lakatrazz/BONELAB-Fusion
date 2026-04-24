@@ -30,17 +30,19 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public NetworkEntity Entity { get; set; } = null;
 
-        private bool _isOwnerCached = false;
+        private bool _isOwner = false;
+        private bool _hasSetOwner = false;
 
         public void OnOwnerChanged(bool owner)
         {
             // Don't track when there isn't any change
-            if (owner == _isOwnerCached)
+            if (_hasSetOwner && owner == _isOwner)
             {
                 return;
             }
 
-            _isOwnerCached = owner;
+            _isOwner = owner;
+            _hasSetOwner = true;
 
             if (owner)
             {
@@ -54,7 +56,7 @@ namespace LabFusion.Marrow.Integration
 
         public bool IsOwner()
         {
-            return _isOwnerCached;
+            return _isOwner;
         }
 
         public void TakeOwnership()

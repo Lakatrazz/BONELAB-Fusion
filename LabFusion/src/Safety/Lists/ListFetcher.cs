@@ -18,6 +18,9 @@ public static class ListFetcher
 
     public static void FetchFile(string path, Action<string> callback)
     {
+        // Public fusion json files use ulong
+        return;
+
         var url = RepositoryURL + path;
 
         FusionLogger.Log($"{LogPrefix} Fetching {path} from url {url}...", ConsoleColor.DarkGreen);

@@ -7,10 +7,8 @@ namespace LabFusion.Safety;
 /// </summary>
 public static class ProfanityFilter
 {
-    private const char _censorCharacter = '*';
-
     /// <summary>
-    /// Returns text replaced by an asterisk if it contains profanity, or unedited otherwise.
+    /// Returns text replaced by <see cref="FilterSettings.CensorCharacter"/> if it contains profanity, or unedited otherwise.
     /// </summary>
     /// <param name="text">The text to filter.</param>
     /// <returns>The filtered text.</returns>
@@ -28,7 +26,7 @@ public static class ProfanityFilter
 
         if (ContainsProfanity(text))
         {
-            return new string(_censorCharacter, text.Length);
+            return FilterSettings.CensorString(text.Length);
         }
 
         return text;

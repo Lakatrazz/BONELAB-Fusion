@@ -46,7 +46,7 @@ public class TimedDespawner : MonoBehaviour
 
     private void LateUpdate()
     {
-        _elapsedTime += TimeUtilities.DeltaTime;
+        _elapsedTime += TimeReferences.DeltaTime;
 
         // Despawn the poolee
         if (_elapsedTime >= TotalDespawnTime)

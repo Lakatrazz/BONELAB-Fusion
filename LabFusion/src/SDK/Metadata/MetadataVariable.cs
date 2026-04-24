@@ -38,6 +38,18 @@ public class MetadataVariable
         return Metadata.GetMetadata(Key);
     }
 
+    public string GetValueOrEmpty()
+    {
+        string value = GetValue();
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value;
+    }
+
     public TValue GetValue<TValue>()
     {
         string value = GetValue();
