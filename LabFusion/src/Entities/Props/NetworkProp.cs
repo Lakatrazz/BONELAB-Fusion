@@ -80,6 +80,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             IsCulledForOwner = IsCulled;
             SendCullStatus(IsCulled, CommonMessageRoutes.ReliableToOtherClients);
+
+            ResetDrag();
+        }
+        else
+        {
+            ClearDrag();
         }
 
         OnReregisterUpdates();
@@ -291,6 +297,60 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         var sentPose = _sentPose.Bodies[index];
 
         return (sentPose.Position - currentPose.Position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.Rotation, currentPose.Rotation) > MinMoveAngle; 
+    }
+
+    private void ResetDrag()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        foreach (var body in _bodies)
+        {
+            float drag = body._defaultRigidbodyInfo.drag;
+            float angularDrag = body._defaultRigidbodyInfo.angularDrag;
+
+            body._cachedRigidbodyInfo.drag = drag;
+            body._cachedRigidbodyInfo.angularDrag = angularDrag;
+
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.drag = drag;
+            rb.angularDrag = angularDrag;
+        }
+    }
+
+    private void ClearDrag()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        foreach (var body in _bodies)
+        {
+            float drag = 0f;
+            float angularDrag = 0f;
+
+            body._cachedRigidbodyInfo.drag = drag;
+            body._cachedRigidbodyInfo.angularDrag = angularDrag;
+
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.drag = drag;
+            rb.angularDrag = angularDrag;
+        }
     }
 
     public void Freeze()

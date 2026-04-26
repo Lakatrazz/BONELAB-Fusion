@@ -7,8 +7,11 @@ namespace LabFusion.Math;
 
 public static class SPDController
 {
-    public const float KP = 900f;
-    public const float KD = 200f;
+    public const float ForceKP = 900f;
+    public const float ForceKD = 200f;
+
+    public const float TorqueKP = 1000f;
+    public const float TorqueKD = 100f;
 
     public const float MaxForce = 1000f;
     public const float MaxTorque = 1000f;
@@ -28,10 +31,10 @@ public static class SPDController
         var error = targetPosition - nextPosition;
         var derivative = targetVelocity - nextVelocity;
 
-        var g = 1f / (deltaTime * (KP * deltaTime + KD) + 1f);
+        var g = 1f / (deltaTime * (ForceKP * deltaTime + ForceKD) + 1f);
 
-        var kpg = KP * g;
-        var kdg = KD * g;
+        var kpg = ForceKP * g;
+        var kdg = ForceKD * g;
 
         var force = kpg * error + kdg * derivative;
 
@@ -48,10 +51,10 @@ public static class SPDController
         var error = UnityDerivatives.GetAngularDisplacement(nextRotation, targetRotation);
         var derivative = targetAngularVelocity - nextAngularVelocity;
 
-        var g = 1f / (deltaTime * (KP * deltaTime + KD) + 1f);
+        var g = 1f / (deltaTime * (TorqueKP * deltaTime + TorqueKD) + 1f);
 
-        var kpg = KP * g;
-        var kdg = KD * g;
+        var kpg = TorqueKP * g;
+        var kdg = TorqueKD * g;
 
         var torque = kpg * error + kdg * derivative;
 
