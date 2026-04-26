@@ -33,6 +33,14 @@ public class EntityPose : INetSerializable
         }
     }
 
+    public void Predict(float deltaTime)
+    {
+        foreach (var body in Bodies)
+        {
+            body.PredictPosition(deltaTime);
+        }
+    }
+
     public void ResetPrediction()
     {
         foreach (var body in Bodies)

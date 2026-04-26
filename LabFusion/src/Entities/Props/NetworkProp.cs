@@ -133,7 +133,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         Unfreeze();
 
         _receivedPose = true;
-        _lastReceivedTime = TimeReferences.TimeSinceStartup;
+
+        float timeSinceStartup = TimeReferences.TimeSinceStartup;
+
+        float timeSinceMessage = timeSinceStartup - _lastReceivedTime;
+
+        EntityPose.Predict(ManagedMathf.Clamp01(timeSinceMessage));
+
+        _lastReceivedTime = timeSinceStartup;
     }
 
     public void ResetPrediction()

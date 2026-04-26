@@ -63,6 +63,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigPose _pose = null;
     public RigPose RigPose => _pose;
 
+    private float _timeSinceLastPose = 0f;
+
     private bool _receivedPose = false;
     public bool ReceivedPose => _receivedPose;
 
@@ -563,6 +565,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
         else
         {
+            _timeSinceLastPose += deltaTime;
+
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
@@ -844,6 +848,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         _pose = pose;
+
+        _pose.PelvisPose.PredictPosition(ManagedMathf.Clamp01(_timeSinceLastPose));
+        _timeSinceLastPose = 0f;
 
         // Teleport to the pose if this is our first
         if (!ReceivedPose)
