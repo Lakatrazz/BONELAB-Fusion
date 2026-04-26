@@ -105,8 +105,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
 
-    private PDController _pelvisPDController = null;
-
     private bool _isCulled = false;
 
     /// <summary>
@@ -192,8 +190,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _networkEntity = networkEntity;
         _playerID = playerID;
-
-        _pelvisPDController = new();
 
         _puppet = new();
 
@@ -774,9 +770,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
 
         RigRefs.RigManager.TeleportToPosition(newPosition, true);
-
-        // Reset PD controller
-        _pelvisPDController.Reset();
     }
 
     private void OnOwnedUpdate()
@@ -806,7 +799,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Stop bodies
         if (pelvisPose == null)
         {
-            _pelvisPDController.Reset();
             return;
         }
 
@@ -815,7 +807,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         if (rigManager.activeSeat)
         {
-            _pelvisPDController.Reset();
             return;
         }
 
@@ -835,16 +826,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.Velocity), ForceMode.Acceleration);
+        pelvis.AddForce(SPDController.CalculateForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.Velocity, deltaTime), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
         {
-            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.Rotation, pelvisPose.AngularVelocity), ForceMode.Acceleration);
-        }
-        else
-        {
-            _pelvisPDController.ResetRotation();
+            pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.Rotation, pelvisPose.AngularVelocity, deltaTime), ForceMode.Acceleration);
         }
     }
 

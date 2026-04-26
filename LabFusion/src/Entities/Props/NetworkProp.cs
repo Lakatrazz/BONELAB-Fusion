@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
+using LabFusion.Math;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -21,7 +22,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public MarrowEntity MarrowEntity => _marrowEntity;
 
     private MarrowBody[] _bodies = null;
-    private PDController[] _pdControllers = null;
 
     private EntityPose _pose = null;
     private EntityPose _sentPose = null;
@@ -99,13 +99,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         _pose = new EntityPose(_bodies.Length);
         _sentPose = new EntityPose(_bodies.Length);
-
-        _pdControllers = new PDController[_bodies.Length];
-
-        for (var i = 0; i < _pdControllers.Length; i++)
-        {
-            _pdControllers[i] = new();
-        }
 
         // Copy current bodies into the entity pose so that they're held up by forces
         CopyBodiesToPose();
@@ -478,11 +471,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void OnReceivedRigidbody(float deltaTime, float timeSinceMessage, int index)
     {
         var body = _bodies[index];
-        var pdController = _pdControllers[index];
 
         if (!body.HasRigidbody)
         {
-            pdController.Reset();
             return;
         }
 
@@ -492,7 +483,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // If so, just ignore values
         if (rigidbody.isKinematic)
         {
-            pdController.Reset();
             return;
         }
 
@@ -504,14 +494,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             pose.PredictPosition(deltaTime);
         }
 
-        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity);
-        rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);
+        var force = SPDController.CalculateForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity, deltaTime);
+        rigidbody.AddForce(force, ForceMode.Acceleration);
 
         // Don't add torque if rotation is frozen
         if (!rigidbody.freezeRotation)
         {
-            pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity);
-            rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+            var torque = SPDController.CalculateTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity, deltaTime);
+            rigidbody.AddTorque(torque, ForceMode.Acceleration);
         }
     }
 
