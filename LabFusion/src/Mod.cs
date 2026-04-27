@@ -23,6 +23,7 @@ using LabFusion.RPC;
 using LabFusion.UI.Popups;
 using LabFusion.Safety;
 using LabFusion.Support;
+using LabFusion.Math;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -86,7 +87,6 @@ public class FusionMod : MelonMod
         SteamAPILoader.OnLoadSteamAPI();
 
         // Initialize data and hooks
-        PDController.OnInitializeMelon();
         PointItemManager.HookEvents();
         RpcManager.OnInitialize();
     }
@@ -306,13 +306,15 @@ public class FusionMod : MelonMod
 
         LocalPlayer.OnFixedUpdate();
 
-        PDController.OnFixedUpdate();
-
         var deltaTime = TimeReferences.FixedDeltaTime;
+
+        SPDController.OnFixedUpdate(deltaTime);
 
         NetworkPlayerManager.OnFixedUpdate(deltaTime);
 
         NetworkEntityManager.OnFixedUpdate(deltaTime);
+
+        ParallelManager.OnFixedUpdate(deltaTime);
 
         // Update hooks
         MultiplayerHooking.InvokeOnFixedUpdate();

@@ -2,8 +2,8 @@
 
 public sealed class RegistrableList<TRegistrable>
 {
-    private readonly HashSet<TRegistrable> _entries = new();
-    public HashSet<TRegistrable> Entries => _entries;
+    private readonly List<TRegistrable> _entries = new();
+    public List<TRegistrable> Entries => _entries;
 
     public void Register(TRegistrable entity)
     {

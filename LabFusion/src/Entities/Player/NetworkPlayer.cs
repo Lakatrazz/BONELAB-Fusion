@@ -830,12 +830,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        pelvis.AddForce(SPDController.CalculateForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.Velocity, deltaTime), ForceMode.Acceleration);
+        pelvis.AddForce(SPDController.CalculateForce(pelvisPosition.ToNumericsVector3(), pelvis.velocity.ToNumericsVector3(), pelvisPose.PredictedPosition.ToNumericsVector3(), pelvisPose.Velocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
         {
-            pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.Rotation, pelvisPose.AngularVelocity, deltaTime), ForceMode.Acceleration);
+            pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation.ToNumericsQuaternion(), pelvis.angularVelocity.ToNumericsVector3(), pelvisPose.Rotation.ToNumericsQuaternion(), pelvisPose.AngularVelocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
         }
     }
 

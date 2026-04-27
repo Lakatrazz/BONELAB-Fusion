@@ -1,17 +1,17 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Data;
 using LabFusion.Math;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IEntityFixedUpdatable
+public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
 {
     private NetworkEntity _networkEntity = null;
 
@@ -22,6 +22,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public MarrowEntity MarrowEntity => _marrowEntity;
 
     private MarrowBody[] _bodies = null;
+    private SPDState _spdState = null;
 
     private EntityPose _pose = null;
     private EntityPose _sentPose = null;
@@ -102,9 +103,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void InitializeBodies()
     {
         _bodies = MarrowEntity.Bodies;
+        int bodyCount = _bodies.Length;
 
-        _pose = new EntityPose(_bodies.Length);
-        _sentPose = new EntityPose(_bodies.Length);
+        _spdState = new SPDState(bodyCount);
+        _pose = new EntityPose(bodyCount);
+        _sentPose = new EntityPose(bodyCount);
 
         // Copy current bodies into the entity pose so that they're held up by forces
         CopyBodiesToPose();
@@ -498,14 +501,25 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         MessageRelay.RelayNative(data, NativeMessageTag.EntityCullStatus, route);
     }
 
-    public void OnEntityFixedUpdate(float deltaTime)
+    void IParallelFixedUpdatable.OnPreParallelFixedUpdate(float deltaTime)
     {
-        // OnEntityFixedUpdate is only registered when we do not own the prop
-        OnReceivedUpdate(deltaTime);
+        OnPreCalculateForces(deltaTime);
     }
 
-    private void OnReceivedUpdate(float deltaTime)
+    void IParallelFixedUpdatable.OnParallelFixedUpdate(float deltaTime)
     {
+        OnCalculateForces(deltaTime);
+    }
+
+    void IParallelFixedUpdatable.OnPostParallelFixedUpdate(float deltaTime)
+    {
+        OnApplyForces(deltaTime);
+    }
+
+    private void OnPreCalculateForces(float deltaTime)
+    {
+        _spdState.CalculatingForces = false;
+
         // Make sure the prop isn't sleeping
         if (IsSleeping)
         {
@@ -529,14 +543,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             return;
         }
 
+        _spdState.CalculatingForces = true;
+
         for (var i = 0; i < _bodies.Length; i++)
         {
-            OnReceivedRigidbody(deltaTime, timeSinceMessage, i);
+            OnPreCalculateRigidbodyForces(deltaTime, timeSinceMessage, i);
         }
     }
 
-    private void OnReceivedRigidbody(float deltaTime, float timeSinceMessage, int index)
+    private void OnPreCalculateRigidbodyForces(float deltaTime, float timeSinceMessage, int index)
     {
+        _spdState.EnabledForces[index] = false;
+        _spdState.EnabledTorques[index] = false;
+
         var body = _bodies[index];
 
         if (!body.HasRigidbody)
@@ -561,13 +580,81 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             pose.PredictPosition(deltaTime);
         }
 
-        var force = SPDController.CalculateForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity, deltaTime);
-        rigidbody.AddForce(force, ForceMode.Acceleration);
+        _spdState.SetLinearInput(index, rigidbody.position.ToNumericsVector3(), rigidbody.velocity.ToNumericsVector3(), pose.PredictedPosition.ToNumericsVector3(), pose.Velocity.ToNumericsVector3());
+        _spdState.EnabledForces[index] = true;
 
         // Don't add torque if rotation is frozen
         if (!rigidbody.freezeRotation)
         {
-            var torque = SPDController.CalculateTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity, deltaTime);
+            _spdState.SetAngularInput(index, rigidbody.rotation.ToNumericsQuaternion(), rigidbody.angularVelocity.ToNumericsVector3(), pose.Rotation.ToNumericsQuaternion(), pose.AngularVelocity.ToNumericsVector3());
+            _spdState.EnabledTorques[index] = true;
+        }
+    }
+
+    private void OnCalculateForces(float deltaTime)
+    {
+        if (!_spdState.CalculatingForces)
+        {
+            return;
+        }
+
+        for (var i = 0; i < _spdState.Count; i++)
+        {
+            OnCalculateRigidbodyForces(deltaTime, i);
+        }
+    }
+
+    private void OnCalculateRigidbodyForces(float deltaTime, int index)
+    {
+        if (_spdState.EnabledForces[index])
+        {
+            var force = SPDController.CalculateForce(_spdState.Positions[index], _spdState.Velocities[index], _spdState.TargetPositions[index], _spdState.TargetVelocities[index], deltaTime);
+            _spdState.Forces[index] = force;
+        }
+
+        if (_spdState.EnabledTorques[index])
+        {
+            var torque = SPDController.CalculateTorque(_spdState.Rotations[index], _spdState.AngularVelocities[index], _spdState.TargetRotations[index], _spdState.TargetAngularVelocities[index], deltaTime);
+            _spdState.Torques[index] = torque;
+        }
+    }
+
+    private void OnApplyForces(float deltaTime)
+    {
+        if (!_spdState.CalculatingForces)
+        {
+            return;
+        }
+
+        for (var i = 0; i < _bodies.Length; i++)
+        {
+            OnApplyRigidbodyForces(deltaTime, i);
+        }
+    }
+
+    private void OnApplyRigidbodyForces(float deltaTime, int index)
+    {
+        bool enabledForce = _spdState.EnabledForces[index];
+        bool enabledTorque = _spdState.EnabledTorques[index];
+
+        if (!enabledForce && !enabledTorque)
+        {
+            return;
+        }
+
+        var body = _bodies[index];
+
+        var rigidbody = body._rigidbody;
+
+        if (enabledForce)
+        {
+            var force = _spdState.Forces[index].ToUnityVector3();
+            rigidbody.AddForce(force, ForceMode.Acceleration);
+        }
+
+        if (enabledTorque)
+        {
+            var torque = _spdState.Torques[index].ToUnityVector3();
             rigidbody.AddTorque(torque, ForceMode.Acceleration);
         }
     }
@@ -643,14 +730,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
         else
         {
-            NetworkEntityManager.UpdatableManager.FixedUpdateManager.Register(this);
+            ParallelManager.UpdatableManager.FixedUpdateManager.Register(this);
         }
     }
 
     private void OnUnregisterUpdates()
     {
         NetworkEntityManager.UpdatableManager.UpdateManager.Unregister(this);
-        NetworkEntityManager.UpdatableManager.FixedUpdateManager.Unregister(this);
+        ParallelManager.UpdatableManager.FixedUpdateManager.Unregister(this);
     }
 
     private Action _onReadyCallback = null;
