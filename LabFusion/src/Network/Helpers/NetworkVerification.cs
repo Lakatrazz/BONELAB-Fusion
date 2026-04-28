@@ -45,7 +45,7 @@ public static class NetworkVerification
     /// </summary>
     /// <param name="platformID"></param>
     /// <returns></returns>
-    public static bool IsClientApproved(ulong platformID)
+    public static bool IsClientApproved(string platformID)
     {
         var privacy = SavedServerSettings.Privacy.Value;
 

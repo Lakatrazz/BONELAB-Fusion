@@ -258,7 +258,7 @@ public static class MenuMatchmaking
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyID);
+                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyHostID);
             default:
                 return false;
         }

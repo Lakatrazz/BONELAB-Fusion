@@ -25,7 +25,7 @@ public static class MasterPermissionsManager
     /// </summary>
     /// <param name="platformID"></param>
     /// <returns></returns>
-    public static bool IsMaster(ulong platformID)
+    public static bool IsMaster(string platformID)
     {
         return TrustedListManager.VerifyPlayer(platformID, string.Empty) == TrustedStatus.Master;
     }
@@ -35,7 +35,7 @@ public static class MasterPermissionsManager
     /// </summary>
     /// <param name="platformID"></param>
     /// <returns></returns>
-    public static MasterStatus GetMasterStatus(ulong platformID)
+    public static MasterStatus GetMasterStatus(string platformID)
     {
         if (IsMaster(platformID))
         {

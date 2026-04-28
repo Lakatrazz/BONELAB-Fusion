@@ -64,12 +64,12 @@ public abstract class NativeMessageHandler : MessageHandler
             MessageRoute route = prefix.Route;
 
             byte? sender = prefix.Sender;
-            ulong? platformID = message.PlatformID;
+            string? platformID = message.PlatformID;
 
             // Prevent ID spoofing
             if (isServerHandled && !ValidateReceivedID(route.Type, ref sender, ref platformID))
             {
-                NetworkConnectionManager.DisconnectUser(platformID.Value);
+                NetworkConnectionManager.DisconnectUser(platformID);
                 return;
             }
 
@@ -103,15 +103,15 @@ public abstract class NativeMessageHandler : MessageHandler
         }
     }
 
-    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref ulong? platformID)
+    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref string? platformID)
     {
         // If we weren't given a PlatformID, there is nothing to validate
-        if (!platformID.HasValue)
+        if (string.IsNullOrEmpty(platformID))
         {
             return true;
         }
 
-        var playerID = PlayerIDManager.GetPlayerID(platformID.Value);
+        var playerID = PlayerIDManager.GetPlayerID(platformID);
         
         // No existing PlayerID, nothing to validate
         if (playerID == null)

@@ -66,8 +66,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Get steam information
         SteamId = SteamClient.SteamId;
-        PlayerIDManager.SetLongID(SteamId.Value);
-        LocalPlayer.Username = GetUsername(SteamId.Value);
+        PlayerIDManager.SetPlatformID(SteamId.ToString());
+        LocalPlayer.Username = GetUsername(SteamId.ToString());
 
         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
 
@@ -96,14 +96,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         UnHookSteamEvents();
 
-        SteamAPI.Shutdown();
+        SteamClient.Shutdown();
     }
 
     public override void LogIn()
     {
         if (SteamClient.IsValid)
         {
-            return;
+            SteamClient.Shutdown();
         }
 
         // Shutdown the game's steam client, if available
@@ -112,6 +112,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
             ShutdownGameClient();
         }
 
+        NetworkLayerNotifications.SendLoggingInNotification();
+        
         bool succeeded;
 
         try
@@ -195,14 +197,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override string GetUsername(ulong userId)
+    public override string GetUsername(string userId)
     {
-        return new Friend(userId).Name;
+        return new Friend(ulong.Parse(userId)).Name;
     }
 
-    public override bool IsFriend(ulong userId)
+    public override bool IsFriend(string userId)
     {
-        return userId == PlayerIDManager.LocalPlatformID || new Friend(userId).IsFriend;
+        return userId == PlayerIDManager.LocalPlatformID || new Friend(ulong.Parse(userId)).IsFriend;
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
@@ -232,7 +234,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
     {
         // Make sure this is actually the server
         if (!IsHost)
@@ -263,13 +265,16 @@ public abstract class SteamNetworkLayer : NetworkLayer
         RefreshServerCode();
     }
 
-    public void JoinServer(SteamId serverId)
+    public void JoinServer(string serverId)
     {
         // Leave existing server
         if (_isConnectionActive || _isServerActive)
             Disconnect();
+        
+        SteamId steamId = new SteamId();
+        steamId.Value = ulong.Parse(serverId);
 
-        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(steamId, 0);
 
         _isServerActive = false;
         _isConnectionActive = true;
@@ -300,7 +305,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         InternalServerHelpers.OnDisconnect(reason);
     }
 
-    public override void DisconnectUser(ulong platformID)
+    public override void DisconnectUser(string platformID)
     {
         // Make sure we are hosting a server
         if (!_isServerActive)

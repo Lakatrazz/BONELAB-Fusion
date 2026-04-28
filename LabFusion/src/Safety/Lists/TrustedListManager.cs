@@ -29,11 +29,11 @@ public static class TrustedListManager
 {
     public struct TrustedPlayer
     {
-        public ulong ID;
+        public string ID;
         public string Name;
         public bool Unique;
 
-        public TrustedPlayer(ulong id, string name, bool unique = true)
+        public TrustedPlayer(string id, string name, bool unique = true)
         {
             this.ID = id;
             this.Name = name;
@@ -43,18 +43,18 @@ public static class TrustedListManager
 
     private static readonly TrustedPlayer[] _steamPlayers = new TrustedPlayer[] {
         // Fusion testers
-        new(76561198198752494, "Lakatrazz"),
-        new(76561198097630377, "AlexTheBaBa"),
-        new(76561198222917852, "Mr.Gaming"),
-        new(76561198096586464, "brwok"),
-        new(76561198143565238, "Riggle"),
-        new(76561198233973112, "Alfie", false),
-        new(76561198061847729, "zz0000"),
-        new(76561198837064193, "172", false),
-        new(76561198147092613, "Eli", false),
+        new("76561198198752494", "Lakatrazz"),
+        new("76561198097630377", "AlexTheBaBa"),
+        new("76561198222917852", "Mr.Gaming"),
+        new("76561198096586464", "brwok"),
+        new("76561198143565238", "Riggle"),
+        new("76561198233973112", "Alfie", false),
+        new("76561198061847729", "zz0000"),
+        new("76561198837064193", "172", false),
+        new("76561198147092613", "Eli", false),
     };
 
-    public static TrustedStatus VerifyPlayer(ulong id, string name)
+    public static TrustedStatus VerifyPlayer(string id, string name)
     {
         if (NetworkLayerManager.Layer is SteamNetworkLayer)
         {
@@ -64,7 +64,7 @@ public static class TrustedListManager
         return TrustedStatus.None;
     }
 
-    private static TrustedStatus VerifyPlayer(TrustedPlayer[] players, ulong id, string name)
+    private static TrustedStatus VerifyPlayer(TrustedPlayer[] players, string id, string name)
     {
         for (var i = 0; i < players.Length; i++)
         {

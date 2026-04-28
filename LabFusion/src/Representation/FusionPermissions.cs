@@ -43,7 +43,7 @@ public static class FusionPermissions
         LocalPlayer.Metadata.PermissionLevel.SetValue(permissionLevel);
     }
 
-    public static void FetchPermissionLevel(ulong longId, out PermissionLevel level, out Color color)
+    public static void FetchPermissionLevel(string platformID, out PermissionLevel level, out Color color)
     {
         level = PermissionLevel.DEFAULT;
         color = Color.white;
@@ -51,7 +51,7 @@ public static class FusionPermissions
         // Get server level permissions
         if (NetworkInfo.IsHost)
         {
-            if (longId == PlayerIDManager.LocalPlatformID)
+            if (platformID == PlayerIDManager.LocalPlatformID)
             {
                 level = PermissionLevel.OWNER;
             }
@@ -59,7 +59,7 @@ public static class FusionPermissions
             {
                 foreach (var tuple in PermissionList.PermittedUsers)
                 {
-                    if (tuple.Item1 == longId)
+                    if (tuple.Item1 == platformID)
                     {
                         level = tuple.Item3;
                     }
@@ -69,7 +69,7 @@ public static class FusionPermissions
         // Get client side permissions
         else
         {
-            var id = PlayerIDManager.GetPlayerID(longId);
+            var id = PlayerIDManager.GetPlayerID(platformID);
 
             if (id == null)
             {
@@ -82,13 +82,13 @@ public static class FusionPermissions
         }
     }
 
-    public static void TrySetPermission(ulong longId, string username, PermissionLevel level)
+    public static void TrySetPermission(string platformID, string username, PermissionLevel level)
     {
         // Set in file
-        PermissionList.SetPermission(longId, username, level);
+        PermissionList.SetPermission(platformID, username, level);
 
         // Set in server
-        var playerId = PlayerIDManager.GetPlayerID(longId);
+        var playerId = PlayerIDManager.GetPlayerID(platformID);
 
         if (playerId != null && NetworkInfo.IsHost)
         {

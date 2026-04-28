@@ -83,7 +83,10 @@ public class FusionMod : MelonMod
         PersistentData.OnPathInitialize();
         
         // Load APIs
+        // LoadFacepunchSteamworks MUST be called on all platforms. LemonLoader on Android crashes without having the assembly loaded.
+        SteamAPILoader.LoadFacepunchSteamworks();
         SteamAPILoader.OnLoadSteamAPI();
+        EOSSDKLoader.OnLoadEOSSDK();
 
         // Initialize data and hooks
         PDController.OnInitializeMelon();
@@ -201,6 +204,7 @@ public class FusionMod : MelonMod
 
         // Free APIs
         SteamAPILoader.OnFreeSteamAPI();
+        EOSSDKLoader.OnFreeEOSSDK();
     }
 
     public override void OnPreferencesLoaded()

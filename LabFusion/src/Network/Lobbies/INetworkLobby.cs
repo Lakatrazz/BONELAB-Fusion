@@ -36,7 +36,7 @@ public interface INetworkLobby
     /// </summary>
     /// <param name="lobbyId">The lobby to join.</param>
     /// <returns>The join delegate.</returns>
-    Action CreateJoinDelegate(ulong lobbyId);
+    Action CreateJoinDelegate(string lobbyId);
 }
 
 public abstract class NetworkLobby : INetworkLobby
@@ -70,5 +70,5 @@ public abstract class NetworkLobby : INetworkLobby
     public abstract string GetMetadata(string key);
     public abstract void SetMetadata(string key, string value);
     public abstract bool TryGetMetadata(string key, out string value);
-    public abstract Action CreateJoinDelegate(ulong lobbyId);
+    public abstract Action CreateJoinDelegate(string lobbyId);
 }
