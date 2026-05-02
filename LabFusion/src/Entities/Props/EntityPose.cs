@@ -4,14 +4,17 @@ namespace LabFusion.Entities;
 
 public class EntityPose : INetSerializable   
 {
-    public BodyPose[] Bodies;
+    public int BodyCount { get; private set; } = 0;
 
-    public int? GetSize() => sizeof(byte) + BodyPose.Size * Bodies.Length;
+    public BodyPose[] Bodies { get; private set; } = Array.Empty<BodyPose>();
+
+    public int? GetSize() => sizeof(byte) + BodyPose.Size * BodyCount;
 
     public EntityPose() { }
 
     public EntityPose(int bodyCount)
     {
+        BodyCount = bodyCount;
         Bodies = new BodyPose[bodyCount];
 
         for (var i = 0; i < bodyCount; i++)
@@ -22,12 +25,12 @@ public class EntityPose : INetSerializable
 
     public void CopyTo(EntityPose target)
     {
-        if (target.Bodies.Length != Bodies.Length) 
+        if (target.BodyCount != BodyCount) 
         {
             return;
         }
 
-        for (var i = 0; i < target.Bodies.Length; i++)
+        for (var i = 0; i < target.BodyCount; i++)
         {
             Bodies[i].CopyTo(target.Bodies[i]);
         }
@@ -63,7 +66,7 @@ public class EntityPose : INetSerializable
 
     public void Serialize(NetWriter writer)
     {
-        byte length = (byte)Bodies.Length;
+        byte length = (byte)BodyCount;
 
         writer.Write(length);
 
@@ -77,6 +80,7 @@ public class EntityPose : INetSerializable
     {
         byte length = reader.ReadByte();
 
+        BodyCount = length;
         Bodies = new BodyPose[length];
 
         for (var i = 0; i < length; i++)
