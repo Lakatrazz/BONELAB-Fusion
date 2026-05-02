@@ -15,9 +15,9 @@ public class BodyPose : INetSerializable
     public Vector3 Velocity = Vector3.zero;
     public Vector3 AngularVelocity = Vector3.zero;
 
-    private Vector3 _positionPrediction = Vector3.zero;
+    public Vector3 LinearPrediction = Vector3.zero;
 
-    public Vector3 PredictedPosition => Position + _positionPrediction;
+    public Vector3 PredictedPosition => Position + LinearPrediction;
 
     public int? GetSize() => Size;
 
@@ -41,12 +41,12 @@ public class BodyPose : INetSerializable
 
     public void ResetPrediction()
     {
-        _positionPrediction = Vector3.zero;
+        LinearPrediction = Vector3.zero;
     }
 
     public void PredictPosition(float deltaTime)
     {
-        _positionPrediction += Velocity * deltaTime;
+        LinearPrediction += Velocity * deltaTime;
     }
 
     public void Serialize(INetSerializer serializer)
