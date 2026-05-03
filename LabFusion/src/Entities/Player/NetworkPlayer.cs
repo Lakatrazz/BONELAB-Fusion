@@ -1088,7 +1088,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         var physicsRig = RigRefs.RigManager.physicsRig;
 
+        var detacher = new TemporaryTransformDetacher();
+        DetachSlottedTransforms(detacher);
+
         _registeredComponentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, physicsRig.gameObject);
+
+        detacher.ReattachTransforms();
 
         RegisterDynamicComponents();
     }
@@ -1140,6 +1145,43 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             }
 
             _dynamicComponentExtenders.Clear();
+        }
+    }
+
+    private void DetachSlottedTransforms(TemporaryTransformDetacher detacher)
+    {
+        foreach (var slot in RigRefs.RigSlots)
+        {
+            var slottedWeapon = slot._slottedWeapon;
+
+            if (slottedWeapon == null)
+            {
+                continue;
+            }
+
+            var host = slottedWeapon.interactableHost;
+
+            if (host == null)
+            {
+                continue;
+            }
+
+            var entity = host.marrowEntity;
+
+            if (entity == null)
+            {
+                continue;
+            }
+
+            detacher.DetachTransform(entity.transform);
+        }
+
+        foreach (var receiver in RigRefs.AmmoReceivers)
+        {
+            foreach (var artTarget in receiver._ammoArtTargets)
+            {
+                detacher.DetachTransform(artTarget.transform);
+            }
         }
     }
 
