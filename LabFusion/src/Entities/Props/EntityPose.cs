@@ -51,11 +51,11 @@ public class EntityPose : INetSerializable
         }
     }
 
-    public void Interpolate(EntityPose from, EntityPose to, float time)
+    public void Interpolate(EntityPose from, EntityPose to, float t)
     {
         for (var i = 0; i < BodyCount; i++)
         {
-            Bodies[i].Interpolate(from.Bodies[i], to.Bodies[i], time);
+            Bodies[i].Interpolate(from.Bodies[i], to.Bodies[i], t);
         }
     }
 
