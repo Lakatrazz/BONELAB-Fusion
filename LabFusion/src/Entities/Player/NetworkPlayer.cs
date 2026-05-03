@@ -578,7 +578,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             // Update the playspace rotation
             var trackedPlayspace = RigSkeleton.TrackedPlayspace;
 
-            trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.InterpolationTime);
+            trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.SmoothInterpolationTime);
         }
     }
 
@@ -819,7 +819,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pelvisRotation = pelvis.rotation;
 
         // Move position with prediction
-        pelvisPose.PredictPosition(deltaTime);
+        pelvisPose.PredictPositionOLDTEMP(deltaTime);
 
         // Check for stability teleport
         float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
@@ -849,7 +849,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _pose = pose;
 
-        _pose.PelvisPose.PredictPosition(ManagedMathf.Clamp01(_timeSinceLastPose));
+        _pose.PelvisPose.PredictPositionOLDTEMP(ManagedMathf.Clamp01(_timeSinceLastPose));
         _timeSinceLastPose = 0f;
 
         // Teleport to the pose if this is our first
@@ -898,8 +898,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             var smoothPoint = SmoothTrackedTransforms[i];
             smoothPoint = new ManagedTransform(
-                Vector3.Lerp(smoothPoint.Position, posePoint.position, NetworkTickManager.InterpolationTime),
-                Quaternion.Slerp(smoothPoint.Rotation, posePoint.rotation, NetworkTickManager.InterpolationTime));
+                Vector3.Lerp(smoothPoint.Position, posePoint.position, NetworkTickManager.SmoothInterpolationTime),
+                Quaternion.Slerp(smoothPoint.Rotation, posePoint.rotation, NetworkTickManager.SmoothInterpolationTime));
             SmoothTrackedTransforms[i] = smoothPoint;
 
             var trackedPoint = RigSkeleton.TrackedPoints[i];

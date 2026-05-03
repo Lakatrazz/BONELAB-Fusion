@@ -8,7 +8,9 @@ public static class NetworkTickManager
     
     public static readonly float SecondsBetweenTicks = 1f / TickRate;
 
-    public static readonly float InterpolationDecayRate = 36f;
+    public static readonly float LinearInterpolationLength = 0.05f;
+
+    public static readonly float SmoothInterpolationDecayRate = 36f;
 
     private static float _tickElapsed = 0f;
 
@@ -20,13 +22,13 @@ public static class NetworkTickManager
     /// <summary>
     /// The amount, or t value, that interpolated values should move this frame.
     /// </summary>
-    public static float InterpolationTime { get; private set; } = 0f;
+    public static float SmoothInterpolationTime { get; private set; } = 0f;
 
     internal static void OnUpdate(float deltaTime)
     {
         IsTickThisFrame = false;
 
-        InterpolationTime = Smoothing.CalculateDecay(InterpolationDecayRate, deltaTime);
+        SmoothInterpolationTime = Smoothing.CalculateDecay(SmoothInterpolationDecayRate, deltaTime);
 
         _tickElapsed += deltaTime;
 

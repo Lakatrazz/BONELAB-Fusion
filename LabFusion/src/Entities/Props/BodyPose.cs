@@ -29,7 +29,7 @@ public class BodyPose : INetSerializable
         AngularVelocity = rigidbody.angularVelocity;
     }
 
-    public void CopyTo(BodyPose target)
+    public void WriteTo(BodyPose target)
     {
         target.Position = Position;
         target.Rotation = Rotation;
@@ -39,12 +39,25 @@ public class BodyPose : INetSerializable
         target.ResetPrediction();
     }
 
+    public void Interpolate(BodyPose from, BodyPose to, float time)
+    {
+        Position = Vector3.Lerp(from.Position, to.Position, time);
+        Rotation = Quaternion.Slerp(from.Rotation, to.Rotation, time);
+        Velocity = Vector3.Lerp(from.Velocity, to.Velocity, time);
+        AngularVelocity = Vector3.Lerp(from.AngularVelocity, to.AngularVelocity, time);
+    }
+
+    public void Predict(float deltaTime)
+    {
+        Position += Velocity * deltaTime;
+    }
+
     public void ResetPrediction()
     {
         LinearPrediction = Vector3.zero;
     }
 
-    public void PredictPosition(float deltaTime)
+    public void PredictPositionOLDTEMP(float deltaTime)
     {
         LinearPrediction += Velocity * deltaTime;
     }

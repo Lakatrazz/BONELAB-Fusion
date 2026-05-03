@@ -52,6 +52,6 @@ public class EntityCullStatusMessage : NativeMessageHandler
             return;
         }
 
-        networkProp.OnReceiveCullStatus(data.IsCulled);
+        networkProp.ReceiveCullStatus(data.IsCulled);
     }
 }

@@ -4,7 +4,7 @@ namespace LabFusion.Entities;
 
 public class EntityPose : INetSerializable   
 {
-    public int BodyCount { get; private set; } = 0;
+    public int BodyCount => Bodies.Length;
 
     public BodyPose[] Bodies { get; private set; } = Array.Empty<BodyPose>();
 
@@ -14,7 +14,6 @@ public class EntityPose : INetSerializable
 
     public EntityPose(int bodyCount)
     {
-        BodyCount = bodyCount;
         Bodies = new BodyPose[bodyCount];
 
         for (var i = 0; i < bodyCount; i++)
@@ -23,7 +22,7 @@ public class EntityPose : INetSerializable
         }
     }
 
-    public void CopyTo(EntityPose target)
+    public void WriteTo(EntityPose target)
     {
         if (target.BodyCount != BodyCount) 
         {
@@ -32,15 +31,15 @@ public class EntityPose : INetSerializable
 
         for (var i = 0; i < target.BodyCount; i++)
         {
-            Bodies[i].CopyTo(target.Bodies[i]);
+            Bodies[i].WriteTo(target.Bodies[i]);
         }
     }
 
-    public void Predict(float deltaTime)
+    public void PredictOLDTEMP(float deltaTime)
     {
         foreach (var body in Bodies)
         {
-            body.PredictPosition(deltaTime);
+            body.PredictPositionOLDTEMP(deltaTime);
         }
     }
 
@@ -49,6 +48,22 @@ public class EntityPose : INetSerializable
         foreach (var body in Bodies)
         {
             body.ResetPrediction();
+        }
+    }
+
+    public void Interpolate(EntityPose from, EntityPose to, float time)
+    {
+        for (var i = 0; i < BodyCount; i++)
+        {
+            Bodies[i].Interpolate(from.Bodies[i], to.Bodies[i], time);
+        }
+    }
+
+    public void Predict(float deltaTime)
+    {
+        for (var i = 0; i < BodyCount; i++)
+        {
+            Bodies[i].Predict(deltaTime);
         }
     }
 
@@ -80,7 +95,6 @@ public class EntityPose : INetSerializable
     {
         byte length = reader.ReadByte();
 
-        BodyCount = length;
         Bodies = new BodyPose[length];
 
         for (var i = 0; i < length; i++)
