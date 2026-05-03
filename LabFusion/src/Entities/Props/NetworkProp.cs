@@ -502,7 +502,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            if (!rb.IsSleeping() && HasBodyMoved(i))
+            bool hasMoved = HasBodyMoved(i);
+
+            if (hasMoved)
             {
                 return false;
             }
