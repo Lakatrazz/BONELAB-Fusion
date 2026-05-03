@@ -108,6 +108,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public const float SleepTimer = 0.5f;
 
     private float _ownedTickDeltaTime = 0f;
+    private int _sleepCheckTick = 0;
+    private const int SleepCheckInterval = 3;
 
     public NetworkProp(NetworkEntity networkEntity, MarrowEntity marrowEntity)
     {
@@ -527,6 +529,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnOwnedTick(float deltaTime)
     {
+        // If we were sleeping, only check for waking up every few ticks
+        if (IsSleeping && _sleepCheckTick < SleepCheckInterval)
+        {
+            _sleepCheckTick++;
+            return;
+        }
+
+        _sleepCheckTick = 0;
+
         // Capture the current pose to read from
         CapturePose();
 
