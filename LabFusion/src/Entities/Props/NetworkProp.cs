@@ -191,7 +191,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         pose.WriteTo(PredictedPose);
 
-        float predictionTime = ManagedMathf.Clamp01(TimeSinceReceivedPose);
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
 
         PredictedPose.Predict(predictionTime);
 
@@ -297,8 +297,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             var rigidbody = body._rigidbody;
 
             bodyPose.ReadFrom(rigidbody);
-
-            bodyPose.ResetPrediction();
         }
     }
 
@@ -626,12 +624,17 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             return;
         }
 
-        TimeSinceReceivedPose += deltaTime;
+        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
+
+        TimeSinceReceivedPose += unscaledDeltaTime;
 
         InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
 
         InterpolatedPose.Interpolate(LastReceivedPose, PredictedPose, InterpolationPercent);
-        InterpolatedPose.Predict(TimeSinceReceivedPose);
+
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
+
+        InterpolatedPose.PredictFrom(predictionTime, ReceivedPose);
     }
 
     private void OnPreCalculateForces(float deltaTime)
@@ -663,11 +666,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         for (var i = 0; i < _bodies.Length; i++)
         {
-            OnPreCalculateRigidbodyForces(deltaTime, TimeSinceReceivedPose, i);
+            OnPreCalculateRigidbodyForces(i);
         }
     }
 
-    private void OnPreCalculateRigidbodyForces(float deltaTime, float timeSinceMessage, int index)
+    private void OnPreCalculateRigidbodyForces(int index)
     {
         _spdState.EnabledForces[index] = false;
         _spdState.EnabledTorques[index] = false;
@@ -689,12 +692,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         var bodyPose = InterpolatedPose.Bodies[index];
-
-        // Don't over predict
-        if (timeSinceMessage <= 0.6f)
-        {
-            bodyPose.PredictPositionOLDTEMP(deltaTime);
-        }
 
         _spdState.SetLinearInput(index, rigidbody.position.ToNumericsVector3(), rigidbody.velocity.ToNumericsVector3(), bodyPose.Position.ToNumericsVector3(), bodyPose.Velocity.ToNumericsVector3());
         _spdState.EnabledForces[index] = true;

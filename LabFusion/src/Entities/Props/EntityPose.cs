@@ -35,22 +35,6 @@ public class EntityPose : INetSerializable
         }
     }
 
-    public void PredictOLDTEMP(float deltaTime)
-    {
-        foreach (var body in Bodies)
-        {
-            body.PredictPositionOLDTEMP(deltaTime);
-        }
-    }
-
-    public void ResetPrediction()
-    {
-        foreach (var body in Bodies)
-        {
-            body.ResetPrediction();
-        }
-    }
-
     public void Interpolate(EntityPose from, EntityPose to, float t)
     {
         for (var i = 0; i < BodyCount; i++)
@@ -59,11 +43,13 @@ public class EntityPose : INetSerializable
         }
     }
 
-    public void Predict(float deltaTime)
+    public void Predict(float deltaTime) => PredictFrom(deltaTime, this);
+
+    public void PredictFrom(float deltaTime, EntityPose reference)
     {
         for (var i = 0; i < BodyCount; i++)
         {
-            Bodies[i].Predict(deltaTime);
+            Bodies[i].PredictFrom(deltaTime, reference.Bodies[i]);
         }
     }
 

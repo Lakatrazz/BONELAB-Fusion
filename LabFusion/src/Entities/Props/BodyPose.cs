@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Math.Unity;
 using LabFusion.Network.Serialization;
 
 using UnityEngine;
@@ -47,9 +48,13 @@ public class BodyPose : INetSerializable
         AngularVelocity = Vector3.Lerp(from.AngularVelocity, to.AngularVelocity, time);
     }
 
-    public void Predict(float deltaTime)
+    public void Predict(float deltaTime) => PredictFrom(deltaTime, this);
+
+    public void PredictFrom(float deltaTime, BodyPose reference)
     {
-        Position += Velocity * deltaTime;
+        Position += reference.Velocity * deltaTime;
+
+        Rotation = UnityDerivatives.GetQuaternionDisplacement(deltaTime * reference.AngularVelocity) * Rotation;
     }
 
     public void ResetPrediction()

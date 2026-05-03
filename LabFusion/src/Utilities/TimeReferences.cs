@@ -19,6 +19,8 @@ public static class TimeReferences
 
     public static float TimeScale { get; private set; } = 1f;
 
+    public static float SafeTimeScale => MathF.Max(0.005f, TimeScale);
+
     public static int FrameCount { get; private set; } = 0;
 
     public static void OnEarlyUpdate()
