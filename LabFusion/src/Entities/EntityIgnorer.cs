@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Extensions;
+using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
 
@@ -33,7 +34,7 @@ public sealed class EntityIgnorer
     {
         IgnoringEntities[entity] = duration;
 
-        MarrowEntity.IgnoreCollision(entity, true);
+        IgnoreCollision(entity, true);
     }
 
     /// <summary>
@@ -44,9 +45,23 @@ public sealed class EntityIgnorer
     {
         IgnoringEntities.Remove(entity);
 
-        if (entity != null)
+        IgnoreCollision(entity, false);
+    }
+
+    private void IgnoreCollision(MarrowEntity otherEntity, bool ignore)
+    {
+        if (otherEntity == null)
         {
-            MarrowEntity.IgnoreCollision(entity, false);
+            return;
+        }
+
+        try
+        {
+            MarrowEntity.IgnoreCollision(otherEntity, ignore);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("ignoring entity", e);
         }
     }
 
