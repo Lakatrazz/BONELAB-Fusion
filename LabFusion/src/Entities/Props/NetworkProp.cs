@@ -624,6 +624,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnProcessReceivedPose(float deltaTime)
     {
+        // The time since a pose has been received should still increment regardless if the first pose has been received
+        // This is so that initial prediction still works during the time when ownership has changed and a new pose hasn't been received yet
+        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
+
+        TimeSinceReceivedPose += unscaledDeltaTime;
+
         if (IsSleeping)
         {
             return;
@@ -633,10 +639,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             return;
         }
-
-        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
-
-        TimeSinceReceivedPose += unscaledDeltaTime;
 
         InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
 
