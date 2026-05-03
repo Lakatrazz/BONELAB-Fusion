@@ -64,6 +64,6 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
         }
 
         // Apply pose
-        networkPlayer.OnReceivePose(data.Pose);
+        networkPlayer.ReceivePose(data.Pose);
     }
 }

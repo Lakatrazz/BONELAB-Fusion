@@ -16,10 +16,6 @@ public class BodyPose : INetSerializable
     public Vector3 Velocity = Vector3.zero;
     public Vector3 AngularVelocity = Vector3.zero;
 
-    public Vector3 LinearPrediction = Vector3.zero;
-
-    public Vector3 PredictedPosition => Position + LinearPrediction;
-
     public int? GetSize() => Size;
 
     public void ReadFrom(Rigidbody rigidbody)
@@ -36,16 +32,14 @@ public class BodyPose : INetSerializable
         target.Rotation = Rotation;
         target.Velocity = Velocity;
         target.AngularVelocity = AngularVelocity;
-
-        target.ResetPrediction();
     }
 
-    public void Interpolate(BodyPose from, BodyPose to, float time)
+    public void Interpolate(BodyPose from, BodyPose to, float t)
     {
-        Position = Vector3.Lerp(from.Position, to.Position, time);
-        Rotation = Quaternion.Slerp(from.Rotation, to.Rotation, time);
-        Velocity = Vector3.Lerp(from.Velocity, to.Velocity, time);
-        AngularVelocity = Vector3.Lerp(from.AngularVelocity, to.AngularVelocity, time);
+        Position = Vector3.Lerp(from.Position, to.Position, t);
+        Rotation = Quaternion.Slerp(from.Rotation, to.Rotation, t);
+        Velocity = Vector3.Lerp(from.Velocity, to.Velocity, t);
+        AngularVelocity = Vector3.Lerp(from.AngularVelocity, to.AngularVelocity, t);
     }
 
     public void Predict(float deltaTime) => PredictFrom(deltaTime, this);
@@ -55,16 +49,6 @@ public class BodyPose : INetSerializable
         Position += reference.Velocity * deltaTime;
 
         Rotation = UnityDerivatives.GetQuaternionDisplacement(deltaTime * reference.AngularVelocity) * Rotation;
-    }
-
-    public void ResetPrediction()
-    {
-        LinearPrediction = Vector3.zero;
-    }
-
-    public void PredictPositionOLDTEMP(float deltaTime)
-    {
-        LinearPrediction += Velocity * deltaTime;
     }
 
     public void Serialize(INetSerializer serializer)
