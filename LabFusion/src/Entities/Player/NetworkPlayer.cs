@@ -106,6 +106,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public float InterpolationPercent { get; private set; } = 0f;
 
+    /// <summary>
+    /// Tracks entities that the player will ignore collision with for a specific amount of time.
+    /// </summary>
+    public EntityIgnorer Ignorer { get; private set; } = null;
+
     private RigPuppet _puppet = null;
     public RigPuppet Puppet => _puppet;
 
@@ -618,6 +623,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.SmoothInterpolationTime);
         }
+
+        Ignorer.Tick(deltaTime / TimeReferences.SafeTimeScale);
     }
 
     private void OnProcessReceivedPose(float deltaTime)
@@ -994,6 +1001,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnFoundRigManager(RigManager rigManager)
     {
         _marrowEntity = rigManager.physicsRig.marrowEntity;
+
+        Ignorer = new(_marrowEntity);
 
         _rigSkeleton = new(rigManager);
         _rigRefs = new(rigManager);
