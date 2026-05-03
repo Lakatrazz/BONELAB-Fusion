@@ -31,10 +31,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public bool IsSleeping { get; private set; } = false;
     public bool IsFrozen { get; private set; } = false;
 
-    private static int _globalSleepOffset = 0;
-    private int _sleepFrameOffset = 0;
-    private const int _sleepCheckInterval = 20;
-
     public bool InitialCull { get; private set; } = false;
 
     public bool IsCulled { get; private set; } = false;
@@ -44,7 +40,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
     /// <summary>
-    /// The prop's local pose captured so that it can be sent to other clients. 
+    /// The prop's local pose captured so that it can be sent to other clients.
+    /// This is captured on every network tick given by <see cref="NetworkTickManager.IsTickThisFrame"/> rather than every frame for performance.
     /// <para>Only valid if <see cref="HasCapturedPose"/> is true.</para>
     /// </summary>
     public EntityPose CapturedPose { get; private set; } = null;
@@ -109,6 +106,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public const float MinMoveAngle = 0.15f;
 
     public const float SleepTimer = 0.5f;
+
+    private float _ownedTickDeltaTime = 0f;
 
     public NetworkProp(NetworkEntity networkEntity, MarrowEntity marrowEntity)
     {
@@ -328,15 +327,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         InitialCull = true;
 
-        // Cycle sleep offset
-        _sleepFrameOffset = _globalSleepOffset;
-        _globalSleepOffset++;
-
-        if (_globalSleepOffset >= 30)
-        {
-            _globalSleepOffset = 0;
-        }
-
         // Invoke ready callback
         _onReadyCallback?.InvokeSafe("executing NetworkProp.OnReadyCallback");
         _onReadyCallback = null;
@@ -521,12 +511,22 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnOwnedUpdate(float deltaTime)
     {
-        // If we were sleeping last frame, only check so often
-        if (IsSleeping && !TimeReferences.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
+        _ownedTickDeltaTime += deltaTime;
+
+        // Only update if on our tick rate
+        if (!NetworkTickManager.IsTickThisFrame)
         {
             return;
         }
 
+        float totalDeltaTime = _ownedTickDeltaTime;
+        _ownedTickDeltaTime = 0f;
+
+        OnOwnedTick(totalDeltaTime);
+    }
+
+    private void OnOwnedTick(float deltaTime)
+    {
         // Capture the current pose to read from
         CapturePose();
 
@@ -545,9 +545,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             _ownerSleepElapsed = 0f;
             IsSleeping = false;
         }
-        
+
         // Starting to sleep
-        if (!wasSleeping && sleeping)
+        bool fallingAsleep = !wasSleeping && sleeping;
+
+        if (fallingAsleep)
         {
             _ownerSleepElapsed += deltaTime;
 
@@ -562,12 +564,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             }
         }
 
-        // Only send if on our tick rate
-        if (!NetworkTickManager.IsTickThisFrame)
-        {
-            return;
-        }
-
+        // Prop is awake, we can send the pose
         SendEntityPose(CommonMessageRoutes.UnreliableToOtherClients);
     }
 
