@@ -140,6 +140,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
         else
         {
+            // We hold the current object pose so that we can keep predicting positions while waiting for the owner's pose
+            HoldReceivedPose();
+
             ClearDrag();
         }
 
