@@ -6,6 +6,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 using UnityEngine;
 

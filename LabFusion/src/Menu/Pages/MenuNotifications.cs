@@ -1,7 +1,7 @@
 ﻿using Il2CppTMPro;
 
 using LabFusion.Marrow.Proxies;
-using LabFusion.Utilities;
+using LabFusion.Extensions;
 using LabFusion.UI.Popups;
 
 using UnityEngine;

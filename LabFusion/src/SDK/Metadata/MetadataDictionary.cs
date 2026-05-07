@@ -1,4 +1,4 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Extensions;
 
 namespace LabFusion.SDK.Metadata;
 

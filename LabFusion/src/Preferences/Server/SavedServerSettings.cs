@@ -1,7 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
-using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 using MelonLoader;
 

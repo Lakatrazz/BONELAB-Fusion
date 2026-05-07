@@ -1,6 +1,7 @@
 ﻿using LabFusion.Player;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 namespace LabFusion.SDK.Gamemodes;
 

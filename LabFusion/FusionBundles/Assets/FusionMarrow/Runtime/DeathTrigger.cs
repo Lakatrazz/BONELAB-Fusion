@@ -5,7 +5,7 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Network;
 using LabFusion.Entities;
-using LabFusion.Utilities;
+using LabFusion.Extensions;
 using LabFusion.RPC;
 #endif
 

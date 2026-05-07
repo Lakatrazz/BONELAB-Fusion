@@ -5,6 +5,7 @@ using LabFusion.Marrow;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
 using LabFusion.Marrow.Patching;
+using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;

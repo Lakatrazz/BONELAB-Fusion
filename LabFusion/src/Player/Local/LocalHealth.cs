@@ -5,7 +5,7 @@ using Il2CppSLZ.VRMK;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
-using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 namespace LabFusion.Player;
 

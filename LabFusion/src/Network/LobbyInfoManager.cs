@@ -3,6 +3,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.Preferences.Server;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network;
 
