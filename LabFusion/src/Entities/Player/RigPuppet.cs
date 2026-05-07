@@ -6,7 +6,7 @@ using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.VFX;
 
 using LabFusion.Extensions;
-using LabFusion.Representation;
+using LabFusion.Marrow.Rig;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -27,7 +27,7 @@ public class RigPuppet
         DestroyPuppet();
 
         // Create the puppet
-        PlayerRepUtilities.CreateNewRig((rig) =>
+        NetRigSpawner.SpawnNetRig((rig) =>
         {
             OnPuppetCreated(rig, onPuppetCreated);
         });

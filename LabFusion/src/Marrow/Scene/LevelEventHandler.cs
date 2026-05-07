@@ -72,7 +72,7 @@ public abstract class LevelEventHandler
         }
     }
 
-    public static void OnInitializeMelon()
+    internal static void Initialize()
     {
         // Hook functions
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoadedCallback;

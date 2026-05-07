@@ -11,6 +11,7 @@ using LabFusion.Preferences;
 using LabFusion.Voice;
 using LabFusion.Math;
 using LabFusion.Extensions;
+using LabFusion.Marrow.Rig;
 
 using MelonLoader;
 
@@ -354,7 +355,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarkDirty();
 
         // Rename the rig to match our ID
-        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerID.SmallID})";
+        rigManager.gameObject.name = NetRigSpawner.GetNetRigName(PlayerID.SmallID);
 
         // Hook into the rig
         // Wait one frame so that the rig is properly initialized

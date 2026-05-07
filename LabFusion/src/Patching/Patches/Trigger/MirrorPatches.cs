@@ -91,17 +91,17 @@ public static class MirrorPatches
     {
         // Check if we have a identifier
         RigManager rig = null;
-        PlayerID playerId;
+        PlayerID playerID;
 
         // If we do, get the rig manager and id
         var identifier = __instance.GetComponent<MirrorIdentifier>();
         if (identifier != null)
         {
-            playerId = PlayerIDManager.GetPlayerID(identifier.id);
+            playerID = PlayerIDManager.GetPlayerID(identifier.id);
 
-            if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
+            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var player))
             {
-                rig = references.RigManager;
+                rig = player.RigRefs.RigManager;
             }
         }
         // Otherwise, clone the mirror and setup IDs
@@ -158,15 +158,15 @@ public static class MirrorPatches
                 return false;
             }
 
-            playerId = PlayerIDManager.GetPlayerID(identifier.id);
+            playerID = PlayerIDManager.GetPlayerID(identifier.id);
 
-            if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
+            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var identifiedPlayer))
             {
-                rig = references.RigManager;
+                rig = identifiedPlayer.RigRefs.RigManager;
             }
         }
 
-        if (rig == null || playerId == null)
+        if (rig == null || playerID == null)
             return false;
 
         bool isTarget = TriggerUtilities.IsMatchingRig(proxy, rig);
@@ -175,14 +175,14 @@ public static class MirrorPatches
         {
             foreach (var item in PointItemManager.LoadedItems)
             {
-                if (playerId.HasEquipped(item))
+                if (playerID.HasEquipped(item))
                 {
                     item.OnUpdateObjects(new PointItemPayload()
                     {
                         type = PointItemPayloadType.MIRROR,
                         rigManager = rig,
                         mirror = __instance,
-                        playerId = playerId,
+                        playerId = playerID,
                     }, true);
                 }
             }
@@ -225,8 +225,10 @@ public static class MirrorPatches
         {
             playerId = PlayerIDManager.GetPlayerID(identifier.id);
 
-            if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
-                rig = references.RigManager;
+            if (playerId != null && NetworkPlayerManager.TryGetPlayer(playerId, out var identifiedPlayer))
+            {
+                rig = identifiedPlayer.RigRefs.RigManager;
+            }
         }
 
         if (rig == null || playerId == null)

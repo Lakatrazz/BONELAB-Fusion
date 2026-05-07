@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 using MarrowFusion.Bonelab.Serialization;
 using MarrowFusion.Bonelab.Messages;
@@ -8,6 +9,9 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Marrow;
+using LabFusion.Marrow.Rig;
+
+using UnityEngine;
 
 namespace MarrowFusion.Bonelab.Extenders;
 
@@ -19,6 +23,7 @@ public static class BonelabPlayerManager
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoined;
         MultiplayerHooking.OnJoinedServer += OnJoinedServer;
+        RigStripper.OnStripRigManager += OnStripBonelabRigManager;
 
         MarrowGameReferences.CalibrationAvatarReference = BonelabAvatarReferences.PolyBlankReference;
         MarrowGameReferences.CalibrationAvatarHeight = MarrowConstants.StandardHeight;
@@ -30,6 +35,16 @@ public static class BonelabPlayerManager
         MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerJoined -= OnPlayerJoined;
         MultiplayerHooking.OnJoinedServer -= OnJoinedServer;
+        RigStripper.OnStripRigManager -= OnStripBonelabRigManager;
+    }
+
+    private static void OnStripBonelabRigManager(RigManager rigManager)
+    {
+        // Remove UI inputs
+        var controllerRig = rigManager.ControllerRig;
+
+        GameObject.DestroyImmediate(controllerRig.leftController.GetComponent<UIControllerInput>());
+        GameObject.DestroyImmediate(controllerRig.rightController.GetComponent<UIControllerInput>());
     }
 
     private static void OnNetworkPlayerRegistered(NetworkPlayer player)

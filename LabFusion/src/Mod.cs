@@ -165,7 +165,7 @@ public class FusionMod : MelonMod
     public override void OnLateInitializeMelon()
     {
         PersistentAssetCreator.OnLateInitializeMelon();
-        PlayerAdditionsHelper.OnInitializeMelon();
+        MuteUIHelper.OnInitializeMelon();
 
 #if RELEASE
         // Check if the auto updater is installed
@@ -197,7 +197,7 @@ public class FusionMod : MelonMod
         PointItemManager.UnhookEvents();
 
         // Undo game changes
-        PlayerAdditionsHelper.OnDeinitializeMelon();
+        MuteUIHelper.OnDeinitializeMelon();
 
         // Free APIs
         SteamAPILoader.OnFreeSteamAPI();

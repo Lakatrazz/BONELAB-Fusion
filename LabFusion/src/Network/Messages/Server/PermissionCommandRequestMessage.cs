@@ -1,4 +1,5 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -85,19 +86,19 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
             case PermissionCommandType.TELEPORT_TO_THEM:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
-
-                    if (references != null && references.IsValid)
-                        PlayerSender.SendPlayerTeleport(playerID, references.RigManager.physicsRig.feet.transform.position);
+                    if (NetworkPlayerManager.TryGetPlayer(playerID, out var player) && player.HasRig)
+                    {
+                        PlayerSender.SendPlayerTeleport(playerID, player.RigRefs.RigManager.physicsRig.feet.transform.position);
+                    }
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_ME:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    PlayerRepUtilities.TryGetReferences(playerID, out var references);
-
-                    if (references != null && references.IsValid)
-                        PlayerSender.SendPlayerTeleport(otherPlayer, references.RigManager.physicsRig.feet.transform.position);
+                    if (NetworkPlayerManager.TryGetPlayer(playerID, out var player) && player.HasRig)
+                    {
+                        PlayerSender.SendPlayerTeleport(otherPlayer, player.RigRefs.RigManager.physicsRig.feet.transform.position);
+                    }
                 }
                 break;
         }
