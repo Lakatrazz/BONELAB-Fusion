@@ -12,6 +12,9 @@ using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.Marrow.Rig;
 
+/// <summary>
+/// Provides functionality to strip unnecessary components from a spawned RigManager for use in multiplayer.
+/// </summary>
 public static class RigStripper
 {
     // Notice when stripping components from the RigManager:

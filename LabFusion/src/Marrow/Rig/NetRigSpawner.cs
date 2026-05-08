@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace LabFusion.Marrow.Rig;
 
+/// <summary>
+/// Manages the spawning of NetRigs to be used for representing players.
+/// </summary>
 public static class NetRigSpawner
 {
     /// <summary>

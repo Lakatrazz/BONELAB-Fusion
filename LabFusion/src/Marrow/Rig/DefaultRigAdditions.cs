@@ -11,6 +11,10 @@ using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 namespace LabFusion.Marrow.Rig;
 
+/// <summary>
+/// Applies default modifications to the local and net RigManagers.
+/// To implement your own modifications, use the events in <see cref="RigAdditions"/>.
+/// </summary>
 public static class DefaultRigAdditions
 {
     internal static void Initialize()
