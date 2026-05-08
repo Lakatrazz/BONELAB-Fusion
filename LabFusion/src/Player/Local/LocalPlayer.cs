@@ -68,9 +68,9 @@ public static class LocalPlayer
     {
         Metadata.Metadata.ForceSetLocalMetadata(key, value);
 
-        var localId = PlayerIDManager.LocalID;
+        var localID = PlayerIDManager.LocalID;
 
-        localId?.Metadata.Metadata.TrySetMetadata(key, value);
+        localID?.Metadata.Metadata.TrySetMetadata(key, value);
 
         return true;
     }
@@ -79,9 +79,9 @@ public static class LocalPlayer
     {
         Metadata.Metadata.ForceRemoveLocalMetadata(key);
 
-        var localId = PlayerIDManager.LocalID;
+        var localID = PlayerIDManager.LocalID;
 
-        localId?.Metadata.Metadata.TryRemoveMetadata(key);
+        localID?.Metadata.Metadata.TryRemoveMetadata(key);
 
         return true;
     }
