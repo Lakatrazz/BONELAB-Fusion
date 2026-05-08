@@ -411,8 +411,8 @@ public static class MenuMatchmaking
         element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = TextFilter.FilterCommon(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
-        element.HostNameText.text = TextFilter.FilterCommonAndRichText(metadata.LobbyInfo.LobbyHostName);
+        element.ServerNameText.text = InfoFilter.FilterDisplayName(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
+        element.HostNameText.text = InfoFilter.FilterIdentifier(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -511,10 +511,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = TextFilter.FilterCommon(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
+        element.ServerNameElement.Value = InfoFilter.FilterDisplayName(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(TextFilter.FilterCommonAndRichText(info.LobbyInfo.LobbyHostName));
+            .WithTitle(InfoFilter.FilterIdentifier(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -523,7 +523,7 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = TextFilter.FilterCommon(info.LobbyInfo.LobbyDescription);
+        element.DescriptionElement.Value = InfoFilter.FilterDescription(info.LobbyInfo.LobbyDescription);
 
         element.MoreElement
             .Cleared()
@@ -611,7 +611,7 @@ public static class MenuMatchmaking
 
         foreach (var player in info.LobbyInfo.PlayerList.Players)
         {
-            var username = TextFilter.FilterCommonAndRichText(player.Username);
+            var username = InfoFilter.FilterIdentifier(player.Username);
             
             var playerResult = playerListPage.AddElement<PlayerResultElement>(username);
 
@@ -636,14 +636,14 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = TextFilter.FilterCommonAndRichText(info.Username);
+        element.UsernameElement.Title = InfoFilter.FilterIdentifier(info.Username);
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.FilterCommon(info.Nickname);
+        element.NicknameElement.Value = InfoFilter.FilterDisplayName(info.Nickname);
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.FilterCommon(info.Description);
+        element.DescriptionElement.Value = InfoFilter.FilterDescription(info.Description);
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         element.PermissionsElement
