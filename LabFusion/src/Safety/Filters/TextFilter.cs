@@ -33,10 +33,9 @@ public static class TextFilter
     private static string ApplyCommonFilters(string text)
     {
         return
-            LinkFilter.Filter(
             ProfanityFilter.Filter(
             text
-            ));
+            );
     }
 
     /// <summary>
