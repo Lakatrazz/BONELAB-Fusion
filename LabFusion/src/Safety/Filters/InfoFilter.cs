@@ -12,7 +12,11 @@ public static class InfoFilter
     /// <returns></returns>
     public static string FilterIdentifier(string identifier)
     {
-        return TextFilter.FilterCommonAndRichText(identifier);
+        var filtered = TextFilter.FilterCommonAndRichText(identifier);
+
+        filtered = CharacterFilter.FilterNonLatin1Characters(filtered);
+
+        return filtered;
     }
 
     /// <summary>
@@ -22,7 +26,11 @@ public static class InfoFilter
     /// <returns></returns>
     public static string FilterDisplayName(string displayName)
     {
-        return TextFilter.FilterCommon(displayName);
+        var filtered = TextFilter.FilterCommon(displayName);
+
+        filtered = CharacterFilter.FilterNonLatin1Characters(filtered);
+
+        return filtered;
     }
 
     /// <summary>
@@ -32,6 +40,10 @@ public static class InfoFilter
     /// <returns></returns>
     public static string FilterDescription(string description)
     {
-        return TextFilter.FilterCommon(description);
+        var filtered = TextFilter.FilterCommon(description);
+
+        filtered = CharacterFilter.FilterNonLatin1Characters(filtered);
+
+        return filtered;
     }
 }

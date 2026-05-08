@@ -8,6 +8,11 @@ public static class FilterSettings
     public const char CensorCharacter = '*';
 
     /// <summary>
+    /// The character that invalid characters get replaced with.
+    /// </summary>
+    public const char InvalidCharacter = '?';
+
+    /// <summary>
     /// Creates a string of repeating <see cref="CensorCharacter"/> with a specified length.
     /// </summary>
     /// <param name="length"></param>
