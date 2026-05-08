@@ -100,9 +100,11 @@ public static class ArtRigPatches
         {
             LocalAvatar.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
-        else if (NetworkPlayerManager.TryGetPlayer(__instance, out var player))
+
+        // If a NetworkPlayer is available, invoke it for that as well
+        if (NetworkPlayerManager.TryGetPlayer(__instance, out var networkPlayer))
         {
-            player.Internal_OnAvatarChanged(__instance.AvatarCrate.Barcode.ID);
+            NetworkAvatarManager.InvokeAvatarChanged(networkPlayer, newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
     }
 }

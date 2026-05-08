@@ -338,8 +338,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
-    internal void Internal_OnAvatarChanged(string barcode)
+    internal void OnAvatarBarcodeChanged(string barcode)
     {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
         if (!LocalAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
         {
             AvatarSetter.SetAvatarDirty();

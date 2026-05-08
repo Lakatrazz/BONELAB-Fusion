@@ -1,9 +1,13 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSLZ.Marrow;
 
+using LabFusion.Entities;
 using LabFusion.MonoBehaviours;
+using LabFusion.Player;
 
 using UnityEngine;
+
+using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 namespace LabFusion.Marrow.Rig;
 
@@ -16,6 +20,14 @@ public static class DefaultRigAdditions
 
         RigAdditions.OnApplyLocalRigAdditions += OnApplyLocalRigAdditions;
         RigAdditions.OnRemoveLocalRigAdditions += OnRemoveLocalRigAdditions;
+
+        NetworkAvatarManager.OnNetworkPlayerAvatarChanged += OnNetworkPlayerAvatarChanged;
+    }
+
+    private static void OnNetworkPlayerAvatarChanged(NetworkPlayer networkPlayer, Avatar avatar, string barcode)
+    {
+        // Reset blood hits so that they're properly cleared
+        networkPlayer.RigRefs.Health.ResetHits();
     }
 
     private static void OnApplyRigAdditions(RigManager rigManager)
