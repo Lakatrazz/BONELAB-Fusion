@@ -114,6 +114,9 @@ public class LobbyInfo
     [JsonPropertyName("teleportation")]
     public PermissionLevel Teleportation { get; set; } = PermissionLevel.DEFAULT;
 
+    /// <summary>
+    /// Writes the current lobby information to this LobbyInfo. This only works for the server host as it uses local server settings.
+    /// </summary>
     public void WriteLobby()
     {
         // Info
@@ -168,5 +171,20 @@ public class LobbyInfo
         Kicking = SavedServerSettings.Kicking.Value;
         Banning = SavedServerSettings.Banning.Value;
         Teleportation = SavedServerSettings.Teleportation.Value;
+    }
+
+    /// <summary>
+    /// Checks if the LobbyInfo contains invalid information, indicating that it may have been tampered with.
+    /// </summary>
+    /// <returns></returns>
+    public bool ValidateLobby()
+    {
+        if (!PlayerList.ValidatePlayers())
+        {
+            return false;
+        }
+
+        // All checks passed, the LobbyInfo is most likely valid
+        return true;
     }
 }
