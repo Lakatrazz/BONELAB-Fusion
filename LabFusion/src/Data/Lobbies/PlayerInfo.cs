@@ -33,24 +33,24 @@ public class PlayerInfo
 
     public PlayerInfo() { }
 
-    public PlayerInfo(PlayerID playerId)
+    public PlayerInfo(PlayerID playerID)
     {
-        PlatformID = playerId.PlatformID;
+        PlatformID = playerID.PlatformID;
 
-        Username = playerId.Metadata.Username.GetValueOrEmpty();
-        Nickname = playerId.Metadata.Nickname.GetValueOrEmpty();
-        Description = playerId.Metadata.Description.GetValueOrEmpty();
+        Username = playerID.Metadata.Username.GetValueOrEmpty();
+        Nickname = playerID.Metadata.Nickname.GetValueOrEmpty();
+        Description = playerID.Metadata.Description.GetValueOrEmpty();
 
-        playerId.TryGetPermissionLevel(out var level);
+        playerID.TryGetPermissionLevel(out var level);
         PermissionLevel = level;
 
-        if (NetworkPlayerManager.TryGetPlayer(playerId, out var networkPlayer) && networkPlayer.HasRig)
+        if (NetworkPlayerManager.TryGetPlayer(playerID, out var networkPlayer) && networkPlayer.HasRig)
         {
             var crate = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate;
             AvatarTitle = crate.Title;
         }
 
-        AvatarTitle = playerId.Metadata.AvatarTitle.GetValue();
-        AvatarModID = playerId.Metadata.AvatarModID.GetValue();
+        AvatarTitle = playerID.Metadata.AvatarTitle.GetValue();
+        AvatarModID = playerID.Metadata.AvatarModID.GetValue();
     }
 }
