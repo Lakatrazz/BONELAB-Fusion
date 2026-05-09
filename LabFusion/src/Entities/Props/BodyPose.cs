@@ -64,7 +64,7 @@ public class BodyPose : INetSerializable
             position = SerializedShortVector3.Compress(NetworkTransformManager.EncodePosition(this.Position));
             rotation = SerializedSmallQuaternion.Compress(this.Rotation);
             velocity = SerializedSmallVector3.Compress(NetworkTransformManager.EncodeVelocity(this.Velocity));
-            angularVelocity = SerializedSmallVector3.Compress(this.AngularVelocity);
+            angularVelocity = SerializedSmallVector3.Compress(NetworkTransformManager.EncodeVelocity(this.AngularVelocity));
         }
 
         serializer.SerializeValue(ref position);
@@ -77,7 +77,7 @@ public class BodyPose : INetSerializable
             this.Position = NetworkTransformManager.DecodePosition(position.Expand());
             this.Rotation = rotation.Expand();
             this.Velocity = NetworkTransformManager.DecodeVelocity(velocity.Expand());
-            this.AngularVelocity = angularVelocity.Expand();
+            this.AngularVelocity = NetworkTransformManager.DecodeVelocity(angularVelocity.Expand());
         }
     }
 }
