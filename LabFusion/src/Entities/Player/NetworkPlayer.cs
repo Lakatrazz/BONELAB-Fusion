@@ -834,12 +834,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        // Find the target centerOfPressure position and teleport
-        var targetPelvis = InterpolatedPelvisPose.Position;
-        var offset = targetPelvis - RigSkeleton.PhysicsPelvis.transform.position;
-        var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
+        // Find the offsets for position and velocity to apply to the rig
+        var pelvis = RigSkeleton.PhysicsPelvis;
 
-        RigRefs.RigManager.TeleportToPosition(newPosition, true);
+        var currentPelvisPosition = pelvis.transform.position;
+        var currentPelvisVelocity = pelvis.velocity;
+
+        var targetPelvisPosition = InterpolatedPelvisPose.Position;
+        var targetPelvisVelocity = InterpolatedPelvisPose.Velocity;
+
+        var positionOffset = targetPelvisPosition - currentPelvisPosition;
+        var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
+
+        RigRefs.RigManager.TeleportWithOffset(positionOffset, velocityOffset);
     }
 
     private void OnOwnedUpdate()
