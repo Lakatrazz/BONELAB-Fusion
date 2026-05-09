@@ -1,6 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Math;
 using LabFusion.Math.Numerics;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -40,6 +41,10 @@ public static class NetworkTransformManager
     public static Vector3 EncodePosition(Vector3 position) => position - FloatingOrigin;
 
     public static Vector3 DecodePosition(Vector3 position) => position + FloatingOrigin;
+
+    public static Vector3 EncodeVelocity(Vector3 velocity) => velocity * TimeReferences.TimeScale;
+
+    public static Vector3 DecodeVelocity(Vector3 velocity) => velocity / TimeReferences.SafeTimeScale;
 
     public static bool IsInBounds(NumericsVector3 position)
     {

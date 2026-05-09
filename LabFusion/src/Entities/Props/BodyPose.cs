@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Math.Unity;
 using LabFusion.Network.Serialization;
+using LabFusion.Scene;
 
 using UnityEngine;
 
@@ -60,9 +61,9 @@ public class BodyPose : INetSerializable
 
         if (!serializer.IsReader)
         {
-            position = SerializedShortVector3.Compress(this.Position);
+            position = SerializedShortVector3.Compress(NetworkTransformManager.EncodePosition(this.Position));
             rotation = SerializedSmallQuaternion.Compress(this.Rotation);
-            velocity = SerializedSmallVector3.Compress(this.Velocity);
+            velocity = SerializedSmallVector3.Compress(NetworkTransformManager.EncodeVelocity(this.Velocity));
             angularVelocity = SerializedSmallVector3.Compress(this.AngularVelocity);
         }
 
@@ -73,9 +74,9 @@ public class BodyPose : INetSerializable
 
         if (serializer.IsReader)
         {
-            this.Position = position.Expand();
+            this.Position = NetworkTransformManager.DecodePosition(position.Expand());
             this.Rotation = rotation.Expand();
-            this.Velocity = velocity.Expand();
+            this.Velocity = NetworkTransformManager.DecodeVelocity(velocity.Expand());
             this.AngularVelocity = angularVelocity.Expand();
         }
     }
