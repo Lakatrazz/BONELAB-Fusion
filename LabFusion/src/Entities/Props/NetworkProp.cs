@@ -593,6 +593,13 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void SendEntityPose(MessageRoute route)
     {
+        // If a pose hasn't been captured yet, make sure to capture one
+        // Prevents initial poses at world origin from being sent
+        if (!HasCapturedPose)
+        {
+            CapturePose();
+        }
+
         var data = new EntityPoseUpdateData()
         {
             Entity = new(NetworkEntity),
