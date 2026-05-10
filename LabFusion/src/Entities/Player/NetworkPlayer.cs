@@ -220,6 +220,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public PlayerUpdatableManager UpdatableManager { get; } = new();
 
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
+
     private readonly JawFlapper _jawFlapper = new();
     public JawFlapper JawFlapper => _jawFlapper;
 
@@ -834,6 +836,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
+
         // Find the offsets for position and velocity to apply to the rig
         var pelvis = RigSkeleton.PhysicsPelvis;
 
@@ -847,6 +851,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
 
         RigRefs.RigManager.TeleportWithOffset(positionOffset, velocityOffset);
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     private void OnOwnedUpdate()

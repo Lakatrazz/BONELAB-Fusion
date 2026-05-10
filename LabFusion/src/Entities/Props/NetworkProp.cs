@@ -102,6 +102,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     /// </summary>
     public float InterpolationPercent { get; private set; } = 0f;
 
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
+
     public const float MinMoveMagnitude = 0.005f;
     public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
     public const float MinMoveAngle = 0.15f;
@@ -253,6 +255,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void TeleportToPose(EntityPose pose)
     {
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
+
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -278,6 +282,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             rigidbody.velocity = bodyPose.Velocity;
             rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     public void CapturePose()

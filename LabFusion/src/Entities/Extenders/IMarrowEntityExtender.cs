@@ -12,6 +12,9 @@ public interface IMarrowEntityExtender : IEntityExtender
 
     MarrowEntity MarrowEntity { get; }
 
+    event Action OnBeforeTeleportToPose;
+    event Action OnAfterTeleportToPose;
+
     void OnEntityCull(bool isInactive);
 
     void TeleportToPose();
