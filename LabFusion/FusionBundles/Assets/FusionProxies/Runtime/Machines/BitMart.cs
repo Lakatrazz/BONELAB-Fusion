@@ -224,7 +224,7 @@ namespace LabFusion.Marrow.Proxies
 
         private void PushDoor(float force = 10f)
         {
-            DoorRigidbody.AddRelativeTorque(Vector3Extensions.left * force, ForceMode.Impulse);
+            DoorRigidbody.AddRelativeTorque(Vector3Extensions.Left * force, ForceMode.Impulse);
         }
 #else
         public void TurnOn()

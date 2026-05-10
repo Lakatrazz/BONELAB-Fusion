@@ -111,8 +111,8 @@ public class Entangled : Gamemode
             joint.linearLimitSpring = new SoftJointLimitSpring() { spring = 7000f };
 
             joint.autoConfigureConnectedAnchor = false;
-            joint.anchor = Vector3Extensions.zero;
-            joint.connectedAnchor = Vector3Extensions.zero;
+            joint.anchor = Vector3Extensions.Zero;
+            joint.connectedAnchor = Vector3Extensions.Zero;
 
             joint.connectedBody = otherPelvis;
         }

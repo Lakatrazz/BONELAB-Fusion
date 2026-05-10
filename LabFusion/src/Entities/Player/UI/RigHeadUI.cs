@@ -163,7 +163,7 @@ public class RigHeadUI
         }
 
         float height = avatar.height / MarrowConstants.StandardHeight;
-        _layoutTransform.localScale = Vector3Extensions.one * height;
+        _layoutTransform.localScale = Vector3Extensions.One * height;
     }
 
     public void UpdateTransform(RigManager rigManager)
@@ -175,7 +175,7 @@ public class RigHeadUI
 
         var head = rigManager.physicsRig.m_head;
 
-        var position = head.position + Vector3Extensions.up * GetUIOffset(rigManager);
+        var position = head.position + Vector3Extensions.Up * GetUIOffset(rigManager);
 
         var playerHead = RigData.Refs.Head;
 

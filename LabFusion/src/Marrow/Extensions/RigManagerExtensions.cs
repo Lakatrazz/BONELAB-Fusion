@@ -181,7 +181,7 @@ public static class RigManagerExtensions
             preSwapAvatar?.Invoke(crate.Barcode.ID, instance);
 
             instance.transform.parent = references.RigManager.transform;
-            instance.transform.SetLocalPositionAndRotation(Vector3Extensions.zero, QuaternionExtensions.identity);
+            instance.transform.SetLocalPositionAndRotation(Vector3Extensions.Zero, QuaternionExtensions.identity);
 
             var avatarComponent = instance.GetComponentInParent<Avatar>(true);
             rm.SwapAvatar(avatarComponent);

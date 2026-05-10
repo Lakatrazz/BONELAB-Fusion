@@ -135,9 +135,9 @@ public static class CosmeticItemHelper
     {
         return mode switch
         {
-            CosmeticScaleMode.HEIGHT => Vector3Extensions.one * (avatar.height / MarrowConstants.StandardHeight),
-            CosmeticScaleMode.HEAD => Vector3Extensions.one * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / MarrowConstants.StandardHeight,
-            _ => Vector3Extensions.one,
+            CosmeticScaleMode.HEIGHT => Vector3Extensions.One * (avatar.height / MarrowConstants.StandardHeight),
+            CosmeticScaleMode.HEAD => Vector3Extensions.One * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / MarrowConstants.StandardHeight,
+            _ => Vector3Extensions.One,
         };
     }
 }

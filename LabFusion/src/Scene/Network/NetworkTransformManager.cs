@@ -11,7 +11,7 @@ namespace LabFusion.Scene;
 
 public static class NetworkTransformManager
 {
-    private static Vector3 _floatingOrigin = Vector3Extensions.zero;
+    private static Vector3 _floatingOrigin = Vector3Extensions.Zero;
     public static Vector3 FloatingOrigin
     {
         get

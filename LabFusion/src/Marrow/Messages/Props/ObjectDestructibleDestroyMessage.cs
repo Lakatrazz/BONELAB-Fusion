@@ -35,7 +35,7 @@ public class ObjectDestructibleDestroyMessage : ModuleMessageHandler
         try
         {
             objectDestructible._hits = objectDestructible.reqHitCount + 1;
-            objectDestructible.TakeDamage(Vector3Extensions.up, objectDestructible._health + 1f, false);
+            objectDestructible.TakeDamage(Vector3Extensions.Up, objectDestructible._health + 1f, false);
         }
         catch (Exception e)
         {
