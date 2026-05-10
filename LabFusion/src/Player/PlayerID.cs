@@ -3,6 +3,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 namespace LabFusion.Player;
 

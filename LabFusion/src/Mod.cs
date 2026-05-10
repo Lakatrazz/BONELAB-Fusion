@@ -23,6 +23,7 @@ using LabFusion.RPC;
 using LabFusion.UI.Popups;
 using LabFusion.Safety;
 using LabFusion.Support;
+using LabFusion.Math;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -89,7 +90,6 @@ public class FusionMod : MelonMod
         EOSSDKLoader.OnLoadEOSSDK();
 
         // Initialize data and hooks
-        PDController.OnInitializeMelon();
         PointItemManager.HookEvents();
         RpcManager.OnInitialize();
     }
@@ -168,7 +168,7 @@ public class FusionMod : MelonMod
     public override void OnLateInitializeMelon()
     {
         PersistentAssetCreator.OnLateInitializeMelon();
-        PlayerAdditionsHelper.OnInitializeMelon();
+        MuteUIHelper.OnInitializeMelon();
 
 #if RELEASE
         // Check if the auto updater is installed
@@ -200,7 +200,7 @@ public class FusionMod : MelonMod
         PointItemManager.UnhookEvents();
 
         // Undo game changes
-        PlayerAdditionsHelper.OnDeinitializeMelon();
+        MuteUIHelper.OnDeinitializeMelon();
 
         // Free APIs
         SteamAPILoader.OnFreeSteamAPI();
@@ -310,13 +310,15 @@ public class FusionMod : MelonMod
 
         LocalPlayer.OnFixedUpdate();
 
-        PDController.OnFixedUpdate();
-
         var deltaTime = TimeReferences.FixedDeltaTime;
+
+        SPDController.OnFixedUpdate(deltaTime);
 
         NetworkPlayerManager.OnFixedUpdate(deltaTime);
 
         NetworkEntityManager.OnFixedUpdate(deltaTime);
+
+        ParallelManager.OnFixedUpdate(deltaTime);
 
         // Update hooks
         MultiplayerHooking.InvokeOnFixedUpdate();

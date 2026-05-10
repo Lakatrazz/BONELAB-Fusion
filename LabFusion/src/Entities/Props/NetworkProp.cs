@@ -1,16 +1,18 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Data;
+using LabFusion.Math;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IEntityFixedUpdatable
+public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
 {
     private NetworkEntity _networkEntity = null;
 
@@ -21,13 +23,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public MarrowEntity MarrowEntity => _marrowEntity;
 
     private MarrowBody[] _bodies = null;
-    private PDController[] _pdControllers = null;
-
-    private EntityPose _pose = null;
-    private EntityPose _sentPose = null;
-
-    private bool _receivedPose = false;
-    private float _lastReceivedTime = 0f;
+    private SPDState _spdState = null;
 
     private float _ownerSleepElapsed = 0f;
 
@@ -35,10 +31,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public bool IsSleeping { get; private set; } = false;
     public bool IsFrozen { get; private set; } = false;
-
-    private static int _globalSleepOffset = 0;
-    private int _sleepFrameOffset = 0;
-    private const int _sleepCheckInterval = 20;
 
     public bool InitialCull { get; private set; } = false;
 
@@ -48,13 +40,79 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
-    public EntityPose EntityPose => _pose;
+    /// <summary>
+    /// The prop's local pose captured so that it can be sent to other clients.
+    /// This is captured on every network tick given by <see cref="NetworkTickManager.IsTickThisFrame"/> rather than every frame for performance.
+    /// <para>Only valid if <see cref="HasCapturedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose CapturedPose { get; private set; } = null;
+
+    /// <summary>
+    /// The last <see cref="CapturedPose"/> that was sent to other clients. 
+    /// This is useful for comparing if the prop has moved and needs to send data again.
+    /// <para>Only valid if <see cref="HasCapturedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose SentPose { get; private set; } = null;
+
+    /// <summary>
+    /// Whether the prop's local pose has been captured in <see cref="CapturedPose"/> to be sent to other clients.
+    /// </summary>
+    public bool HasCapturedPose { get; private set; } = false;
+
+    /// <summary>
+    /// The pose in use right before the latest pose was received from the prop's owner.
+    /// Used for interpolation to smooth out network latency.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose LastReceivedPose { get; private set; } = null;
+
+    /// <summary>
+    /// The latest pose received from the prop's owner.
+    /// This is the pose that prediction is based on, and will be used to replicate the prop locally if the owner stops sending messages.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose ReceivedPose { get; private set; } = null;
+
+    /// <summary>
+    /// The <see cref="ReceivedPose"/>, but predicted right after being received based on the network latency.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose PredictedPose { get; private set; } = null;
+
+    /// <summary>
+    /// The current interpolated pose between <see cref="LastReceivedPose"/> and <see cref="PredictedPose"/>.
+    /// Additional prediction based on velocity is applied on top to simulate the object's travel while waiting for the next pose.
+    /// This is the pose actively used to replicate props locally per physics update.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public EntityPose InterpolatedPose { get; private set; } = null;
+
+    /// <summary>
+    /// Whether an updated pose has been received from the prop's owner and applied to <see cref="ReceivedPose"/>.
+    /// </summary>
+    public bool HasReceivedPose { get; private set; } = false;
+
+    /// <summary>
+    /// The time in seconds since we received an EntityPose from the prop's owner.
+    /// </summary>
+    public float TimeSinceReceivedPose { get; private set; } = 0f;
+
+    /// <summary>
+    /// The percent from 0 to 1 of interpolation from <see cref="LastReceivedPose"/> to <see cref="PredictedPose"/>.
+    /// </summary>
+    public float InterpolationPercent { get; private set; } = 0f;
+
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
 
     public const float MinMoveMagnitude = 0.005f;
     public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
     public const float MinMoveAngle = 0.15f;
 
     public const float SleepTimer = 0.5f;
+
+    private float _ownedTickDeltaTime = 0f;
+    private int _sleepCheckTick = 0;
+    private const int SleepCheckInterval = 3;
 
     public NetworkProp(NetworkEntity networkEntity, MarrowEntity marrowEntity)
     {
@@ -72,7 +130,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
-        _receivedPose = false;
+        ResetPoseState();
 
         if (entity.IsOwner)
         {
@@ -80,6 +138,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             IsCulledForOwner = IsCulled;
             SendCullStatus(IsCulled, CommonMessageRoutes.ReliableToOtherClients);
+
+            ResetDrag();
+        }
+        else
+        {
+            // We hold the current object pose so that we can keep predicting positions while waiting for the owner's pose
+            HoldReceivedPose();
+
+            ClearDrag();
         }
 
         OnReregisterUpdates();
@@ -96,20 +163,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void InitializeBodies()
     {
         _bodies = MarrowEntity.Bodies;
+        int bodyCount = _bodies.Length;
 
-        _pose = new EntityPose(_bodies.Length);
-        _sentPose = new EntityPose(_bodies.Length);
+        _spdState = new SPDState(bodyCount);
 
-        _pdControllers = new PDController[_bodies.Length];
+        CapturedPose = new(bodyCount);
+        SentPose = new(bodyCount);
 
-        for (var i = 0; i < _pdControllers.Length; i++)
-        {
-            _pdControllers[i] = new();
-        }
+        LastReceivedPose = new(bodyCount);
+        ReceivedPose = new(bodyCount);
+        PredictedPose = new(bodyCount);
+        InterpolatedPose = new(bodyCount);
 
-        // Copy current bodies into the entity pose so that they're held up by forces
-        CopyBodiesToPose();
-        UpdateReceiveTime();
+        HoldReceivedPose();
     }
 
     private void InitializeComponents()
@@ -117,33 +183,80 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
     }
 
-    public void OnReceivePose(EntityPose pose)
+    public void ReceivePose(EntityPose pose)
     {
-        pose.CopyTo(EntityPose);
+        if (HasReceivedPose)
+        {
+            InterpolatedPose.WriteTo(LastReceivedPose);
+        }
+        else
+        {
+            pose.WriteTo(LastReceivedPose);
+        }
 
-        UpdateReceiveTime();
+        pose.WriteTo(ReceivedPose);
+
+        pose.WriteTo(PredictedPose);
+
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
+
+        PredictedPose.Predict(predictionTime);
+
+        LastReceivedPose.WriteTo(InterpolatedPose);
+
+        RefreshReceivedState();
     }
 
-    public void OnReceiveCullStatus(bool isCulled)
+    public void HoldReceivedPose()
+    {
+        WriteToPose(ReceivedPose);
+
+        ResyncReceivedPose();
+
+        RefreshReceivedState();
+    }
+
+    public void ResyncReceivedPose()
+    {
+        ReceivedPose.WriteTo(LastReceivedPose);
+        ReceivedPose.WriteTo(PredictedPose);
+        ReceivedPose.WriteTo(InterpolatedPose);
+    }
+
+    public void ReceiveCullStatus(bool isCulled)
     {
         IsCulledForOwner = isCulled;
     }
 
-    private void UpdateReceiveTime()
+    private void RefreshReceivedState()
     {
         Unfreeze();
 
-        _receivedPose = true;
-        _lastReceivedTime = TimeReferences.TimeSinceStartup;
+        TimeSinceReceivedPose = 0f;
+        HasReceivedPose = true;
     }
 
-    public void ResetPrediction()
+    private void ResetPoseState()
     {
-        EntityPose.ResetPrediction();
+        TimeSinceReceivedPose = 0f;
+        HasReceivedPose = false;
+        HasCapturedPose = false;
     }
 
     public void TeleportToPose()
     {
+        if (!HasReceivedPose)
+        {
+            return;
+        }
+
+        TeleportToPose(InterpolatedPose);
+    }
+
+    public void TeleportToPose(EntityPose pose)
+    {
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
+
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -162,19 +275,25 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             var transform = rigidbody.transform;
 
-            var pose = EntityPose.Bodies[i];
+            var bodyPose = pose.Bodies[i];
 
-            transform.position = pose.PredictedPosition;
-            transform.rotation = pose.Rotation;
-            rigidbody.velocity = pose.Velocity;
-            rigidbody.angularVelocity = pose.AngularVelocity;
+            transform.position = bodyPose.Position;
+            transform.rotation = bodyPose.Rotation;
+            rigidbody.velocity = bodyPose.Velocity;
+            rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
-    private void CopyBodiesToPose() 
+    public void CapturePose()
     {
-        _receivedPose = false;
+        WriteToPose(CapturedPose);
+        HasCapturedPose = true;
+    }
 
+    public void WriteToPose(EntityPose pose)
+    {
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -184,16 +303,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            var pose = _pose.Bodies[i];
+            var bodyPose = pose.Bodies[i];
 
             var rigidbody = body._rigidbody;
 
-            pose.Position = rigidbody.position;
-            pose.Rotation = rigidbody.rotation;
-            pose.Velocity = rigidbody.velocity;
-            pose.AngularVelocity = rigidbody.angularVelocity;
-
-            pose.ResetPrediction();
+            bodyPose.ReadFrom(rigidbody);
         }
     }
 
@@ -224,15 +338,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         OnEntityCull(MarrowEntity.IsCulled);
 
         InitialCull = true;
-
-        // Cycle sleep offset
-        _sleepFrameOffset = _globalSleepOffset;
-        _globalSleepOffset++;
-
-        if (_globalSleepOffset >= 30)
-        {
-            _globalSleepOffset = 0;
-        }
 
         // Invoke ready callback
         _onReadyCallback?.InvokeSafe("executing NetworkProp.OnReadyCallback");
@@ -294,10 +399,64 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private bool HasBodyMoved(int index)
     {
-        var currentPose = _pose.Bodies[index];
-        var sentPose = _sentPose.Bodies[index];
+        var currentPose = CapturedPose.Bodies[index];
+        var sentPose = SentPose.Bodies[index];
 
         return (sentPose.Position - currentPose.Position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.Rotation, currentPose.Rotation) > MinMoveAngle; 
+    }
+
+    private void ResetDrag()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        foreach (var body in _bodies)
+        {
+            float drag = body._defaultRigidbodyInfo.drag;
+            float angularDrag = body._defaultRigidbodyInfo.angularDrag;
+
+            body._cachedRigidbodyInfo.drag = drag;
+            body._cachedRigidbodyInfo.angularDrag = angularDrag;
+
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.drag = drag;
+            rb.angularDrag = angularDrag;
+        }
+    }
+
+    private void ClearDrag()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        foreach (var body in _bodies)
+        {
+            float drag = 0f;
+            float angularDrag = 0f;
+
+            body._cachedRigidbodyInfo.drag = drag;
+            body._cachedRigidbodyInfo.angularDrag = angularDrag;
+
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.drag = drag;
+            rb.angularDrag = angularDrag;
+        }
     }
 
     public void Freeze()
@@ -353,7 +512,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            if (!rb.IsSleeping() && HasBodyMoved(i))
+            bool hasMoved = HasBodyMoved(i);
+
+            if (hasMoved)
             {
                 return false;
             }
@@ -364,14 +525,33 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnOwnedUpdate(float deltaTime)
     {
-        // If we were sleeping last frame, only check so often
-        if (IsSleeping && !TimeReferences.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
+        _ownedTickDeltaTime += deltaTime;
+
+        // Only update if on our tick rate
+        if (!NetworkTickManager.IsTickThisFrame)
         {
             return;
         }
 
-        // Copy all body positions to current position
-        CopyBodiesToPose();
+        float totalDeltaTime = _ownedTickDeltaTime;
+        _ownedTickDeltaTime = 0f;
+
+        OnOwnedTick(totalDeltaTime);
+    }
+
+    private void OnOwnedTick(float deltaTime)
+    {
+        // If we were sleeping, only check for waking up every few ticks
+        if (IsSleeping && _sleepCheckTick < SleepCheckInterval)
+        {
+            _sleepCheckTick++;
+            return;
+        }
+
+        _sleepCheckTick = 0;
+
+        // Capture the current pose to read from
+        CapturePose();
 
         bool wasSleeping = IsSleeping;
         bool sleeping = CheckOwnedSleeping();
@@ -388,9 +568,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             _ownerSleepElapsed = 0f;
             IsSleeping = false;
         }
-        
+
         // Starting to sleep
-        if (!wasSleeping && sleeping)
+        bool fallingAsleep = !wasSleeping && sleeping;
+
+        if (fallingAsleep)
         {
             _ownerSleepElapsed += deltaTime;
 
@@ -405,26 +587,28 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             }
         }
 
-        // Only send if on our tick rate
-        if (!NetworkTickManager.IsTickThisFrame)
-        {
-            return;
-        }
-
+        // Prop is awake, we can send the pose
         SendEntityPose(CommonMessageRoutes.UnreliableToOtherClients);
     }
 
     private void SendEntityPose(MessageRoute route)
     {
+        // If a pose hasn't been captured yet, make sure to capture one
+        // Prevents initial poses at world origin from being sent
+        if (!HasCapturedPose)
+        {
+            CapturePose();
+        }
+
         var data = new EntityPoseUpdateData()
         {
             Entity = new(NetworkEntity),
-            Pose = EntityPose,
+            Pose = CapturedPose,
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, route);
 
-        EntityPose.CopyTo(_sentPose);
+        CapturedPose.WriteTo(SentPose);
     }
 
     private void SendCullStatus(bool isCulled, MessageRoute route)
@@ -438,14 +622,55 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         MessageRelay.RelayNative(data, NativeMessageTag.EntityCullStatus, route);
     }
 
-    public void OnEntityFixedUpdate(float deltaTime)
+    void IParallelFixedUpdatable.OnPreParallelFixedUpdate(float deltaTime)
     {
-        // OnEntityFixedUpdate is only registered when we do not own the prop
-        OnReceivedUpdate(deltaTime);
+        OnProcessReceivedPose(deltaTime);
+
+        OnPreCalculateForces(deltaTime);
     }
 
-    private void OnReceivedUpdate(float deltaTime)
+    void IParallelFixedUpdatable.OnParallelFixedUpdate(float deltaTime)
     {
+        OnCalculateForces(deltaTime);
+    }
+
+    void IParallelFixedUpdatable.OnPostParallelFixedUpdate(float deltaTime)
+    {
+        OnApplyForces(deltaTime);
+    }
+
+    private void OnProcessReceivedPose(float deltaTime)
+    {
+        // The time since a pose has been received should still increment regardless if the first pose has been received
+        // This is so that initial prediction still works during the time when ownership has changed and a new pose hasn't been received yet
+        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
+
+        TimeSinceReceivedPose += unscaledDeltaTime;
+
+        if (IsSleeping)
+        {
+            return;
+        }
+
+        if (!HasReceivedPose)
+        {
+            return;
+        }
+
+        InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
+
+        InterpolatedPose.Interpolate(LastReceivedPose, PredictedPose, InterpolationPercent);
+
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
+
+        InterpolatedPose.PredictFrom(predictionTime, ReceivedPose);
+    }
+
+    private void OnPreCalculateForces(float deltaTime)
+    {
+        _spdState.CalculatingForces = false;
+        _spdState.Desynced = false;
+
         // Make sure the prop isn't sleeping
         if (IsSleeping)
         {
@@ -453,36 +678,37 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Make sure we actually have a pose
-        if (!_receivedPose)
+        if (!HasReceivedPose)
         {
             return;
         }
 
         // Check if this hasn't received an update in a while
-        float timeSinceMessage = TimeReferences.TimeSinceStartup - _lastReceivedTime;
-
-        if (timeSinceMessage >= SleepTimer)
+        if (TimeSinceReceivedPose >= SleepTimer)
         {
-            ResetPrediction();
-            TeleportToPose();
+            ResyncReceivedPose();
+            TeleportToPose(ReceivedPose);
             Freeze();
             return;
         }
 
+        _spdState.CalculatingForces = true;
+
         for (var i = 0; i < _bodies.Length; i++)
         {
-            OnReceivedRigidbody(deltaTime, timeSinceMessage, i);
+            OnPreCalculateRigidbodyForces(i);
         }
     }
 
-    private void OnReceivedRigidbody(float deltaTime, float timeSinceMessage, int index)
+    private void OnPreCalculateRigidbodyForces(int index)
     {
+        _spdState.EnabledForces[index] = false;
+        _spdState.EnabledTorques[index] = false;
+
         var body = _bodies[index];
-        var pdController = _pdControllers[index];
 
         if (!body.HasRigidbody)
         {
-            pdController.Reset();
             return;
         }
 
@@ -492,26 +718,104 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // If so, just ignore values
         if (rigidbody.isKinematic)
         {
-            pdController.Reset();
             return;
         }
 
-        var pose = EntityPose.Bodies[index];
+        var bodyPose = InterpolatedPose.Bodies[index];
 
-        // Don't over predict
-        if (timeSinceMessage <= 0.6f)
-        {
-            pose.PredictPosition(deltaTime);
-        }
-
-        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.Velocity);
-        rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);
+        _spdState.SetLinearInput(index, rigidbody.position.ToNumericsVector3(), rigidbody.velocity.ToNumericsVector3(), bodyPose.Position.ToNumericsVector3(), bodyPose.Velocity.ToNumericsVector3());
+        _spdState.EnabledForces[index] = true;
 
         // Don't add torque if rotation is frozen
         if (!rigidbody.freezeRotation)
         {
-            pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.Rotation, pose.AngularVelocity);
-            rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+            _spdState.SetAngularInput(index, rigidbody.rotation.ToNumericsQuaternion(), rigidbody.angularVelocity.ToNumericsVector3(), bodyPose.Rotation.ToNumericsQuaternion(), bodyPose.AngularVelocity.ToNumericsVector3());
+            _spdState.EnabledTorques[index] = true;
+        }
+    }
+
+    private void OnCalculateForces(float deltaTime)
+    {
+        if (!_spdState.CalculatingForces)
+        {
+            return;
+        }
+
+        for (var i = 0; i < _spdState.Count; i++)
+        {
+            OnCalculateRigidbodyForces(deltaTime, i);
+        }
+    }
+
+    private void OnCalculateRigidbodyForces(float deltaTime, int index)
+    {
+        if (_spdState.EnabledForces[index])
+        {
+            var position = _spdState.Positions[index];
+            var velocity = _spdState.Velocities[index];
+
+            var targetPosition = _spdState.TargetPositions[index];
+            var targetVelocity = _spdState.TargetVelocities[index];
+
+            var force = SPDController.CalculateForce(position, velocity, targetPosition, targetVelocity, deltaTime);
+            _spdState.Forces[index] = force;
+
+            if (!_spdState.Desynced && NetworkTransformManager.IsLinearDesynced(position, targetPosition, targetVelocity))
+            {
+                _spdState.Desynced = true;
+            }
+        }
+
+        if (_spdState.EnabledTorques[index])
+        {
+            var torque = SPDController.CalculateTorque(_spdState.Rotations[index], _spdState.AngularVelocities[index], _spdState.TargetRotations[index], _spdState.TargetAngularVelocities[index], deltaTime);
+            _spdState.Torques[index] = torque;
+        }
+    }
+
+    private void OnApplyForces(float deltaTime)
+    {
+        if (!_spdState.CalculatingForces)
+        {
+            return;
+        }
+
+        if (_spdState.Desynced)
+        {
+            TeleportToPose();
+            return;
+        }
+
+        for (var i = 0; i < _bodies.Length; i++)
+        {
+            OnApplyRigidbodyForces(deltaTime, i);
+        }
+    }
+
+    private void OnApplyRigidbodyForces(float deltaTime, int index)
+    {
+        bool enabledForce = _spdState.EnabledForces[index];
+        bool enabledTorque = _spdState.EnabledTorques[index];
+
+        if (!enabledForce && !enabledTorque)
+        {
+            return;
+        }
+
+        var body = _bodies[index];
+
+        var rigidbody = body._rigidbody;
+
+        if (enabledForce)
+        {
+            var force = _spdState.Forces[index].ToUnityVector3();
+            rigidbody.AddForce(force, ForceMode.Acceleration);
+        }
+
+        if (enabledTorque)
+        {
+            var torque = _spdState.Torques[index].ToUnityVector3();
+            rigidbody.AddTorque(torque, ForceMode.Acceleration);
         }
     }
 
@@ -580,20 +884,22 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             return;
         }
 
-        if (NetworkEntity.IsOwner)
+        bool isOwner = NetworkEntity.IsOwner;
+
+        if (isOwner)
         {
             NetworkEntityManager.UpdatableManager.UpdateManager.Register(this);
         }
         else
         {
-            NetworkEntityManager.UpdatableManager.FixedUpdateManager.Register(this);
+            ParallelManager.UpdatableManager.FixedUpdateManager.Register(this);
         }
     }
 
     private void OnUnregisterUpdates()
     {
         NetworkEntityManager.UpdatableManager.UpdateManager.Unregister(this);
-        NetworkEntityManager.UpdatableManager.FixedUpdateManager.Unregister(this);
+        ParallelManager.UpdatableManager.FixedUpdateManager.Unregister(this);
     }
 
     private Action _onReadyCallback = null;

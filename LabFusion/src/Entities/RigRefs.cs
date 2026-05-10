@@ -22,6 +22,7 @@ public class RigRefs
     public Grip[] RigGrips { get; private set; }
 
     public InventorySlotReceiver[] RigSlots { get; private set; }
+    public InventoryAmmoReceiver[] AmmoReceivers { get; private set; } = null;
 
     public Hand LeftHand { get; private set; }
     public Hand RightHand { get; private set; }
@@ -113,6 +114,8 @@ public class RigRefs
         RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
 
         RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
+
+        AmmoReceivers = rigManager.GetComponentsInChildren<InventoryAmmoReceiver>(true);
 
         LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
         RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();

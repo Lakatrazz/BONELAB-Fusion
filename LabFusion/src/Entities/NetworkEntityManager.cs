@@ -2,7 +2,6 @@
 using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
-using LabFusion.Data;
 
 using MelonLoader;
 

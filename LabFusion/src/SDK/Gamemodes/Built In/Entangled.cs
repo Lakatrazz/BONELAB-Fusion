@@ -64,14 +64,14 @@ public class Entangled : Gamemode
                 return;
 
             // Validate pelvis rigidbodies
-            if (selfPelvis == null && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+            if (selfPelvis == null && NetworkPlayerManager.TryGetPlayer(player1, out var netPlayer1) && netPlayer1.HasRig)
             {
-                selfPelvis = ref1.RigManager.physicsRig.torso._pelvisRb;
+                selfPelvis = netPlayer1.RigRefs.RigManager.physicsRig.torso._pelvisRb;
             }
 
-            if (otherPelvis == null && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+            if (otherPelvis == null && NetworkPlayerManager.TryGetPlayer(player2, out var netPlayer2) && netPlayer2.HasRig)
             {
-                otherPelvis = ref2.RigManager.physicsRig.torso._pelvisRb;
+                otherPelvis = netPlayer2.RigRefs.RigManager.physicsRig.torso._pelvisRb;
             }
 
             // If we have both pelvises, update them

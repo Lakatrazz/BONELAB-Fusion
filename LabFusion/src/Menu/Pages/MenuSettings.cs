@@ -1,14 +1,11 @@
 ﻿using Il2CppSLZ.Marrow.SceneStreaming;
 
 using LabFusion.Data;
-using LabFusion.Downloading.ModIO;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
+using LabFusion.Marrow.Rig;
 using LabFusion.Preferences.Client;
-using LabFusion.Representation;
-using LabFusion.Safety;
-using LabFusion.UI.Popups;
 using LabFusion.Voice;
 
 using UnityEngine;
@@ -221,7 +218,7 @@ public static class MenuSettings
         generalGroup.AddElement<FunctionElement>("Spawn Player Rep")
             .Do(() =>
             {
-                PlayerRepUtilities.CreateNewRig((rig) =>
+                NetRigSpawner.SpawnNetRig((rig) =>
                 {
                     rig.transform.position = RigData.Refs.RigManager.physicsRig.feet.transform.position;
                 });

@@ -79,6 +79,9 @@ public static class LocalAvatar
 
     public static float AvatarMass { get; private set; } = 84f;
 
+    /// <summary>
+    /// Invoked when the avatar of the Local Player changes.
+    /// </summary>
     public static event PlayerAvatarDelegate? OnAvatarChanged;
 
     internal static void OnInitializeMelon()

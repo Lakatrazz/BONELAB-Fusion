@@ -6,6 +6,7 @@ using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Marrow;
+using LabFusion.Extensions;
 
 using Il2CppSLZ.Bonelab;
 

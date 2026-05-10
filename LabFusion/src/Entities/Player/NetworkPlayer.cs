@@ -11,6 +11,8 @@ using LabFusion.Preferences;
 using LabFusion.Voice;
 using LabFusion.Math;
 using LabFusion.Extensions;
+using LabFusion.Marrow.Rig;
+using LabFusion.Math.Numerics;
 
 using MelonLoader;
 
@@ -63,8 +65,53 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigPose _pose = null;
     public RigPose RigPose => _pose;
 
-    private bool _receivedPose = false;
-    public bool ReceivedPose => _receivedPose;
+    /// <summary>
+    /// The pose in use right before the latest pose was received from the player.
+    /// Used for interpolation to smooth out network latency.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public BodyPose LastReceivedPelvisPose { get; private set; } = new();
+
+    /// <summary>
+    /// The latest pose received from the player.
+    /// This is the pose that prediction is based on.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public BodyPose ReceivedPelvisPose { get; private set; } = new();
+
+    /// <summary>
+    /// The <see cref="ReceivedPelvisPose"/>, but predicted right after being received based on the network latency.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public BodyPose PredictedPelvisPose { get; private set; } = new();
+
+    /// <summary>
+    /// The current interpolated pelvis pose between <see cref="LastReceivedPelvisPose"/> and <see cref="PredictedPelvisPose"/>.
+    /// Additional prediction based on velocity is applied on top to simulate the player's travel while waiting for the next pose.
+    /// This is the pose actively used to replicate the player locally per physics update.
+    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// </summary>
+    public BodyPose InterpolatedPelvisPose { get; private set; } = new();
+
+    /// <summary>
+    /// Whether an updated RigPose has been received from the player.
+    /// </summary>
+    public bool HasReceivedPose { get; private set; } = false;
+
+    /// <summary>
+    /// The time in seconds since we received a RigPose from the player.
+    /// </summary>
+    public float TimeSinceReceivedPose { get; private set; } = 0f;
+
+    /// <summary>
+    /// The percent from 0 to 1 of interpolation from <see cref="LastReceivedPelvisPose"/> to <see cref="PredictedPelvisPose"/>.
+    /// </summary>
+    public float InterpolationPercent { get; private set; } = 0f;
+
+    /// <summary>
+    /// Tracks entities that the player will ignore collision with for a specific amount of time.
+    /// </summary>
+    public EntityIgnorer Ignorer { get; private set; } = null;
 
     private RigPuppet _puppet = null;
     public RigPuppet Puppet => _puppet;
@@ -104,8 +151,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public SerializedPlayerSettings playerSettings = null;
 
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
-
-    private PDController _pelvisPDController = null;
 
     private bool _isCulled = false;
 
@@ -176,6 +221,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public PlayerUpdatableManager UpdatableManager { get; } = new();
 
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
+
     private readonly JawFlapper _jawFlapper = new();
     public JawFlapper JawFlapper => _jawFlapper;
 
@@ -192,8 +239,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _networkEntity = networkEntity;
         _playerID = playerID;
-
-        _pelvisPDController = new();
 
         _puppet = new();
 
@@ -296,8 +341,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
-    internal void Internal_OnAvatarChanged(string barcode)
+    internal void OnAvatarBarcodeChanged(string barcode)
     {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
         if (!LocalAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
         {
             AvatarSetter.SetAvatarDirty();
@@ -313,7 +363,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarkDirty();
 
         // Rename the rig to match our ID
-        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerID.SmallID})";
+        rigManager.gameObject.name = NetRigSpawner.GetNetRigName(PlayerID.SmallID);
 
         // Hook into the rig
         // Wait one frame so that the rig is properly initialized
@@ -567,6 +617,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
         else
         {
+            OnProcessReceivedPose(deltaTime);
+
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
@@ -578,8 +630,25 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             // Update the playspace rotation
             var trackedPlayspace = RigSkeleton.TrackedPlayspace;
 
-            trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.InterpolationTime);
+            trackedPlayspace.rotation = Quaternion.Slerp(trackedPlayspace.rotation, RigPose.TrackedPlayspaceExpanded, NetworkTickManager.SmoothInterpolationTime);
         }
+
+        Ignorer.Tick(deltaTime / TimeReferences.SafeTimeScale);
+    }
+
+    private void OnProcessReceivedPose(float deltaTime)
+    {
+        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
+
+        TimeSinceReceivedPose += unscaledDeltaTime;
+
+        InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
+
+        InterpolatedPelvisPose.Interpolate(LastReceivedPelvisPose, PredictedPelvisPose, InterpolationPercent);
+
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
+
+        InterpolatedPelvisPose.PredictFrom(predictionTime, ReceivedPelvisPose);
     }
 
     public void OnEntityFixedUpdate(float deltaTime)
@@ -763,20 +832,28 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void TeleportToPose()
     {
         // Don't teleport if no pose
-        if (!ReceivedPose || !HasRig)
+        if (!HasReceivedPose || !HasRig)
         {
             return;
         }
 
-        // Find the target centerOfPressure position and teleport
-        var targetPelvis = RigPose.PelvisPose.PredictedPosition;
-        var offset = targetPelvis - RigSkeleton.PhysicsPelvis.transform.position;
-        var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
 
-        RigRefs.RigManager.TeleportToPosition(newPosition, true);
+        // Find the offsets for position and velocity to apply to the rig
+        var pelvis = RigSkeleton.PhysicsPelvis;
 
-        // Reset PD controller
-        _pelvisPDController.Reset();
+        var currentPelvisPosition = pelvis.transform.position;
+        var currentPelvisVelocity = pelvis.velocity;
+
+        var targetPelvisPosition = InterpolatedPelvisPose.Position;
+        var targetPelvisVelocity = InterpolatedPelvisPose.Velocity;
+
+        var positionOffset = targetPelvisPosition - currentPelvisPosition;
+        var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
+
+        RigRefs.RigManager.TeleportWithOffset(positionOffset, velocityOffset);
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     private void OnOwnedUpdate()
@@ -796,17 +873,16 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnApplyBodyForces(float deltaTime)
     {
-        if (!ReceivedPose)
+        if (!HasReceivedPose)
         {
             return;
         }
 
-        var pelvisPose = RigPose.PelvisPose;
+        var pelvisPose = InterpolatedPelvisPose;
 
         // Stop bodies
         if (pelvisPose == null)
         {
-            _pelvisPDController.Reset();
             return;
         }
 
@@ -815,7 +891,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         if (rigManager.activeSeat)
         {
-            _pelvisPDController.Reset();
             return;
         }
 
@@ -823,32 +898,44 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pelvisPosition = pelvis.position;
         var pelvisRotation = pelvis.rotation;
 
-        // Move position with prediction
-        pelvisPose.PredictPosition(deltaTime);
+        var numericsPelvisPosition = pelvisPosition.ToNumericsVector3();
 
-        // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
-        if (distSqr > (2f * (pelvisPose.Velocity.magnitude + 1f)))
+        var numericsPelvisTargetPosition = pelvisPose.Position.ToNumericsVector3();
+        var numericsPelvisTargetVelocity = pelvisPose.Velocity.ToNumericsVector3();
+
+        // Teleport to the rig pose if the position is too desynced
+        if (NetworkTransformManager.IsLinearDesynced(numericsPelvisPosition, numericsPelvisTargetPosition, numericsPelvisTargetVelocity))
         {
             TeleportToPose();
             return;
         }
 
         // Apply forces
-        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.Velocity), ForceMode.Acceleration);
+        pelvis.AddForce(SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3(), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
         {
-            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.Rotation, pelvisPose.AngularVelocity), ForceMode.Acceleration);
+            pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation.ToNumericsQuaternion(), pelvis.angularVelocity.ToNumericsVector3(), pelvisPose.Rotation.ToNumericsQuaternion(), pelvisPose.AngularVelocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
         }
-        else
-        {
-            _pelvisPDController.ResetRotation();
-        }
+
+        // Have the rig walk any extra distance into place
+        // This accounts for desync caused by friction preventing the forces from reaching the destination
+        // Translating the RemapRig seems to be the best way I can find to get the rig to start walking somewhere physically
+        // Bugs occur in seats, but theres already a seat check above to prevent forces
+        var offset = numericsPelvisTargetPosition - numericsPelvisPosition;
+        offset.Y = 0f;
+
+        var remapRig = RigSkeleton.RemapRig;
+        var walkSpeed = remapRig.maxVelocity;
+        
+        offset = NumericsMathVector3.ClampMagnitude(offset, 1f) * walkSpeed;
+        var delta = offset * deltaTime;
+
+        remapRig.transform.position += delta.ToUnityVector3();
     }
 
-    public void OnReceivePose(RigPose pose)
+    public void ReceivePose(RigPose pose)
     {
         // If we don't have a rig yet, don't store the pose
         if (!HasRig)
@@ -858,13 +945,33 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _pose = pose;
 
-        // Teleport to the pose if this is our first
-        if (!ReceivedPose)
+        if (HasReceivedPose)
         {
-            _receivedPose = true;
+            InterpolatedPelvisPose.WriteTo(LastReceivedPelvisPose);
+        }
+        else
+        {
+            pose.PelvisPose.WriteTo(LastReceivedPelvisPose);
+        }
+
+        pose.PelvisPose.WriteTo(ReceivedPelvisPose);
+
+        pose.PelvisPose.WriteTo(PredictedPelvisPose);
+
+        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
+
+        PredictedPelvisPose.Predict(predictionTime);
+
+        LastReceivedPelvisPose.WriteTo(InterpolatedPelvisPose);
+
+        // Teleport to the pose if this is our first
+        if (!HasReceivedPose)
+        {
             TeleportToPose();
             CopyPosePointsToSmoothPoints();
         }
+
+        RefreshReceivedState();
 
         // Update the health
         HealthBar.Health = pose.Health;
@@ -874,9 +981,15 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         RigSkeleton.Health.max_Health = pose.MaxHealth;
     }
 
+    private void RefreshReceivedState()
+    {
+        TimeSinceReceivedPose = 0f;
+        HasReceivedPose = true;
+    }
+
     private void CopyPosePointsToSmoothPoints()
     {
-        if (!ReceivedPose)
+        if (!HasReceivedPose)
         {
             return;
         }
@@ -890,7 +1003,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnOverrideControllerRig()
     {
-        if (!ReceivedPose)
+        if (!HasReceivedPose)
         {
             RigRefs.RigManager.remapHeptaRig.inWeight = 0f;
             return;
@@ -904,8 +1017,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             var smoothPoint = SmoothTrackedTransforms[i];
             smoothPoint = new ManagedTransform(
-                Vector3.Lerp(smoothPoint.Position, posePoint.position, NetworkTickManager.InterpolationTime),
-                Quaternion.Slerp(smoothPoint.Rotation, posePoint.rotation, NetworkTickManager.InterpolationTime));
+                Vector3.Lerp(smoothPoint.Position, posePoint.position, NetworkTickManager.SmoothInterpolationTime),
+                Quaternion.Slerp(smoothPoint.Rotation, posePoint.rotation, NetworkTickManager.SmoothInterpolationTime));
             SmoothTrackedTransforms[i] = smoothPoint;
 
             var trackedPoint = RigSkeleton.TrackedPoints[i];
@@ -917,7 +1030,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnRigDestroyed()
     {
         _pose = null;
-        _receivedPose = false;
+        HasReceivedPose = false;
 
         NetworkEntity?.ClearDataCaughtUpPlayers();
 
@@ -927,6 +1040,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnFoundRigManager(RigManager rigManager)
     {
         _marrowEntity = rigManager.physicsRig.marrowEntity;
+
+        Ignorer = new(_marrowEntity);
 
         _rigSkeleton = new(rigManager);
         _rigRefs = new(rigManager);
@@ -1012,7 +1127,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         var physicsRig = RigRefs.RigManager.physicsRig;
 
+        var detacher = new TemporaryTransformDetacher();
+        DetachSlottedTransforms(detacher);
+
         _registeredComponentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, physicsRig.gameObject);
+
+        detacher.ReattachTransforms();
 
         RegisterDynamicComponents();
     }
@@ -1064,6 +1184,43 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             }
 
             _dynamicComponentExtenders.Clear();
+        }
+    }
+
+    private void DetachSlottedTransforms(TemporaryTransformDetacher detacher)
+    {
+        foreach (var slot in RigRefs.RigSlots)
+        {
+            var slottedWeapon = slot._slottedWeapon;
+
+            if (slottedWeapon == null)
+            {
+                continue;
+            }
+
+            var host = slottedWeapon.interactableHost;
+
+            if (host == null)
+            {
+                continue;
+            }
+
+            var entity = host.marrowEntity;
+
+            if (entity == null)
+            {
+                continue;
+            }
+
+            detacher.DetachTransform(entity.transform);
+        }
+
+        foreach (var receiver in RigRefs.AmmoReceivers)
+        {
+            foreach (var artTarget in receiver._ammoArtTargets)
+            {
+                detacher.DetachTransform(artTarget.transform);
+            }
         }
     }
 

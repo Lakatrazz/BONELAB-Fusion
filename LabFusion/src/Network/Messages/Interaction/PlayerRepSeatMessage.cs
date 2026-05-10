@@ -3,6 +3,8 @@ using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 using LabFusion.Marrow.Extenders;
 
+using Il2CppSLZ.Marrow.Interaction;
+
 namespace LabFusion.Network;
 
 public class PlayerRepSeatData : INetSerializable
@@ -27,6 +29,8 @@ public class PlayerRepSeatData : INetSerializable
 public class PlayerRepSeatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepSeat;
+
+    public static readonly float SeatIgnoreTime = 0.5f;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
@@ -69,15 +73,34 @@ public class PlayerRepSeatMessage : NativeMessageHandler
                 return;
             }
 
+            var marrowEntityExtender = seatEntity.GetExtender<IMarrowEntityExtender>();
+
+            MarrowEntity marrowEntity = null;
+
+            if (marrowEntityExtender != null)
+            {
+                marrowEntity = marrowEntityExtender.MarrowEntity;
+            }
+
             SeatPatches.IgnorePatches = true;
 
             if (data.IsIngress)
             {
                 seat.IngressRig(player.RigRefs.RigManager);
+
+                if (marrowEntity != null)
+                {
+                    player.Ignorer.TimedIgnoreEntity(marrowEntity, SeatIgnoreTime);
+                }
             }
             else if (player.RigRefs.RigManager.activeSeat)
             {
                 player.RigRefs.RigManager.activeSeat.EgressRig(true);
+
+                if (marrowEntity != null)
+                {
+                    player.Ignorer.CancelIgnoreEntity(marrowEntity);
+                }
             }
         }
     }

@@ -92,7 +92,7 @@ public class SerializedController : INetSerializable
         controller._secondaryInteractionButton = SecondaryInteractionButton;
 
         // Thumbstick with interpolation
-        controller._thumbstickAxis = Vector2.Lerp(controller._thumbstickAxis, ThumbstickAxis, NetworkTickManager.InterpolationTime);
+        controller._thumbstickAxis = Vector2.Lerp(controller._thumbstickAxis, ThumbstickAxis, NetworkTickManager.SmoothInterpolationTime);
 
         // Update hovering so that grips solve properly
         controller._lastTimeGrabbed = TimeReferences.TimeSinceStartup;

@@ -28,8 +28,8 @@ public static class MetadataHelper
         var username = id.Metadata.Username.GetValueOrEmpty();
         var nickname = id.Metadata.Nickname.GetValueOrEmpty();
 
-        username = TextFilter.FilterCommonAndRichText(username);
-        nickname = TextFilter.FilterCommon(nickname);
+        username = InfoFilter.FilterIdentifier(username);
+        nickname = InfoFilter.FilterDisplayName(nickname);
 
         // Check validity
         if (TrustedListManager.VerifyPlayer(id.PlatformID, username) == TrustedStatus.Impersonator)

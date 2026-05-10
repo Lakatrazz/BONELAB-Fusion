@@ -4,6 +4,9 @@ namespace LabFusion.Player;
 
 public class PlayerMetadata
 {
+    public static readonly MetadataProcessor Processor = new MetadataProcessor()
+        .WithHostAuthorityKey(nameof(PermissionLevel));
+
     public NetworkMetadata Metadata { get; private set; } = null;
 
     public MetadataVariable Username { get; private set; } = null;

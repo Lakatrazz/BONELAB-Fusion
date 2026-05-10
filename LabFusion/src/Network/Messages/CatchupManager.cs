@@ -1,6 +1,6 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Player;
-using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network;
 

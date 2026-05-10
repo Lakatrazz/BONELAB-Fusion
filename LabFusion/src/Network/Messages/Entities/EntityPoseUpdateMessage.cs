@@ -45,6 +45,6 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
             return;
         }
 
-        networkProp.OnReceivePose(data.Pose);
+        networkProp.ReceivePose(data.Pose);
     }
 }

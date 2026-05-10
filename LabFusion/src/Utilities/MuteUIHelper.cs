@@ -9,8 +9,9 @@ using UnityEngine.Rendering;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
+
+using LabFusion.Marrow.Rig;
 
 namespace LabFusion.Utilities;
 
@@ -33,6 +34,9 @@ public static class MuteUIHelper
 
         RenderPipelineManager.beginCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
+
+        RigAdditions.OnApplyLocalRigAdditions += OnCreateMuteUI;
+        RigAdditions.OnRemoveLocalRigAdditions += OnDestroyMuteUI;
     }
 
     public static void OnDeinitializeMelon()
@@ -42,6 +46,9 @@ public static class MuteUIHelper
 
         RenderPipelineManager.beginCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
+
+        RigAdditions.OnApplyLocalRigAdditions -= OnCreateMuteUI;
+        RigAdditions.OnRemoveLocalRigAdditions -= OnDestroyMuteUI;
     }
 
     private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
@@ -99,7 +106,7 @@ public static class MuteUIHelper
         _indicatorGameObject.SetActive(VoiceInfo.ShowMuteIndicator);
     }
 
-    public static void OnCreateMuteUI(RigManager manager)
+    public static void OnCreateMuteUI(RigManager rigManager)
     {
         // If this current networking layer does not support VC, don't bother showing these icons
         if (!VoiceInfo.CanTalk)
@@ -134,7 +141,7 @@ public static class MuteUIHelper
         homePage.items.Add(_mutePage);
 
         // Add mute icon
-        var openControllerRig = manager.ControllerRig.TryCast<OpenControllerRig>();
+        var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
         Transform headset = openControllerRig.headset;
 
         var muteSpawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.MuteIndicatorReference);
@@ -172,7 +179,7 @@ public static class MuteUIHelper
         });
     }
 
-    public static void OnDestroyMuteUI()
+    public static void OnDestroyMuteUI(RigManager rigManager)
     {
         if (_mutePage != null)
         {

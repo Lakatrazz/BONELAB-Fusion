@@ -84,47 +84,4 @@ internal static class PersistentAssetCreator
             Font = fonts[0];
         }
     }
-
-    internal static void SetupImpactProperties(RigManager rig)
-    {
-        var physRig = rig.physicsRig;
-        var rigidbodies = physRig.GetComponentsInChildren<Rigidbody>(true);
-
-        var surfaceData = physRig._surfaceDataDefault;
-
-        var avatar = rig.avatar;
-
-        if (avatar != null && avatar.surfaceData)
-        {
-            surfaceData = avatar.surfaceData;
-        }
-
-        var impactProperties = new List<ImpactProperties>();
-
-        for (var i = 0; i < rigidbodies.Length; i++)
-        {
-            var rb = rigidbodies[i];
-            var go = rb.gameObject;
-
-            // Check if it already has impact properties
-            if (rb.GetComponent<ImpactProperties>())
-            {
-                continue;
-            }
-
-            // Ignore specific rigidbodies
-            if (go == physRig.knee || go == physRig.feet)
-            {
-                continue;
-            }
-        
-            var properties = go.AddComponent<ImpactProperties>();
-            properties.surfaceData = surfaceData;
-            properties.decalType = ImpactProperties.DecalType.None;
-
-            impactProperties.Add(properties);
-        }
-
-        physRig._impactProperties = new Il2CppReferenceArray<ImpactProperties>(impactProperties.ToArray());
-    }
 }
