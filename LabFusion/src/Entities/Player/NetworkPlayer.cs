@@ -12,6 +12,7 @@ using LabFusion.Voice;
 using LabFusion.Math;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Rig;
+using LabFusion.Math.Numerics;
 
 using MelonLoader;
 
@@ -917,6 +918,21 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation.ToNumericsQuaternion(), pelvis.angularVelocity.ToNumericsVector3(), pelvisPose.Rotation.ToNumericsQuaternion(), pelvisPose.AngularVelocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
         }
+
+        // Have the rig walk any extra distance into place
+        // This accounts for desync caused by friction preventing the forces from reaching the destination
+        // Translating the RemapRig seems to be the best way I can find to get the rig to start walking somewhere physically
+        // Bugs occur in seats, but theres already a seat check above to prevent forces
+        var offset = numericsPelvisTargetPosition - numericsPelvisPosition;
+        offset.Y = 0f;
+
+        var remapRig = RigSkeleton.RemapRig;
+        var walkSpeed = remapRig.maxVelocity;
+        
+        offset = NumericsMathVector3.ClampMagnitude(offset, 1f) * walkSpeed;
+        var delta = offset * deltaTime;
+
+        remapRig.transform.position += delta.ToUnityVector3();
     }
 
     public void ReceivePose(RigPose pose)
