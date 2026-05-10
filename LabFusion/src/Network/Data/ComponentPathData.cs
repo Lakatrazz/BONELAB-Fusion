@@ -9,11 +9,11 @@ namespace LabFusion.Network;
 
 public class ComponentPathData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort) * 2 + sizeof(bool) + ComponentHashData.Size;
+    public const int Size = sizeof(byte) + NetworkEntityReference.Size + sizeof(ushort) + sizeof(bool) + ComponentHashData.Size;
 
     public bool HasEntity;
 
-    public ushort EntityID;
+    public NetworkEntityReference Entity;
     public ushort ComponentIndex;
 
     public ComponentHashData HashData;
@@ -23,7 +23,7 @@ public class ComponentPathData : INetSerializable
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref HasEntity);
-        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref Entity);
         serializer.SerializeValue(ref ComponentIndex);
 
         bool hasHashData = HashData != null;
@@ -56,7 +56,7 @@ public class ComponentPathData : INetSerializable
         return new ComponentPathData()
         {
             HasEntity = hasNetworkEntity,
-            EntityID = entityID,
+            Entity = new(entityID),
             ComponentIndex = componentIndex,
             HashData = hashData,
         };
@@ -68,7 +68,7 @@ public class ComponentPathData : INetSerializable
 
         if (HasEntity)
         {
-            var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(EntityID);
+            var entity = Entity.GetEntity();
 
             if (entity == null)
             {

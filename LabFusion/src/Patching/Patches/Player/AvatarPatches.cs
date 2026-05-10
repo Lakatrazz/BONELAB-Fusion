@@ -3,6 +3,7 @@
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Marrow.Extensions;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
@@ -13,16 +14,25 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(Avatar))]
 public static class AvatarPatches
 {
-    public static bool IgnorePatches = false;
+    [HarmonyPatch(nameof(Avatar.Awake))]
+    [HarmonyPrefix]
+    public static void AwakePrefix(Avatar __instance)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        // Avatar SurfaceDataCards currently don't get loaded properly, base game avatars set the inaccessible asset reference
+        // If this is changed in a future patch this can be removed
+        __instance.LoadSurfaceData();
+    }
 
     [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
     [HarmonyPatch(new Type[0])]
     [HarmonyPostfix]
     public static void RefreshBodyMeasurementsPostfix(Avatar __instance)
     {
-        if (IgnorePatches)
-            return;
-
         OverrideBodyMeasurements(__instance);
     }
 
