@@ -23,7 +23,13 @@ internal class EOSOculusAuth : EOSAuthInterface
         Il2CppOculus.Platform.Users.GetLoggedInUser().OnComplete((Il2CppOculus.Platform.Message<Il2CppOculus.Platform.Models.User>.Callback)(message =>
         {
             if (!message.IsError)
-                displayName = message.Data.OculusID;
+            {
+                displayName = message.Data.DisplayName;
+                if (string.IsNullOrWhiteSpace(displayName))
+                {
+                    displayName = message.Data.OculusID;
+                }
+            }
             
             requestComplete = true;
         }));
