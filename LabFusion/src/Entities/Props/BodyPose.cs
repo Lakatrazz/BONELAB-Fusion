@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Math.Unity;
 using LabFusion.Network.Serialization;
 using LabFusion.Scene;
@@ -50,6 +51,11 @@ public class BodyPose : INetSerializable
         Position += reference.Velocity * deltaTime;
 
         Rotation = UnityDerivatives.GetQuaternionDisplacement(deltaTime * reference.AngularVelocity) * Rotation;
+    }
+
+    public bool IsValid()
+    {
+        return !Position.IsNaN() && !Velocity.IsNaN() && !AngularVelocity.IsNaN();
     }
 
     public void Serialize(INetSerializer serializer)

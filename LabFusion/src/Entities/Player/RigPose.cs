@@ -62,6 +62,11 @@ public class RigPose : INetSerializable
         MaxHealth = skeleton.Health.max_Health;
     }
 
+    public bool IsValid()
+    {
+        return PelvisPose.IsValid();
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
