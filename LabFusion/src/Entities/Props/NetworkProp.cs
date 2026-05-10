@@ -102,6 +102,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     /// </summary>
     public float InterpolationPercent { get; private set; } = 0f;
 
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
+
     public const float MinMoveMagnitude = 0.005f;
     public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
     public const float MinMoveAngle = 0.15f;
@@ -253,6 +255,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void TeleportToPose(EntityPose pose)
     {
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
+
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -278,6 +282,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
             rigidbody.velocity = bodyPose.Velocity;
             rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     public void CapturePose()
@@ -656,6 +662,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void OnPreCalculateForces(float deltaTime)
     {
         _spdState.CalculatingForces = false;
+        _spdState.Desynced = false;
 
         // Make sure the prop isn't sleeping
         if (IsSleeping)
@@ -737,8 +744,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (_spdState.EnabledForces[index])
         {
-            var force = SPDController.CalculateForce(_spdState.Positions[index], _spdState.Velocities[index], _spdState.TargetPositions[index], _spdState.TargetVelocities[index], deltaTime);
+            var position = _spdState.Positions[index];
+            var velocity = _spdState.Velocities[index];
+
+            var targetPosition = _spdState.TargetPositions[index];
+            var targetVelocity = _spdState.TargetVelocities[index];
+
+            var force = SPDController.CalculateForce(position, velocity, targetPosition, targetVelocity, deltaTime);
             _spdState.Forces[index] = force;
+
+            if (!_spdState.Desynced && NetworkTransformManager.IsLinearDesynced(position, targetPosition, targetVelocity))
+            {
+                _spdState.Desynced = true;
+            }
         }
 
         if (_spdState.EnabledTorques[index])
@@ -752,6 +770,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (!_spdState.CalculatingForces)
         {
+            return;
+        }
+
+        if (_spdState.Desynced)
+        {
+            TeleportToPose();
             return;
         }
 

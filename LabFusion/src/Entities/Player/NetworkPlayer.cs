@@ -220,6 +220,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public PlayerUpdatableManager UpdatableManager { get; } = new();
 
+    public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
+
     private readonly JawFlapper _jawFlapper = new();
     public JawFlapper JawFlapper => _jawFlapper;
 
@@ -834,12 +836,23 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        // Find the target centerOfPressure position and teleport
-        var targetPelvis = InterpolatedPelvisPose.Position;
-        var offset = targetPelvis - RigSkeleton.PhysicsPelvis.transform.position;
-        var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
+        OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
 
-        RigRefs.RigManager.TeleportToPosition(newPosition, true);
+        // Find the offsets for position and velocity to apply to the rig
+        var pelvis = RigSkeleton.PhysicsPelvis;
+
+        var currentPelvisPosition = pelvis.transform.position;
+        var currentPelvisVelocity = pelvis.velocity;
+
+        var targetPelvisPosition = InterpolatedPelvisPose.Position;
+        var targetPelvisVelocity = InterpolatedPelvisPose.Velocity;
+
+        var positionOffset = targetPelvisPosition - currentPelvisPosition;
+        var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
+
+        RigRefs.RigManager.TeleportWithOffset(positionOffset, velocityOffset);
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     private void OnOwnedUpdate()
@@ -884,16 +897,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pelvisPosition = pelvis.position;
         var pelvisRotation = pelvis.rotation;
 
-        // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.Position).sqrMagnitude;
-        if (distSqr > (2f * (pelvisPose.Velocity.magnitude + 1f)))
+        var numericsPelvisPosition = pelvisPosition.ToNumericsVector3();
+
+        var numericsPelvisTargetPosition = pelvisPose.Position.ToNumericsVector3();
+        var numericsPelvisTargetVelocity = pelvisPose.Velocity.ToNumericsVector3();
+
+        // Teleport to the rig pose if the position is too desynced
+        if (NetworkTransformManager.IsLinearDesynced(numericsPelvisPosition, numericsPelvisTargetPosition, numericsPelvisTargetVelocity))
         {
             TeleportToPose();
             return;
         }
 
         // Apply forces
-        pelvis.AddForce(SPDController.CalculateForce(pelvisPosition.ToNumericsVector3(), pelvis.velocity.ToNumericsVector3(), pelvisPose.Position.ToNumericsVector3(), pelvisPose.Velocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
+        pelvis.AddForce(SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3(), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)

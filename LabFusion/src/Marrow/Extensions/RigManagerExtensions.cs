@@ -1,9 +1,12 @@
-﻿using MelonLoader;
-
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Utilities;
+﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Utilities;
+using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Entities;
+using LabFusion.Marrow.Extensions;
+
+using MelonLoader;
 
 using System.Collections;
 
@@ -11,13 +14,74 @@ using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
-using LabFusion.Entities;
-using LabFusion.Marrow.Extensions;
-
 namespace LabFusion.Extensions;
 
 public static class RigManagerExtensions
 {
+    private struct TempBody
+    {
+        public Rigidbody Rigidbody;
+        public Transform Transform;
+        public Vector3 Position;
+        public Vector3 Velocity;
+    }
+
+    /// <summary>
+    /// Teleports a RigManager seamlessly by using a position and velocity offset without resetting its body positions.
+    /// </summary>
+    /// <param name="rigManager">The RigManager to teleport.</param>
+    /// <param name="positionOffset">The offset to apply to all rigidbody positions.</param>
+    /// <param name="velocityOffset">The offset to apply to all rigidbody velocities.</param>
+    public static void TeleportWithOffset(this RigManager rigManager, Vector3 positionOffset, Vector3 velocityOffset)
+    {
+        var controllerRig = rigManager.ControllerRig;
+        var physicsRig = rigManager.physicsRig;
+        var remapRigs = rigManager.remapRigs;
+
+        var marrowEntity = physicsRig.marrowEntity;
+
+        // Gets the teleported positions and velocities for all of the RigManager's rigidbodies
+        var tempBodies = new List<TempBody>();
+        foreach (var marrowBody in marrowEntity.Bodies)
+        {
+            if (!marrowBody.HasRigidbody)
+            {
+                continue;
+            }
+
+            var rigidbody = marrowBody._rigidbody;
+            var transform = marrowBody.transform;
+
+            tempBodies.Add(new TempBody()
+            {
+                Rigidbody = rigidbody,
+                Transform = transform,
+                Position = transform.position + positionOffset,
+                Velocity = rigidbody.velocity + velocityOffset,
+            });
+        }
+
+        // Teleporting all of the rigs that need it
+        var displaceTransform = SimpleTransform.Create(positionOffset, Quaternion.identity);
+
+        controllerRig.Teleport(displaceTransform, false);
+
+        foreach (var rig in remapRigs)
+        {
+            rig.Teleport(displaceTransform, false);
+        }
+
+        physicsRig.Teleport(displaceTransform, false);
+
+        // Now, reapply the teleported positions and velocities for the player's rigidbodies
+        // This makes it more stable than the regular PhysicsRig teleport
+        foreach (var tempBody in tempBodies)
+        {
+            tempBody.Transform.position = tempBody.Position;
+            tempBody.Rigidbody.velocity = tempBody.Velocity;
+        }
+    }
+
     public static void TeleportToPosition(this RigManager rigManager, Vector3 position, bool resetVelocity = true)
     {
         var physicsRig = rigManager.physicsRig;
