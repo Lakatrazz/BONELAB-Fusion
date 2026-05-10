@@ -20,10 +20,12 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
 
         var sender = received.Sender;
 
+        bool hasValue = !string.IsNullOrWhiteSpace(received.PlatformID) || received.PlatformID != "0";
+        
         // Make sure the message sender is able to modify this player's metadata
         if (!NetworkVerification.HasAuthorityOverPlayer(playerID, sender))
         {
-            var descriptor = received.PlatformID.HasValue ? $"{received.PlatformID}" : "with no PlatformID";
+            var descriptor = hasValue ? $"{received.PlatformID}" : "with no PlatformID";
             FusionLogger.Warn($"User {descriptor} attempted to modify metadata for player {playerID}!");
             return;
         }
@@ -31,7 +33,7 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
         // If the player does not have authority over this specific metadata key, do not allow them to change it
         if (!PlayerMetadata.Processor.HasAuthorityOverKey(key, sender))
         {
-            var descriptor = received.PlatformID.HasValue ? $"{received.PlatformID}" : "with no PlatformID";
+            var descriptor = hasValue ? $"{received.PlatformID}" : "with no PlatformID";
             FusionLogger.Warn($"User {descriptor} attempted to modify metadata with key {key}, which they do not have authority over!");
             return;
         }

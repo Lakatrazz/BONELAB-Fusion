@@ -36,14 +36,14 @@ public class PlayerList
     {
         // Validate conflicting fields between each player
         // If any of the players have the same PlatformID, it has likely been tampered with
-        var platformIDs = new HashSet<ulong>(Players.Length);
+        var platformIDs = new HashSet<string>(Players.Length);
 
         foreach (var player in Players)
         {
             var platformID = player.PlatformID;
 
             // If the PlatformID is invalid, the lobby is probably invalid as well
-            if (platformID == 0)
+            if (string.IsNullOrWhiteSpace(platformID) || platformID == "0")
             {
                 return false;
             }
