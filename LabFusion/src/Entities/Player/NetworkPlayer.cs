@@ -897,16 +897,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pelvisPosition = pelvis.position;
         var pelvisRotation = pelvis.rotation;
 
-        // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.Position).sqrMagnitude;
-        if (distSqr > (2f * (pelvisPose.Velocity.magnitude + 1f)))
+        var numericsPelvisPosition = pelvisPosition.ToNumericsVector3();
+
+        var numericsPelvisTargetPosition = pelvisPose.Position.ToNumericsVector3();
+        var numericsPelvisTargetVelocity = pelvisPose.Velocity.ToNumericsVector3();
+
+        // Teleport to the rig pose if the position is too desynced
+        if (NetworkTransformManager.IsLinearDesynced(numericsPelvisPosition, numericsPelvisTargetPosition, numericsPelvisTargetVelocity))
         {
             TeleportToPose();
             return;
         }
 
         // Apply forces
-        pelvis.AddForce(SPDController.CalculateForce(pelvisPosition.ToNumericsVector3(), pelvis.velocity.ToNumericsVector3(), pelvisPose.Position.ToNumericsVector3(), pelvisPose.Velocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
+        pelvis.AddForce(SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3(), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)

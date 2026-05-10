@@ -46,6 +46,22 @@ public static class NetworkTransformManager
 
     public static Vector3 DecodeVelocity(Vector3 velocity) => velocity / TimeReferences.SafeTimeScale;
 
+    public static bool IsLinearDesynced(NumericsVector3 position, NumericsVector3 targetPosition, NumericsVector3 targetVelocity)
+    {
+        float error = (targetPosition - position).Length();
+
+        float sqrtTargetVelocity = MathF.Sqrt(targetVelocity.Length());
+
+        float maxDistance = 1f + sqrtTargetVelocity;
+
+        if (error > maxDistance)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public static bool IsInBounds(NumericsVector3 position)
     {
         float lengthSquared = position.LengthSquared();

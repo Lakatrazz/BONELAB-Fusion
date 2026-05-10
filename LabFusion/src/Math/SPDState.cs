@@ -21,6 +21,8 @@ public sealed class SPDState
     public Vector3[] Torques { get; }
     public bool[] EnabledTorques { get; }
 
+    public bool Desynced { get; set; } = false;
+
     public bool CalculatingForces { get; set; } = false;
 
     public SPDState(int count)

@@ -662,6 +662,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private void OnPreCalculateForces(float deltaTime)
     {
         _spdState.CalculatingForces = false;
+        _spdState.Desynced = false;
 
         // Make sure the prop isn't sleeping
         if (IsSleeping)
@@ -743,8 +744,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (_spdState.EnabledForces[index])
         {
-            var force = SPDController.CalculateForce(_spdState.Positions[index], _spdState.Velocities[index], _spdState.TargetPositions[index], _spdState.TargetVelocities[index], deltaTime);
+            var position = _spdState.Positions[index];
+            var velocity = _spdState.Velocities[index];
+
+            var targetPosition = _spdState.TargetPositions[index];
+            var targetVelocity = _spdState.TargetVelocities[index];
+
+            var force = SPDController.CalculateForce(position, velocity, targetPosition, targetVelocity, deltaTime);
             _spdState.Forces[index] = force;
+
+            if (!_spdState.Desynced && NetworkTransformManager.IsLinearDesynced(position, targetPosition, targetVelocity))
+            {
+                _spdState.Desynced = true;
+            }
         }
 
         if (_spdState.EnabledTorques[index])
@@ -758,6 +770,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (!_spdState.CalculatingForces)
         {
+            return;
+        }
+
+        if (_spdState.Desynced)
+        {
+            TeleportToPose();
             return;
         }
 
