@@ -157,7 +157,7 @@ public class RigAvatarSetter
             if (barcode == MarrowGameReferences.CalibrationAvatarReference.Barcode.ID)
             {
                 float newHeight = _stats.height;
-                transform.localScale = Vector3Extensions.one * (newHeight / MarrowGameReferences.CalibrationAvatarHeight);
+                transform.localScale = Vector3Extensions.One * (newHeight / MarrowGameReferences.CalibrationAvatarHeight);
             }
             // Otherwise, apply the synced scale
             else

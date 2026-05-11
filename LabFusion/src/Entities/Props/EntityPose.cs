@@ -53,6 +53,23 @@ public class EntityPose : INetSerializable
         }
     }
 
+    public bool IsValid()
+    {
+        for (var i = 0; i < BodyCount; i++)
+        {
+            var body = Bodies[i];
+
+            var valid = body.IsValid();
+
+            if (!valid)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         if (serializer is NetWriter writer)

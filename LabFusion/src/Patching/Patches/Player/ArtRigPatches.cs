@@ -35,7 +35,7 @@ public static class ArtRigPatches
         }
 
         var jaw = inRig.m_jaw;
-        jaw.localRotation = Quaternion.AngleAxis(angle, Vector3Extensions.right);
+        jaw.localRotation = Quaternion.AngleAxis(angle, Vector3Extensions.Right);
     }
 
     [HarmonyPostfix]

@@ -23,11 +23,11 @@ public static class UIMachineUtilities
         LaserCursorUtilities.CreateLaserCursor((cursor) =>
         {
             cursor.transform.parent = canvas.parent;
-            cursor.transform.SetLocalPositionAndRotation(Vector3Extensions.zero, QuaternionExtensions.identity);
+            cursor.transform.SetLocalPositionAndRotation(Vector3Extensions.Zero, QuaternionExtensions.identity);
 
             LaserCursor.CursorRegion region = new()
             {
-                bounds = new Bounds(Vector3Extensions.zero, Vector3.Scale(bounds, canvas.lossyScale)),
+                bounds = new Bounds(Vector3Extensions.Zero, Vector3.Scale(bounds, canvas.lossyScale)),
                 center = uiPlane,
             };
 

@@ -10,17 +10,17 @@ public static class Vector3Extensions
 {
     // Due to the nature of IL2, getting these values is a little slower than usual
     // So, doesn't hurt to cache them
-    public static readonly Vector3 zero = Vector3.zero;
-    public static readonly Vector3 one = Vector3.one;
+    public static readonly Vector3 Zero = Vector3.zero;
+    public static readonly Vector3 One = Vector3.one;
 
-    public static readonly Vector3 left = Vector3.left;
-    public static readonly Vector3 right = Vector3.right;
+    public static readonly Vector3 Left = Vector3.left;
+    public static readonly Vector3 Right = Vector3.right;
 
-    public static readonly Vector3 forward = Vector3.forward;
-    public static readonly Vector3 back = Vector3.back;
+    public static readonly Vector3 Forward = Vector3.forward;
+    public static readonly Vector3 Back = Vector3.back;
 
-    public static readonly Vector3 up = Vector3.up;
-    public static readonly Vector3 down = Vector3.down;
+    public static readonly Vector3 Up = Vector3.up;
+    public static readonly Vector3 Down = Vector3.down;
 
     public static Quaternion GetQuaternionDisplacement(this Vector3 displacement)
     {
@@ -49,5 +49,16 @@ public static class Vector3Extensions
         float y = vector3.y;
         float z = vector3.z;
         return x * x + y * y + z * z;
+    }
+
+    /// <summary>
+    /// Returns if any of the components of this vector are NaN.
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <returns></returns>
+    public static bool IsNaN(this Vector3 vector)
+    {
+        // NaN added to any value will always return NaN
+        return float.IsNaN(vector.x + vector.y + vector.z);
     }
 }

@@ -233,10 +233,10 @@ public static class MenuSettings
 
                 for (var i = 0; i < 10; i++)
                 {
-                    physRig.rbFeet.AddForce(Vector3Extensions.left * force, ForceMode.VelocityChange);
-                    physRig.rbKnee.AddForce(Vector3Extensions.right * force, ForceMode.VelocityChange);
-                    physRig.rightHand.rb.AddForce(Vector3Extensions.up * force, ForceMode.VelocityChange);
-                    physRig.leftHand.rb.AddForce(Vector3Extensions.down * force, ForceMode.VelocityChange);
+                    physRig.rbFeet.AddForce(Vector3Extensions.Left * force, ForceMode.VelocityChange);
+                    physRig.rbKnee.AddForce(Vector3Extensions.Right * force, ForceMode.VelocityChange);
+                    physRig.rightHand.rb.AddForce(Vector3Extensions.Up * force, ForceMode.VelocityChange);
+                    physRig.leftHand.rb.AddForce(Vector3Extensions.Down * force, ForceMode.VelocityChange);
                 }
             });
     }

@@ -45,7 +45,7 @@ public class HomeEventHandler : GamemodeLevelEventHandler
             // In a server, teleport the player to the top of the lift so they don't spawn underneath it if its synced
             if (NetworkInfo.HasServer)
             {
-                LocalPlayer.TeleportToPosition(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3Extensions.forward);
+                LocalPlayer.TeleportToPosition(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3Extensions.Forward);
             }
 
             TaxiController = GameObject.FindObjectOfType<TaxiController>(true);
@@ -59,15 +59,15 @@ public class HomeEventHandler : GamemodeLevelEventHandler
 
             // Add extra seats
             // Inside seat
-            CreateSeat(2, new Vector3(-0.326f, 0.441f, -1.125f), Vector3Extensions.zero);
+            CreateSeat(2, new Vector3(-0.326f, 0.441f, -1.125f), Vector3Extensions.Zero);
 
             // Trunk seats
-            CreateSeat(3, new Vector3(0.48f, 0.928f, -2.138f), Vector3Extensions.up * -180f);
-            CreateSeat(4, new Vector3(-0.48f, 0.928f, -2.138f), Vector3Extensions.up * -180f);
+            CreateSeat(3, new Vector3(0.48f, 0.928f, -2.138f), Vector3Extensions.Up * -180f);
+            CreateSeat(4, new Vector3(-0.48f, 0.928f, -2.138f), Vector3Extensions.Up * -180f);
 
             // Hood seats
-            CreateSeat(5, new Vector3(0.48f, 0.928f, 1.998f), Vector3Extensions.zero);
-            CreateSeat(6, new Vector3(-0.48f, 0.928f, 1.998f), Vector3Extensions.zero);
+            CreateSeat(5, new Vector3(0.48f, 0.928f, 1.998f), Vector3Extensions.Zero);
+            CreateSeat(6, new Vector3(-0.48f, 0.928f, 1.998f), Vector3Extensions.Zero);
         }
     }
 

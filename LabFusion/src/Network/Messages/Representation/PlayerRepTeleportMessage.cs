@@ -42,6 +42,6 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
         var data = received.ReadData<PlayerRepTeleportData>();
 
         // Teleport the player
-        LocalPlayer.TeleportToPosition(data.Position, Vector3Extensions.forward);
+        LocalPlayer.TeleportToPosition(data.Position, Vector3Extensions.Forward);
     }
 }

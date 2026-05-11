@@ -56,9 +56,9 @@ public static class LocalVision
         canvas.renderMode = RenderMode.WorldSpace;
         var canvasTransform = _blindnessGameObject.transform;
         canvasTransform.parent = RigData.Refs.Headset;
-        canvasTransform.localPosition = Vector3Extensions.forward * 0.05f;
+        canvasTransform.localPosition = Vector3Extensions.Forward * 0.05f;
         canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        canvasTransform.localScale = Vector3Extensions.one * 10f;
+        canvasTransform.localScale = Vector3Extensions.One * 10f;
 
         _blindnessImage = _blindnessGameObject.AddComponent<RawImage>();
 

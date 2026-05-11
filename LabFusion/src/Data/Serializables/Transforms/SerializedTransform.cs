@@ -9,7 +9,7 @@ namespace LabFusion.Data;
 public class SerializedTransform : INetSerializable
 {
     public const ushort Size = sizeof(float) * 3 + SerializedQuaternion.Size;
-    public static readonly SerializedTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
+    public static readonly SerializedTransform Default = new(Vector3Extensions.Zero, QuaternionExtensions.identity);
 
     public int? GetSize() => Size;
 

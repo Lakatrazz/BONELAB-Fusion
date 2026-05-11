@@ -8,7 +8,7 @@ namespace LabFusion.Data;
 public class SerializedLocalTransform : INetSerializable
 {
     public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size;
-    public static readonly SerializedLocalTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
+    public static readonly SerializedLocalTransform Default = new(Vector3Extensions.Zero, QuaternionExtensions.identity);
 
     public Vector3 position;
     public Quaternion rotation;
