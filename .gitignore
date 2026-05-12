@@ -359,4 +359,5 @@ Staging/Thunderstore/Mods
 Staging/Thunderstore/Plugins
 
 # Auto Generated
-LabFusion/FusionBundles/Assets/AddressableAssetsData
+**/Assets/AddressableAssetsData
+**/_MarrowAssets/PackedAssets

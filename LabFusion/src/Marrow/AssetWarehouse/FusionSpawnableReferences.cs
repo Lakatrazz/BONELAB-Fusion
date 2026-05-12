@@ -37,4 +37,6 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference LaserCursorReference = new("Lakatrazz.FusionContent.Spawnable.LaserCursor");
 
     public static readonly SpawnableCrateReference EntangledLineReference = new("Lakatrazz.FusionContent.Spawnable.EntangledLine");
+
+    public static readonly SpawnableCrateReference WristWatchReference = new("Lakatrazz.FusionContent.Spawnable.WristWatch");
 }
