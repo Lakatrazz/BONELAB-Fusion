@@ -10,7 +10,7 @@ namespace LabFusion.Player;
 public class PlayerID : INetSerializable, IEquatable<PlayerID>
 {
     /// <summary>
-    /// Invoked when any PlayerId's metadata changes. Passes in the PlayerId, key, and value.
+    /// Invoked when any PlayerID's metadata changes. Passes in the PlayerID, key, and value.
     /// </summary>
     public static event Action<PlayerID, string, string> OnMetadataChangedEvent, OnMetadataRemovedEvent;
 
