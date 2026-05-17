@@ -12,6 +12,7 @@ using LabFusion.MonoBehaviours;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.SDK.Wearables;
 
 namespace LabFusion.Patching;
 
@@ -69,6 +70,8 @@ public static class MirrorPatches
     private static bool OnEnterSingleplayer(Mirror __instance, TriggerRefProxy proxy)
     {
         var rigManager = RigManager.Cache.Get(proxy.root);
+
+        WearableManager.LocalDisplayer.AddReflectionOrigin(__instance._reflectTran);
 
         foreach (var item in PointItemManager.LoadedItems)
         {
@@ -173,6 +176,13 @@ public static class MirrorPatches
 
         if (isTarget)
         {
+            var wearableDisplayer = WearableManager.GetWearableDisplayer(rig);
+
+            if (wearableDisplayer != null)
+            {
+                wearableDisplayer.AddReflectionOrigin(__instance._reflectTran);
+            }
+
             foreach (var item in PointItemManager.LoadedItems)
             {
                 if (playerID.HasEquipped(item))
@@ -238,6 +248,13 @@ public static class MirrorPatches
 
         if (isTarget)
         {
+            var wearableDisplayer = WearableManager.GetWearableDisplayer(rig);
+
+            if (wearableDisplayer != null)
+            {
+                wearableDisplayer.RemoveReflectionOrigin(__instance._reflectTran);
+            }
+
             foreach (var item in PointItemManager.LoadedItems)
             {
                 if (playerId.EquippedItems.Contains(item.Barcode))
@@ -259,6 +276,8 @@ public static class MirrorPatches
     private static bool OnExitSingleplayer(Mirror __instance, TriggerRefProxy proxy)
     {
         var rigManager = RigManager.Cache.Get(proxy.root);
+
+        WearableManager.LocalDisplayer.RemoveReflectionOrigin(__instance._reflectTran);
 
         foreach (var item in PointItemManager.LoadedItems)
         {

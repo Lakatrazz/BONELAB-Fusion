@@ -94,7 +94,7 @@ public static class CosmeticLoader
 
         var pallet = crate.Pallet.Title;
 
-        var point = (RigPoint)cosmeticRoot.cosmeticPoint.Get();
+        var point = (WearablePoint)cosmeticRoot.cosmeticPoint.Get();
 
         var price = cosmeticRoot.rawPrice.Get();
 

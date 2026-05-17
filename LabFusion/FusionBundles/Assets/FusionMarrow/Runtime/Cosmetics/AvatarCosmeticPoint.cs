@@ -20,7 +20,7 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppValueField<int> cosmeticPoint;
 #else
-        public RigPoint cosmeticPoint = RigPoint.HEAD;
+        public WearablePoint cosmeticPoint = WearablePoint.Head;
 #endif
 
 #if UNITY_EDITOR

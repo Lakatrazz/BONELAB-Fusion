@@ -1,5 +1,7 @@
-﻿using LabFusion.SDK.Messages;
+﻿using LabFusion.SDK.Equippables;
+using LabFusion.SDK.Messages;
 using LabFusion.SDK.Modules;
+using LabFusion.SDK.Wearables;
 
 namespace LabFusion.SDK;
 
@@ -16,5 +18,11 @@ public sealed class SDKModule : Module
         ModuleMessageManager.RegisterHandler<AnimationStateMessage>();
         ModuleMessageManager.RegisterHandler<GamemodeDropperMessage>();
         ModuleMessageManager.RegisterHandler<VoiceProxyInputMessage>();
+
+        WearableManager.Initialize();
+
+        var wristWatchItem = new WristWatchItem();
+        EquippableManager.RegisterEquippable(wristWatchItem);
+        EquippableManager.EquipEquippable(wristWatchItem.Barcode, true);
     }
 }

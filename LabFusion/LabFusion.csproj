@@ -275,7 +275,6 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\AnimatorSyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\AvatarCosmeticPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
-    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\DeathTrigger.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Desyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\CelebrationEvents.cs" />
@@ -299,6 +298,8 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCInt.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCVariable.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\VoiceProxy.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Wearables\WearablePoint.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Wearables\WearableSide.cs" />
   </ItemGroup>
 
   <ItemGroup>

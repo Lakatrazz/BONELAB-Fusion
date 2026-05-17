@@ -26,7 +26,7 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppReferenceField<Texture2D> previewIcon;
 #else
-        public RigPoint cosmeticPoint = RigPoint.HEAD;
+        public WearablePoint cosmeticPoint = WearablePoint.Head;
 
         public bool hiddenInView = false;
 

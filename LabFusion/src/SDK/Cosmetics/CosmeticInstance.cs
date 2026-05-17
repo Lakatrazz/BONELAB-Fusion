@@ -25,11 +25,11 @@ public class CosmeticInstance
 
     public bool isHiddenInView;
 
-    public RigPoint itemPoint;
+    public WearablePoint itemPoint;
 
     public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
 
-    private Dictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
+    private Dictionary<WearablePoint, AvatarCosmeticPoint> _avatarPoints = new();
 
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;
@@ -66,7 +66,7 @@ public class CosmeticInstance
 
     public NetworkPlayer NetworkPlayer { get; set; } = null;
 
-    public CosmeticInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, RigPoint itemPoint)
+    public CosmeticInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, WearablePoint itemPoint)
     {
         rigManager = payload.rigManager;
         avatar = null;
@@ -160,7 +160,7 @@ public class CosmeticInstance
 
         foreach (var point in avatar.GetComponentsInChildren<AvatarCosmeticPoint>())
         {
-            var cosmeticPoint = (RigPoint)point.cosmeticPoint.Get();
+            var cosmeticPoint = (WearablePoint)point.cosmeticPoint.Get();
 
             if (!_avatarPoints.ContainsKey(cosmeticPoint))
             {
@@ -186,7 +186,7 @@ public class CosmeticInstance
         accessory.SetActive(true);
     }
 
-    public void Update(RigPoint itemPoint)
+    public void Update(WearablePoint itemPoint)
     {
         // Don't update position if this is culled
         if (IsCulled)

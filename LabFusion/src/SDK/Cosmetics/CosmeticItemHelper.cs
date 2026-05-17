@@ -24,24 +24,18 @@ public static class CosmeticItemHelper
         return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
     }
 
-    public static CosmeticScaleMode GetScaleMode(RigPoint point)
+    public static CosmeticScaleMode GetScaleMode(WearablePoint point)
     {
-        switch (point)
+        return point switch
         {
-            default:
-            case RigPoint.CHEST:
-            case RigPoint.CHEST_BACK:
-            case RigPoint.LOCOSPHERE:
-            case RigPoint.HIPS:
-                return CosmeticScaleMode.HEIGHT;
-            case RigPoint.HEAD:
-            case RigPoint.HEAD_TOP:
-            case RigPoint.EYE_RIGHT:
-            case RigPoint.EYE_LEFT:
-            case RigPoint.EYE_CENTER:
-            case RigPoint.NOSE:
-                return CosmeticScaleMode.HEAD;
-        }
+            WearablePoint.Head or
+            WearablePoint.HeadTop or 
+            WearablePoint.EyeRight or 
+            WearablePoint.EyeLeft or 
+            WearablePoint.EyeCenter or 
+            WearablePoint.Nose => CosmeticScaleMode.HEAD,
+            _ => CosmeticScaleMode.HEIGHT,
+        };
     }
 
     public static void GetTransform(AvatarCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale)
@@ -52,7 +46,7 @@ public static class CosmeticItemHelper
         scale = transform.lossyScale;
     }
 
-    public static void GetTransform(RigPoint itemPoint, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale)
+    public static void GetTransform(WearablePoint itemPoint, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale)
     {
         PhysicsRig inRig = rig.physicsRig;
         ArtRig artRig = inRig.artOutput;
@@ -65,11 +59,11 @@ public static class CosmeticItemHelper
         switch (itemPoint)
         {
             default:
-            case RigPoint.HEAD:
+            case WearablePoint.Head:
                 position = head.position;
                 rotation = head.rotation;
                 break;
-            case RigPoint.HEAD_TOP:
+            case WearablePoint.HeadTop:
                 Vector3 eyeCenter = GetEyeCenter(artRig);
 
                 eyeCenter += head.up * (avatar.HeadTop * avatar.height);
@@ -85,15 +79,15 @@ public static class CosmeticItemHelper
 
                 rotation = head.rotation;
                 break;
-            case RigPoint.EYE_LEFT:
+            case WearablePoint.EyeLeft:
                 position = artRig.eyeLf.position;
                 rotation = artRig.eyeLf.rotation;
                 break;
-            case RigPoint.EYE_CENTER:
+            case WearablePoint.EyeCenter:
                 position = GetEyeCenter(artRig);
                 rotation = head.rotation;
                 break;
-            case RigPoint.NOSE:
+            case WearablePoint.Nose:
                 Vector3 noseCenter = GetEyeCenter(artRig);
                 position = head.position + head.forward * (avatar.ForeheadEllipseZ * avatar.height);
 
@@ -106,27 +100,32 @@ public static class CosmeticItemHelper
 
                 rotation = head.rotation;
                 break;
-            case RigPoint.EYE_RIGHT:
+            case WearablePoint.EyeRight:
                 position = artRig.eyeRt.position;
                 rotation = artRig.eyeRt.rotation;
                 break;
-            case RigPoint.CHEST:
+            case WearablePoint.Chest:
                 position = inRig.m_chest.position;
                 rotation = inRig.m_chest.rotation;
                 break;
-            case RigPoint.CHEST_BACK:
+            case WearablePoint.ChestBack:
                 Transform chest = inRig.m_chest;
                 position = chest.position - chest.forward * avatar.ChestEllipseNegZ;
                 rotation = chest.rotation;
                 break;
-            case RigPoint.HIPS:
+            case WearablePoint.Hips:
                 position = inRig.m_pelvis.position;
                 rotation = inRig.m_pelvis.rotation;
                 break;
-            case RigPoint.LOCOSPHERE:
-                Transform physG = rig.physicsRig.physG.transform;
-                position = physG.position;
-                rotation = physG.rotation;
+            case WearablePoint.WristLeftTop:
+                var artWristLeft = artRig.artWristLf;
+                position = artWristLeft.position + artWristLeft.up * (avatar.wristEllipse.ZRadius * avatar.eyeHeight);
+                rotation = artWristLeft.rotation;
+                break;
+            case WearablePoint.WristRightTop:
+                var artWristRight = artRig.artWristRt;
+                position = artWristRight.position + artWristRight.up * (avatar.wristEllipse.ZRadius * avatar.eyeHeight);
+                rotation = artWristRight.rotation;
                 break;
         }
     }
