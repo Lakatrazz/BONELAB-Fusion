@@ -162,14 +162,6 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         return id == null || !id.IsValid;
     }
 
-    public bool HasEquipped(PointItem item)
-    {
-        if (IsMe)
-            return item.IsEquipped;
-        else
-            return EquippedItems.Contains(item.Barcode);
-    }
-
     internal void ForceSetEquipped(string barcode, bool value)
     {
         // Remove/add to the list
