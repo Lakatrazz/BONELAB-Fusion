@@ -7,7 +7,6 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
-using Il2CppSystem.Runtime.Serialization.Formatters.Binary;
 
 namespace LabFusion.SDK.Wearables;
 
@@ -28,6 +27,16 @@ public static class WearableTransformCalculator
             WearablePoint.EyeLeft or 
             WearablePoint.EyeCenter or 
             WearablePoint.Nose => WearableScaleMode.Head,
+            WearablePoint.WristLeft or
+            WearablePoint.WristLeftTop or
+            WearablePoint.WristLeftBottom or
+            WearablePoint.WristLeftOut or
+            WearablePoint.WristLeftIn or
+            WearablePoint.WristRight or
+            WearablePoint.WristRightTop or
+            WearablePoint.WristRightBottom or
+            WearablePoint.WristRightOut or
+            WearablePoint.WristRightIn => WearableScaleMode.Wrist,
             _ => WearableScaleMode.Height,
         };
     }
@@ -225,11 +234,25 @@ public static class WearableTransformCalculator
 
     public static Vector3 GetScale(Avatar avatar, WearableScaleMode mode)
     {
-        return mode switch
+        var scale = Vector3Extensions.One;
+
+        switch (mode)
         {
-            WearableScaleMode.Height => Vector3Extensions.One * (avatar.height / MarrowConstants.StandardHeight),
-            WearableScaleMode.Head => Vector3Extensions.One * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / MarrowConstants.StandardHeight,
-            _ => Vector3Extensions.One,
-        };
+            case WearableScaleMode.Height:
+                scale *= avatar.height / MarrowConstants.StandardHeight;
+                break;
+            case WearableScaleMode.Head:
+                scale *= avatar.ForeheadEllipseX / 0.044f * avatar.height / MarrowConstants.StandardHeight;
+                break;
+            case WearableScaleMode.Wrist:
+                var wristEllipse = avatar.wristEllipse;
+                var averageRadius = (wristEllipse.XRadius + wristEllipse.ZRadius) * 0.5f;
+                float referenceRadius = 0.01985f;
+
+                scale *= averageRadius / referenceRadius * avatar.height / MarrowConstants.StandardHeight;
+                break;
+        }
+
+        return scale;
     }
 }

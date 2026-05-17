@@ -12,5 +12,7 @@ public enum WearableScaleMode
 
     Height,
 
-    Head
+    Head,
+
+    Wrist
 }
