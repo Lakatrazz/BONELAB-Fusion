@@ -205,39 +205,58 @@ public class WearableDisplayer
             return;
         }
 
-        UpdateWearables();
+        UpdateTransforms();
     }
 
-    private void UpdateWearables()
+    private void UpdateTransforms()
     {
-        int reflectionCount = ReflectionOrigins.Count;
+        UpdateMainTransforms();
+        UpdateReflectionTransforms();
+    }
 
-        foreach (var pair in WearableToInstanceLookup)
+    private void UpdateMainTransforms()
+    {
+        foreach (var instance in WearableToInstanceLookup.Values)
         {
-            var instance = pair.Value;
-            var point = instance.Point;
+            UpdateMainTransform(instance);
+        }
+    }
 
-            Vector3 position;
-            Quaternion rotation;
-            Vector3 scale;
+    private void UpdateMainTransform(WearableInstance instance)
+    {
+        var point = instance.Point;
 
-            if (AvatarPoints.TryGetValue(instance.Point, out var avatarPoint))
-            {
-                WearableTransformCalculator.GetTransform(avatarPoint, out position, out rotation, out scale);
-            }
-            else
-            {
-                WearableTransformCalculator.GetTransform(point, RigManager, out position, out rotation, out scale);
-            }
+        Vector3 position;
+        Quaternion rotation;
+        Vector3 scale;
 
-            instance.UpdateMain(position, rotation, scale);
+        if (AvatarPoints.TryGetValue(instance.Point, out var avatarPoint))
+        {
+            WearableTransformCalculator.GetTransform(avatarPoint, out position, out rotation, out scale);
+        }
+        else
+        {
+            WearableTransformCalculator.GetTransform(point, RigManager, out position, out rotation, out scale);
+        }
 
-            for (var i = 0; i < reflectionCount; i++)
-            {
-                var reflectionOrigin = ReflectionOrigins[i];
+        instance.UpdateMain(position, rotation, scale);
+    }
 
-                instance.UpdateReflection(reflectionOrigin, i);
-            }
+    private void UpdateReflectionTransforms()
+    {
+        foreach (var instance in WearableToInstanceLookup.Values)
+        {
+            UpdateReflectionTransforms(instance);
+        }
+    }
+
+    private void UpdateReflectionTransforms(WearableInstance instance)
+    {
+        for (var i = 0; i < ReflectionOrigins.Count; i++)
+        {
+            var reflectionOrigin = ReflectionOrigins[i];
+
+            instance.UpdateReflection(reflectionOrigin, i);
         }
     }
 
@@ -277,6 +296,7 @@ public class WearableDisplayer
     private void ApplyWearableReflections(WearableInstance instance)
     {
         instance.ReflectionCount = ReflectionCount;
+        UpdateReflectionTransforms(instance);
     }
 
     private void OnAvatarSwapped()

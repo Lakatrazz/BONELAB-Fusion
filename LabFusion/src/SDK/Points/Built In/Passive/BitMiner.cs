@@ -7,30 +7,29 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Points;
 
+// TODO: Cleanup mess after point item system is cleaned up
 [CompiledPointItem]
-public class BitMiner : PointItem
+public class BitMiner : IPointItem
 {
-    public override string Title => "Bit Miner";
+    public string Title => "Bit Miner";
 
-    public override string Author => "Lakatrazz";
+    public string Author => "Lakatrazz";
 
-    public override string Description => CreateDescription(1);
+    public string Description => CreateDescription(1);
 
-    public override int Price => 600;
+    public int Price => 600;
 
-    public override string[] Tags => new string[2] {
+    public string[] Tags => new string[2] {
         "Utility",
         "Passive",
     };
 
-    public override PointItemUpgrade[] Upgrades => new PointItemUpgrade[] {
+    public PointItemUpgrade[] Upgrades => new PointItemUpgrade[] {
         new(Description + CreateNextLevelDescription(1), 1000),
         new(CreateDescription(2) + CreateNextLevelDescription(2), 1200),
         new(CreateDescription(3) + CreateNextLevelDescription(3), 3000),
         new(CreateDescription(4) + CreateNextLevelDescription(4), 4200, CreateDescription(5) + "\n\nLevel: 4"),
     };
-
-    public override bool ImplementLateUpdate => true;
 
     private float _bitTime;
 
@@ -46,14 +45,14 @@ public class BitMiner : PointItem
         return $"<size=18>Hires NullMen to extract void energy from the depths of MythOS.\n\nCurrent: {bits} Bit{suffix}/Player/Minute";
     }
 
-    public override void OnLateUpdate()
+    private void OnLateUpdate()
     {
-        if (!IsUnlocked)
+        if (!((IPointItem)this).IsUnlocked)
         {
             return;
         }
 
-        if (!IsEquipped)
+        if (!((IPointItem)this).IsEquipped)
         {
             return;
         }
@@ -83,7 +82,7 @@ public class BitMiner : PointItem
 
     private int CalculateBitReward()
     {
-        var baseCount = 2 + CurrentUpgradeIndex;
+        var baseCount = 2 + ((IPointItem)this).CurrentUpgradeIndex;
 
         var otherPlayers = PlayerIDManager.PlayerCount - 1;
 
@@ -93,8 +92,22 @@ public class BitMiner : PointItem
         return finalCount;
     }
 
-    public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
+    public void LoadIcon(Action<Texture2D> loadCallback)
     {
-        onLoaded(MenuResources.GetPointIcon(Title).TryCast<Texture2D>());
+        loadCallback(MenuResources.GetPointIcon(Title).TryCast<Texture2D>());
+    }
+
+    public void OnRegistered()
+    {
+        MultiplayerHooking.OnLateUpdate += OnLateUpdate;
+    }
+
+    public void OnUnregistered()
+    {
+        MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
+    }
+
+    public void OnEquipChanged(PlayerID playerID, bool equipped)
+    {
     }
 }

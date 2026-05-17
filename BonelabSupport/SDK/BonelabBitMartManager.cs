@@ -21,7 +21,7 @@ public static class BonelabBitMartManager
         BitMart.ItemPurchased -= OnItemPurchased;
     }
 
-    private static void OnItemPurchased(BitMart bitMart, PointItem item)
+    private static void OnItemPurchased(BitMart bitMart, IPointItem item)
     {
         SpawnGacha(bitMart, item.Barcode);
     }

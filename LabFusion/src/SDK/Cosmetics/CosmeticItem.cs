@@ -1,42 +1,38 @@
-﻿using LabFusion.Extensions;
-using LabFusion.SDK.Points;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Marrow.Integration;
-
-using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Player;
+using LabFusion.SDK.Equippables;
+using LabFusion.SDK.Points;
+using LabFusion.SDK.Wearables;
 
 using UnityEngine;
 
 namespace LabFusion.SDK.Cosmetics;
 
-public class CosmeticItem : PointItem
+// TODO: Cleanup mess after point item system is cleaned up
+public class CosmeticItem : WearableItem, IPointItem
 {
-    public override string Title => Variables.Title;
+    public string Title => Variables.Title;
 
-    public override string Description => Variables.Description;
+    public string Description => Variables.Description;
 
-    public override int Price => Variables.Price;
+    public int Price => Variables.Price;
 
-    public override string Author => Variables.Author;
+    public string Author => Variables.Author;
 
-    public override string Category => Variables.Category;
+    public string Category => Variables.Category;
 
-    public override string[] Tags => Variables.Tags;
+    public string[] Tags => Variables.Tags;
 
-    public override string Barcode => Variables.Barcode;
-
-    public override bool Redacted => Variables.HiddenInShop;
-
-    // We use LateUpdate to cleanup accessories, so it should be hooked
-    public override bool ImplementLateUpdate => true;
-
-    protected Dictionary<RigManager, CosmeticInstance> _accessoryInstances = new(new UnityComparer());
+    public bool Redacted => Variables.HiddenInShop;
 
     private CosmeticVariables _variables = default;
 
     private SpawnableCrateReference _spawnableCrateReference = null;
 
     public CosmeticVariables Variables => _variables;
+
+    public override string Barcode => Variables.Barcode;
 
     public CosmeticItem(CosmeticVariables variables)
     {
@@ -45,7 +41,7 @@ public class CosmeticItem : PointItem
         _spawnableCrateReference = new(variables.Barcode);
     }
 
-    public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
+    public void LoadIcon(Action<Texture2D> loadCallback)
     {
         var crate = _spawnableCrateReference.Crate;
 
@@ -65,106 +61,40 @@ public class CosmeticItem : PointItem
 
             var previewIcon = root.previewIcon.Get();
 
-            onLoaded(previewIcon);
+            loadCallback(previewIcon);
         };
 
         crate.MainGameObject.LoadAsset(onGameObjectLoaded);
     }
 
-    public override void OnUpdateObjects(PointItemPayload payload, bool isVisible)
+    public void OnRegistered()
     {
-        // Make sure we have a prefab
-        if (isVisible && _spawnableCrateReference.Crate == null)
-            return;
-
-        // Check if this is a mirror payload
-        if (payload.type == PointItemPayloadType.MIRROR)
-        {
-            // Make sure we have an accessory instance of this
-            if (!_accessoryInstances.ContainsKey(payload.rigManager))
-                return;
-
-            if (isVisible)
-            {
-                Transform tempParent = new GameObject("Temp Parent").transform;
-                tempParent.gameObject.SetActive(false);
-
-                var onLoaded = (GameObject go) =>
-                {
-                    var accessory = GameObject.Instantiate(go, tempParent);
-                    accessory.SetActive(false);
-                    accessory.transform.parent = null;
-
-                    GameObject.Destroy(tempParent.gameObject);
-
-                    accessory.name = $"{go.name} (Mirror)";
-
-                    _accessoryInstances[payload.rigManager].InsertMirror(payload.mirror, accessory);
-                };
-                _spawnableCrateReference.Crate.MainGameObject.LoadAsset(onLoaded);
-            }
-            else
-            {
-                _accessoryInstances[payload.rigManager].RemoveMirror(payload.mirror);
-            }
-
-            return;
-        }
-
-        // Make sure we have a rig
-        if (payload.rigManager == null)
-            return;
-
-        // Check if we need to destroy or create an accessory
-        if (isVisible && !_accessoryInstances.ContainsKey(payload.rigManager))
-        {
-            var onLoaded = (GameObject go) =>
-            {
-                var accessory = GameObject.Instantiate(go);
-                accessory.name = go.name;
-
-                var instance = new CosmeticInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && Variables.HiddenInView, Variables.CosmeticPoint);
-                _accessoryInstances.Add(payload.rigManager, instance);
-            };
-            _spawnableCrateReference.Crate.MainGameObject.LoadAsset(onLoaded);
-        }
-        else if (!isVisible && _accessoryInstances.ContainsKey(payload.rigManager))
-        {
-            var instance = _accessoryInstances[payload.rigManager];
-            instance.Cleanup();
-            _accessoryInstances.Remove(payload.rigManager);
-        }
+        EquippableManager.RegisterEquippable(this);
     }
 
-    public override void OnLateUpdate()
+    public void OnUnregistered()
     {
-        // Make sure theres accessory instances
-        if (_accessoryInstances.Count <= 0)
+    }
+
+    public void OnEquipChanged(PlayerID playerID, bool equipped)
+    {
+        bool isMe = playerID == null || playerID.IsMe;
+
+        if (!isMe)
         {
             return;
         }
 
-        // Check if all instances are valid. Otherwise, clean them up
-        List<CosmeticInstance> accessoriesToRemove = null;
+        EquippableManager.EquipEquippable(Barcode, equipped);
+    }
 
-        foreach (var instance in _accessoryInstances)
+    public override WearableInstance CreateInstance()
+    {
+        return new WearableInstance()
         {
-            if (!instance.Value.IsValid())
-            {
-                accessoriesToRemove ??= new List<CosmeticInstance>();
-
-                accessoriesToRemove.Add(instance.Value);
-            }
-        }
-
-        if (accessoriesToRemove != null)
-        {
-            for (var i = 0; i < accessoriesToRemove.Count; i++)
-            {
-                var instance = accessoriesToRemove[i];
-                instance.Cleanup();
-                _accessoryInstances.Remove(instance.rigManager);
-            }
-        }
+            Point = Variables.CosmeticPoint,
+            HiddenInView = Variables.HiddenInView,
+            SpawnableCrateReference = _spawnableCrateReference,
+        };
     }
 }

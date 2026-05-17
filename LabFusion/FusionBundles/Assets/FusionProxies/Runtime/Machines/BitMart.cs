@@ -28,7 +28,7 @@ namespace LabFusion.Marrow.Proxies
 
         public const float PowerTransitionLength = 0.5f;
 
-        public static event Action<BitMart, PointItem> ItemPurchased;
+        public static event Action<BitMart, IPointItem> ItemPurchased;
 
         public BitMartElement BitMartElement { get; set; } = null;
 
@@ -197,7 +197,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        private void OnItemPurchased(PointItem item)
+        private void OnItemPurchased(IPointItem item)
         {
             PushDoor(100f);
 
@@ -205,13 +205,13 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        private void OnItemEquipped(PointItem item)
+        private void OnItemEquipped(IPointItem item)
         {
             PushDoor();
         }
 
         [HideFromIl2Cpp]
-        private void OnItemUnequipped(PointItem item)
+        private void OnItemUnequipped(IPointItem item)
         {
             PushDoor();
         }

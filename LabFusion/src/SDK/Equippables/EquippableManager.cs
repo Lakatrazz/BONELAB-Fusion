@@ -78,7 +78,7 @@ public static class EquippableManager
 
         if (TryGetEquippable(barcode, out var equippable))
         {
-            equippable.OnLocalEquipped(equipped);
+            equippable.OnLocalEquipChanged(equipped);
         }
     }
 
@@ -109,7 +109,7 @@ public static class EquippableManager
 
         if (TryGetEquippable(barcode, out var equippable))
         {
-            equippable.OnNetEquipped(playerID, equipped);
+            equippable.OnNetEquipChanged(playerID, equipped);
         }
     }
 
@@ -129,7 +129,7 @@ public static class EquippableManager
                 continue;
             }
 
-            equippable.OnNetEquipped(playerID, false);
+            equippable.OnNetEquipChanged(playerID, false);
         }
 
         NetEquippedItems.Remove(smallID);

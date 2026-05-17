@@ -67,17 +67,17 @@ namespace LabFusion.Marrow.Proxies
         public TMP_Text CatalogBitCountText { get; set; } = null;
 
         [HideFromIl2Cpp]
-        public event Action<PointItem> OnItemPurchased, OnItemEquipped, OnItemUnequipped;
+        public event Action<IPointItem> OnItemPurchased, OnItemEquipped, OnItemUnequipped;
 
         [HideFromIl2Cpp]
         public event Action OnAllItemsUnequipped;
 
-        private List<PointItem> _pointItems = null;
+        private List<IPointItem> _pointItems = null;
         private List<string> _pallets = null;
-        private Dictionary<string, List<PointItem>> _palletToPointItem = null;
+        private Dictionary<string, List<IPointItem>> _palletToPointItem = null;
 
         private string _currentPallet = null;
-        private PointItem _currentItem = null;
+        private IPointItem _currentItem = null;
 
         private SortMode _sortMode = SortMode.PRICE;
 
@@ -307,7 +307,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        public void ShowPointItem(PointItem pointItem)
+        public void ShowPointItem(IPointItem pointItem)
         {
             _currentItem = pointItem;
 
@@ -325,7 +325,7 @@ namespace LabFusion.Marrow.Proxies
                 return;
             }
 
-            pointItem.LoadPreviewIcon(texture =>
+            pointItem.LoadIcon(texture =>
             {
                 if (ItemPreview == null)
                 {
@@ -398,7 +398,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        public void ShowPointItems(List<PointItem> pointItems)
+        public void ShowPointItems(List<IPointItem> pointItems)
         {
             _pointItems = pointItems;
 

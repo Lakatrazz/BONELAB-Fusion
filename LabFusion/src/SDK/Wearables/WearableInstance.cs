@@ -131,7 +131,7 @@ public class WearableInstance
         var reflectedForward = Vector3.Reflect(forward, reflectionAxis);
         var reflectedUp = Vector3.Reflect(up, reflectionAxis);
 
-        Quaternion reflectedRotation = Quaternion.LookRotation(reflectedForward, reflectedUp);
+        Quaternion reflectedRotation = Quaternion.LookRotation(-reflectedForward, reflectedUp);
 
         // Reflect the wearable's position
         var reflectionPivot = reflectionOrigin.position;
@@ -142,6 +142,9 @@ public class WearableInstance
 
         // Apply the reflected transform
         var reflectionTransform = ReflectionInstances[reflectionIndex];
+
+        // Reflection origins have negative scale, the reflection is parented so that the models get properly reflected
+        reflectionTransform.parent = reflectionOrigin;
 
         reflectionTransform.SetPositionAndRotation(reflectedPosition, reflectedRotation);
         reflectionTransform.localScale = Scale;
@@ -213,39 +216,20 @@ public class WearableInstance
 
     private void SpawnReflections(int reflectionCount)
     {
-        ReflectionInstances.RemoveAll(t => t == null);
+        DespawnReflections();
 
-        if (reflectionCount > ReflectionInstances.Count)
+        for (var i = 0; i < reflectionCount; i++)
         {
-            for (var i = 0; i < reflectionCount - ReflectionInstances.Count; i++)
+            var instanceIndex = i;
+
+            SpawnInstance((instance) =>
             {
-                var instanceIndex = i;
+                instance.name = $"{instance.name} (Reflection ({instanceIndex}))";
 
-                SpawnInstance((instance) =>
-                {
-                    instance.name = $"{instance.name} (Reflection ({instanceIndex}))";
+                instance.SetActive(IsShown && IsReflectionShown);
 
-                    instance.SetActive(IsShown && IsReflectionShown);
-
-                    ReflectionInstances.Add(instance.transform);
-                });
-            }
-        }
-        else if (reflectionCount < ReflectionInstances.Count)
-        {
-            for (var i = reflectionCount - 1; i < ReflectionInstances.Count; i++)
-            {
-                var reflection = ReflectionInstances[i];
-
-                if (reflection == null)
-                {
-                    continue;
-                }
-
-                GameObject.Destroy(reflection);
-            }
-
-            ReflectionInstances.RemoveRange(reflectionCount - 1, ReflectionInstances.Count - reflectionCount);
+                ReflectionInstances.Add(instance.transform);
+            });
         }
     }
 

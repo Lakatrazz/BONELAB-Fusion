@@ -6,7 +6,7 @@ public interface IEquippableItem
 {
     string Barcode { get; }
 
-    void OnLocalEquipped(bool equipped);
+    void OnLocalEquipChanged(bool equipped);
 
-    void OnNetEquipped(PlayerID playerID, bool equipped);
+    void OnNetEquipChanged(PlayerID playerID, bool equipped);
 }

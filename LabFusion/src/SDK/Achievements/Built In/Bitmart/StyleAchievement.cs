@@ -15,7 +15,7 @@ namespace LabFusion.SDK.Achievements
             PointItemManager.OnItemUnlocked -= OnItemUnlocked;
         }
 
-        private void OnItemUnlocked(PointItem item)
+        private void OnItemUnlocked(IPointItem item)
         {
             CheckTasks();
         }

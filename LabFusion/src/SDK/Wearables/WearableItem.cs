@@ -18,12 +18,12 @@ public abstract class WearableItem : IEquippableItem
 
     public abstract WearableInstance CreateInstance();
 
-    public void OnLocalEquipped(bool equipped)
+    public void OnLocalEquipChanged(bool equipped)
     {
         LocalEquipped?.InvokeSafe(this, equipped, "executing WearableItem.LocalEquipped event");
     }
 
-    public void OnNetEquipped(PlayerID playerID, bool equipped)
+    public void OnNetEquipChanged(PlayerID playerID, bool equipped)
     {
         NetEquipped?.InvokeSafe(playerID, equipped, "executing WearableItem.NetEquipped event");
     }

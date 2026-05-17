@@ -62,7 +62,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
-        public void ApplyPointItem(PointItem item)
+        public void ApplyPointItem(IPointItem item)
         {
             GetReferences();
 
@@ -75,7 +75,7 @@ namespace LabFusion.Marrow.Proxies
 
             Preview.texture = _defaultPreview;
 
-            item.LoadPreviewIcon((texture) =>
+            item.LoadIcon((texture) =>
             {
                 if (Preview == null)
                 {

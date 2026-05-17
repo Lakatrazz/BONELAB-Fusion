@@ -69,24 +69,7 @@ public static class MirrorPatches
 
     private static bool OnEnterSingleplayer(Mirror __instance, TriggerRefProxy proxy)
     {
-        var rigManager = RigManager.Cache.Get(proxy.root);
-
         WearableManager.LocalDisplayer.AddReflectionOrigin(__instance._reflectTran);
-
-        foreach (var item in PointItemManager.LoadedItems)
-        {
-            if (item.IsEquipped)
-            {
-                item.OnUpdateObjects(new PointItemPayload()
-                {
-                    type = PointItemPayloadType.MIRROR,
-                    rigManager = rigManager,
-                    mirror = __instance,
-                    playerId = PlayerIDManager.LocalID,
-                }, true);
-            }
-        }
-
         return true;
     }
 
@@ -182,20 +165,6 @@ public static class MirrorPatches
             {
                 wearableDisplayer.AddReflectionOrigin(__instance._reflectTran);
             }
-
-            foreach (var item in PointItemManager.LoadedItems)
-            {
-                if (playerID.HasEquipped(item))
-                {
-                    item.OnUpdateObjects(new PointItemPayload()
-                    {
-                        type = PointItemPayloadType.MIRROR,
-                        rigManager = rig,
-                        mirror = __instance,
-                        playerId = playerID,
-                    }, true);
-                }
-            }
         }
 
         return isTarget;
@@ -254,20 +223,6 @@ public static class MirrorPatches
             {
                 wearableDisplayer.RemoveReflectionOrigin(__instance._reflectTran);
             }
-
-            foreach (var item in PointItemManager.LoadedItems)
-            {
-                if (playerId.EquippedItems.Contains(item.Barcode))
-                {
-                    item.OnUpdateObjects(new PointItemPayload()
-                    {
-                        type = PointItemPayloadType.MIRROR,
-                        rigManager = rig,
-                        mirror = __instance,
-                        playerId = playerId,
-                    }, false);
-                }
-            }
         }
 
         return isTarget;
@@ -275,24 +230,7 @@ public static class MirrorPatches
 
     private static bool OnExitSingleplayer(Mirror __instance, TriggerRefProxy proxy)
     {
-        var rigManager = RigManager.Cache.Get(proxy.root);
-
         WearableManager.LocalDisplayer.RemoveReflectionOrigin(__instance._reflectTran);
-
-        foreach (var item in PointItemManager.LoadedItems)
-        {
-            if (item.IsEquipped)
-            {
-                item.OnUpdateObjects(new PointItemPayload()
-                {
-                    type = PointItemPayloadType.MIRROR,
-                    rigManager = rigManager,
-                    mirror = __instance,
-                    playerId = PlayerIDManager.LocalID,
-                }, false);
-            }
-        }
-
 
         return true;
     }

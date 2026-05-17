@@ -47,7 +47,7 @@ public enum SortMode
 public static class PointItemManager
 {
     public static event Action OnBitCountChanged = null;
-    public static event Action<PointItem> OnItemUnlocked = null;
+    public static event Action<IPointItem> OnItemUnlocked = null;
 
     public static RarityLevel CalculateLevel(int price)
     {
@@ -145,51 +145,10 @@ public static class PointItemManager
 
     internal static void HookEvents()
     {
-        LocalPlayer.OnLocalRigCreated += OnLocalRigCreated;
-        NetworkPlayer.OnNetworkRigCreated += OnNetworkRigCreated;
     }
 
     internal static void UnhookEvents()
     {
-        LocalPlayer.OnLocalRigCreated -= OnLocalRigCreated;
-        NetworkPlayer.OnNetworkRigCreated -= OnNetworkRigCreated;
-    }
-
-    private static void OnLocalRigCreated(RigManager rigManager)
-    {
-        foreach (var item in LoadedItems)
-        {
-            if (item.IsEquipped)
-            {
-                item.OnUpdateObjects(new PointItemPayload()
-                {
-                    type = PointItemPayloadType.SELF,
-                    rigManager = rigManager,
-                    playerId = PlayerIDManager.LocalID,
-                }, true);
-            }
-        }
-    }
-
-    private static void OnNetworkRigCreated(NetworkPlayer player, RigManager rigManager)
-    {
-        if (player.NetworkEntity.IsOwner)
-        {
-            return;
-        }
-
-        foreach (var item in LoadedItems)
-        {
-            if (player.PlayerID.EquippedItems.Contains(item.Barcode))
-            {
-                item.OnUpdateObjects(new PointItemPayload()
-                {
-                    type = PointItemPayloadType.PLAYER_REP,
-                    rigManager = rigManager,
-                    playerId = player.PlayerID,
-                }, true);
-            }
-        }
     }
 
     public static void LoadItems(Assembly assembly)
@@ -199,10 +158,10 @@ public static class PointItemManager
             throw new NullReferenceException("Tried loading point items from a null assembly!");
         }
 
-        AssemblyUtilities.LoadAllValid<PointItem>(assembly, RegisterPointItem);
+        AssemblyUtilities.LoadAllValid<IPointItem>(assembly, RegisterPointItem);
     }
 
-    public static void RegisterPointItem<T>() where T : PointItem => RegisterPointItem(typeof(T));
+    public static void RegisterPointItem<T>() where T : IPointItem => RegisterPointItem(typeof(T));
 
     private static void RegisterPointItem(Type type)
     {
@@ -212,12 +171,12 @@ public static class PointItemManager
             return;
         }
 
-        var item = Activator.CreateInstance(type) as PointItem;
+        var item = Activator.CreateInstance(type) as IPointItem;
 
         RegisterPointItem(item);
     }
 
-    public static void RegisterPointItem(PointItem item)
+    public static void RegisterPointItem(IPointItem item)
     {
         if (PointItemLookup.ContainsKey(item.Barcode))
         {
@@ -228,7 +187,7 @@ public static class PointItemManager
         PointItems.Add(item);
         PointItemLookup.Add(item.Barcode, item);
 
-        item.Register();
+        item.OnRegistered();
 
         if (item.IsEquipped)
         {
@@ -236,7 +195,7 @@ public static class PointItemManager
         }
     }
 
-    public static bool TryGetPointItem(string barcode, out PointItem item)
+    public static bool TryGetPointItem(string barcode, out IPointItem item)
     {
         if (string.IsNullOrWhiteSpace(barcode))
         {
@@ -296,7 +255,7 @@ public static class PointItemManager
         OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
     }
 
-    public static bool TryUpgradeItem(PointItem item)
+    public static bool TryUpgradeItem(IPointItem item)
     {
         var unlockedItems = GetUnlockedItems();
 
@@ -326,7 +285,7 @@ public static class PointItemManager
         return true;
     }
 
-    public static bool TryBuyItem(PointItem item)
+    public static bool TryBuyItem(IPointItem item)
     {
         var unlockedItems = GetUnlockedItems();
 
@@ -364,89 +323,50 @@ public static class PointItemManager
             return;
         }
 
-        // Get the rig info
-        RigManager manager = null;
-        PointItemPayloadType type = PointItemPayloadType.SELF;
-
-        if (id == null || id.IsMe)
-        {
-            if (!RigData.HasPlayer)
-            {
-                return;
-            }
-
-            manager = RigData.Refs.RigManager;
-            type = PointItemPayloadType.SELF;
-        }
-        else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
-        {
-            if (!rep.HasRig)
-            {
-                return;
-            }
-
-            manager = rep.RigRefs.RigManager;
-            type = PointItemPayloadType.PLAYER_REP;
-        }
-
-        // Update equip
-        var payload = new PointItemPayload()
-        {
-            type = type,
-            playerId = id,
-            rigManager = manager,
-        };
-
-        item.OnEquipChanged(payload, isEquipped);
-
-        // Update visibility
-        if (manager != null)
-        {
-            item.OnUpdateObjects(payload, isEquipped);
-        }
+        item.OnEquipChanged(id, isEquipped);
     }
 
     internal static void Internal_OnTriggerItem(PlayerID id, string barcode, string value = null)
     {
-        if (!TryGetPointItem(barcode, out var item))
-        {
-            return;
-        }
-
-        // Get the rig info
-        RigManager manager = null;
-        PointItemPayloadType type = PointItemPayloadType.SELF;
-
-        if (id == null || id.IsMe)
-        {
-            manager = RigData.Refs.RigManager;
-            type = PointItemPayloadType.SELF;
-        }
-        else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
-        {
-            manager = rep.RigRefs.RigManager;
-            type = PointItemPayloadType.PLAYER_REP;
-        }
-
-        // Update equip
-        var payload = new PointItemPayload()
-        {
-            type = type,
-            playerId = id,
-            rigManager = manager,
-        };
-
-        if (value != null)
-        {
-            item.OnTrigger(payload, value);
-        }
-        else
-        {
-            item.OnTrigger(payload);
-        }
+        // if (!TryGetPointItem(barcode, out var item))
+        // {
+        //     return;
+        // }
+        // 
+        // // Get the rig info
+        // RigManager manager = null;
+        // PointItemPayloadType type = PointItemPayloadType.SELF;
+        // 
+        // if (id == null || id.IsMe)
+        // {
+        //     manager = RigData.Refs.RigManager;
+        //     type = PointItemPayloadType.SELF;
+        // }
+        // else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
+        // {
+        //     manager = rep.RigRefs.RigManager;
+        //     type = PointItemPayloadType.PLAYER_REP;
+        // }
+        // 
+        // // Update equip
+        // var payload = new PointItemPayload()
+        // {
+        //     type = type,
+        //     playerId = id,
+        //     rigManager = manager,
+        // };
+        // 
+        // if (value != null)
+        // {
+        //     item.OnTrigger(payload, value);
+        // }
+        // else
+        // {
+        //     item.OnTrigger(payload);
+        // }
     }
 
-    public static void SetEquipped(PointItem item, bool isEquipped)
+    public static void SetEquipped(IPointItem item, bool isEquipped)
     {
         if (item == null || (!item.IsUnlocked && !item.IsEquipped))
         {
@@ -466,9 +386,9 @@ public static class PointItemManager
         }
     }
 
-    public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE)
+    public static IReadOnlyList<IPointItem> GetLockedItems(SortMode sort = SortMode.PRICE)
     {
-        List<PointItem> items = new(LoadedItems.Count);
+        List<IPointItem> items = new(LoadedItems.Count);
 
         foreach (var item in LoadedItems)
         {
@@ -493,9 +413,9 @@ public static class PointItemManager
         return items;
     }
 
-    public static IReadOnlyList<PointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE)
+    public static IReadOnlyList<IPointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE)
     {
-        List<PointItem> items = new(LoadedItems.Count);
+        List<IPointItem> items = new(LoadedItems.Count);
 
         foreach (var item in LoadedItems)
         {
@@ -515,7 +435,7 @@ public static class PointItemManager
         return items;
     }
 
-    private static void SortBy(ref List<PointItem> items, SortMode sort)
+    private static void SortBy(ref List<IPointItem> items, SortMode sort)
     {
         switch (sort)
         {
@@ -531,8 +451,8 @@ public static class PointItemManager
         }
     }
 
-    public static IReadOnlyList<PointItem> LoadedItems => PointItems;
+    public static IReadOnlyList<IPointItem> LoadedItems => PointItems;
 
-    internal static readonly List<PointItem> PointItems = new();
-    internal static readonly Dictionary<string, PointItem> PointItemLookup = new();
+    internal static readonly List<IPointItem> PointItems = new();
+    internal static readonly Dictionary<string, IPointItem> PointItemLookup = new();
 }
