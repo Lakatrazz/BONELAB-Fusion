@@ -72,10 +72,10 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
-        OnAfterCreateId();
+        OnAfterCreateID();
     }
 
-    private void OnAfterCreateId()
+    private void OnAfterCreateID()
     {
         HookMetadata();
 
@@ -178,20 +178,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         PointItemManager.OnEquipChanged(this, barcode, value);
     }
 
-    public void Insert()
-    {
-        if (PlayerIDManager.PlayerIDs.Any((id) => id.SmallID == SmallID))
-        {
-            var list = PlayerIDManager.PlayerIDs.Where((id) => id.SmallID == SmallID).ToList();
-
-            for (var i = 0; i < list.Count; i++)
-            {
-                list[i].Cleanup();
-            }
-        }
-
-        PlayerIDManager.InsertPlayerID(this);
-    }
+    public void Insert() => PlayerIDManager.InsertPlayerID(this);
 
     public void Cleanup()
     {
@@ -251,7 +238,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
                 ForceSetEquipped(item, true);
             }
 
-            OnAfterCreateId();
+            OnAfterCreateID();
         }
     }
 }
