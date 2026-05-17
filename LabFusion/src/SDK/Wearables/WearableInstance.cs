@@ -10,7 +10,50 @@ public class WearableInstance
 {
     public bool HiddenInView { get; set; } = false;
 
-    public bool IsHidden { get; set; } = false;
+    private bool _isShown = true;
+    public bool IsShown
+    {
+        get
+        {
+            return _isShown;
+        }
+        set
+        {
+            _isShown = value;
+
+            ApplyVisibility();
+        }
+    }
+
+    private bool _isPrimaryShown = true;
+    public bool IsPrimaryShown
+    {
+        get
+        {
+            return _isPrimaryShown;
+        }
+        set
+        {
+            _isPrimaryShown = value;
+
+            ApplyMainVisibility();
+        }
+    }
+
+    private bool _isReflectionShown = true;
+    public bool IsReflectionShown
+    {
+        get
+        {
+            return _isReflectionShown;
+        }
+        set
+        {
+            _isReflectionShown = value;
+
+            ApplyReflectionVisibility();
+        }
+    }
 
     public WearablePoint Point { get; set; } = WearablePoint.Head;
 
@@ -18,77 +61,63 @@ public class WearableInstance
     public Quaternion Rotation { get; private set; } = Quaternion.identity;
     public Vector3 Scale { get; private set; } = Vector3.one;
 
-    public Transform Transform { get; private set; } = null;
+    public Transform MainInstance { get; private set; } = null;
 
-    public List<Transform> Reflections { get; } = new();
+    public List<Transform> ReflectionInstances { get; } = new();
+
+    private int _reflectionCount = 0;
+    public int ReflectionCount
+    {
+        get
+        {
+            return _reflectionCount;
+        }
+        set
+        {
+            if (_reflectionCount == value)
+            {
+                return;
+            }
+
+            _reflectionCount = value;
+
+            SpawnReflections(value);
+        }
+    }
 
     public SpawnableCrateReference SpawnableCrateReference { get; set; } = new();
 
+    public void Spawn()
+    {
+        SpawnMainInstance();
+
+        SpawnReflections(ReflectionCount);
+    }
+
+    public void Despawn()
+    {
+        DespawnMainInstance();
+
+        DespawnReflections();
+    }
+
     public void Destroy()
     {
-        DestroyInstance();
-
-        DestroyReflections();
+        Despawn();
     }
 
-    public void CreateInstance()
-    {
-        SpawnInstance((instance) =>
-        {
-            Transform = instance.transform;
-
-            ApplyTransform();
-        });
-    }
-
-    public void CreateReflections(int reflectionCount)
-    {
-        Reflections.RemoveAll(t => t == null);
-
-        if (reflectionCount > Reflections.Count)
-        {
-            for (var i = 0; i < reflectionCount - Reflections.Count; i++)
-            {
-                var instanceIndex = i;
-
-                SpawnInstance((instance) =>
-                {
-                    instance.name = $"{instance.name} (Reflection ({instanceIndex}))";
-
-                    Reflections.Add(instance.transform);
-                });
-            }
-        }
-        else if (reflectionCount < Reflections.Count)
-        {
-            for (var i = reflectionCount - 1; i < Reflections.Count; i++)
-            {
-                var reflection = Reflections[i];
-
-                if (reflection == null)
-                {
-                    continue;
-                }
-
-                GameObject.Destroy(reflection);
-            }
-
-            Reflections.RemoveRange(reflectionCount - 1, Reflections.Count - reflectionCount);
-        }
-    }
-
-    public void UpdateWearable(Vector3 position, Quaternion rotation, Vector3 scale)
+    public void UpdateMain(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         Position = position;
         Rotation = rotation;
         Scale = scale;
 
-        ApplyTransform();
+        ApplyMainTransform();
     }
 
     public void UpdateReflection(Transform reflectionOrigin, int reflectionIndex)
     {
-        if (Reflections.Count <= reflectionIndex)
+        if (ReflectionInstances.Count <= reflectionIndex)
         {
             return;
         }
@@ -112,21 +141,49 @@ public class WearableInstance
         reflectedPosition += reflectionPivot;
 
         // Apply the reflected transform
-        var reflectionTransform = Reflections[reflectionIndex];
+        var reflectionTransform = ReflectionInstances[reflectionIndex];
 
         reflectionTransform.SetPositionAndRotation(reflectedPosition, reflectedRotation);
         reflectionTransform.localScale = Scale;
     }
 
-    private void ApplyTransform()
+    private void ApplyMainTransform()
     {
-        if (Transform == null)
+        if (MainInstance == null)
         {
             return;
         }
 
-        Transform.SetPositionAndRotation(Position, Rotation);
-        Transform.localScale = Scale;
+        MainInstance.SetPositionAndRotation(Position, Rotation);
+        MainInstance.localScale = Scale;
+    }
+
+    private void ApplyVisibility()
+    {
+        ApplyMainVisibility();
+        ApplyReflectionVisibility();
+    }
+
+    private void ApplyMainVisibility()
+    {
+        if (MainInstance == null)
+        {
+            return;
+        }
+
+        var mainGameObject = MainInstance.gameObject;
+        mainGameObject.SetActive(IsShown && IsPrimaryShown);
+    }
+
+    private void ApplyReflectionVisibility()
+    {
+        bool active = IsShown && IsReflectionShown;
+
+        foreach (var reflection in ReflectionInstances)
+        {
+            var reflectionGameObject = reflection.gameObject;
+            reflectionGameObject.SetActive(active);
+        }
     }
 
     private void SpawnInstance(Action<GameObject> onSpawned)
@@ -142,20 +199,70 @@ public class WearableInstance
         SpawnableCrateReference.Crate.LoadAsset(onLoaded);
     }
 
-    private void DestroyInstance()
+    private void SpawnMainInstance()
     {
-        if (Transform == null)
+        SpawnInstance((instance) =>
+        {
+            MainInstance = instance.transform;
+
+            instance.SetActive(IsShown && IsPrimaryShown);
+
+            ApplyMainTransform();
+        });
+    }
+
+    private void SpawnReflections(int reflectionCount)
+    {
+        ReflectionInstances.RemoveAll(t => t == null);
+
+        if (reflectionCount > ReflectionInstances.Count)
+        {
+            for (var i = 0; i < reflectionCount - ReflectionInstances.Count; i++)
+            {
+                var instanceIndex = i;
+
+                SpawnInstance((instance) =>
+                {
+                    instance.name = $"{instance.name} (Reflection ({instanceIndex}))";
+
+                    instance.SetActive(IsShown && IsReflectionShown);
+
+                    ReflectionInstances.Add(instance.transform);
+                });
+            }
+        }
+        else if (reflectionCount < ReflectionInstances.Count)
+        {
+            for (var i = reflectionCount - 1; i < ReflectionInstances.Count; i++)
+            {
+                var reflection = ReflectionInstances[i];
+
+                if (reflection == null)
+                {
+                    continue;
+                }
+
+                GameObject.Destroy(reflection);
+            }
+
+            ReflectionInstances.RemoveRange(reflectionCount - 1, ReflectionInstances.Count - reflectionCount);
+        }
+    }
+
+    private void DespawnMainInstance()
+    {
+        if (MainInstance == null)
         {
             return;
         }
 
-        GameObject.Destroy(Transform.gameObject);
-        Transform = null;
+        GameObject.Destroy(MainInstance.gameObject);
+        MainInstance = null;
     }
 
-    private void DestroyReflections()
+    private void DespawnReflections()
     {
-        foreach (var reflection in Reflections)
+        foreach (var reflection in ReflectionInstances)
         {
             if (reflection == null)
             {
@@ -165,6 +272,6 @@ public class WearableInstance
             GameObject.Destroy(reflection.gameObject);
         }
 
-        Reflections.Clear();
+        ReflectionInstances.Clear();
     }
 }

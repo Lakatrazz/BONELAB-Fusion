@@ -2,6 +2,7 @@
 
 using LabFusion.Marrow.Integration;
 using LabFusion.Utilities;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -14,6 +15,10 @@ namespace LabFusion.SDK.Wearables;
 
 public class WearableDisplayer
 {
+    public PlayerID PlayerID { get; set; } = null;
+
+    public bool IsLocal => PlayerID == null || PlayerID.IsMe;
+
     public bool HasRig { get; private set; } = false;
 
     public RigManager RigManager { get; private set; } = null;
@@ -22,13 +27,51 @@ public class WearableDisplayer
 
     public List<Transform> ReflectionOrigins { get; } = new();
 
+    public int ReflectionCount => ReflectionOrigins.Count;
+
     public List<WearableItem> Wearables { get; } = new();
 
     public Dictionary<WearableItem, WearableInstance> WearableToInstanceLookup { get; } = new();
 
-    public bool IsPaused { get; private set; } = false;
+    private bool _isPaused = false;
+    public bool IsPaused
+    {
+        get
+        {
+            return _isPaused;
+        }
+        set
+        {
+            if (_isPaused == value)
+            {
+                return;
+            }
 
-    public bool IsHidden { get; private set; } = false;
+            _isPaused = value;
+
+            ApplyWearableVisibility();
+        }
+    }
+
+    private bool _isShown = true;
+    public bool IsShown
+    {
+        get
+        {
+            return _isShown;
+        }
+        set
+        {
+            if (_isShown == value)
+            {
+                return;
+            }
+
+            _isShown = value;
+
+            ApplyWearableVisibility();
+        }
+    }
 
     public void SetRigManager(RigManager rigManager)
     {
@@ -49,11 +92,15 @@ public class WearableDisplayer
     public void AddReflectionOrigin(Transform reflectionOrigin)
     {
         ReflectionOrigins.Add(reflectionOrigin);
+
+        ApplyWearableReflections();
     }
 
     public void RemoveReflectionOrigin(Transform reflectionOrigin)
     {
         ReflectionOrigins.Remove(reflectionOrigin);
+
+        ApplyWearableReflections();
     }
 
     public void AddWearable(WearableItem wearable)
@@ -66,12 +113,13 @@ public class WearableDisplayer
         Wearables.Add(wearable);
 
         var wearableInstance = wearable.CreateInstance();
+        ApplyWearableConfiguration(wearableInstance);
+
         WearableToInstanceLookup[wearable] = wearableInstance;
 
         if (RigManager != null)
         {
-            wearableInstance.CreateInstance();
-            wearableInstance.CreateReflections(ReflectionOrigins.Count);
+            wearableInstance.Spawn();
         }
     }
 
@@ -91,44 +139,34 @@ public class WearableDisplayer
         }
     }
 
-    public void PauseWearables(bool paused)
+    public void RemoveWearables()
     {
-        if (IsPaused == paused)
+        foreach (var instance in WearableToInstanceLookup.Values)
         {
-            return;
-        }
-
-        IsPaused = paused;
-    }
-
-    public void HideWearables(bool hidden)
-    {
-        if (IsHidden == hidden)
-        {
-            return;
-        }
-
-        IsHidden = true;
-    }
-
-    private void CreateWearables()
-    {
-        foreach (var pair in WearableToInstanceLookup)
-        {
-            var instance = pair.Value;
-
-            instance.CreateInstance();
-            instance.CreateReflections(ReflectionOrigins.Count);
-        }
-    }
-
-    private void DestroyWearables()
-    {
-        foreach (var pair in WearableToInstanceLookup)
-        {
-            var instance = pair.Value;
-
             instance.Destroy();
+        }
+
+        Wearables.Clear();
+        WearableToInstanceLookup.Clear();
+    }
+
+    private void SpawnWearables()
+    {
+        foreach (var pair in WearableToInstanceLookup)
+        {
+            var instance = pair.Value;
+
+            instance.Spawn();
+        }
+    }
+
+    private void DespawnWearables()
+    {
+        foreach (var pair in WearableToInstanceLookup)
+        {
+            var instance = pair.Value;
+
+            instance.Despawn();
         }
     }
 
@@ -143,12 +181,13 @@ public class WearableDisplayer
         // Call avatar swapped initially to get the starting avatar's values
         OnAvatarSwapped();
 
-        CreateWearables();
+        // Spawn all wearables for the rig
+        SpawnWearables();
     }
 
     private void UnhookRig()
     {
-        DestroyWearables();
+        DespawnWearables();
 
         if (RigManager == null)
         {
@@ -161,7 +200,7 @@ public class WearableDisplayer
 
     private void OnPostLateUpdate()
     {
-        if (IsHidden || IsPaused)
+        if (!IsShown || IsPaused)
         {
             return;
         }
@@ -191,7 +230,7 @@ public class WearableDisplayer
                 WearableTransformCalculator.GetTransform(point, RigManager, out position, out rotation, out scale);
             }
 
-            instance.UpdateWearable(position, rotation, scale);
+            instance.UpdateMain(position, rotation, scale);
 
             for (var i = 0; i < reflectionCount; i++)
             {
@@ -200,6 +239,44 @@ public class WearableDisplayer
                 instance.UpdateReflection(reflectionOrigin, i);
             }
         }
+    }
+
+    private void ApplyWearableConfiguration(WearableInstance instance)
+    {
+        ApplyWearableVisibility(instance);
+        ApplyWearableReflections(instance);
+    }
+
+    private void ApplyWearableVisibility()
+    {
+        foreach (var instance in WearableToInstanceLookup.Values)
+        {
+            ApplyWearableVisibility(instance);
+        }
+    }
+
+    private void ApplyWearableVisibility(WearableInstance instance)
+    {
+        bool isShown = IsShown;
+        bool isPrimaryShown = !instance.HiddenInView || !IsLocal || IsPaused;
+        bool isReflectionShown = true;
+
+        instance.IsShown = isShown;
+        instance.IsPrimaryShown = isPrimaryShown;
+        instance.IsReflectionShown = isReflectionShown;
+    }
+
+    private void ApplyWearableReflections()
+    {
+        foreach (var instance in WearableToInstanceLookup.Values)
+        {
+            ApplyWearableReflections(instance);
+        }
+    }
+
+    private void ApplyWearableReflections(WearableInstance instance)
+    {
+        instance.ReflectionCount = ReflectionCount;
     }
 
     private void OnAvatarSwapped()
