@@ -235,21 +235,22 @@ public static class WearableTransformCalculator
     public static Vector3 GetScale(Avatar avatar, WearableScaleMode mode)
     {
         var scale = Vector3Extensions.One;
+        float heightProportion = avatar.height / MarrowConstants.StandardHeight;
 
         switch (mode)
         {
             case WearableScaleMode.Height:
-                scale *= avatar.height / MarrowConstants.StandardHeight;
+                scale *= heightProportion;
                 break;
             case WearableScaleMode.Head:
-                scale *= avatar.ForeheadEllipseX / 0.044f * avatar.height / MarrowConstants.StandardHeight;
+                scale *= avatar.ForeheadEllipseX / 0.044f * heightProportion;
                 break;
             case WearableScaleMode.Wrist:
                 var wristEllipse = avatar.wristEllipse;
                 var averageRadius = (wristEllipse.XRadius + wristEllipse.ZRadius) * 0.5f;
                 float referenceRadius = 0.01985f;
 
-                scale *= averageRadius / referenceRadius * avatar.height / MarrowConstants.StandardHeight;
+                scale *= averageRadius / referenceRadius * heightProportion;
                 break;
         }
 
