@@ -2,6 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.MonoBehaviours;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -49,14 +50,9 @@ public static class NetRigSpawner
 
     private static void OnDefaultRigLoaded(GameObject asset, Action<RigManager> onSpawnCallback)
     {
-        // Create a disabled parent GameObject for the rig
-        // This is so that the rig can be stripped without any of the duplicated components executing
-        GameObject disabledContainer = new();
-        disabledContainer.SetActive(false);
-
         var rigManagerAsset = asset.GetComponentInChildren<RigManager>().gameObject;
 
-        var newRigGameObject = GameObject.Instantiate(rigManagerAsset, disabledContainer.transform);
+        var newRigGameObject = GameObject.Instantiate(rigManagerAsset, DisabledContainer.ContainerTransform);
         newRigGameObject.name = NetRigName;
         newRigGameObject.SetActive(false);
 
@@ -71,8 +67,6 @@ public static class NetRigSpawner
         ConvertToNetRig(newRigManager);
 
         newRigGameObject.transform.parent = null;
-        GameObject.Destroy(disabledContainer);
-
         newRigGameObject.SetActive(true);
 
         onSpawnCallback?.Invoke(newRigManager);

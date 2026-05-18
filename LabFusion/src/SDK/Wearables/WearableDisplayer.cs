@@ -205,15 +205,19 @@ public class WearableDisplayer
             return;
         }
 
-        UpdateWearables();
+        float deltaTime = TimeReferences.DeltaTime;
+
+        UpdateWearables(deltaTime);
     }
 
-    private void UpdateWearables()
+    private void UpdateWearables(float deltaTime)
     {
         foreach (var instance in WearableToInstanceLookup.Values)
         {
             UpdateMainTransform(instance);
             UpdateReflectionTransforms(instance);
+
+            instance.Tick(deltaTime);
         }
     }
 

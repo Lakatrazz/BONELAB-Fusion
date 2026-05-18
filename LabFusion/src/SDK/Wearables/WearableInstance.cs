@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow.Integration;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -87,6 +88,8 @@ public class WearableInstance
 
     public SpawnableCrateReference SpawnableCrateReference { get; set; } = new();
 
+    private bool _dontUpdateReflectionsThisFrame = false;
+
     public void Spawn()
     {
         SpawnMainInstance();
@@ -122,6 +125,11 @@ public class WearableInstance
             return;
         }
 
+        if (_dontUpdateReflectionsThisFrame)
+        {
+            return;
+        }
+
         // Reflect the wearable's rotation
         Vector3 forward = Rotation * Vector3.forward;
         Vector3 up = Rotation * Vector3.up;
@@ -148,6 +156,11 @@ public class WearableInstance
 
         reflectionTransform.SetPositionAndRotation(reflectedPosition, reflectedRotation);
         reflectionTransform.localScale = Scale;
+    }
+
+    public void Tick(float deltaTime)
+    {
+        _dontUpdateReflectionsThisFrame = false;
     }
 
     private void ApplyMainTransform()
@@ -189,11 +202,11 @@ public class WearableInstance
         }
     }
 
-    private void SpawnInstance(Action<GameObject> onSpawned)
+    private void SpawnInstance(Action<GameObject> onSpawned, Transform parent = null)
     {
         var onLoaded = (GameObject go) =>
         {
-            var instance = GameObject.Instantiate(go);
+            var instance = GameObject.Instantiate(go, parent);
 
             instance.name = go.name;
 
@@ -218,6 +231,16 @@ public class WearableInstance
     {
         DespawnReflections();
 
+        if (reflectionCount <= 0)
+        {
+            return;
+        }
+
+        // Reflections are parented to the disabled container until their transform is updated
+        // This prevents them from being visible when they shouldn't be
+        // The transform update automatically reparents them to the reflection origin
+        var parent = DisabledContainer.ContainerTransform;
+
         for (var i = 0; i < reflectionCount; i++)
         {
             var instanceIndex = i;
@@ -229,8 +252,12 @@ public class WearableInstance
                 instance.SetActive(IsShown && IsReflectionShown);
 
                 ReflectionInstances.Add(instance.transform);
-            });
+            }, parent);
         }
+
+        // Reflection updates are delayed by one frame to prevent pop-in from the reflection scaling
+        // For whatever reason, the reflection origin isn't always scaled, and changes scales between frames
+        _dontUpdateReflectionsThisFrame = true;
     }
 
     private void DespawnMainInstance()
