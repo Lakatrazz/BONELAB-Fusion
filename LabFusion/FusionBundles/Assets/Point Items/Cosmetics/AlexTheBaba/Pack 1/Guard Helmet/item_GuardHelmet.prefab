@@ -67,9 +67,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cosmeticPoint: 1
   hiddenInView: 1
+  hiddenInShop: 0
   rawPrice: 500
   previewIcon: {fileID: 2800000, guid: f7121c7cf38f0df41bf03b4a91f98197, type: 3}
-  authorOverride: BaBaCorp
 --- !u!1001 &4415335649911732740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,15 +83,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 15.880554
+      value: 15.178793
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 15.880554
+      value: 15.178793
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 15.880554
+      value: 15.178793
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -103,7 +103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0168
+      value: -0.0031
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalRotation.w
