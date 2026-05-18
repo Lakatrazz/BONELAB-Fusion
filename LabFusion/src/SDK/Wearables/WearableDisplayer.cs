@@ -205,20 +205,15 @@ public class WearableDisplayer
             return;
         }
 
-        UpdateTransforms();
+        UpdateWearables();
     }
 
-    private void UpdateTransforms()
-    {
-        UpdateMainTransforms();
-        UpdateReflectionTransforms();
-    }
-
-    private void UpdateMainTransforms()
+    private void UpdateWearables()
     {
         foreach (var instance in WearableToInstanceLookup.Values)
         {
             UpdateMainTransform(instance);
+            UpdateReflectionTransforms(instance);
         }
     }
 
@@ -240,14 +235,6 @@ public class WearableDisplayer
         }
 
         instance.UpdateMain(position, rotation, scale);
-    }
-
-    private void UpdateReflectionTransforms()
-    {
-        foreach (var instance in WearableToInstanceLookup.Values)
-        {
-            UpdateReflectionTransforms(instance);
-        }
     }
 
     private void UpdateReflectionTransforms(WearableInstance instance)
@@ -296,7 +283,6 @@ public class WearableDisplayer
     private void ApplyWearableReflections(WearableInstance instance)
     {
         instance.ReflectionCount = ReflectionCount;
-        UpdateReflectionTransforms(instance);
     }
 
     private void OnAvatarSwapped()
