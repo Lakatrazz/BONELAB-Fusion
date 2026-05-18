@@ -17,6 +17,17 @@ public static class WearableTransformCalculator
         return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
     }
 
+    private static Vector3 GetHeadCenter(PhysicsRig physicsRig, ArtRig artRig, Avatar avatar)
+    {
+        var physicsHead = physicsRig.m_head;
+        var artHead = artRig.artHead;
+
+        var headForward = physicsHead.forward;
+        float offset = avatar.eyeHeight * (avatar.ForeheadEllipseZ - avatar.ForeheadEllipseNegZ) * 0.5f;
+
+        return artHead.position + offset * headForward;
+    }
+
     public static WearableScaleMode GetScaleMode(WearablePoint point)
     {
         return point switch
@@ -51,35 +62,35 @@ public static class WearableTransformCalculator
 
     public static void GetTransform(WearablePoint point, RigManager rigManager, out Vector3 position, out Quaternion rotation, out Vector3 scale)
     {
-        PhysicsRig inRig = rigManager.physicsRig;
-        ArtRig artRig = inRig.artOutput;
-        Avatar avatar = rigManager._avatar;
+        PhysicsRig physicsRig = rigManager.physicsRig;
+        ArtRig artRig = physicsRig.artOutput;
+        Avatar avatar = rigManager.avatar;
 
         scale = GetScale(avatar, GetScaleMode(point));
 
-        var head = inRig.m_head;
+        var head = physicsRig.m_head;
 
         switch (point)
         {
             default:
             case WearablePoint.Head:
-                position = head.position;
+                position = GetHeadCenter(physicsRig, artRig, avatar);
                 rotation = head.rotation;
                 break;
             case WearablePoint.HeadTop:
-                Vector3 eyeCenter = GetEyeCenter(artRig);
+                var eyeCenter = GetEyeCenter(artRig);
+                var headCenter = GetHeadCenter(physicsRig, artRig, avatar);
 
-                eyeCenter += head.up * (avatar.HeadTop * avatar.height);
-                eyeCenter -= head.forward * (avatar.ForeheadEllipseZ * avatar.height * 0.5f);
+                float upOffset = avatar.eyeHeight * avatar.HeadTop;
 
-                eyeCenter = head.InverseTransformPoint(eyeCenter);
+                var localEyeCenter = head.InverseTransformPoint(eyeCenter);
+                var localHeadTop = head.InverseTransformPoint(headCenter);
 
-                position = head.position;
-                position = head.InverseTransformPoint(position);
+                localHeadTop.y = localEyeCenter.y + upOffset;
 
-                position.y = eyeCenter.y;
-                position = head.TransformPoint(position);
+                var headTop = head.TransformPoint(localHeadTop);
 
+                position = headTop;
                 rotation = head.rotation;
                 break;
             case WearablePoint.EyeLeft:
@@ -108,17 +119,17 @@ public static class WearableTransformCalculator
                 rotation = artRig.eyeRt.rotation;
                 break;
             case WearablePoint.Chest:
-                position = inRig.m_chest.position;
-                rotation = inRig.m_chest.rotation;
+                position = physicsRig.m_chest.position;
+                rotation = physicsRig.m_chest.rotation;
                 break;
             case WearablePoint.ChestBack:
-                Transform chest = inRig.m_chest;
+                Transform chest = physicsRig.m_chest;
                 position = chest.position - chest.forward * avatar.ChestEllipseNegZ;
                 rotation = chest.rotation;
                 break;
             case WearablePoint.Hips:
-                position = inRig.m_pelvis.position;
-                rotation = inRig.m_pelvis.rotation;
+                position = physicsRig.m_pelvis.position;
+                rotation = physicsRig.m_pelvis.rotation;
                 break;
             case WearablePoint.WristLeft:
             case WearablePoint.WristLeftTop:
