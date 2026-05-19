@@ -103,6 +103,13 @@ public class WearableDisplayer
         ApplyWearableReflections();
     }
 
+    public void ClearReflectionOrigins()
+    {
+        ReflectionOrigins.Clear();
+
+        ApplyWearableReflections();
+    }
+
     public void AddWearable(WearableItem wearable)
     {
         if (Wearables.Contains(wearable))
@@ -172,6 +179,8 @@ public class WearableDisplayer
 
     private void HookRig()
     {
+        ClearReflectionOrigins();
+
         // We want our code to execute first in the RigManager, before the head is offset backwards
         // So we combine these two delegates manually
         RigManager.OnPostLateUpdate = Il2Delegate.Combine((Il2Action)OnPostLateUpdate, RigManager.OnPostLateUpdate).Cast<Il2Action>();
@@ -187,6 +196,8 @@ public class WearableDisplayer
 
     private void UnhookRig()
     {
+        ClearReflectionOrigins();
+
         DespawnWearables();
 
         if (RigManager == null)
