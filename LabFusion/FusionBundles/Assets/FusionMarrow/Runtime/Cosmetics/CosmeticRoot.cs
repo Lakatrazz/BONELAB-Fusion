@@ -36,7 +36,7 @@ namespace LabFusion.Marrow.Integration
 
         public AvatarAlignment GetAlignment() => (AvatarAlignment)Alignment.Get();
 
-        public AvatarSide GetSide() => (AvatarSide)Side.Get();
+        public AvatarSide GetSide() => AvatarPointSupport.ValidateSideAndFallback(GetPoint(), (AvatarSide)Side.Get());
 
         public AvatarAnchor GetAnchor() => new(GetPoint(), GetAlignment(), GetSide());
 
@@ -92,7 +92,9 @@ namespace LabFusion.Marrow.Integration
 
             if (AvatarPointSupport.CheckSideSupported(Point))
             {
-                meshName += $"_s{Side}";
+                var validatedSide = AvatarPointSupport.ValidateSideAndFallback(Point, Side);
+
+                meshName += $"_s{validatedSide}";
             }
 
             return meshName;

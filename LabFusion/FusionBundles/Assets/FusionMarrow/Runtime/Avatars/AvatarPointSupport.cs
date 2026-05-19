@@ -25,5 +25,22 @@
                 _ => false,
             };
         }
+
+        public static AvatarSide ValidateSideAndFallback(AvatarPoint point, AvatarSide side)
+        {
+            switch (point)
+            {
+                default:
+                    return side;
+                case AvatarPoint.Wrist:
+                case AvatarPoint.Ankle:
+                    if (side == AvatarSide.Center)
+                    {
+                        return AvatarSide.Left;
+                    }
+
+                    return side;
+            }
+        }
     }
 }

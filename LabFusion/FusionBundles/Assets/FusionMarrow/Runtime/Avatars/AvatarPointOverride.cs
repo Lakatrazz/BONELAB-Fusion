@@ -30,7 +30,7 @@ namespace LabFusion.Marrow.Integration
 
         public AvatarAlignment GetAlignment() => (AvatarAlignment)Alignment.Get();
 
-        public AvatarSide GetSide() => (AvatarSide)Side.Get();
+        public AvatarSide GetSide() => AvatarPointSupport.ValidateSideAndFallback(GetPoint(), (AvatarSide)Side.Get());
 
         public AvatarAnchor GetAnchor() => new(GetPoint(), GetAlignment(), GetSide());
 #else
