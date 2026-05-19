@@ -6,28 +6,22 @@ using UnityEngine.UIElements;
 
 namespace LabFusion.Marrow.Integration
 {
-    [CustomEditor(typeof(CosmeticRoot))]
-    public class CosmeticRootEditor : Editor
+    [CustomEditor(typeof(AvatarPointOverride))]
+    public class AvatarPointOverrideEditor : Editor
     {
         private SerializedProperty _pointProperty = null;
         private SerializedProperty _alignmentProperty = null;
         private SerializedProperty _sideProperty = null;
 
-        private SerializedProperty _hiddenInViewProperty = null;
-        private SerializedProperty _hiddenInShopProperty = null;
-        private SerializedProperty _rawPriceProperty = null;
-        private SerializedProperty _previewIconProperty = null;
+        private SerializedProperty _previewCosmeticProperty = null;
 
         private void OnEnable()
         {
-            _pointProperty = serializedObject.FindProperty(nameof(CosmeticRoot.Point));
-            _alignmentProperty = serializedObject.FindProperty(nameof(CosmeticRoot.Alignment));
-            _sideProperty = serializedObject.FindProperty(nameof(CosmeticRoot.Side));
+            _pointProperty = serializedObject.FindProperty(nameof(AvatarPointOverride.Point));
+            _alignmentProperty = serializedObject.FindProperty(nameof(AvatarPointOverride.Alignment));
+            _sideProperty = serializedObject.FindProperty(nameof(AvatarPointOverride.Side));
 
-            _hiddenInViewProperty = serializedObject.FindProperty(nameof(CosmeticRoot.HiddenInView));
-            _hiddenInShopProperty = serializedObject.FindProperty(nameof(CosmeticRoot.HiddenInShop));
-            _rawPriceProperty = serializedObject.FindProperty(nameof(CosmeticRoot.RawPrice));
-            _previewIconProperty = serializedObject.FindProperty(nameof(CosmeticRoot.PreviewIcon));
+            _previewCosmeticProperty = serializedObject.FindProperty(nameof(AvatarPointOverride.PreviewCosmetic));
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -84,21 +78,12 @@ namespace LabFusion.Marrow.Integration
                 UpdateInvalidSideWarning(invalidSideWarning, avatarPoint, newAvatarSide, sideSupported);
             });
 
-            var shopHeader = new Label("Shop");
-            shopHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
-            root.Add(shopHeader);
+            var previewHeader = new Label("Preview");
+            previewHeader.style.unityFontStyleAndWeight = FontStyle.Bold;
+            root.Add(previewHeader);
 
-            var hiddenInView = new PropertyField(_hiddenInViewProperty);
-            root.Add(hiddenInView);
-
-            var hiddenInShop = new PropertyField(_hiddenInShopProperty);
-            root.Add(hiddenInShop);
-
-            var rawPrice = new PropertyField(_rawPriceProperty);
-            root.Add(rawPrice);
-
-            var previewIcon = new PropertyField(_previewIconProperty);
-            root.Add(previewIcon);
+            var previewCosmetic = new PropertyField(_previewCosmeticProperty);
+            root.Add(previewCosmetic);
 
             return root;
         }
