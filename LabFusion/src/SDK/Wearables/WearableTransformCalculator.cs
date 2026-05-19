@@ -56,7 +56,7 @@ public static class WearableTransformCalculator
                 GetHeadTopTransform(physicsRig, artRig, avatar, out position, out rotation);
                 break;
             case AvatarPoint.Eye:
-                GetEyeTransform(anchor.Side, physicsRig, artRig, out position, out rotation);
+                GetEyeTransform(anchor.Side, physicsRig, artRig, avatar, out position, out rotation);
                 break;
             case AvatarPoint.Chest:
                 GetChestTransform(anchor.Alignment, physicsRig, artRig, avatar, out position, out rotation);
@@ -221,16 +221,20 @@ public static class WearableTransformCalculator
         rotation = head.rotation;
     }
 
-    private static void GetEyeTransform(AvatarSide side, PhysicsRig physicsRig, ArtRig artRig, out Vector3 position, out Quaternion rotation)
+    private static void GetEyeTransform(AvatarSide side, PhysicsRig physicsRig, ArtRig artRig, Avatar avatar, out Vector3 position, out Quaternion rotation)
     {
         var head = physicsRig.m_head;
 
-        position = side switch
+        var eyePosition = side switch
         {
             AvatarSide.Left => artRig.eyeLf.position,
             AvatarSide.Right => artRig.eyeRt.position,
             _ => GetEyeCenter(artRig),
         };
+
+        var headFrontPosition = head.position + avatar.eyeHeight * avatar.ForeheadEllipseZ * head.forward;
+
+        position = GetPositionWithRelativeXY(head, headFrontPosition, eyePosition);
 
         rotation = head.rotation;
     }
@@ -450,6 +454,20 @@ public static class WearableTransformCalculator
 
         var localPosition = localXZPosition;
         localPosition.y = localYPosition.y + yOffset;
+
+        var position = origin.TransformPoint(localPosition);
+
+        return position;
+    }
+
+    private static Vector3 GetPositionWithRelativeXY(Transform origin, Vector3 zPosition, Vector3 xyPosition)
+    {
+        var localZPosition = origin.InverseTransformPoint(zPosition);
+        var localXYPosition = origin.InverseTransformPoint(xyPosition);
+
+        var localPosition = localZPosition;
+        localPosition.x = localXYPosition.x;
+        localPosition.y = localXYPosition.y;
 
         var position = origin.TransformPoint(localPosition);
 
