@@ -11,6 +11,25 @@ namespace LabFusion.SDK.Wearables;
 
 public static class WearableTransformCalculator
 {
+    private struct AvatarRadii
+    {
+        public float RadiusX, RadiusZ;
+
+        public float ReferenceRadiusX, ReferenceRadiusZ;
+
+        public AvatarRadii(float radius, float referenceRadius)
+            : this(radius, radius, referenceRadius, referenceRadius) { }
+
+        public AvatarRadii(float radiusX, float radiusZ, float referenceRadiusX, float referenceRadiusZ)
+        {
+            RadiusX = radiusX;
+            RadiusZ = radiusZ;
+
+            ReferenceRadiusX = referenceRadiusX;
+            ReferenceRadiusZ = referenceRadiusZ;
+        }
+    }
+
     public static void GetTransform(AvatarPointOverride point, out Vector3 position, out Quaternion rotation, out Vector3 scale)
     {
         var transform = point.transform;
@@ -25,7 +44,7 @@ public static class WearableTransformCalculator
         ArtRig artRig = physicsRig.artOutput;
         Avatar avatar = rigManager.avatar;
 
-        scale = GetScale(avatar, anchor.Point);
+        scale = GetScale(avatar, anchor.Point, anchor.Alignment);
 
         switch (anchor.Point)
         {
@@ -54,87 +73,92 @@ public static class WearableTransformCalculator
         }
     }
 
-    public static Vector3 GetScale(Avatar avatar, AvatarPoint point)
+    public static Vector3 GetScale(Avatar avatar, AvatarPoint point, AvatarAlignment alignment)
     {
-        var scale = Vector3Extensions.One;
+        // If alignment isn't supported, just treat the point like it's scaling from the center
+        if (!AvatarPointSupport.CheckAlignmentSupported(point))
+        {
+            alignment = AvatarAlignment.Center;
+        }
 
         float eyeHeightProportion = avatar.eyeHeight / WearableConstants.ReferenceEyeHeight;
+        var avatarRadii = GetAvatarRadii(avatar, point);
 
+        float sideRadius = avatarRadii.RadiusX;
+        float forwardRadius = avatarRadii.RadiusZ;
+
+        float sideReferenceRadius = avatarRadii.ReferenceRadiusX;
+        float forwardReferenceRadius = avatarRadii.ReferenceRadiusZ;
+
+        float sideScaleFactor = sideRadius / sideReferenceRadius;
+        float forwardScaleFactor = forwardRadius / forwardReferenceRadius;
+
+        switch (alignment)
+        {
+            default:
+            case AvatarAlignment.Center:
+                float scaleFactor = MathF.Max(sideScaleFactor, forwardScaleFactor) * eyeHeightProportion;
+
+                return Vector3Extensions.One * scaleFactor;
+            case AvatarAlignment.Front:
+            case AvatarAlignment.Back:
+                return Vector3Extensions.One * sideScaleFactor * eyeHeightProportion;
+            case AvatarAlignment.Out:
+            case AvatarAlignment.In:
+                return Vector3Extensions.One * forwardScaleFactor * eyeHeightProportion;
+        }
+    }
+
+    private static AvatarRadii GetAvatarRadii(Avatar avatar, AvatarPoint point)
+    {
         switch (point)
         {
             default:
-                scale *= eyeHeightProportion;
-                break;
+                return new(1f, 1f);
             case AvatarPoint.Head:
             case AvatarPoint.HeadTop:
             case AvatarPoint.Eye:
-                {
-                    float radiusX = avatar.ForeheadEllipseX;
-                    float radiusZ = (avatar.ForeheadEllipseZ + avatar.ForeheadEllipseNegZ) * 0.5f;
+                float foreheadRadiusX = avatar.ForeheadEllipseX;
+                float foreheadRadiusZ = 0.5f * (avatar.ForeheadEllipseZ + avatar.ForeheadEllipseNegZ);
 
-                    float referenceRadiusX = WearableConstants.ReferenceForeheadEllipseX;
-                    float referenceRadiusZ = (WearableConstants.ReferenceForeheadEllipseZ + WearableConstants.ReferenceForeheadEllipseNegZ) * 0.5f;
+                float referenceForeheadRadiusX = WearableConstants.ReferenceForeheadEllipseX;
+                float referenceForeheadRadiusZ = 0.5f * (WearableConstants.ReferenceForeheadEllipseZ + WearableConstants.ReferenceForeheadEllipseNegZ);
 
-                    scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
-                }
-                break;
+                return new(foreheadRadiusX, foreheadRadiusZ, referenceForeheadRadiusX, referenceForeheadRadiusZ);
             case AvatarPoint.Chest:
-                {
-                    float radiusX = avatar.ChestEllipseX;
-                    float radiusZ = (avatar.ChestEllipseZ + avatar.ChestEllipseNegZ) * 0.5f;
+                float chestRadiusX = avatar.ChestEllipseX;
+                float chestRadiusZ = 0.5f * (avatar.ChestEllipseZ + avatar.ChestEllipseNegZ);
 
-                    float referenceRadiusX = WearableConstants.ReferenceChestEllipseX;
-                    float referenceRadiusZ = (WearableConstants.ReferenceChestEllipseZ + WearableConstants.ReferenceChestEllipseNegZ) * 0.5f;
+                float referenceChestRadiusX = WearableConstants.ReferenceChestEllipseX;
+                float referenceChestRadiusZ = 0.5f * (WearableConstants.ReferenceChestEllipseZ + WearableConstants.ReferenceChestEllipseNegZ);
 
-                    scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
-                }
-                break;
+                return new(chestRadiusX, chestRadiusZ, referenceChestRadiusX, referenceChestRadiusZ);
             case AvatarPoint.Hips:
-                {
-                    float radiusX = avatar.HighHipsEllipseX;
-                    float radiusZ = (avatar.HighHipsEllipseZ + avatar.HighHipsEllipseNegZ) * 0.5f;
+                float highHipsRadiusX = avatar.HighHipsEllipseX;
+                float highHipsRadiusZ = 0.5f * (avatar.HighHipsEllipseZ + avatar.HighHipsEllipseNegZ);
 
-                    float referenceRadiusX = WearableConstants.ReferenceHighHipsEllipseX;
-                    float referenceRadiusZ = (WearableConstants.ReferenceHighHipsEllipseZ + WearableConstants.ReferenceHighHipsEllipseNegZ) * 0.5f;
+                float referenceHighHipsRadiusX = WearableConstants.ReferenceHighHipsEllipseX;
+                float referenceHighHipsRadiusZ = 0.5f * (WearableConstants.ReferenceHighHipsEllipseZ + WearableConstants.ReferenceHighHipsEllipseNegZ);
 
-                    scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
-                }
-                break;
+                return new(highHipsRadiusX, highHipsRadiusZ, referenceHighHipsRadiusX, referenceHighHipsRadiusZ);
             case AvatarPoint.Wrist:
-                {
-                    float radiusX = avatar.wristEllipse.XRadius;
-                    float radiusZ = avatar.wristEllipse.ZRadius;
+                float wristRadiusX = avatar.wristEllipse.XRadius;
+                float wristRadiusZ = avatar.wristEllipse.ZRadius;
 
-                    float referenceRadiusX = WearableConstants.ReferenceWristEllipseX;
-                    float referenceRadiusZ = WearableConstants.ReferenceWristEllipseZ;
+                float referenceWristRadiusX = WearableConstants.ReferenceWristEllipseX;
+                float referenceWristRadiusZ = WearableConstants.ReferenceWristEllipseZ;
 
-                    scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
-                }
-                break;
+                // For the wrist, Z is side to side and X is forward and back, so we flip the axes
+                return new(wristRadiusZ, wristRadiusX, referenceWristRadiusZ, referenceWristRadiusX);
             case AvatarPoint.Ankle:
-                {
-                    float radiusX = avatar.ankleEllipse.XRadius;
-                    float radiusZ = avatar.ankleEllipse.ZRadius;
+                float ankleRadiusX = avatar.ankleEllipse.XRadius;
+                float ankleRadiusZ = avatar.ankleEllipse.ZRadius;
 
-                    float referenceRadiusX = WearableConstants.ReferenceAnkleEllipseX;
-                    float referenceRadiusZ = WearableConstants.ReferenceAnkleEllipseZ;
+                float referenceAnkleRadiusX = WearableConstants.ReferenceAnkleEllipseX;
+                float referenceAnkleRadiusZ = WearableConstants.ReferenceAnkleEllipseZ;
 
-                    scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
-                }
-                break;
+                return new(ankleRadiusX, ankleRadiusZ, referenceAnkleRadiusX, referenceAnkleRadiusZ);
         }
-
-        return scale;
-    }
-
-    private static Vector3 GetScale(float radiusX, float radiusZ, float referenceRadiusX, float referenceRadiusZ)
-    {
-        float radiusMax = MathF.Max(radiusX, radiusZ);
-        float referenceRadiusMax = MathF.Max(referenceRadiusX, referenceRadiusZ);
-
-        float radiusProportion = radiusMax / referenceRadiusMax;
-
-        return Vector3Extensions.One * radiusProportion;
     }
 
     private static void GetHeadTransform(AvatarAlignment alignment, PhysicsRig physicsRig, ArtRig artRig, Avatar avatar, out Vector3 position, out Quaternion rotation)
