@@ -134,13 +134,13 @@ public static class WearableTransformCalculator
 
                 return new(chestRadiusX, chestRadiusZ, referenceChestRadiusX, referenceChestRadiusZ);
             case AvatarPoint.Hips:
-                float highHipsRadiusX = avatar.HighHipsEllipseX;
-                float highHipsRadiusZ = 0.5f * (avatar.HighHipsEllipseZ + avatar.HighHipsEllipseNegZ);
+                float hipsRadiusX = avatar.HipsEllipseX;
+                float hipsRadiusZ = 0.5f * (avatar.HipsEllipseZ + avatar.HipsEllipseNegZ);
 
-                float referenceHighHipsRadiusX = WearableConstants.ReferenceHighHipsEllipseX;
-                float referenceHighHipsRadiusZ = 0.5f * (WearableConstants.ReferenceHighHipsEllipseZ + WearableConstants.ReferenceHighHipsEllipseNegZ);
+                float referenceHipsRadiusX = WearableConstants.ReferenceHipsEllipseX;
+                float referenceHipsRadiusZ = 0.5f * (WearableConstants.ReferenceHipsEllipseZ + WearableConstants.ReferenceHipsEllipseNegZ);
 
-                return new(highHipsRadiusX, highHipsRadiusZ, referenceHighHipsRadiusX, referenceHighHipsRadiusZ);
+                return new(hipsRadiusX, hipsRadiusZ, referenceHipsRadiusX, referenceHipsRadiusZ);
             case AvatarPoint.Wrist:
                 float wristRadiusX = avatar.wristEllipse.XRadius;
                 float wristRadiusZ = avatar.wristEllipse.ZRadius;
@@ -278,42 +278,43 @@ public static class WearableTransformCalculator
 
     private static void GetHipsTransform(AvatarAlignment alignment, PhysicsRig physicsRig, ArtRig artRig, Avatar avatar, out Vector3 position, out Quaternion rotation)
     {
-        var pelvis = physicsRig.m_pelvis;
+        var leftHip = physicsRig.m_hipLf;
+        var rightHip = physicsRig.m_hipRt;
+
+        var hipsPosition = (leftHip.position + rightHip.position) * 0.5f;
+        var hipsRotation = physicsRig.m_pelvis.rotation;
+
+        var hipsForward = hipsRotation * Vector3.forward;
+        var hipsUp = hipsRotation * Vector3.up;
+        var hipsRight = hipsRotation * Vector3.right;
 
         float eyeHeight = avatar.eyeHeight;
 
-        var hipsForward = pelvis.forward;
-        var hipsUp = pelvis.up;
-        var hipsRight = pelvis.right;
+        var hipsCenter = hipsPosition + 0.5f * eyeHeight * (avatar.HipsEllipseZ - avatar.HipsEllipseNegZ) * hipsForward;
 
-        var hipsPosition = pelvis.position;
-
-        var hipsCenterPosition = hipsPosition + 0.5f * eyeHeight * (avatar.HighHipsEllipseZ - avatar.HighHipsEllipseNegZ) * hipsForward;
-        var hipsCenterRotation = pelvis.rotation;
-
-        var frontOffsetRotation = Quaternion.AngleAxis(90f, hipsRight) * hipsCenterRotation;
+        var frontOffsetRotation = Quaternion.AngleAxis(90f, hipsRight) * hipsRotation;
 
         switch (alignment)
         {
             default:
             case AvatarAlignment.Center:
-                position = hipsCenterPosition;
-                rotation = hipsCenterRotation;
+                position = hipsCenter;
+                rotation = hipsRotation;
                 break;
             case AvatarAlignment.Back:
-                position = hipsPosition - avatar.HighHipsEllipseNegZ * eyeHeight * hipsForward;
+                position = hipsPosition - avatar.HipsEllipseNegZ * eyeHeight * hipsForward;
                 rotation = Quaternion.AngleAxis(180f, hipsUp) * frontOffsetRotation;
                 break;
             case AvatarAlignment.Front:
-                position = hipsPosition + avatar.HighHipsEllipseZ * eyeHeight * hipsForward;
+                position = hipsPosition + avatar.HipsEllipseZ * eyeHeight * hipsForward;
                 rotation = frontOffsetRotation;
                 break;
             case AvatarAlignment.Out:
-                position = hipsCenterPosition + avatar.HighHipsEllipseX * eyeHeight * hipsRight;
+                position = hipsCenter + avatar.HipsEllipseX * eyeHeight * hipsRight;
                 rotation = Quaternion.AngleAxis(90f, hipsUp) * frontOffsetRotation;
                 break;
             case AvatarAlignment.In:
-                position = hipsCenterPosition - avatar.HighHipsEllipseX * eyeHeight * hipsRight;
+                position = hipsCenter - avatar.HipsEllipseX * eyeHeight * hipsRight;
                 rotation = Quaternion.AngleAxis(-90f, hipsUp) * frontOffsetRotation;
                 break;
         }
