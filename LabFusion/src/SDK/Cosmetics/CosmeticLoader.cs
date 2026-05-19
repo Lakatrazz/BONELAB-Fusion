@@ -3,7 +3,6 @@
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
 using LabFusion.SDK.Points;
-using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -94,12 +93,12 @@ public static class CosmeticLoader
 
         var pallet = crate.Pallet.Title;
 
-        var point = (WearablePoint)cosmeticRoot.cosmeticPoint.Get();
+        var anchor = cosmeticRoot.GetAnchor();
 
-        var price = cosmeticRoot.rawPrice.Get();
+        var price = cosmeticRoot.GetRawPrice();
 
-        var hiddenInView = cosmeticRoot.hiddenInView.Get();
-        var hiddenInShop = cosmeticRoot.hiddenInShop.Get();
+        var hiddenInView = cosmeticRoot.GetHiddenInView();
+        var hiddenInShop = cosmeticRoot.GetHiddenInShop();
 
         var variables = new CosmeticVariables()
         {
@@ -109,7 +108,7 @@ public static class CosmeticLoader
             Category = pallet,
             Tags = tags.ToArray(),
             Barcode = barcode.ID,
-            CosmeticPoint = point,
+            Anchor = anchor,
             Price = price,
             HiddenInView = hiddenInView,
             HiddenInShop = hiddenInShop,

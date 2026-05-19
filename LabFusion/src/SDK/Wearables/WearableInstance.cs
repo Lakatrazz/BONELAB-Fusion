@@ -56,7 +56,7 @@ public class WearableInstance
         }
     }
 
-    public WearablePoint Point { get; set; } = WearablePoint.Head;
+    public AvatarAnchor Anchor { get; set; } = new(AvatarPoint.Head, AvatarAlignment.Center, AvatarSide.Center);
 
     public Vector3 Position { get; private set; } = Vector3.zero;
     public Quaternion Rotation { get; private set; } = Quaternion.identity;

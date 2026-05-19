@@ -4,6 +4,8 @@ using UnityEngine;
 using MelonLoader;
 
 using Il2CppInterop.Runtime.InteropTypes.Fields;
+#else
+using UnityEngine.Serialization;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -16,29 +18,58 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public CosmeticRoot(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppValueField<int> cosmeticPoint;
+        public Il2CppValueField<int> Point;
 
-        public Il2CppValueField<bool> hiddenInView;
+        public Il2CppValueField<int> Alignment;
 
-        public Il2CppValueField<bool> hiddenInShop;
+        public Il2CppValueField<int> Side;
 
-        public Il2CppValueField<int> rawPrice;
+        public Il2CppValueField<bool> HiddenInView;
 
-        public Il2CppReferenceField<Texture2D> previewIcon;
+        public Il2CppValueField<bool> HiddenInShop;
+
+        public Il2CppValueField<int> RawPrice;
+
+        public Il2CppReferenceField<Texture2D> PreviewIcon;
+
+        public AvatarPoint GetPoint() => (AvatarPoint)Point.Get();
+
+        public AvatarAlignment GetAlignment() => (AvatarAlignment)Alignment.Get();
+
+        public AvatarSide GetSide() => (AvatarSide)Side.Get();
+
+        public AvatarAnchor GetAnchor() => new(GetPoint(), GetAlignment(), GetSide());
+
+        public bool GetHiddenInView() => HiddenInView.Get();
+
+        public bool GetHiddenInShop() => HiddenInShop.Get();
+
+        public int GetRawPrice() => RawPrice.Get();
+
+        public Texture2D GetPreviewIcon() => PreviewIcon.Get();
 #else
-        public WearablePoint cosmeticPoint = WearablePoint.Head;
+        [FormerlySerializedAs("cosmeticPoint")]
+        public AvatarPoint Point = AvatarPoint.Head;
 
-        public bool hiddenInView = false;
+        public AvatarAlignment Alignment = AvatarAlignment.Center;
 
-        public bool hiddenInShop = false;
+        public AvatarSide Side = AvatarSide.Center;
 
-        public int rawPrice = 100;
+        [FormerlySerializedAs("hiddenInView")]
+        public bool HiddenInView = false;
 
-        public Texture2D previewIcon = null;
+        [FormerlySerializedAs("hiddenInShop")]
+        public bool HiddenInShop = false;
+
+        [FormerlySerializedAs("rawPrice")]
+        public int RawPrice = 100;
+
+        [FormerlySerializedAs("previewIcon")]
+        public Texture2D PreviewIcon = null;
 
         private void OnDrawGizmos()
         {
-            var mesh = Resources.Load<Mesh>($"Meshes/{cosmeticPoint}");
+            var mesh = Resources.Load<Mesh>($"Meshes/{GetMeshName()}");
 
             if (mesh == null)
             {
@@ -48,6 +79,23 @@ namespace LabFusion.Marrow.Integration
             Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
 
             Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
+        }
+
+        private string GetMeshName()
+        {
+            string meshName = Point.ToString();
+
+            if (AvatarPointSupport.CheckAlignmentSupported(Point))
+            {
+                meshName += $"_a{Alignment}";
+            }
+
+            if (AvatarPointSupport.CheckSideSupported(Point))
+            {
+                meshName += $"_s{Side}";
+            }
+
+            return meshName;
         }
 #endif
     }

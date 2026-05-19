@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
+
 using LabFusion.Marrow.Integration;
 using LabFusion.Player;
 using LabFusion.SDK.Equippables;
@@ -59,7 +60,7 @@ public class CosmeticItem : WearableItem, IPointItem
                 return;
             }
 
-            var previewIcon = root.previewIcon.Get();
+            var previewIcon = root.PreviewIcon.Get();
 
             loadCallback(previewIcon);
         };
@@ -92,7 +93,7 @@ public class CosmeticItem : WearableItem, IPointItem
     {
         return new WearableInstance()
         {
-            Point = Variables.CosmeticPoint,
+            Anchor = Variables.Anchor,
             HiddenInView = Variables.HiddenInView,
             SpawnableCrateReference = _spawnableCrateReference,
         };

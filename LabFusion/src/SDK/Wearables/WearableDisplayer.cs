@@ -23,7 +23,7 @@ public class WearableDisplayer
 
     public RigManager RigManager { get; private set; } = null;
 
-    public Dictionary<WearablePoint, AvatarCosmeticPoint> AvatarPoints { get; } = new();
+    public Dictionary<AvatarAnchor, AvatarPointOverride> AvatarPointOverrides { get; } = new();
 
     public List<Transform> ReflectionOrigins { get; } = new();
 
@@ -223,19 +223,19 @@ public class WearableDisplayer
 
     private void UpdateMainTransform(WearableInstance instance)
     {
-        var point = instance.Point;
+        var anchor = instance.Anchor;
 
         Vector3 position;
         Quaternion rotation;
         Vector3 scale;
 
-        if (AvatarPoints.TryGetValue(instance.Point, out var avatarPoint))
+        if (AvatarPointOverrides.TryGetValue(anchor, out var avatarPoint))
         {
             WearableTransformCalculator.GetTransform(avatarPoint, out position, out rotation, out scale);
         }
         else
         {
-            WearableTransformCalculator.GetTransform(point, RigManager, out position, out rotation, out scale);
+            WearableTransformCalculator.GetTransform(anchor, RigManager, out position, out rotation, out scale);
         }
 
         instance.UpdateMain(position, rotation, scale);
@@ -295,7 +295,7 @@ public class WearableDisplayer
         {
             var avatar = RigManager.avatar;
 
-            PopulateAvatarPoints(avatar);
+            PopulateAvatarPointOverrides(avatar);
         }
         catch (Exception e)
         {
@@ -303,17 +303,17 @@ public class WearableDisplayer
         }
     }
 
-    private void PopulateAvatarPoints(Avatar avatar)
+    private void PopulateAvatarPointOverrides(Avatar avatar)
     {
-        AvatarPoints.Clear();
+        AvatarPointOverrides.Clear();
 
-        var points = avatar.GetComponentsInChildren<AvatarCosmeticPoint>();
+        var points = avatar.GetComponentsInChildren<AvatarPointOverride>();
 
         foreach (var point in points)
         {
-            var rigPoint = (WearablePoint)point.cosmeticPoint.Get();
+            var anchor = point.GetAnchor();
 
-            AvatarPoints[rigPoint] = point;
+            AvatarPointOverrides[anchor] = point;
         }
     }
 }

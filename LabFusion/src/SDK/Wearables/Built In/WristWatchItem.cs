@@ -11,7 +11,7 @@ public class WristWatchItem : WearableItem
     {
         return new WearableInstance()
         {
-            Point = WearablePoint.WristLeftTop,
+            Anchor = new AvatarAnchor(AvatarPoint.Wrist, AvatarAlignment.Back, AvatarSide.Left),
             SpawnableCrateReference = FusionSpawnableReferences.WristWatchReference,
         };
     }

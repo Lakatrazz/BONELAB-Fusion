@@ -18,7 +18,7 @@ public struct CosmeticVariables
 
     public int Price;
 
-    public WearablePoint CosmeticPoint;
+    public AvatarAnchor Anchor;
 
     public bool HiddenInView;
 
