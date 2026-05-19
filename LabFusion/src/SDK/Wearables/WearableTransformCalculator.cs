@@ -91,11 +91,11 @@ public static class WearableTransformCalculator
                 break;
             case AvatarPoint.Hips:
                 {
-                    float radiusX = avatar.HipsEllipseX;
-                    float radiusZ = (avatar.HipsEllipseZ + avatar.HipsEllipseNegZ) * 0.5f;
+                    float radiusX = avatar.HighHipsEllipseX;
+                    float radiusZ = (avatar.HighHipsEllipseZ + avatar.HighHipsEllipseNegZ) * 0.5f;
 
-                    float referenceRadiusX = WearableConstants.ReferenceHipsEllipseX;
-                    float referenceRadiusZ = (WearableConstants.ReferenceHipsEllipseZ + WearableConstants.ReferenceHipsEllipseNegZ) * 0.5f;
+                    float referenceRadiusX = WearableConstants.ReferenceHighHipsEllipseX;
+                    float referenceRadiusZ = (WearableConstants.ReferenceHighHipsEllipseZ + WearableConstants.ReferenceHighHipsEllipseNegZ) * 0.5f;
 
                     scale = GetScale(radiusX, radiusZ, referenceRadiusX, referenceRadiusZ) * eyeHeightProportion;
                 }

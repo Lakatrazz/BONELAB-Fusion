@@ -12,9 +12,9 @@ public static class WearableConstants
     public const float ReferenceChestEllipseZ = 0.084f;
     public const float ReferenceChestEllipseNegZ = 0.087f;
 
-    public const float ReferenceHipsEllipseX = 0.1077f;
-    public const float ReferenceHipsEllipseZ = 0.059f;
-    public const float ReferenceHipsEllipseNegZ = 0.094f;
+    public const float ReferenceHighHipsEllipseX = 0.1008f;
+    public const float ReferenceHighHipsEllipseZ = 0.071f;
+    public const float ReferenceHighHipsEllipseNegZ = 0.086f;
 
     public const float ReferenceWristEllipseX = 0.0152f;
     public const float ReferenceWristEllipseZ = 0.0245f;
