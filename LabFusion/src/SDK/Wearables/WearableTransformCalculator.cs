@@ -264,11 +264,10 @@ public static class WearableTransformCalculator
 
         var hipsPosition = pelvis.position;
 
-        var hipsCenterPosition = hipsPosition + 0.5f * eyeHeight * (avatar.HipsEllipseZ - avatar.HipsEllipseNegZ) * hipsForward;
+        var hipsCenterPosition = hipsPosition + 0.5f * eyeHeight * (avatar.HighHipsEllipseZ - avatar.HighHipsEllipseNegZ) * hipsForward;
         var hipsCenterRotation = pelvis.rotation;
 
         var frontOffsetRotation = Quaternion.AngleAxis(90f, hipsRight) * hipsCenterRotation;
-
 
         switch (alignment)
         {
@@ -278,19 +277,19 @@ public static class WearableTransformCalculator
                 rotation = hipsCenterRotation;
                 break;
             case AvatarAlignment.Back:
-                position = hipsPosition - avatar.HipsEllipseNegZ * eyeHeight * hipsForward;
+                position = hipsPosition - avatar.HighHipsEllipseNegZ * eyeHeight * hipsForward;
                 rotation = Quaternion.AngleAxis(180f, hipsUp) * frontOffsetRotation;
                 break;
             case AvatarAlignment.Front:
-                position = hipsPosition + avatar.HipsEllipseZ * eyeHeight * hipsForward;
+                position = hipsPosition + avatar.HighHipsEllipseZ * eyeHeight * hipsForward;
                 rotation = frontOffsetRotation;
                 break;
             case AvatarAlignment.Out:
-                position = hipsCenterPosition + avatar.HipsEllipseX * eyeHeight * hipsRight;
+                position = hipsCenterPosition + avatar.HighHipsEllipseX * eyeHeight * hipsRight;
                 rotation = Quaternion.AngleAxis(90f, hipsUp) * frontOffsetRotation;
                 break;
             case AvatarAlignment.In:
-                position = hipsCenterPosition - avatar.HipsEllipseX * eyeHeight * hipsRight;
+                position = hipsCenterPosition - avatar.HighHipsEllipseX * eyeHeight * hipsRight;
                 rotation = Quaternion.AngleAxis(-90f, hipsUp) * frontOffsetRotation;
                 break;
         }
