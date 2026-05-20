@@ -65,11 +65,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 7
-  hiddenInView: 1
-  rawPrice: 700
-  previewIcon: {fileID: 2800000, guid: 6724b6334127b264a92c2897f017bc68, type: 3}
-  authorOverride: BaBaCorp
+  Point: 40
+  Alignment: 2
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 700
+  PreviewIcon: {fileID: 2800000, guid: 6724b6334127b264a92c2897f017bc68, type: 3}
 --- !u!1001 &8763854884073373731
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -99,31 +101,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: 0.133
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.127
+      value: 0.038
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5
+      value: -0.00000026077032
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.50000006
+      value: -0.7071067
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.50000006
+      value: 0.7071069
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.5
+      value: 0.00000023134632
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1b1080127bcc3e4e92c6c34e0fc39a3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

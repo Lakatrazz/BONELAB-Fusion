@@ -45,11 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 4
-  hiddenInView: 1
-  rawPrice: 2500
-  previewIcon: {fileID: 2800000, guid: e516c96b7eaf4bc4fac69962a267d423, type: 3}
-  authorOverride: Riggle
+  Point: 0
+  Alignment: 1
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 2500
+  PreviewIcon: {fileID: 2800000, guid: e516c96b7eaf4bc4fac69962a267d423, type: 3}
 --- !u!1 &8855192227336425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,14 +77,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8855192227336425504}
-  m_LocalRotation: {x: -0, y: 0.81287956, z: -0, w: 0.58243185}
-  m_LocalPosition: {x: 0.0114, y: -0.060899995, z: 0.0111}
+  m_LocalRotation: {x: 0.54167527, y: -0.4545195, z: 0.61237246, w: -0.35355332}
+  m_LocalPosition: {x: 0.015, y: 0.01, z: 0.0691}
   m_LocalScale: {x: 0.5443599, y: 0.5443599, z: 0.5443599}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 854235331482153748}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 108.756, z: 0}
+  m_LocalEulerAnglesHint: {x: 10, y: 90, z: 250}
 --- !u!33 &5046280428144510271
 MeshFilter:
   m_ObjectHideFlags: 0

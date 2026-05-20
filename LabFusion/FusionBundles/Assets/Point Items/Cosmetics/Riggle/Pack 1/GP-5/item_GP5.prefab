@@ -45,11 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 5
-  hiddenInView: 1
-  rawPrice: 1400
-  previewIcon: {fileID: 2800000, guid: 48a718c4285ad7e4ab4e7f30f286bf76, type: 3}
-  authorOverride: Riggle
+  Point: 0
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 1400
+  PreviewIcon: {fileID: 2800000, guid: 48a718c4285ad7e4ab4e7f30f286bf76, type: 3}
 --- !u!1 &3147018704073389226
 GameObject:
   m_ObjectHideFlags: 0
@@ -76,7 +78,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3147018704073389226}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 0.057, z: 0.0301}
+  m_LocalPosition: {x: -0, y: -0.0197, z: 0.0301}
   m_LocalScale: {x: 0.10771708, y: 0.107717074, z: 0.10771708}
   m_ConstrainProportionsScale: 0
   m_Children: []

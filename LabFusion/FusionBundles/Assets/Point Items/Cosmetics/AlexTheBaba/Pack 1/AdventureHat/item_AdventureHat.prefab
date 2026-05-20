@@ -65,11 +65,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 1
-  hiddenInView: 1
-  hiddenInShop: 0
-  rawPrice: 400
-  previewIcon: {fileID: 2800000, guid: 8951005725010b049b4b6a9200738d12, type: 3}
+  Point: 1
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 400
+  PreviewIcon: {fileID: 2800000, guid: 8951005725010b049b4b6a9200738d12, type: 3}
 --- !u!1001 &3985128780923671026
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,27 +85,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.082124606
+      value: 0.09237353
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.082124606
+      value: 0.09237353
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.082124606
+      value: 0.09237353
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.580775e-10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.1294
+      value: -0.1329
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.013899993
+      value: -0.0075
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e68d59d7621fb974c9b9325cec36d12e, type: 3}
       propertyPath: m_LocalRotation.w

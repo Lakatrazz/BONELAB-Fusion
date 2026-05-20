@@ -65,7 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Point: 0
+  Point: 20
   Alignment: 0
   Side: 0
   HiddenInView: 1
@@ -97,15 +97,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7e845da9d949fc548a66621690aae844, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7e845da9d949fc548a66621690aae844, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0158
+      value: -0.0226
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7e845da9d949fc548a66621690aae844, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.11
+      value: -0.0922
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7e845da9d949fc548a66621690aae844, type: 3}
       propertyPath: m_LocalRotation.w

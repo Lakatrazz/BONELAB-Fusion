@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060318481411122712}
   m_LocalRotation: {x: 0.6738606, y: -0, z: -0, w: 0.7388585}
-  m_LocalPosition: {x: 0.000118255615, y: 0.0365, z: -0.0062000006}
-  m_LocalScale: {x: 0.0009480539, y: 0.0009480539, z: 0.0009480539}
+  m_LocalPosition: {x: -0.001, y: 0.025, z: -0.008}
+  m_LocalScale: {x: 0.0010247556, y: 0.0010247556, z: 0.0010247556}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7477786804003002349}
@@ -129,11 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 1
-  hiddenInView: 1
-  rawPrice: 800
-  previewIcon: {fileID: 2800000, guid: aa3df760af40b1c4581c90d3718d0c52, type: 3}
-  authorOverride: Riggle
+  Point: 1
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 800
+  PreviewIcon: {fileID: 2800000, guid: aa3df760af40b1c4581c90d3718d0c52, type: 3}
 --- !u!1 &5826918098768798897
 GameObject:
   m_ObjectHideFlags: 0

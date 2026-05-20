@@ -65,11 +65,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 1
-  hiddenInView: 1
-  rawPrice: 800
-  previewIcon: {fileID: 2800000, guid: 2d979acc18d949b4fa5522dd6d714ed6, type: 3}
-  authorOverride: BaBaCorp
+  Point: 1
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 800
+  PreviewIcon: {fileID: 2800000, guid: 2d979acc18d949b4fa5522dd6d714ed6, type: 3}
 --- !u!1001 &2061246307744651092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103,7 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9733685a1f417a14ea87427b88539c0c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.02
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9733685a1f417a14ea87427b88539c0c, type: 3}
       propertyPath: m_LocalRotation.w

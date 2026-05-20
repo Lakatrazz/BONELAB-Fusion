@@ -45,11 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 7
-  hiddenInView: 1
-  rawPrice: 1600
-  previewIcon: {fileID: 2800000, guid: b41279109fb91064cb0ccd9a64dcba5e, type: 3}
-  authorOverride: BaBaCorp
+  Point: 40
+  Alignment: 2
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 1600
+  PreviewIcon: {fileID: 2800000, guid: b41279109fb91064cb0ccd9a64dcba5e, type: 3}
 --- !u!1 &8924460699795187415
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,14 +77,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8924460699795187415}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.134, z: -0.093}
+  m_LocalRotation: {x: 0.00000041093173, y: 0.7071068, z: -0.70710677, w: 0.00000041093176}
+  m_LocalPosition: {x: 0, y: 0.077, z: -0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 357579675980359299}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
 --- !u!33 &7753843451391718622
 MeshFilter:
   m_ObjectHideFlags: 0

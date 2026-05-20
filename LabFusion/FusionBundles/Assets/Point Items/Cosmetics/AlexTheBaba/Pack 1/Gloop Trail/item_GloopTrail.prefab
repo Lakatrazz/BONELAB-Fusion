@@ -4854,8 +4854,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 8
-  hiddenInView: 0
-  rawPrice: 1200
-  previewIcon: {fileID: 2800000, guid: a861ff2de80643543816daff6795b534, type: 3}
-  authorOverride: BaBaCorp
+  Point: 41
+  Alignment: 0
+  Side: 0
+  HiddenInView: 0
+  HiddenInShop: 0
+  RawPrice: 1200
+  PreviewIcon: {fileID: 2800000, guid: a861ff2de80643543816daff6795b534, type: 3}

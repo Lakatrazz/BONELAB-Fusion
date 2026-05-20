@@ -65,11 +65,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 1
-  hiddenInView: 1
-  hiddenInShop: 0
-  rawPrice: 500
-  previewIcon: {fileID: 2800000, guid: f7121c7cf38f0df41bf03b4a91f98197, type: 3}
+  Point: 1
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 500
+  PreviewIcon: {fileID: 2800000, guid: f7121c7cf38f0df41bf03b4a91f98197, type: 3}
 --- !u!1001 &4415335649911732740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,19 +85,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 15.178793
+      value: 15.849695
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 15.178793
+      value: 15.849695
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 15.178793
+      value: 15.849695
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0026
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -103,7 +105,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0031
+      value: 0.0044
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
       propertyPath: m_LocalRotation.w

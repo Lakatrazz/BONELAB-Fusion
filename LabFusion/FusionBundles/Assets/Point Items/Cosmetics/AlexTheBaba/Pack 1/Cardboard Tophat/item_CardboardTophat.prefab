@@ -65,11 +65,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 1
-  hiddenInView: 1
-  rawPrice: 600
-  previewIcon: {fileID: 2800000, guid: ba81c268e85084b4f91bcbd5f5cfa311, type: 3}
-  authorOverride: BaBaCorp
+  Point: 1
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 600
+  PreviewIcon: {fileID: 2800000, guid: ba81c268e85084b4f91bcbd5f5cfa311, type: 3}
 --- !u!1001 &979908763746969024
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,27 +85,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalScale.x
-      value: 7.9113865
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalScale.y
-      value: 7.9113865
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalScale.z
-      value: 7.9113865
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0542
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0182
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f991089ebaa5f7145adbeae5551bff78, type: 3}
       propertyPath: m_LocalRotation.w

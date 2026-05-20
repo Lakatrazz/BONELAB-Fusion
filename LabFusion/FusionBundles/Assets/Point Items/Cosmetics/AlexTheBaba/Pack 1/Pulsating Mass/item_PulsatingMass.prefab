@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 2655332463075705859}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 15.490743, y: 15.490743, z: 15.490743}
+  m_LocalScale: {x: 16.44962, y: 16.44962, z: 16.44962}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5758003882074517786}
@@ -174,8 +174,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 0
-  hiddenInView: 1
-  rawPrice: 1700
-  previewIcon: {fileID: 2800000, guid: 3b8ffb2a478492d41a76f00dca518d64, type: 3}
-  authorOverride: BaBaCorp
+  Point: 0
+  Alignment: 0
+  Side: 0
+  HiddenInView: 1
+  HiddenInShop: 0
+  RawPrice: 1700
+  PreviewIcon: {fileID: 2800000, guid: 3b8ffb2a478492d41a76f00dca518d64, type: 3}
