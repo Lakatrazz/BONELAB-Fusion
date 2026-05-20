@@ -100,6 +100,13 @@ public static class CosmeticLoader
         var hiddenInView = cosmeticRoot.GetHiddenInView();
         var hiddenInShop = cosmeticRoot.GetHiddenInShop();
 
+        var authorOverride = cosmeticRoot.GetAuthorOverride();
+
+        if (!string.IsNullOrWhiteSpace(authorOverride))
+        {
+            author = authorOverride;
+        }
+
         var variables = new CosmeticVariables()
         {
             Title = title,

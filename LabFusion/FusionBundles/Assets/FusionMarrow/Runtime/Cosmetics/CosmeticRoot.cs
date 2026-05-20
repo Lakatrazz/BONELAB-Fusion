@@ -47,6 +47,20 @@ namespace LabFusion.Marrow.Integration
         public int GetRawPrice() => RawPrice.Get();
 
         public Texture2D GetPreviewIcon() => PreviewIcon.Get();
+
+        public string GetAuthorOverride()
+        {
+            var authorOverride = transform.Find("AuthorOverride");
+
+            if (authorOverride == null || authorOverride.childCount <= 0)
+            {
+                return null;
+            }
+
+            var author = authorOverride.GetChild(0).name;
+
+            return author;
+        }
 #else
         [FormerlySerializedAs("cosmeticPoint")]
         public AvatarPoint Point = AvatarPoint.Head;

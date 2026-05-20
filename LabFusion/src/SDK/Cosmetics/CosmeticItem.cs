@@ -60,7 +60,7 @@ public class CosmeticItem : WearableItem, IPointItem
                 return;
             }
 
-            var previewIcon = root.PreviewIcon.Get();
+            var previewIcon = root.GetPreviewIcon();
 
             loadCallback(previewIcon);
         };
