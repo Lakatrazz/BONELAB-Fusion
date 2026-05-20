@@ -166,7 +166,7 @@ public static class WearableTransformCalculator
         var head = physicsRig.m_head;
 
         float eyeHeight = avatar.eyeHeight;
-        var eyeCenter = GetEyeCenter(artRig);
+        var eyeCenter = GetEyeCenter(physicsRig, avatar);
 
         var headForward = head.forward;
         var headUp = head.up;
@@ -210,7 +210,7 @@ public static class WearableTransformCalculator
     {
         var head = physicsRig.m_head;
 
-        var eyeCenter = GetEyeCenter(artRig);
+        var eyeCenter = GetEyeCenter(physicsRig, avatar);
         var eyeHeight = avatar.eyeHeight;
 
         var headCenterXZ = head.position + eyeHeight * GetHeadZOffset(avatar) * head.forward;
@@ -225,12 +225,15 @@ public static class WearableTransformCalculator
     {
         var head = physicsRig.m_head;
 
+        var eyeCenter = GetEyeCenter(physicsRig, avatar);
+
         var eyePosition = side switch
         {
             AvatarSide.Left => artRig.eyeLf.position,
             AvatarSide.Right => artRig.eyeRt.position,
-            _ => GetEyeCenter(artRig),
+            _ => eyeCenter,
         };
+        eyePosition = GetPositionWithRelativeY(head, eyePosition, eyeCenter, 0f);
 
         var headFrontPosition = head.position + avatar.eyeHeight * avatar.ForeheadEllipseZ * head.forward;
 
@@ -440,9 +443,12 @@ public static class WearableTransformCalculator
         }
     }
 
-    private static Vector3 GetEyeCenter(ArtRig artRig)
+    private static Vector3 GetEyeCenter(PhysicsRig physicsRig, Avatar avatar)
     {
-        return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+        var head = physicsRig.m_head;
+        var eyeInHead = -avatar.skullCameraLocal;
+
+        return head.TransformPoint(eyeInHead);
     }
 
     private static float GetHeadZOffset(Avatar avatar) => (avatar.ForeheadEllipseZ - avatar.ForeheadEllipseNegZ) * 0.5f;
