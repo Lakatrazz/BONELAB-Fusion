@@ -103,13 +103,13 @@ public class WristWatchBehavior : IWearableComponent
         IsLocal = local;
     }
 
-    public void OnMainInstanceCreated(GameObject gameObject, RigManager rigManager)
+    public void OnMainInstanceCreated(GameObject mainInstance, RigManager rigManager)
     {
         _isOpen = false;
 
         RigManager = rigManager;
 
-        var transform = gameObject.transform;
+        var transform = mainInstance.transform;
 
         MainInstanceTransform = transform;
 
@@ -150,6 +150,15 @@ public class WristWatchBehavior : IWearableComponent
         }
 
         ShowPanel(false);
+    }
+
+    public void OnReflectionInstanceCreated(GameObject reflectionInstance)
+    {
+        // Disable all effects for the reflection
+        var transform = reflectionInstance.transform;
+
+        transform.Find("Effects").gameObject.SetActive(false);
+        transform.Find("UI").gameObject.SetActive(false);
     }
 
     public void OnTick(float deltaTime)

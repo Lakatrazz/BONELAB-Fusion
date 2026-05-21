@@ -289,15 +289,25 @@ public class WearableInstance
             {
                 instance.name = $"{instance.name} (Reflection ({instanceIndex}))";
 
-                instance.SetActive(IsShown && IsReflectionShown);
-
-                ReflectionInstances.Add(instance.transform);
+                OnReflectionInstanceCreated(instance);
             }, parent);
         }
 
         // Reflection updates are delayed by one frame to prevent pop-in from the reflection scaling
         // For whatever reason, the reflection origin isn't always scaled, and changes scales between frames
         _dontUpdateReflectionsThisFrame = true;
+    }
+
+    private void OnReflectionInstanceCreated(GameObject reflectionInstance)
+    {
+        reflectionInstance.SetActive(IsShown && IsReflectionShown);
+
+        ReflectionInstances.Add(reflectionInstance.transform);
+
+        foreach (var component in Components)
+        {
+            component.OnReflectionInstanceCreated(reflectionInstance);
+        }
     }
 
     private void DespawnMainInstance()

@@ -12,6 +12,8 @@ public interface IWearableComponent
 
     void OnMainInstanceCreated(GameObject mainInstance, RigManager rigManager);
 
+    void OnReflectionInstanceCreated(GameObject reflectionInstance);
+
     void OnTick(float deltaTime);
 
     void OnDeinitialize();
