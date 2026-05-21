@@ -13,6 +13,7 @@ public class WristWatchItem : WearableItem
         {
             Anchor = new AvatarAnchor(AvatarPoint.Wrist, AvatarAlignment.Back, AvatarSide.Left),
             SpawnableCrateReference = FusionSpawnableReferences.WristWatchReference,
+            Components = new() { new WristWatchBehavior() },
         };
     }
 }

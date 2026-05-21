@@ -48,4 +48,7 @@ public static class FusionMonoDiscReferences
     public static readonly MonoDiscReference UISelectReference = new("Lakatrazz.FusionContent.MonoDisc.UISelect");
     public static readonly MonoDiscReference UITurnOffReference = new("Lakatrazz.FusionContent.MonoDisc.UITurnOff");
     public static readonly MonoDiscReference UITurnOnReference = new("Lakatrazz.FusionContent.MonoDisc.UITurnOn");
+
+    public static readonly MonoDiscReference JinglePositiveHolographic00Reference = new("Lakatrazz.FusionContent.MonoDisc.JinglePositiveHolographic00");
+    public static readonly MonoDiscReference JingleNegativeHolographic00Reference = new("Lakatrazz.FusionContent.MonoDisc.JingleNegativeHolographic00");
 }

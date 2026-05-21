@@ -1,6 +1,8 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow.Integration;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -62,7 +64,11 @@ public class WearableInstance
     public Quaternion Rotation { get; private set; } = Quaternion.identity;
     public Vector3 Scale { get; private set; } = Vector3.one;
 
+    public RigManager RigManager { get; set; } = null;
+
     public Transform MainInstance { get; private set; } = null;
+
+    public bool HasMainInstance => MainInstance != null;
 
     public List<Transform> ReflectionInstances { get; } = new();
 
@@ -88,10 +94,22 @@ public class WearableInstance
 
     public SpawnableCrateReference SpawnableCrateReference { get; set; } = new();
 
+    public List<IWearableComponent> Components { get; set; } = new();
+
     private bool _dontUpdateReflectionsThisFrame = false;
 
-    public void Spawn()
+    public void Initialize(bool local, PlayerID playerID = null)
     {
+        foreach (var component in Components)
+        {
+            component.OnInitialize(local, playerID);
+        }
+    }
+
+    public void Spawn(RigManager rigManager)
+    {
+        RigManager = rigManager;
+
         SpawnMainInstance();
 
         SpawnReflections(ReflectionCount);
@@ -107,6 +125,11 @@ public class WearableInstance
     public void Destroy()
     {
         Despawn();
+
+        foreach (var component in Components)
+        {
+            component.OnDeinitialize();
+        }
     }
 
     public void UpdateMain(Vector3 position, Quaternion rotation, Vector3 scale)
@@ -161,11 +184,21 @@ public class WearableInstance
     public void Tick(float deltaTime)
     {
         _dontUpdateReflectionsThisFrame = false;
+
+        if (!HasMainInstance)
+        {
+            return;
+        }
+
+        foreach (var component in Components)
+        {
+            component.OnTick(deltaTime);
+        }
     }
 
     private void ApplyMainTransform()
     {
-        if (MainInstance == null)
+        if (!HasMainInstance)
         {
             return;
         }
@@ -217,14 +250,21 @@ public class WearableInstance
 
     private void SpawnMainInstance()
     {
-        SpawnInstance((instance) =>
+        SpawnInstance(OnMainInstanceCreated);
+    }
+
+    private void OnMainInstanceCreated(GameObject mainInstance)
+    {
+        MainInstance = mainInstance.transform;
+
+        mainInstance.SetActive(IsShown && IsPrimaryShown);
+
+        ApplyMainTransform();
+
+        foreach (var component in Components)
         {
-            MainInstance = instance.transform;
-
-            instance.SetActive(IsShown && IsPrimaryShown);
-
-            ApplyMainTransform();
-        });
+            component.OnMainInstanceCreated(mainInstance, RigManager);
+        }
     }
 
     private void SpawnReflections(int reflectionCount)

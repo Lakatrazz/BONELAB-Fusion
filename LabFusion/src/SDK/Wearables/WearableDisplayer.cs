@@ -124,9 +124,11 @@ public class WearableDisplayer
 
         WearableToInstanceLookup[wearable] = wearableInstance;
 
+        wearableInstance.Initialize(IsLocal, PlayerID);
+
         if (RigManager != null)
         {
-            wearableInstance.Spawn();
+            wearableInstance.Spawn(RigManager);
         }
     }
 
@@ -163,7 +165,7 @@ public class WearableDisplayer
         {
             var instance = pair.Value;
 
-            instance.Spawn();
+            instance.Spawn(RigManager);
         }
     }
 

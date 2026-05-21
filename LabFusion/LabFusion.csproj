@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Remove="FusionBundles\Assets\Achievements\**" />
     <Compile Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <Compile Remove="FusionBundles\Assets\Common\**" />
     <Compile Remove="FusionBundles\Assets\Content\**" />
     <Compile Remove="FusionBundles\Assets\FusionMarrow\**" />
     <Compile Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
@@ -48,6 +49,7 @@
     <Compile Remove="src\Data\Interfaces\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Achievements\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Common\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Content\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\FusionMarrow\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
@@ -77,6 +79,7 @@
     <EmbeddedResource Remove="src\Data\Interfaces\**" />
     <None Remove="FusionBundles\Assets\Achievements\**" />
     <None Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <None Remove="FusionBundles\Assets\Common\**" />
     <None Remove="FusionBundles\Assets\Content\**" />
     <None Remove="FusionBundles\Assets\FusionMarrow\**" />
     <None Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
@@ -123,6 +126,7 @@
     <None Remove="FusionBundles\Assets\Achievements.meta" />
     <None Remove="FusionBundles\Assets\AddressableAssetsData.meta" />
     <None Remove="FusionBundles\Assets\AssetBundles.meta" />
+    <None Remove="FusionBundles\Assets\Common.meta" />
     <None Remove="FusionBundles\Assets\Content.meta" />
     <None Remove="FusionBundles\Assets\FusionMarrow.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies.meta" />
