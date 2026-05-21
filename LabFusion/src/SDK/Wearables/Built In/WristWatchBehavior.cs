@@ -94,6 +94,8 @@ public class WristWatchBehavior : IWearableComponent
     private Quaternion _stateStartRotationInRig = Quaternion.identity;
     private float _stateStartScaleFactor = 0f;
 
+    private float _observedElapsed = 0f;
+
     public void OnInitialize(bool local, PlayerID playerID = null)
     {
         IsLocal = local;
@@ -155,7 +157,7 @@ public class WristWatchBehavior : IWearableComponent
             return;
         }
 
-        CheckPanelObservation();
+        CheckPanelObservation(deltaTime);
         SolveState(deltaTime);
 
         if (State != PanelState.Closed)
@@ -171,7 +173,7 @@ public class WristWatchBehavior : IWearableComponent
         UI.gameObject.SetActive(show);
     }
 
-    private void CheckPanelObservation()
+    private void CheckPanelObservation(float deltaTime)
     {
         float heightScale = GetHeightScale();
 
@@ -195,7 +197,16 @@ public class WristWatchBehavior : IWearableComponent
 
         bool observed = lookingAtOrigin && originOutwards && originClose;
 
-        IsOpen = observed;
+        if (observed)
+        {
+            _observedElapsed += deltaTime;
+        }
+        else
+        {
+            _observedElapsed = 0f;
+        }
+
+        IsOpen = observed && _observedElapsed >= 0.1f;
     }
 
     private void SolveState(float deltaTime)
