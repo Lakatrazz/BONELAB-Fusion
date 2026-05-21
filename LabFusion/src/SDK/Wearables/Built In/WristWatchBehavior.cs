@@ -43,6 +43,8 @@ public class WristWatchBehavior : IWearableComponent
 
     public const float SmoothDecay = 12f;
 
+    public const float ObserveLookTime = 0.3f;
+
     public bool IsLocal { get; set; } = false;
 
     public Transform MainInstanceTransform { get; set; } = null;
@@ -206,7 +208,7 @@ public class WristWatchBehavior : IWearableComponent
             _observedElapsed = 0f;
         }
 
-        IsOpen = observed && _observedElapsed >= 0.1f;
+        IsOpen = observed && _observedElapsed >= ObserveLookTime;
     }
 
     private void SolveState(float deltaTime)
