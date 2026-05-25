@@ -33,6 +33,22 @@ namespace LabFusion.Marrow.Integration
             }
 
             TextView.text = textElement.Text;
+
+            var style = textElement.Style;
+
+            TextView.color = style.TextColor;
+
+            TextView.font = style.Font;
+            TextView.fontSize = style.FontSize ?? 14f;
+
+            bool hasGradient = style.TextGradient.HasValue;
+            TextView.enableVertexGradient = hasGradient;
+
+            if (hasGradient)
+            {
+                var gradient = style.TextGradient.Value;
+                TextView.colorGradient = new(gradient.TopLeft, gradient.TopRight, gradient.BottomLeft, gradient.BottomRight);
+            }
         }
 
         protected override void OnGetReferences()

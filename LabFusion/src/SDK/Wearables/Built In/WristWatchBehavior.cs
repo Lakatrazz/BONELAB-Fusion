@@ -224,18 +224,23 @@ public class WristWatchBehavior : IWearableComponent
         topGroup.Style.Margins = new(0, 0, 5, 5);
 
         var gamemodeTitleLabel = new LabelElement("Smash Bones");
+
+        gamemodeTitleLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.MetalMania_Regular);
+        gamemodeTitleLabel.Style.FontSize = 24f;
+        gamemodeTitleLabel.Style.TextGradient = new(new(1f, 0.4f, 0f), new(1f, 0.92f, 0.27f), new(1f, 0.02f, 0f), new(1f, 0.32f, 0f));
+
         topGroup.Add(gamemodeTitleLabel);
 
         root.Add(topGroup);
 
         // Center info group
         var centerGroup = new UIElement();
-        centerGroup.Style.AlignContent = UIAlign.Stretch;
-        centerGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        centerGroup.Style.AlignContent = UIAlign.Start;
+        centerGroup.Style.Padding = new(5, 5, 10, 10);
 
         var stockGroup = new UIElement();
         stockGroup.Style.Direction = UIDirection.Row;
-        stockGroup.Style.JustifyContent = UIJustify.Center;
+        stockGroup.Style.JustifyContent = UIJustify.Start;
         stockGroup.Style.AlignContent = UIAlign.Center;
 
         var stockIcon = new UIElement();

@@ -2,17 +2,52 @@
 
 using LabFusion.Extensions;
 
+using Il2CppTMPro;
+
 namespace LabFusion.UI.Elements;
 
 public class UIStyle
 {
-    private Color _color = Color.white;
-    public Color Color
+    private Color _textColor = Color.white;
+    public Color TextColor
     {
-        get => _color;
+        get => _textColor;
         set
         {
-            _color = value;
+            _textColor = value;
+            NotifyStyleChanged();
+        }
+    }
+
+    private UIVertexColor? _textGradient = null;
+    public UIVertexColor? TextGradient
+    {
+        get => _textGradient;
+        set
+        {
+            _textGradient = value;
+            NotifyStyleChanged();
+        }
+    }
+
+    private TMP_FontAsset _font = null;
+    public TMP_FontAsset Font
+    {
+        get => _font;
+        set
+        {
+            _font = value;
+            NotifyStyleChanged();
+        }
+    }
+
+    private float? _fontSize = null;
+    public float? FontSize
+    {
+        get => _fontSize;
+        set
+        {
+            _fontSize = value;
             NotifyStyleChanged();
         }
     }
