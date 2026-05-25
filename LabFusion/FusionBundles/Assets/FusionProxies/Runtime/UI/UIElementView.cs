@@ -107,16 +107,23 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public void AssignElement(UIElement element)
         {
+            UnassignElement();
+
             Element = element;
 
             RepaintElement(element);
 
             element.Repainted += OnRepainted;
+        }
 
-            Destroyed += () =>
+        public void UnassignElement()
+        {
+            if (Element == null)
             {
-                element.Repainted -= OnRepainted;
-            };
+                return;
+            }
+
+            Element.Repainted -= OnRepainted;
         }
 
         [HideFromIl2Cpp]
@@ -155,7 +162,18 @@ namespace LabFusion.Marrow.Integration
             References.BackgroundColorView.color = style.BackgroundColor;
 
             References.BackgroundImageView.enabled = style.BackgroundImage != null;
-            References.BackgroundImageView.sprite = style.BackgroundImage;
+            References.BackgroundImageView.texture = style.BackgroundImage;
+
+            var childAlignment = style.AlignItems switch
+            {
+                UIAlign.Center => TextAnchor.UpperCenter,
+                UIAlign.End => TextAnchor.UpperRight,
+                _ => TextAnchor.UpperLeft,
+            };
+
+            References.MarginsLayoutGroup.childAlignment = childAlignment;
+            References.ColumnContainer.childAlignment = childAlignment;
+            References.RowContainer.childAlignment = childAlignment;
 
             OnRepaintedElement(element);
         }
@@ -221,6 +239,8 @@ namespace LabFusion.Marrow.Integration
 
         private void OnDestroy()
         {
+            UnassignElement();
+
             Destroyed?.InvokeSafe("executing Destroyed event");
         }
 

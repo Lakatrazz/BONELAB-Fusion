@@ -18,7 +18,7 @@ namespace LabFusion.Marrow.Integration
 
         public Image BackgroundColorView { get; private set; } = null;
 
-        public Image BackgroundImageView { get; private set; } = null;
+        public RawImage BackgroundImageView { get; private set; } = null;
 
         public Button ClickableButtonView { get; private set; } = null;
 
@@ -47,7 +47,7 @@ namespace LabFusion.Marrow.Integration
 
             BackgroundColorView = MarginsTransform.Find("view_BackgroundColor").GetComponent<Image>();
 
-            BackgroundImageView = MarginsTransform.Find("view_BackgroundImage").GetComponent<Image>();
+            BackgroundImageView = MarginsTransform.Find("view_BackgroundImage").GetComponent<RawImage>();
 
             var clickableView = MarginsTransform.Find("view_Clickable");
             ClickableButtonView = clickableView.GetComponent<Button>();

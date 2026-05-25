@@ -28,8 +28,8 @@ public class UIStyle
         }
     }
 
-    private Sprite _backgroundImage = null;
-    public Sprite BackgroundImage
+    private Texture _backgroundImage = null;
+    public Texture BackgroundImage
     {
         get => _backgroundImage;
         set

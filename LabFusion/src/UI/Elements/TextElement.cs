@@ -23,5 +23,9 @@ public abstract class TextElement : UIElement, IValueNotifier<string>
 
     public event ValueChangedHandler<string> ValueChanged;
 
-    void IValueNotifier<string>.SetValueWithoutNotify(string value) => _text = value;
+    void IValueNotifier<string>.SetValueWithoutNotify(string value)
+    {
+        _text = value;
+        Repaint();
+    }
 }

@@ -221,10 +221,21 @@ public class WristWatchBehavior : IWearableComponent
         var northGroup = new UIElement();
         northGroup.Style.BackgroundColor = Color.red;
 
+        var northIconGroup = new UIElement();
+        northIconGroup.Style.Direction = UIDirection.Row;
+        northIconGroup.Style.AlignItems = UIAlign.Center;
+        northIconGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+
+        var northIcon = new UIElement();
+        northIcon.Style.Width = 25f;
+        northIcon.Style.Height = 25f;
+        northIcon.Style.BackgroundImage = LabFusion.Menu.MenuResources.GetLogoIcon("LavaGang");
+        northIconGroup.Add(northIcon);
+
         var northLabel = new LabelElement("North");
-        northLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        northLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
-        northGroup.Add(northLabel);
+        northIconGroup.Add(northLabel);
+
+        northGroup.Add(northIconGroup);
 
         root.Add(northGroup);
 
