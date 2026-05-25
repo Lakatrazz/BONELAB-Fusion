@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow;
 
+using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
 using LabFusion.Math;
@@ -48,6 +49,8 @@ public class WristWatchBehavior : IWearableComponent
 
     public const float ObserveLookTime = 0.3f;
 
+    public const int Resolution = 200;
+
     public bool IsLocal { get; set; } = false;
 
     public Transform MainInstanceTransform { get; set; } = null;
@@ -55,6 +58,8 @@ public class WristWatchBehavior : IWearableComponent
     public Transform Origin { get; set; } = null;
     public Transform Panel { get; set; } = null;
     public Transform Surface { get; set; } = null;
+
+    public RectTransform Canvas { get; set; } = null;
 
     public Transform Head { get; set; } = null;
 
@@ -124,8 +129,9 @@ public class WristWatchBehavior : IWearableComponent
         Panel = Origin.Find("Panel");
         Surface = Origin.Find("Surface");
 
-        var canvas = Panel.Find("Canvas");
-        RootView = canvas.Find("view_UIElement").GetComponent<UIElementView>();
+        Canvas = Panel.Find("Canvas").GetComponent<RectTransform>();
+
+        RootView = Canvas.Find("view_UIElement").GetComponent<UIElementView>();
 
         Head = rigManager.ControllerRig.TryCast<OpenControllerRig>().headset;
         ControllerRigTransform = rigManager.ControllerRig.transform;
@@ -193,8 +199,16 @@ public class WristWatchBehavior : IWearableComponent
 
         if (show)
         {
+            ApplyCanvasResolution();
             DrawUITree();
         }
+    }
+
+    private void ApplyCanvasResolution()
+    {
+        float scale = 1f / Resolution;
+        Canvas.localScale = Vector3Extensions.One * scale;
+        Canvas.sizeDelta = Vector2.one * Resolution;
     }
 
     private void DrawUITree()
@@ -221,6 +235,7 @@ public class WristWatchBehavior : IWearableComponent
         var westGroup = new UIElement();
         westGroup.Style.FlexGrow = 1f;
         westGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        westGroup.Style.Padding = new UIRectOffset(5, 5, 5, 5);
         horizontalGroup.Add(westGroup);
 
         var westLabel = new LabelElement("West");
@@ -231,6 +246,7 @@ public class WristWatchBehavior : IWearableComponent
         var eastGroup = new UIElement();
         eastGroup.Style.FlexGrow = 1f;
         eastGroup.Style.BackgroundColor = Color.green;
+        eastGroup.Style.Padding = new UIRectOffset(5, 5, 5, 5);
 
         var eastLabel = new LabelElement("East");
         eastLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
