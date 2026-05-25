@@ -1,8 +1,11 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Marrow;
+using LabFusion.Marrow.Integration;
 using LabFusion.Math;
 using LabFusion.Player;
+using LabFusion.UI;
+using LabFusion.UI.Elements;
 
 using UnityEngine;
 
@@ -69,6 +72,8 @@ public class WristWatchBehavior : IWearableComponent
 
     public List<Transform> Flares { get; } = new();
 
+    public UIElementView RootView { get; private set; } = null;
+
     private bool _isOpen = false;
     public bool IsOpen
     {
@@ -118,6 +123,9 @@ public class WristWatchBehavior : IWearableComponent
         Origin = UI.Find("Origin");
         Panel = Origin.Find("Panel");
         Surface = Origin.Find("Surface");
+
+        var canvas = Panel.Find("Canvas");
+        RootView = canvas.Find("view_UIElement").GetComponent<UIElementView>();
 
         Head = rigManager.ControllerRig.TryCast<OpenControllerRig>().headset;
         ControllerRigTransform = rigManager.ControllerRig.transform;
@@ -182,6 +190,68 @@ public class WristWatchBehavior : IWearableComponent
     {
         Effects.gameObject.SetActive(show);
         UI.gameObject.SetActive(show);
+
+        if (show)
+        {
+            DrawUITree();
+        }
+    }
+
+    private void DrawUITree()
+    {
+        var root = new UIElement();
+
+        root.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        root.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+
+        var northGroup = new UIElement();
+        northGroup.Style.BackgroundColor = Color.red;
+
+        var northLabel = new LabelElement("North");
+        northLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        northLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        northGroup.Add(northLabel);
+
+        root.Add(northGroup);
+
+        var horizontalGroup = new UIElement();
+        horizontalGroup.Style.Direction = UIDirection.Row;
+        horizontalGroup.Style.FlexGrow = 5f;
+
+        var westGroup = new UIElement();
+        westGroup.Style.FlexGrow = 1f;
+        westGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        horizontalGroup.Add(westGroup);
+
+        var westLabel = new LabelElement("West");
+        westLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        westLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        westGroup.Add(westLabel);
+
+        var eastGroup = new UIElement();
+        eastGroup.Style.FlexGrow = 1f;
+        eastGroup.Style.BackgroundColor = Color.green;
+
+        var eastLabel = new LabelElement("East");
+        eastLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        eastLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        eastGroup.Add(eastLabel);
+
+        horizontalGroup.Add(eastGroup);
+
+        root.Add(horizontalGroup);
+
+        var southGroup = new UIElement();
+        southGroup.Style.BackgroundColor = Color.yellow;
+
+        var southLabel = new LabelElement("South");
+        southLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        southLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        southGroup.Add(southLabel);
+
+        root.Add(southGroup);
+
+        UIElementDrawer.DrawUITree(root, RootView);
     }
 
     private void CheckPanelObservation(float deltaTime)
