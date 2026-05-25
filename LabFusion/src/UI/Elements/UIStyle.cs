@@ -83,13 +83,24 @@ public class UIStyle
         }
     }
 
-    private UIAlign _alignItems = UIAlign.Stretch;
-    public UIAlign AlignItems
+    private UIJustify _justifyContent = UIJustify.Start;
+    public UIJustify JustifyContent
     {
-        get => _alignItems;
+        get => _justifyContent;
         set
         {
-            _alignItems = value;
+            _justifyContent = value;
+            NotifyStyleChanged();
+        }
+    }
+
+    private UIAlign _alignContent = UIAlign.Stretch;
+    public UIAlign AlignContent
+    {
+        get => _alignContent;
+        set
+        {
+            _alignContent = value;
             NotifyStyleChanged();
         }
     }

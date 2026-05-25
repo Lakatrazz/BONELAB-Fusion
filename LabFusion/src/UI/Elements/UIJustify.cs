@@ -1,12 +1,10 @@
 ﻿namespace LabFusion.UI.Elements;
 
-public enum UIAlign
+public enum UIJustify
 {
     Start,
-
+    
     Center,
 
-    End,
-
-    Stretch
+    End
 }

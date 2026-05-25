@@ -145,7 +145,7 @@ namespace LabFusion.Marrow.Integration
                 layoutElement.preferredHeight = style.Height ?? -1f;
 
                 var flexGrow = style.FlexGrow;
-                var alignGrow = parentStyle.AlignItems == UIAlign.Stretch ? -1f : 0f;
+                var alignGrow = parentStyle.AlignContent == UIAlign.Stretch ? -1f : 0f;
 
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
@@ -164,12 +164,46 @@ namespace LabFusion.Marrow.Integration
             References.BackgroundImageView.enabled = style.BackgroundImage != null;
             References.BackgroundImageView.texture = style.BackgroundImage;
 
-            var childAlignment = style.AlignItems switch
+            var justifyContent = style.JustifyContent;
+            var alignContent = style.AlignContent;
+            var isColumn = style.Direction == UIDirection.Column || style.Direction == UIDirection.ColumnReverse;
+            var isReversed = style.Direction == UIDirection.ColumnReverse || style.Direction == UIDirection.RowReverse;
+
+            int rawAlignment = 0;
+
+            switch (justifyContent)
             {
-                UIAlign.Center => TextAnchor.UpperCenter,
-                UIAlign.End => TextAnchor.UpperRight,
-                _ => TextAnchor.UpperLeft,
-            };
+                case UIJustify.Center:
+                    rawAlignment += isColumn ? 3 : 1;
+                    break;
+                case UIJustify.End:
+                    rawAlignment += isColumn ? 6 : 2;
+                    break;
+            }
+
+            switch (alignContent)
+            {
+                case UIAlign.Center:
+                    rawAlignment += isColumn ? 1 : 3;
+                    break;
+                case UIAlign.End:
+                    rawAlignment += isColumn ? 2 : 6;
+                    break;
+            }
+
+            if (isReversed)
+            {
+                int xAlignment = rawAlignment % 3;
+                int yAlignment = (rawAlignment - xAlignment) / 3;
+
+                int flippedYAlignment = 2 - yAlignment;
+
+                rawAlignment = flippedYAlignment * 3 + xAlignment;
+            }
+
+            rawAlignment %= (int)TextAnchor.LowerRight + 1;
+
+            var childAlignment = (TextAnchor)rawAlignment;
 
             References.MarginsLayoutGroup.childAlignment = childAlignment;
             References.ColumnContainer.childAlignment = childAlignment;

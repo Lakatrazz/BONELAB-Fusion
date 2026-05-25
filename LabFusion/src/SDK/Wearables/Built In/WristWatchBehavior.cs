@@ -223,7 +223,8 @@ public class WristWatchBehavior : IWearableComponent
 
         var northIconGroup = new UIElement();
         northIconGroup.Style.Direction = UIDirection.Row;
-        northIconGroup.Style.AlignItems = UIAlign.Center;
+        northIconGroup.Style.JustifyContent = UIJustify.Center;
+        northIconGroup.Style.AlignContent = UIAlign.Center;
         northIconGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
 
         var northIcon = new UIElement();
