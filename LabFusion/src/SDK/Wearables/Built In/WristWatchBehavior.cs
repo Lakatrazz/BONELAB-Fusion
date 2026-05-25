@@ -218,66 +218,48 @@ public class WristWatchBehavior : IWearableComponent
         root.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
         root.Style.Padding = new UIRectOffset(5, 5, 5, 5);
 
-        var northGroup = new UIElement();
-        northGroup.Style.BackgroundColor = Color.red;
+        // Top info group
+        var topGroup = new UIElement();
+        topGroup.Style.AlignContent = UIAlign.Center;
+        topGroup.Style.Margins = new(0, 0, 5, 5);
 
-        var northIconGroup = new UIElement();
-        northIconGroup.Style.Direction = UIDirection.Row;
-        northIconGroup.Style.JustifyContent = UIJustify.Center;
-        northIconGroup.Style.AlignContent = UIAlign.Center;
-        northIconGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
+        var gamemodeTitleLabel = new LabelElement("Smash Bones");
+        topGroup.Add(gamemodeTitleLabel);
 
-        var northIcon = new UIElement();
-        northIcon.Style.Width = 25f;
-        northIcon.Style.Height = 25f;
-        northIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
-        northIconGroup.Add(northIcon);
+        root.Add(topGroup);
 
-        var northLabel = new LabelElement("North");
-        northIconGroup.Add(northLabel);
+        // Center info group
+        var centerGroup = new UIElement();
+        centerGroup.Style.AlignContent = UIAlign.Stretch;
+        centerGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
 
-        northGroup.Add(northIconGroup);
+        var stockGroup = new UIElement();
+        stockGroup.Style.Direction = UIDirection.Row;
+        stockGroup.Style.JustifyContent = UIJustify.Center;
+        stockGroup.Style.AlignContent = UIAlign.Center;
 
-        root.Add(northGroup);
+        var stockIcon = new UIElement();
+        stockIcon.Style.Width = 25f;
+        stockIcon.Style.Height = 25f;
+        stockIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
+        stockGroup.Add(stockIcon);
 
-        var horizontalGroup = new UIElement();
-        horizontalGroup.Style.Direction = UIDirection.Row;
-        horizontalGroup.Style.FlexGrow = 5f;
+        var stockLabel = new LabelElement("x3");
+        stockLabel.Style.Margins = new(5, 0, 0, 0);
+        stockGroup.Add(stockLabel);
 
-        var westGroup = new UIElement();
-        westGroup.Style.FlexGrow = 1f;
-        westGroup.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        westGroup.Style.Padding = new UIRectOffset(5, 5, 5, 5);
-        horizontalGroup.Add(westGroup);
+        var percentGroup = new UIElement();
+        percentGroup.Style.Direction = UIDirection.Row;
+        percentGroup.Style.JustifyContent = UIJustify.Center;
+        percentGroup.Style.AlignContent = UIAlign.Center;
 
-        var westLabel = new LabelElement("West");
-        westLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        westLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
-        westGroup.Add(westLabel);
+        var percentLabel = new LabelElement("43%");
+        percentGroup.Add(percentLabel);
 
-        var eastGroup = new UIElement();
-        eastGroup.Style.FlexGrow = 1f;
-        eastGroup.Style.BackgroundColor = Color.green;
-        eastGroup.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        centerGroup.Add(stockGroup);
+        centerGroup.Add(percentGroup);
 
-        var eastLabel = new LabelElement("East");
-        eastLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        eastLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
-        eastGroup.Add(eastLabel);
-
-        horizontalGroup.Add(eastGroup);
-
-        root.Add(horizontalGroup);
-
-        var southGroup = new UIElement();
-        southGroup.Style.BackgroundColor = Color.yellow;
-
-        var southLabel = new LabelElement("South");
-        southLabel.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        southLabel.Style.Padding = new UIRectOffset(5, 5, 5, 5);
-        southGroup.Add(southLabel);
-
-        root.Add(southGroup);
+        root.Add(centerGroup);
 
         UIElementDrawer.DrawUITree(root, RootView);
     }

@@ -11,6 +11,11 @@ public static class CommonIcons
     public static readonly string Add = "Add";
 
     /// <summary>
+    /// An icon for the bits in-universe currency.
+    /// </summary>
+    public static readonly string Bit = "Bit";
+
+    /// <summary>
     /// A chatbox icon.
     /// </summary>
     public static readonly string Chat = "Chat";
