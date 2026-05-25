@@ -20,6 +20,8 @@ public static class MenuResources
     public static Dictionary<string, Texture> LogoIconLookup { get; private set; } = null;
     public static Dictionary<string, Texture> AchievementIconLookup { get; private set; } = null;
 
+    public static Dictionary<string, Texture> CommonIconLookup { get; private set; } = null;
+
     public const string ModsIconTitle = "Mods";
 
     public const string EmptyIconTitle = "Empty";
@@ -41,6 +43,8 @@ public static class MenuResources
     public static Texture GetLogoIcon(string logoTitle) => GetIcon(LogoIconLookup, logoTitle);
 
     public static Texture GetAchievementIcon(string achievementTitle) => GetIcon(AchievementIconLookup, achievementTitle);
+
+    public static Texture GetCommonIcon(string commonIconName) => GetIcon(CommonIconLookup, commonIconName);
 
     private static Texture GetIcon(Dictionary<string, Texture> lookup, string key)
     {
@@ -77,6 +81,8 @@ public static class MenuResources
         NotificationIconLookup = LoadIcons(ResourcesTransform, "Notification Icons");
         LogoIconLookup = LoadIcons(ResourcesTransform, "Logo Icons");
         AchievementIconLookup = LoadIcons(ResourcesTransform, "Achievement Icons");
+
+        CommonIconLookup = LoadIcons(ResourcesTransform, "Common Icons");
 
         _onResourcesReadyCallback?.Invoke();
         _onResourcesReadyCallback = null;

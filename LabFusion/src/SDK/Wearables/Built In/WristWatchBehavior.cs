@@ -7,7 +7,7 @@ using LabFusion.Math;
 using LabFusion.Player;
 using LabFusion.UI;
 using LabFusion.UI.Elements;
-
+using LabFusion.UI.Resources;
 using UnityEngine;
 
 namespace LabFusion.SDK.Wearables;
@@ -230,7 +230,7 @@ public class WristWatchBehavior : IWearableComponent
         var northIcon = new UIElement();
         northIcon.Style.Width = 25f;
         northIcon.Style.Height = 25f;
-        northIcon.Style.BackgroundImage = LabFusion.Menu.MenuResources.GetLogoIcon("LavaGang");
+        northIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
         northIconGroup.Add(northIcon);
 
         var northLabel = new LabelElement("North");
