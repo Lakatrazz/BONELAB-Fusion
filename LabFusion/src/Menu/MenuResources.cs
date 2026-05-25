@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Il2CppTMPro;
+
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace LabFusion.Menu;
@@ -21,6 +23,7 @@ public static class MenuResources
     public static Dictionary<string, Texture> AchievementIconLookup { get; private set; } = null;
 
     public static Dictionary<string, Texture> CommonIconLookup { get; private set; } = null;
+    public static Dictionary<string, TMP_FontAsset> CommonFontLookup { get; private set; } = null;
 
     public const string ModsIconTitle = "Mods";
 
@@ -46,6 +49,8 @@ public static class MenuResources
 
     public static Texture GetCommonIcon(string commonIconName) => GetIcon(CommonIconLookup, commonIconName);
 
+    public static TMP_FontAsset GetCommonFont(string commonFontName) => GetFont(CommonFontLookup, commonFontName);
+
     private static Texture GetIcon(Dictionary<string, Texture> lookup, string key)
     {
         if (string.IsNullOrWhiteSpace(key))
@@ -56,6 +61,21 @@ public static class MenuResources
         if (lookup.TryGetValue(key, out var texture))
         {
             return texture;
+        }
+
+        return null;
+    }
+
+    private static TMP_FontAsset GetFont(Dictionary<string, TMP_FontAsset> lookup, string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return null;
+        }
+
+        if (lookup.TryGetValue(key, out var fontAsset))
+        {
+            return fontAsset;
         }
 
         return null;
@@ -83,6 +103,7 @@ public static class MenuResources
         AchievementIconLookup = LoadIcons(ResourcesTransform, "Achievement Icons");
 
         CommonIconLookup = LoadIcons(ResourcesTransform, "Common Icons");
+        CommonFontLookup = LoadFonts(ResourcesTransform, "Common Fonts");
 
         _onResourcesReadyCallback?.Invoke();
         _onResourcesReadyCallback = null;
@@ -123,6 +144,34 @@ public static class MenuResources
             }
 
             lookup.Add(iconTransform.name, image.texture);
+        }
+
+        return lookup;
+    }
+
+    private static Dictionary<string, TMP_FontAsset> LoadFonts(Transform resources, string name)
+    {
+        var fonts = resources.Find(name);
+
+        var lookup = new Dictionary<string, TMP_FontAsset>();
+
+        foreach (var font in fonts)
+        {
+            var fontTransform = font.TryCast<Transform>();
+
+            if (fontTransform == null)
+            {
+                continue;
+            }
+
+            var text = fontTransform.GetComponent<TMP_Text>();
+
+            if (text == null)
+            {
+                continue;
+            }
+
+            lookup.Add(fontTransform.name, text.font);
         }
 
         return lookup;

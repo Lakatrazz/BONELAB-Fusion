@@ -238,16 +238,16 @@ public static class MenuCreator
         // Cache references
         _menuPopups = MenuGameObject.GetComponentInChildren<MenuPopups>(true);
 
+        // Get resources contained in the menu
+        MenuResources.GetResources(menuTransform.Find("Resources"));
+
+        MenuButtonImage.sprite = MenuResources.MenuIconSprite;
+
         // Setup text
         MenuButtonHelper.PopulateTexts(MenuGameObject);
 
         // Setup buttons
         MenuButtonHelper.PopulateButtons(MenuGameObject);
-
-        // Get resources contained in the menu
-        MenuResources.GetResources(menuTransform.Find("Resources"));
-
-        MenuButtonImage.sprite = MenuResources.MenuIconSprite;
 
         // Add functionality to the back arrow
         var backArrowElement = menuTransform.Find("button_BackArrow").GetComponent<FunctionElement>();
