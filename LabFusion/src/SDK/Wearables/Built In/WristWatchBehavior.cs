@@ -223,21 +223,10 @@ public class WristWatchBehavior : IWearableComponent
         topGroup.Style.AlignContent = UIAlign.Center;
         topGroup.Style.Margins = new(0, 0, 5, 5);
 
-        var gamemodeTitleLabel = new LabelElement("Smash Bones");
+        var gamemodeTitleLabel = new LabelElement("00:00:00");
 
-        gamemodeTitleLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.MetalMania_Regular);
-        gamemodeTitleLabel.Style.FontSize = 24f;
-        gamemodeTitleLabel.Style.TextGradient = new(new(1f, 0.4f, 0f), new(1f, 0.92f, 0.27f), new(1f, 0.02f, 0f), new(1f, 0.32f, 0f));
-        gamemodeTitleLabel.Style.TextColor = new Color(0.1f, 0.1f, 0.1f);
-
-        var gamemodeDropShadow = new LabelElement("Smash Bones");
-        gamemodeDropShadow.Style.Font = UIResources.GetCommonFont(CommonFonts.MetalMania_Regular);
-        gamemodeDropShadow.Style.FontSize = 24f;
-        gamemodeDropShadow.Style.TextGradient = new(new(1f, 0.4f, 0f), new(1f, 0.92f, 0.27f), new(1f, 0.02f, 0f), new(1f, 0.32f, 0f));
-        gamemodeDropShadow.Style.Position = UIPosition.Absolute;
-        gamemodeDropShadow.Style.AbsoluteOffset = new Vector2(1f, 1f);
-
-        gamemodeTitleLabel.Add(gamemodeDropShadow);
+        gamemodeTitleLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
+        gamemodeTitleLabel.Style.FontSize = 30f;
 
         topGroup.Add(gamemodeTitleLabel);
 
@@ -245,30 +234,39 @@ public class WristWatchBehavior : IWearableComponent
 
         // Center info group
         var centerGroup = new UIElement();
-        centerGroup.Style.AlignContent = UIAlign.Start;
+        centerGroup.Style.FlexGrow = 1f;
+        centerGroup.Style.Direction = UIDirection.Row;
+        centerGroup.Style.JustifyContent = UIJustify.Center;
+        centerGroup.Style.AlignContent = UIAlign.Stretch;
         centerGroup.Style.Padding = new(5, 5, 10, 10);
 
         var stockGroup = new UIElement();
         stockGroup.Style.Direction = UIDirection.Row;
         stockGroup.Style.JustifyContent = UIJustify.Start;
         stockGroup.Style.AlignContent = UIAlign.Center;
+        stockGroup.Style.Margins = new UIRectOffset(10, 10, 5, 5);
 
         var stockIcon = new UIElement();
-        stockIcon.Style.Width = 25f;
-        stockIcon.Style.Height = 25f;
+        stockIcon.Style.Width = 50f;
+        stockIcon.Style.Height = 50f;
         stockIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
         stockGroup.Add(stockIcon);
 
         var stockLabel = new LabelElement("x3");
         stockLabel.Style.Margins = new(5, 0, 0, 0);
+        stockLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
+        stockLabel.Style.FontSize = 20f;
         stockGroup.Add(stockLabel);
 
         var percentGroup = new UIElement();
         percentGroup.Style.Direction = UIDirection.Row;
         percentGroup.Style.JustifyContent = UIJustify.Center;
         percentGroup.Style.AlignContent = UIAlign.Center;
+        percentGroup.Style.Margins = new UIRectOffset(10, 10, 5, 5);
 
         var percentLabel = new LabelElement("43%");
+        percentLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
+        percentLabel.Style.FontSize = 20f;
         percentGroup.Add(percentLabel);
 
         centerGroup.Add(stockGroup);
