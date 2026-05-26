@@ -107,6 +107,17 @@ public class UIStyle
         }
     }
 
+    private UIPosition _position = UIPosition.Relative;
+    public UIPosition Position
+    {
+        get => _position;
+        set
+        {
+            _position = value;
+            NotifyStyleChanged();
+        }
+    }
+
     private float _flexGrow = 0f;
     public float FlexGrow
     {
@@ -158,6 +169,17 @@ public class UIStyle
         set
         {
             _padding = value;
+            NotifyStyleChanged();
+        }
+    }
+
+    private Vector2 _absoluteOffset = new();
+    public Vector2 AbsoluteOffset
+    {
+        get => _absoluteOffset;
+        set
+        {
+            _absoluteOffset = value;
             NotifyStyleChanged();
         }
     }

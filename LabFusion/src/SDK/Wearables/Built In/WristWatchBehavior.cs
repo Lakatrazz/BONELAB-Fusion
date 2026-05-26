@@ -228,6 +228,16 @@ public class WristWatchBehavior : IWearableComponent
         gamemodeTitleLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.MetalMania_Regular);
         gamemodeTitleLabel.Style.FontSize = 24f;
         gamemodeTitleLabel.Style.TextGradient = new(new(1f, 0.4f, 0f), new(1f, 0.92f, 0.27f), new(1f, 0.02f, 0f), new(1f, 0.32f, 0f));
+        gamemodeTitleLabel.Style.TextColor = new Color(0.1f, 0.1f, 0.1f);
+
+        var gamemodeDropShadow = new LabelElement("Smash Bones");
+        gamemodeDropShadow.Style.Font = UIResources.GetCommonFont(CommonFonts.MetalMania_Regular);
+        gamemodeDropShadow.Style.FontSize = 24f;
+        gamemodeDropShadow.Style.TextGradient = new(new(1f, 0.4f, 0f), new(1f, 0.92f, 0.27f), new(1f, 0.02f, 0f), new(1f, 0.32f, 0f));
+        gamemodeDropShadow.Style.Position = UIPosition.Absolute;
+        gamemodeDropShadow.Style.AbsoluteOffset = new Vector2(1f, 1f);
+
+        gamemodeTitleLabel.Add(gamemodeDropShadow);
 
         topGroup.Add(gamemodeTitleLabel);
 

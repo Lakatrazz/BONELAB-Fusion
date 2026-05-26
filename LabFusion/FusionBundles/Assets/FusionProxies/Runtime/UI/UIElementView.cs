@@ -23,6 +23,9 @@ namespace LabFusion.Marrow.Integration
         public UIElementViewReferences References { get; } = new();
 
         [HideFromIl2Cpp]
+        public UIElementView Parent { get; private set; } = null;
+
+        [HideFromIl2Cpp]
         public List<UIElementView> Children { get; } = new();
 
         [HideFromIl2Cpp]
@@ -47,6 +50,28 @@ namespace LabFusion.Marrow.Integration
                 _direction = value;
 
                 ApplyDirection();
+            }
+        }
+
+        private UIPosition _position = UIPosition.Relative;
+
+        [HideFromIl2Cpp]
+        public UIPosition Position
+        {
+            get => _position;
+            set
+            {
+                if (_position == value)
+                {
+                    return;
+                }
+
+                _position = value;
+
+                if (Parent != null)
+                {
+                    Parent.ReparentChild(this);
+                }
             }
         }
 
@@ -77,7 +102,9 @@ namespace LabFusion.Marrow.Integration
         {
             Children.Add(child);
 
-            child.transform.SetParent(Container, false);
+            child.Parent = Parent;
+
+            ReparentChild(child);
         }
 
         [HideFromIl2Cpp]
@@ -131,6 +158,9 @@ namespace LabFusion.Marrow.Integration
         {
             var style = element.Style;
 
+            Direction = style.Direction;
+            Position = style.Position;
+
             var parent = element.Parent;
 
             if (parent != null)
@@ -149,9 +179,24 @@ namespace LabFusion.Marrow.Integration
 
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
-            }
 
-            Direction = style.Direction;
+                bool ignoreLayout = style.Position == UIPosition.Absolute;
+
+                layoutElement.ignoreLayout = ignoreLayout;
+
+                if (ignoreLayout)
+                {
+                    var rectTransform = References.RectTransform;
+
+                    rectTransform.anchorMin = Vector2.zero;
+                    rectTransform.anchorMax = Vector2.one;
+
+                    var absoluteOffset = style.AbsoluteOffset;
+
+                    rectTransform.offsetMin = absoluteOffset;
+                    rectTransform.offsetMax = absoluteOffset;
+                }
+            }
 
             var margins = style.Margins;
             References.RectLayoutGroup.padding = new(margins.Left, margins.Right, margins.Top, margins.Bottom);
@@ -245,12 +290,19 @@ namespace LabFusion.Marrow.Integration
             References.ColumnContainer.reverseArrangement = reversed;
             References.RowContainer.reverseArrangement = reversed;
 
-            var container = Container;
-
             foreach (var child in Children)
             {
-                child.transform.SetParent(container, false);
+                ReparentChild(child);
             }
+        }
+
+        private void ReparentChild(UIElementView child)
+        {
+            var position = child.Position;
+
+            var parent = position == UIPosition.Relative ? Container : References.MarginsTransform;
+
+            child.transform.SetParent(parent, false);
         }
 
         private void UpdateColliderSize()
