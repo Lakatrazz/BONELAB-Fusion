@@ -232,12 +232,17 @@ public class WristWatchBehavior : IWearableComponent
 
         root.Add(topGroup);
 
+        var horizontalLine = new UIElement();
+        horizontalLine.Style.BackgroundColor = Color.white;
+        horizontalLine.Style.Height = 2.5f;
+        root.Add(horizontalLine);
+
         // Center info group
         var centerGroup = new UIElement();
         centerGroup.Style.FlexGrow = 1f;
         centerGroup.Style.Direction = UIDirection.Row;
         centerGroup.Style.JustifyContent = UIJustify.Center;
-        centerGroup.Style.AlignContent = UIAlign.Stretch;
+        centerGroup.Style.AlignContent = UIAlign.Center;
         centerGroup.Style.Padding = new(5, 5, 10, 10);
 
         var stockGroup = new UIElement();
@@ -270,6 +275,13 @@ public class WristWatchBehavior : IWearableComponent
         percentGroup.Add(percentLabel);
 
         centerGroup.Add(stockGroup);
+
+        var verticalLine = new UIElement();
+        verticalLine.Style.BackgroundColor = Color.white;
+        verticalLine.Style.Width = 2.5f;
+        verticalLine.Style.AlignSelfStretch = true;
+        centerGroup.Add(verticalLine);
+
         centerGroup.Add(percentGroup);
 
         root.Add(centerGroup);

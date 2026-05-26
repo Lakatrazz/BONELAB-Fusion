@@ -174,8 +174,10 @@ namespace LabFusion.Marrow.Integration
                 layoutElement.preferredWidth = style.Width ?? -1f;
                 layoutElement.preferredHeight = style.Height ?? -1f;
 
+                bool alignStretch = parentStyle.AlignContent == UIAlign.Stretch || style.AlignSelfStretch;
+
                 var flexGrow = style.FlexGrow;
-                var alignGrow = parentStyle.AlignContent == UIAlign.Stretch ? -1f : 0f;
+                var alignGrow = alignStretch ? -1f : 0f;
 
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;

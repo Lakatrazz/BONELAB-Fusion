@@ -151,6 +151,17 @@ public class UIStyle
         }
     }
 
+    private bool _alignSelfStretch = false;
+    public bool AlignSelfStretch
+    {
+        get => _alignSelfStretch;
+        set
+        {
+            _alignSelfStretch = value;
+            NotifyStyleChanged();
+        }
+    }
+
     private UIRectOffset _margins = new();
     public UIRectOffset Margins
     {
