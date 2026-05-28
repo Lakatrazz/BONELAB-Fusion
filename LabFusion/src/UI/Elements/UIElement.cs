@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.UI.Styles;
 
 namespace LabFusion.UI.Elements;
 
@@ -7,8 +8,8 @@ namespace LabFusion.UI.Elements;
 /// </summary>
 public class UIElement : IRepaintNotifier
 {
-    private UIStyle _style = null;
-    public UIStyle Style
+    private Style _style = null;
+    public Style Style
     {
         get
         {
@@ -35,6 +36,8 @@ public class UIElement : IRepaintNotifier
     public IReadOnlyList<UIElement> PhysicalChildren => _physicalChildren;
 
     public virtual UIElement ContentContainer => this;
+
+    public HashSet<string> StyleClasses { get; } = new();
 
     public event Action Repainted;
 
@@ -73,6 +76,12 @@ public class UIElement : IRepaintNotifier
             contentContainer.Remove(child);
         }
     }
+
+    public void AddStyleClass(string className) => StyleClasses.Add(className);
+
+    public void RemoveStyleClass(string className) => StyleClasses.Remove(className);
+
+    public bool HasStyleClass(string className) => StyleClasses.Contains(className);
 
     public List<TElement> Query<TElement>() where TElement : UIElement
     {

@@ -1,9 +1,9 @@
-﻿namespace LabFusion.UI.Elements;
+﻿namespace LabFusion.UI.Styles;
 
 /// <summary>
 /// Indicates the direction that children are displayed for a UI element.
 /// </summary>
-public enum UIDirection
+public enum Direction
 {
     /// <summary>
     /// Children are displayed from the top down.

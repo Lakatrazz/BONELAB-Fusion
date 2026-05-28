@@ -8,6 +8,7 @@ using Il2CppInterop.Runtime.Attributes;
 using Il2CppTMPro;
 
 using LabFusion.UI.Elements;
+using LabFusion.UI.Styles;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -36,12 +37,12 @@ namespace LabFusion.Marrow.Integration
 
             var style = textElement.Style;
 
-            TextView.color = style.TextColor;
+            TextView.color = style.TextColor != StyleKeyword.Null ? style.TextColor : Color.white;
 
             TextView.font = style.Font;
-            TextView.fontSize = style.FontSize ?? 14f;
+            TextView.fontSize = style.FontSize != StyleKeyword.Null ? style.FontSize : 14f;
 
-            bool hasGradient = style.TextGradient.HasValue;
+            bool hasGradient = style.TextGradient != StyleKeyword.Null;
             TextView.enableVertexGradient = hasGradient;
 
             if (hasGradient)

@@ -7,6 +7,7 @@ using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Extensions;
 using LabFusion.UI.Elements;
+using LabFusion.UI.Styles;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -34,10 +35,10 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public event Action Destroyed;
 
-        private UIDirection _direction = UIDirection.Column;
+        private Direction _direction = Direction.Column;
 
         [HideFromIl2Cpp]
-        public UIDirection Direction
+        public Direction Direction
         {
             get => _direction;
             set
@@ -53,10 +54,10 @@ namespace LabFusion.Marrow.Integration
             }
         }
 
-        private UIPosition _position = UIPosition.Relative;
+        private Position _position = Position.Relative;
 
         [HideFromIl2Cpp]
-        public UIPosition Position
+        public Position Position
         {
             get => _position;
             set
@@ -82,8 +83,8 @@ namespace LabFusion.Marrow.Integration
             {
                 return Direction switch
                 {
-                    UIDirection.Row or 
-                    UIDirection.RowReverse => References.RowContainer.transform,
+                    Direction.Row or 
+                    Direction.RowReverse => References.RowContainer.transform,
                     _ => References.ColumnContainer.transform,
                 };
             }
@@ -167,14 +168,14 @@ namespace LabFusion.Marrow.Integration
             {
                 var parentStyle = parent.Style;
 
-                var parentIsColumn = parentStyle.Direction == UIDirection.Column || parentStyle.Direction == UIDirection.ColumnReverse;
+                var parentIsColumn = parentStyle.Direction == Direction.Column || parentStyle.Direction == Direction.ColumnReverse;
 
                 var layoutElement = References.LayoutElement;
 
-                layoutElement.preferredWidth = style.Width ?? -1f;
-                layoutElement.preferredHeight = style.Height ?? -1f;
+                layoutElement.preferredWidth = style.Width != StyleKeyword.Null ? style.Width : -1f;
+                layoutElement.preferredHeight = style.Height != StyleKeyword.Null ? style.Height : -1f;
 
-                bool alignStretch = parentStyle.AlignContent == UIAlign.Stretch || style.AlignSelfStretch;
+                bool alignStretch = parentStyle.AlignItems == Align.Stretch || style.AlignSelfStretch;
 
                 var flexGrow = style.FlexGrow;
                 var alignGrow = alignStretch ? -1f : 0f;
@@ -182,7 +183,7 @@ namespace LabFusion.Marrow.Integration
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
 
-                bool ignoreLayout = style.Position == UIPosition.Absolute;
+                bool ignoreLayout = style.Position == Position.Absolute;
 
                 layoutElement.ignoreLayout = ignoreLayout;
 
@@ -200,40 +201,40 @@ namespace LabFusion.Marrow.Integration
                 }
             }
 
-            var margins = style.Margins;
+            BorderOffsets margins = style.Margins;
             References.RectLayoutGroup.padding = new(margins.Left, margins.Right, margins.Top, margins.Bottom);
 
-            var padding = style.Padding;
+            BorderOffsets padding = style.Padding;
             References.MarginsLayoutGroup.padding = new(padding.Left, padding.Right, padding.Top, padding.Bottom);
 
             References.BackgroundColorView.color = style.BackgroundColor;
 
-            References.BackgroundImageView.enabled = style.BackgroundImage != null;
+            References.BackgroundImageView.enabled = style.BackgroundImage != StyleKeyword.Null;
             References.BackgroundImageView.texture = style.BackgroundImage;
 
-            var justifyContent = style.JustifyContent;
-            var alignContent = style.AlignContent;
-            var isColumn = style.Direction == UIDirection.Column || style.Direction == UIDirection.ColumnReverse;
-            var isReversed = style.Direction == UIDirection.ColumnReverse || style.Direction == UIDirection.RowReverse;
+            Justify justifyContent = style.JustifyContent;
+            Align alignContent = style.AlignItems;
+            var isColumn = style.Direction == Direction.Column || style.Direction == Direction.ColumnReverse;
+            var isReversed = style.Direction == Direction.ColumnReverse || style.Direction == Direction.RowReverse;
 
             int rawAlignment = 0;
 
             switch (justifyContent)
             {
-                case UIJustify.Center:
+                case Justify.Center:
                     rawAlignment += isColumn ? 3 : 1;
                     break;
-                case UIJustify.End:
+                case Justify.End:
                     rawAlignment += isColumn ? 6 : 2;
                     break;
             }
 
             switch (alignContent)
             {
-                case UIAlign.Center:
+                case Align.Center:
                     rawAlignment += isColumn ? 1 : 3;
                     break;
-                case UIAlign.End:
+                case Align.End:
                     rawAlignment += isColumn ? 2 : 6;
                     break;
             }
@@ -287,7 +288,7 @@ namespace LabFusion.Marrow.Integration
 
         private void ApplyDirection()
         {
-            bool reversed = Direction == UIDirection.ColumnReverse || Direction == UIDirection.RowReverse;
+            bool reversed = Direction == Direction.ColumnReverse || Direction == Direction.RowReverse;
 
             References.ColumnContainer.reverseArrangement = reversed;
             References.RowContainer.reverseArrangement = reversed;
@@ -302,7 +303,7 @@ namespace LabFusion.Marrow.Integration
         {
             var position = child.Position;
 
-            var parent = position == UIPosition.Relative ? Container : References.MarginsTransform;
+            var parent = position == Position.Relative ? Container : References.MarginsTransform;
 
             child.transform.SetParent(parent, false);
         }

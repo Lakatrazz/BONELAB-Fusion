@@ -1,13 +1,13 @@
-﻿namespace LabFusion.UI.Elements;
+﻿namespace LabFusion.UI.Styles;
 
-public struct UIRectOffset
+public struct BorderOffsets
 {
     public int Left { get; set; }
     public int Right { get; set; }
     public int Top { get; set; }
     public int Bottom { get; set; }
 
-    public UIRectOffset(int left, int right, int top, int bottom)
+    public BorderOffsets(int left, int right, int top, int bottom)
     {
         Left = left;
         Right = right;

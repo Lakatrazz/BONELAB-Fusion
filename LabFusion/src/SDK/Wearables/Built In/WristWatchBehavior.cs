@@ -5,9 +5,12 @@ using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
 using LabFusion.Math;
 using LabFusion.Player;
+
 using LabFusion.UI;
 using LabFusion.UI.Elements;
 using LabFusion.UI.Resources;
+using LabFusion.UI.Styles;
+
 using UnityEngine;
 
 namespace LabFusion.SDK.Wearables;
@@ -216,12 +219,12 @@ public class WristWatchBehavior : IWearableComponent
         var root = new UIElement();
 
         root.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
-        root.Style.Padding = new UIRectOffset(5, 5, 5, 5);
+        root.Style.Padding = new BorderOffsets(5, 5, 5, 5);
 
         // Top info group
         var topGroup = new UIElement();
-        topGroup.Style.AlignContent = UIAlign.Center;
-        topGroup.Style.Margins = new(0, 0, 5, 5);
+        topGroup.Style.AlignItems = Align.Center;
+        topGroup.Style.Margins = new BorderOffsets(0, 0, 5, 5);
 
         var gamemodeTitleLabel = new LabelElement("00:00:00");
 
@@ -240,16 +243,16 @@ public class WristWatchBehavior : IWearableComponent
         // Center info group
         var centerGroup = new UIElement();
         centerGroup.Style.FlexGrow = 1f;
-        centerGroup.Style.Direction = UIDirection.Row;
-        centerGroup.Style.JustifyContent = UIJustify.Center;
-        centerGroup.Style.AlignContent = UIAlign.Center;
-        centerGroup.Style.Padding = new(5, 5, 10, 10);
+        centerGroup.Style.Direction = Direction.Row;
+        centerGroup.Style.JustifyContent = Justify.Center;
+        centerGroup.Style.AlignItems = Align.Center;
+        centerGroup.Style.Padding = new BorderOffsets(5, 5, 10, 10);
 
         var stockGroup = new UIElement();
-        stockGroup.Style.Direction = UIDirection.Row;
-        stockGroup.Style.JustifyContent = UIJustify.Start;
-        stockGroup.Style.AlignContent = UIAlign.Center;
-        stockGroup.Style.Margins = new UIRectOffset(10, 10, 5, 5);
+        stockGroup.Style.Direction = Direction.Row;
+        stockGroup.Style.JustifyContent = Justify.Start;
+        stockGroup.Style.AlignItems = Align.Center;
+        stockGroup.Style.Margins = new BorderOffsets(10, 10, 5, 5);
 
         var stockIcon = new UIElement();
         stockIcon.Style.Width = 50f;
@@ -258,16 +261,16 @@ public class WristWatchBehavior : IWearableComponent
         stockGroup.Add(stockIcon);
 
         var stockLabel = new LabelElement("x3");
-        stockLabel.Style.Margins = new(5, 0, 0, 0);
+        stockLabel.Style.Margins = new BorderOffsets(5, 0, 0, 0);
         stockLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
         stockLabel.Style.FontSize = 20f;
         stockGroup.Add(stockLabel);
 
         var percentGroup = new UIElement();
-        percentGroup.Style.Direction = UIDirection.Row;
-        percentGroup.Style.JustifyContent = UIJustify.Center;
-        percentGroup.Style.AlignContent = UIAlign.Center;
-        percentGroup.Style.Margins = new UIRectOffset(10, 10, 5, 5);
+        percentGroup.Style.Direction = Direction.Row;
+        percentGroup.Style.JustifyContent = Justify.Center;
+        percentGroup.Style.AlignItems = Align.Center;
+        percentGroup.Style.Margins = new BorderOffsets(10, 10, 5, 5);
 
         var percentLabel = new LabelElement("43%");
         percentLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
