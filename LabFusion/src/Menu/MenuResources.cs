@@ -1,5 +1,7 @@
 ﻿using Il2CppTMPro;
 
+using LabFusion.UI.Resources;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -107,6 +109,8 @@ public static class MenuResources
 
         _onResourcesReadyCallback?.Invoke();
         _onResourcesReadyCallback = null;
+
+        CommonStyleSheets.MarkDirty();
     }
 
     public static void HookResourcesReady(Action callback)

@@ -6,6 +6,10 @@ public class StyleSheet
 {
     public List<StyleRule> Rules { get; } = new();
 
+    public void Add(StyleRule rule) => Rules.Add(rule);
+
+    public void Remove(StyleRule rule) => Rules.Remove(rule);
+
     public List<StyleRule> GetMatchingRules(UIElement element)
     {
         List<StyleRule> matchingRules = new();

@@ -1,6 +1,6 @@
 ﻿namespace LabFusion.UI.Resources;
 
-public static class CommonProperties
+public static class CommonStyleProperties
 {
     public static readonly string TextColor = "text-color";
     public static readonly string TextGradient = "text-gradient";

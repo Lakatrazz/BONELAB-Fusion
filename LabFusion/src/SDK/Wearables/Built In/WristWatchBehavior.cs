@@ -216,6 +216,22 @@ public class WristWatchBehavior : IWearableComponent
 
     private void DrawUITree()
     {
+        var root = CreateUITree();
+
+        var styleSheets = new List<StyleSheet>()
+        {
+            CommonStyleSheets.DefaultStyleSheet,
+        };
+
+        styleSheets.AddRange(root.StyleSheets);
+
+        root.Resolve(styleSheets);
+
+        UIElementDrawer.DrawUITree(root, RootView);
+    }
+
+    private UIElement CreateUITree()
+    {
         var root = new UIElement();
 
         root.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
@@ -228,7 +244,6 @@ public class WristWatchBehavior : IWearableComponent
 
         var gamemodeTitleLabel = new LabelElement("00:00:00");
 
-        gamemodeTitleLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
         gamemodeTitleLabel.Style.FontSize = 30f;
 
         topGroup.Add(gamemodeTitleLabel);
@@ -262,7 +277,6 @@ public class WristWatchBehavior : IWearableComponent
 
         var stockLabel = new LabelElement("x3");
         stockLabel.Style.Margins = new BorderOffsets(5, 0, 0, 0);
-        stockLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
         stockLabel.Style.FontSize = 20f;
         stockGroup.Add(stockLabel);
 
@@ -273,7 +287,6 @@ public class WristWatchBehavior : IWearableComponent
         percentGroup.Style.Margins = new BorderOffsets(10, 10, 5, 5);
 
         var percentLabel = new LabelElement("43%");
-        percentLabel.Style.Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold);
         percentLabel.Style.FontSize = 20f;
         percentGroup.Add(percentLabel);
 
@@ -289,7 +302,7 @@ public class WristWatchBehavior : IWearableComponent
 
         root.Add(centerGroup);
 
-        UIElementDrawer.DrawUITree(root, RootView);
+        return root;
     }
 
     private void CheckPanelObservation(float deltaTime)

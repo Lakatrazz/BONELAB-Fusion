@@ -11,104 +11,104 @@ public class Style : IReadOnlyStyle
 {
     public StyleValue<Color> TextColor 
     { 
-        get => GetProperty<Color>(CommonProperties.TextColor); 
-        set => SetProperty(CommonProperties.TextColor, value); 
+        get => GetProperty<Color>(CommonStyleProperties.TextColor); 
+        set => SetProperty(CommonStyleProperties.TextColor, value); 
     }
 
     public StyleValue<VertexColors> TextGradient
     {
-        get => GetProperty<VertexColors>(CommonProperties.TextGradient);
-        set => SetProperty(CommonProperties.TextGradient, value);
+        get => GetProperty<VertexColors>(CommonStyleProperties.TextGradient);
+        set => SetProperty(CommonStyleProperties.TextGradient, value);
     }
 
     public StyleValue<TMP_FontAsset> Font
     {
-        get => GetProperty<TMP_FontAsset>(CommonProperties.Font);
-        set => SetProperty(CommonProperties.Font, value);
+        get => GetProperty<TMP_FontAsset>(CommonStyleProperties.Font);
+        set => SetProperty(CommonStyleProperties.Font, value);
     }
 
     public StyleValue<float> FontSize
     {
-        get => GetProperty<float>(CommonProperties.FontSize);
-        set => SetProperty(CommonProperties.FontSize, value);
+        get => GetProperty<float>(CommonStyleProperties.FontSize);
+        set => SetProperty(CommonStyleProperties.FontSize, value);
     }
 
     public StyleValue<Color> BackgroundColor
     {
-        get => GetProperty<Color>(CommonProperties.BackgroundColor);
-        set => SetProperty(CommonProperties.BackgroundColor, value);
+        get => GetProperty<Color>(CommonStyleProperties.BackgroundColor);
+        set => SetProperty(CommonStyleProperties.BackgroundColor, value);
     }
 
     public StyleValue<Texture> BackgroundImage
     {
-        get => GetProperty<Texture>(CommonProperties.BackgroundImage);
-        set => SetProperty(CommonProperties.BackgroundImage, value);
+        get => GetProperty<Texture>(CommonStyleProperties.BackgroundImage);
+        set => SetProperty(CommonStyleProperties.BackgroundImage, value);
     }
 
     public StyleValue<float> Width
     {
-        get => GetProperty<float>(CommonProperties.Width);
-        set => SetProperty(CommonProperties.Width, value);
+        get => GetProperty<float>(CommonStyleProperties.Width);
+        set => SetProperty(CommonStyleProperties.Width, value);
     }
 
     public StyleValue<float> Height
     {
-        get => GetProperty<float>(CommonProperties.Height);
-        set => SetProperty(CommonProperties.Height, value);
+        get => GetProperty<float>(CommonStyleProperties.Height);
+        set => SetProperty(CommonStyleProperties.Height, value);
     }
 
     public StyleValue<Direction> Direction
     {
-        get => GetProperty<Direction>(CommonProperties.Direction);
-        set => SetProperty(CommonProperties.Direction, value);
+        get => GetProperty<Direction>(CommonStyleProperties.Direction);
+        set => SetProperty(CommonStyleProperties.Direction, value);
     }
 
     public StyleValue<Position> Position
     {
-        get => GetProperty<Position>(CommonProperties.Position);
-        set => SetProperty(CommonProperties.Position, value);
+        get => GetProperty<Position>(CommonStyleProperties.Position);
+        set => SetProperty(CommonStyleProperties.Position, value);
     }
 
     public StyleValue<float> FlexGrow
     {
-        get => GetProperty<float>(CommonProperties.FlexGrow);
-        set => SetProperty(CommonProperties.FlexGrow, value);
+        get => GetProperty<float>(CommonStyleProperties.FlexGrow);
+        set => SetProperty(CommonStyleProperties.FlexGrow, value);
     }
 
     public StyleValue<Justify> JustifyContent
     {
-        get => GetProperty<Justify>(CommonProperties.JustifyContent);
-        set => SetProperty(CommonProperties.JustifyContent, value);
+        get => GetProperty<Justify>(CommonStyleProperties.JustifyContent);
+        set => SetProperty(CommonStyleProperties.JustifyContent, value);
     }
 
     public StyleValue<Align> AlignItems
     {
-        get => GetProperty<Align>(CommonProperties.AlignItems);
-        set => SetProperty(CommonProperties.AlignItems, value);
+        get => GetProperty<Align>(CommonStyleProperties.AlignItems);
+        set => SetProperty(CommonStyleProperties.AlignItems, value);
     }
 
     public StyleValue<bool> AlignSelfStretch
     {
-        get => GetProperty<bool>(CommonProperties.AlignSelfStretch);
-        set => SetProperty(CommonProperties.AlignSelfStretch, value);
+        get => GetProperty<bool>(CommonStyleProperties.AlignSelfStretch);
+        set => SetProperty(CommonStyleProperties.AlignSelfStretch, value);
     }
 
     public StyleValue<BorderOffsets> Margins
     {
-        get => GetProperty<BorderOffsets>(CommonProperties.Margins);
-        set => SetProperty(CommonProperties.Margins, value);
+        get => GetProperty<BorderOffsets>(CommonStyleProperties.Margins);
+        set => SetProperty(CommonStyleProperties.Margins, value);
     }
 
     public StyleValue<BorderOffsets> Padding
     {
-        get => GetProperty<BorderOffsets>(CommonProperties.Padding);
-        set => SetProperty(CommonProperties.Padding, value);
+        get => GetProperty<BorderOffsets>(CommonStyleProperties.Padding);
+        set => SetProperty(CommonStyleProperties.Padding, value);
     }
 
     public StyleValue<Vector2> AbsoluteOffset
     {
-        get => GetProperty<Vector2>(CommonProperties.AbsoluteOffset);
-        set => SetProperty(CommonProperties.AbsoluteOffset, value);
+        get => GetProperty<Vector2>(CommonStyleProperties.AbsoluteOffset);
+        set => SetProperty(CommonStyleProperties.AbsoluteOffset, value);
     }
 
     public event Action StyleChanged;

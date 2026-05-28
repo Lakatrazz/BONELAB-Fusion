@@ -121,6 +121,12 @@ public class UIElement : IRepaintNotifier
         {
             var childStyleSheets = styleSheets;
 
+            if (child.StyleSheets.Count > 0)
+            {
+                childStyleSheets = styleSheets.ToList();
+                childStyleSheets.AddRange(child.StyleSheets);
+            }
+
             child.Resolve(childStyleSheets);
         }
     }
