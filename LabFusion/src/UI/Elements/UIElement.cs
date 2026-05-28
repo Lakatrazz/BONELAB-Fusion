@@ -18,6 +18,9 @@ public class UIElement : IRepaintNotifier
         }
     }
 
+    private Style _resolvedStyle = null;
+    public IReadOnlyStyle ResolvedStyle => _resolvedStyle;
+
     public UIElement Parent => _logicalParent;
 
     public IReadOnlyList<UIElement> Children
@@ -38,6 +41,8 @@ public class UIElement : IRepaintNotifier
     public virtual UIElement ContentContainer => this;
 
     public HashSet<string> StyleClasses { get; } = new();
+
+    public List<StyleSheet> StyleSheets { get; } = new();
 
     public event Action Repainted;
 
@@ -83,26 +88,68 @@ public class UIElement : IRepaintNotifier
 
     public bool HasStyleClass(string className) => StyleClasses.Contains(className);
 
-    public List<TElement> Query<TElement>() where TElement : UIElement
+    public void AddStyleSheet(StyleSheet styleSheet) => StyleSheets.Add(styleSheet);
+
+    public void RemoveStyleSheet(StyleSheet styleSheet) => StyleSheets.Remove(styleSheet);
+
+    public void ClearStyleSheets() => StyleSheets.Clear();
+
+    public void Resolve() => Resolve(CollectStyleSheets());
+
+    public void Resolve(List<StyleSheet> styleSheets)
     {
-        List<TElement> result = new();
+        var resolvedStyle = new Style(Style);
 
-        foreach (var child in Children)
+        List<StyleRule> matchingRules = new();
+
+        foreach (var styleSheet in styleSheets)
         {
-            if (child is TElement element)
-            {
-                result.Add(element);
-            }
-
-            var childQuery = child.Query<TElement>();
-
-            if (childQuery.Count > 0)
-            {
-                result.AddRange(childQuery);
-            }
+            matchingRules.AddRange(styleSheet.GetMatchingRules(this));
         }
 
-        return result;
+        var orderedRules = matchingRules.OrderBy(rule => rule.Selector.Specificity);
+
+        foreach (var rule in orderedRules)
+        {
+            rule.ApplyRule(Style, resolvedStyle);
+        }
+
+        _resolvedStyle = resolvedStyle;
+
+        // Apply to children
+        foreach (var child in PhysicalChildren)
+        {
+            var childStyleSheets = styleSheets;
+
+            child.Resolve(childStyleSheets);
+        }
+    }
+
+    public List<StyleSheet> CollectStyleSheets()
+    {
+        List<StyleSheet> collectedStyleSheets = new();
+
+        collectedStyleSheets.AddRange(StyleSheets);
+
+        var parent = Parent;
+
+        while (parent != null)
+        {
+            var parentStyleSheets = parent.StyleSheets;
+
+            if (parentStyleSheets.Count > 0)
+            {
+                collectedStyleSheets.AddRange(parentStyleSheets);
+            }
+
+            parent = parent.Parent;
+        }
+
+        // Child style sheets should be more specific
+        // Since we went up the hierarchy, the order needs to be reversed for correct specificity
+        collectedStyleSheets.Reverse();
+
+        return collectedStyleSheets;
     }
 
     public void Repaint()

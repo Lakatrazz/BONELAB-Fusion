@@ -157,7 +157,7 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public void RepaintElement(UIElement element)
         {
-            var style = element.Style;
+            var style = element.ResolvedStyle;
 
             Direction = style.Direction;
             Position = style.Position;
@@ -166,24 +166,29 @@ namespace LabFusion.Marrow.Integration
 
             if (parent != null)
             {
-                var parentStyle = parent.Style;
+                var parentStyle = parent.ResolvedStyle;
 
-                var parentIsColumn = parentStyle.Direction == Direction.Column || parentStyle.Direction == Direction.ColumnReverse;
+                var parentDirection = parentStyle.Direction.GetValueOrDefault(Direction.Column);
+
+                var parentIsColumn = parentDirection == Direction.Column || parentDirection == Direction.ColumnReverse;
 
                 var layoutElement = References.LayoutElement;
 
-                layoutElement.preferredWidth = style.Width != StyleKeyword.Null ? style.Width : -1f;
-                layoutElement.preferredHeight = style.Height != StyleKeyword.Null ? style.Height : -1f;
+                layoutElement.preferredWidth = style.Width.GetValueOrDefault(-1f);
+                layoutElement.preferredHeight = style.Height.GetValueOrDefault(-1f);
 
-                bool alignStretch = parentStyle.AlignItems == Align.Stretch || style.AlignSelfStretch;
+                var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(Align.Stretch);
+                var alignSelfStretch = style.AlignSelfStretch.GetValueOrDefault(false);
 
-                var flexGrow = style.FlexGrow;
+                bool alignStretch = parentAlignItems == Align.Stretch || alignSelfStretch;
+
+                var flexGrow = style.FlexGrow.GetValueOrDefault(0f);
                 var alignGrow = alignStretch ? -1f : 0f;
 
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
 
-                bool ignoreLayout = style.Position == Position.Absolute;
+                bool ignoreLayout = style.Position.GetValueOrDefault(Position.Relative) == Position.Absolute;
 
                 layoutElement.ignoreLayout = ignoreLayout;
 
@@ -207,15 +212,17 @@ namespace LabFusion.Marrow.Integration
             BorderOffsets padding = style.Padding;
             References.MarginsLayoutGroup.padding = new(padding.Left, padding.Right, padding.Top, padding.Bottom);
 
-            References.BackgroundColorView.color = style.BackgroundColor;
+            References.BackgroundColorView.color = style.BackgroundColor.GetValueOrDefault(Color.clear);
 
-            References.BackgroundImageView.enabled = style.BackgroundImage != StyleKeyword.Null;
+            References.BackgroundImageView.enabled = style.BackgroundImage.Keyword.HasValue();
             References.BackgroundImageView.texture = style.BackgroundImage;
 
-            Justify justifyContent = style.JustifyContent;
-            Align alignContent = style.AlignItems;
-            var isColumn = style.Direction == Direction.Column || style.Direction == Direction.ColumnReverse;
-            var isReversed = style.Direction == Direction.ColumnReverse || style.Direction == Direction.RowReverse;
+            var direction = style.Direction.GetValueOrDefault(Direction.Column);
+
+            Justify justifyContent = style.JustifyContent.GetValueOrDefault(Justify.Start);
+            Align alignItems = style.AlignItems.GetValueOrDefault(Align.Stretch);
+            var isColumn = direction == Direction.Column || direction == Direction.ColumnReverse;
+            var isReversed = direction == Direction.ColumnReverse || direction == Direction.RowReverse;
 
             int rawAlignment = 0;
 
@@ -229,7 +236,7 @@ namespace LabFusion.Marrow.Integration
                     break;
             }
 
-            switch (alignContent)
+            switch (alignItems)
             {
                 case Align.Center:
                     rawAlignment += isColumn ? 1 : 3;

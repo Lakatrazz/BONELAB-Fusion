@@ -5,6 +5,8 @@ public interface IStyleValue
     object Value { get; set; }
 
     StyleKeyword Keyword { get; set; }
+
+    IStyleValue Clone();
 }
 
 public struct StyleValue<T> : IStyleValue
@@ -35,6 +37,15 @@ public struct StyleValue<T> : IStyleValue
     {
         _keyword = keyword;
         _value = default;
+    }
+
+    public IStyleValue Clone()
+    {
+        return new StyleValue<T>()
+        {
+            _value = _value,
+            _keyword = _keyword,
+        };
     }
 
     public static implicit operator T(StyleValue<T> value) => value.Value;

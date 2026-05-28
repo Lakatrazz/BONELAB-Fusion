@@ -35,14 +35,14 @@ namespace LabFusion.Marrow.Integration
 
             TextView.text = textElement.Text;
 
-            var style = textElement.Style;
+            var style = textElement.ResolvedStyle;
 
-            TextView.color = style.TextColor != StyleKeyword.Null ? style.TextColor : Color.white;
+            TextView.color = style.TextColor.GetValueOrDefault(Color.white);
 
             TextView.font = style.Font;
-            TextView.fontSize = style.FontSize != StyleKeyword.Null ? style.FontSize : 14f;
+            TextView.fontSize = style.FontSize.GetValueOrDefault(14f);
 
-            bool hasGradient = style.TextGradient != StyleKeyword.Null;
+            bool hasGradient = style.TextGradient.Keyword.HasValue();
             TextView.enableVertexGradient = hasGradient;
 
             if (hasGradient)

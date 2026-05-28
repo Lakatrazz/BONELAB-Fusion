@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
 using LabFusion.Extensions;
+using LabFusion.UI.Resources;
 
 using Il2CppTMPro;
 
 namespace LabFusion.UI.Styles;
 
-public class Style
+public class Style : IReadOnlyStyle
 {
     public StyleValue<Color> TextColor 
     { 
@@ -112,11 +113,21 @@ public class Style
 
     public event Action StyleChanged;
 
-    public IReadOnlyDictionary<string, IStyleValue> AssignedProperties => _assignedProperties;
+    public IReadOnlyDictionary<string, IStyleValue> SetProperties => _setProperties;
 
-    private readonly Dictionary<string, IStyleValue> _assignedProperties = new();
+    private readonly Dictionary<string, IStyleValue> _setProperties = new();
 
     public Style() { }
+
+    public Style(Style other)
+    {
+        _setProperties = new(other._setProperties.Count);
+
+        foreach (var pair in other._setProperties)
+        {
+            _setProperties[pair.Key] = pair.Value.Clone();
+        }
+    }
 
     public Style(Action changeCallback)
     {
@@ -125,7 +136,7 @@ public class Style
 
     public StyleValue<T> GetProperty<T>(string propertyName)
     {
-        if (_assignedProperties.TryGetValue(propertyName, out var value))
+        if (_setProperties.TryGetValue(propertyName, out var value))
         {
             return (StyleValue<T>)value;
         }
@@ -133,7 +144,7 @@ public class Style
         return StyleKeyword.Null;
     }
 
-    public void SetProperty<T>(string propertyName, StyleValue<T> value)
+    public void SetProperty(string propertyName, IStyleValue value)
     {
         if (value.Keyword == StyleKeyword.Null)
         {
@@ -141,17 +152,19 @@ public class Style
             return;
         }
 
-        _assignedProperties[propertyName] = value;
+        _setProperties[propertyName] = value;
 
         NotifyStyleChanged();
     }
 
     public void RemoveProperty(string propertyName) 
     { 
-        _assignedProperties.Remove(propertyName);
+        _setProperties.Remove(propertyName);
 
         NotifyStyleChanged();
     }
+
+    public bool HasSetProperty(string propertyName) => _setProperties.ContainsKey(propertyName);
 
     private void NotifyStyleChanged() => StyleChanged?.InvokeSafe("executing StyleChanged event");
 }

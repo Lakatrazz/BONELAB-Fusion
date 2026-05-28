@@ -1,4 +1,4 @@
-﻿namespace LabFusion.UI.Styles;
+﻿namespace LabFusion.UI.Resources;
 
 public static class CommonProperties
 {

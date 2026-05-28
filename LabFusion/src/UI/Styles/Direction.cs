@@ -6,7 +6,7 @@
 public enum Direction
 {
     /// <summary>
-    /// Children are displayed from the top down.
+    /// Children are displayed from the top down. This is the default value.
     /// </summary>
     Column,
 
