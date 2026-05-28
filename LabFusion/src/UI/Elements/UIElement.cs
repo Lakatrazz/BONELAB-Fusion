@@ -98,11 +98,13 @@ public class UIElement : IRepaintNotifier
 
     public void Resolve(List<StyleSheet> styleSheets)
     {
+        var uniqueSheets = styleSheets.Distinct();
+
         var resolvedStyle = new Style(Style);
 
         List<StyleRule> matchingRules = new();
 
-        foreach (var styleSheet in styleSheets)
+        foreach (var styleSheet in uniqueSheets)
         {
             matchingRules.AddRange(styleSheet.GetMatchingRules(this));
         }
