@@ -39,4 +39,6 @@ public interface IReadOnlyStyle
     StyleValue<BorderOffsets> Padding { get; }
 
     StyleValue<Vector2> AbsoluteOffset { get; }
+
+    IReadOnlyDictionary<string, IStyleValue> SetProperties { get; }
 }

@@ -240,10 +240,9 @@ public class WristWatchBehavior : IWearableComponent
         // Top info group
         var topGroup = new UIElement();
         topGroup.Style.AlignItems = Align.Center;
+        topGroup.Style.FontSize = 14f;
 
         var gamemodeTitleLabel = new LabelElement("Smash Bones");
-
-        gamemodeTitleLabel.Style.FontSize = 14f;
 
         topGroup.Add(gamemodeTitleLabel);
 
@@ -252,7 +251,6 @@ public class WristWatchBehavior : IWearableComponent
         topGroup.Add(horizontalLine);
 
         var timeLabel = new LabelElement("00:00:00");
-        timeLabel.Style.FontSize = 14f;
         topGroup.Add(timeLabel);
 
         root.Add(topGroup);
@@ -263,6 +261,7 @@ public class WristWatchBehavior : IWearableComponent
         centerGroup.Style.JustifyContent = Justify.Center;
         centerGroup.Style.AlignItems = Align.Center;
         centerGroup.Style.Margins = new BorderOffsets(0, 0, 5, 0);
+        centerGroup.Style.FontSize = 28f;
 
         var percentGroup = new UIElement();
         percentGroup.Style.Direction = Direction.Row;
@@ -270,7 +269,6 @@ public class WristWatchBehavior : IWearableComponent
         percentGroup.Style.AlignItems = Align.Center;
 
         var percentLabel = new LabelElement("43%");
-        percentLabel.Style.FontSize = 28f;
         percentGroup.Add(percentLabel);
 
         var stockGroup = new UIElement();
@@ -286,7 +284,6 @@ public class WristWatchBehavior : IWearableComponent
 
         var stockLabel = new LabelElement("x3");
         stockLabel.Style.Margins = new BorderOffsets(5, 0, 0, 0);
-        stockLabel.Style.FontSize = 28f;
         stockGroup.Add(stockLabel);
 
         centerGroup.Add(percentGroup);

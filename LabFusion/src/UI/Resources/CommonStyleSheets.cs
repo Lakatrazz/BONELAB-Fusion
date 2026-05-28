@@ -30,7 +30,7 @@ public static class CommonStyleSheets
             Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold)
         };
 
-        styleSheet.Add(new StyleRule(new UniversalSelector(), fontStyle));
+        styleSheet.Add(new StyleRule(new RootSelector(), fontStyle));
 
         var horizontalLineStyle = new Style
         {

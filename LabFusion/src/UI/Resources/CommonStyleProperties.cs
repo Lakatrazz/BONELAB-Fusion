@@ -27,4 +27,12 @@ public static class CommonStyleProperties
     public static readonly string Padding = "padding";
 
     public static readonly string AbsoluteOffset = "absolute-offset";
+
+    public static readonly List<string> InheritedProperties = new()
+    {
+        TextColor,
+        TextGradient,
+        Font,
+        FontSize
+    };
 }

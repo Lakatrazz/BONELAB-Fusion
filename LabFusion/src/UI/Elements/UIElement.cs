@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.UI.Resources;
 using LabFusion.UI.Styles;
 
 namespace LabFusion.UI.Elements;
@@ -98,9 +99,11 @@ public class UIElement : IRepaintNotifier
 
     public void Resolve(List<StyleSheet> styleSheets)
     {
-        var uniqueSheets = styleSheets.Distinct();
-
         var resolvedStyle = new Style(Style);
+
+        InheritProperties(Style, resolvedStyle);
+
+        var uniqueSheets = styleSheets.Distinct();
 
         List<StyleRule> matchingRules = new();
 
@@ -184,5 +187,35 @@ public class UIElement : IRepaintNotifier
 
         child._physicalParent = null;
         child._logicalParent = null;
+    }
+
+    private void InheritProperties(Style originalStyle, Style resolvedStyle)
+    {
+        var parent = Parent;
+
+        if (parent == null)
+        {
+            return;
+        }
+
+        var parentStyle = parent.ResolvedStyle;
+
+        if (parentStyle == null)
+        {
+            return;
+        }
+
+        foreach (var inheritedProperty in CommonStyleProperties.InheritedProperties)
+        {
+            if (originalStyle.HasSetProperty(inheritedProperty))
+            {
+                continue;
+            }
+
+            if (parentStyle.SetProperties.TryGetValue(inheritedProperty, out var inheritedValue))
+            {
+                resolvedStyle.SetProperty(inheritedProperty, inheritedValue);
+            }
+        }
     }
 }
