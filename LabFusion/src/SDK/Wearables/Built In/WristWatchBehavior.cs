@@ -251,8 +251,7 @@ public class WristWatchBehavior : IWearableComponent
         root.Add(topGroup);
 
         var horizontalLine = new UIElement();
-        horizontalLine.Style.BackgroundColor = Color.white;
-        horizontalLine.Style.Height = 2.5f;
+        horizontalLine.AddStyleClass(CommonStyleClasses.HorizontalLine);
         root.Add(horizontalLine);
 
         // Center info group
@@ -293,9 +292,7 @@ public class WristWatchBehavior : IWearableComponent
         centerGroup.Add(stockGroup);
 
         var verticalLine = new UIElement();
-        verticalLine.Style.BackgroundColor = Color.white;
-        verticalLine.Style.Width = 2.5f;
-        verticalLine.Style.AlignSelfStretch = true;
+        verticalLine.AddStyleClass(CommonStyleClasses.VerticalLine);
         centerGroup.Add(verticalLine);
 
         centerGroup.Add(percentGroup);

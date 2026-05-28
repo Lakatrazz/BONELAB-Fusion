@@ -1,5 +1,7 @@
 ﻿using LabFusion.UI.Styles;
 
+using UnityEngine;
+
 namespace LabFusion.UI.Resources;
 
 public static class CommonStyleSheets
@@ -28,8 +30,25 @@ public static class CommonStyleSheets
             Font = UIResources.GetCommonFont(CommonFonts.BalooBhai2_SemiBold)
         };
 
-        var fontRule = new StyleRule(new UniversalSelector(), fontStyle);
-        styleSheet.Add(fontRule);
+        styleSheet.Add(new StyleRule(new UniversalSelector(), fontStyle));
+
+        var horizontalLineStyle = new Style
+        {
+            BackgroundColor = Color.white,
+            Height = 2f,
+            AlignSelfStretch = true,
+        };
+
+        styleSheet.Add(new StyleRule(new ClassSelector(CommonStyleClasses.HorizontalLine), horizontalLineStyle));
+
+        var verticalLineStyle = new Style
+        {
+            BackgroundColor = Color.white,
+            Width = 2f,
+            AlignSelfStretch = true,
+        };
+
+        styleSheet.Add(new StyleRule(new ClassSelector(CommonStyleClasses.VerticalLine), verticalLineStyle));
 
         return styleSheet;
     }
