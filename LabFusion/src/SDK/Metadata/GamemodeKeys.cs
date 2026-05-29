@@ -10,14 +10,12 @@ public static class GamemodeKeys
 
     public static Predicate<string> PersistentKeys => (v) =>
     {
-        switch (v)
+        return v switch
         {
-            case StartedKey:
-            case SelectedKey:
-            case ReadyKey:
-                return true;
-            default:
-                return false;
-        }
+            StartedKey or
+            SelectedKey or 
+            ReadyKey => true,
+            _ => false,
+        };
     };
 }

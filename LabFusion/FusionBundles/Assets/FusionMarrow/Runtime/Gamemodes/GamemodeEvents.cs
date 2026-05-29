@@ -29,8 +29,8 @@ namespace LabFusion.Marrow.Integration
 
         private void Awake()
         {
-            GamemodeManager.OnGamemodeStarted += OnGamemodeStarted;
-            GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
+            GamemodeManager.GamemodeStarted += OnGamemodeStarted;
+            GamemodeManager.GamemodeStopped += OnGamemodeStopped;
 
             if (GamemodeManager.IsGamemodeStarted)
             {
@@ -40,8 +40,8 @@ namespace LabFusion.Marrow.Integration
 
         private void OnDestroy()
         {
-            GamemodeManager.OnGamemodeStarted -= OnGamemodeStarted;
-            GamemodeManager.OnGamemodeStopped -= OnGamemodeStopped;
+            GamemodeManager.GamemodeStarted -= OnGamemodeStarted;
+            GamemodeManager.GamemodeStopped -= OnGamemodeStopped;
         }
 
         [HideFromIl2Cpp]

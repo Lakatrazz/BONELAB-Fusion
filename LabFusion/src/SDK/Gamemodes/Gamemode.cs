@@ -5,6 +5,10 @@ using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu.Data;
 using LabFusion.Player;
+using LabFusion.SDK.Wearables;
+using LabFusion.UI.Elements;
+using LabFusion.UI.Resources;
+using LabFusion.UI.Styles;
 
 using UnityEngine;
 
@@ -13,7 +17,7 @@ namespace LabFusion.SDK.Gamemodes;
 /// <summary>
 /// The base class for a multiplayer Gamemode.
 /// </summary>
-public abstract class Gamemode
+public abstract class Gamemode : IWearableUIProvider
 {
     public static event Action<Gamemode, bool> OnStartedKeyChanged, OnSelectedKeyChanged, OnReadyKeyChanged;
 
@@ -202,6 +206,28 @@ public abstract class Gamemode
     /// Invoked when this Gamemode is unregistered.
     /// </summary>
     public virtual void OnGamemodeUnregistered() { }
+
+    public virtual UIElement CreateWearableUI()
+    {
+        var root = new UIElement();
+
+        var headerGroup = new UIElement();
+        headerGroup.Style.AlignItems = Align.Center;
+
+        var titleLabel = new LabelElement(Title);
+        headerGroup.Add(titleLabel);
+
+        var horizontalLine = new UIElement();
+        horizontalLine.AddStyleClass(CommonStyleClasses.HorizontalLine);
+        headerGroup.Add(horizontalLine);
+
+        var timerLabel = new LabelElement("00:00.00");
+        headerGroup.Add(timerLabel);
+
+        root.Add(headerGroup);
+
+        return root;
+    }
 
     public virtual void OnMainSceneInitialized() { }
 

@@ -216,7 +216,17 @@ public class WristWatchBehavior : IWearableComponent
 
     private void DrawUITree()
     {
-        var root = CreateUITree();
+        var root = CreatePanelRoot();
+
+        if (WristWatchManager.PanelUI != null)
+        {
+            var wearableUI = WristWatchManager.PanelUI.CreateWearableUI();
+
+            if (wearableUI != null)
+            {
+                root.Add(wearableUI);
+            }
+        }
 
         var styleSheets = new List<StyleSheet>()
         {
@@ -230,66 +240,12 @@ public class WristWatchBehavior : IWearableComponent
         UIElementDrawer.DrawUITree(root, RootView);
     }
 
-    private UIElement CreateUITree()
+    private static UIElement CreatePanelRoot()
     {
         var root = new UIElement();
 
         root.Style.BackgroundColor = new Color(0f, 0f, 0f, 0.3f);
         root.Style.Padding = new BorderOffsets(5, 5, 5, 5);
-
-        // Top info group
-        var topGroup = new UIElement();
-        topGroup.Style.AlignItems = Align.Center;
-        topGroup.Style.FontSize = 14f;
-
-        var gamemodeTitleLabel = new LabelElement("Smash Bones");
-
-        topGroup.Add(gamemodeTitleLabel);
-
-        var horizontalLine = new UIElement();
-        horizontalLine.AddStyleClass(CommonStyleClasses.HorizontalLine);
-        topGroup.Add(horizontalLine);
-
-        var timeLabel = new LabelElement("00:00:00");
-        topGroup.Add(timeLabel);
-
-        root.Add(topGroup);
-
-        // Center info group
-        var centerGroup = new UIElement();
-        centerGroup.Style.Direction = Direction.Column;
-        centerGroup.Style.JustifyContent = Justify.Center;
-        centerGroup.Style.AlignItems = Align.Center;
-        centerGroup.Style.Margins = new BorderOffsets(0, 0, 5, 0);
-        centerGroup.Style.FontSize = 28f;
-
-        var percentGroup = new UIElement();
-        percentGroup.Style.Direction = Direction.Row;
-        percentGroup.Style.JustifyContent = Justify.Center;
-        percentGroup.Style.AlignItems = Align.Center;
-
-        var percentLabel = new LabelElement("43%");
-        percentGroup.Add(percentLabel);
-
-        var stockGroup = new UIElement();
-        stockGroup.Style.Direction = Direction.Row;
-        stockGroup.Style.JustifyContent = Justify.Start;
-        stockGroup.Style.AlignItems = Align.Center;
-
-        var stockIcon = new UIElement();
-        stockIcon.Style.Width = 50f;
-        stockIcon.Style.Height = 50f;
-        stockIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
-        stockGroup.Add(stockIcon);
-
-        var stockLabel = new LabelElement("x3");
-        stockLabel.Style.Margins = new BorderOffsets(5, 0, 0, 0);
-        stockGroup.Add(stockLabel);
-
-        centerGroup.Add(percentGroup);
-        centerGroup.Add(stockGroup);
-
-        root.Add(centerGroup);
 
         return root;
     }

@@ -40,14 +40,14 @@ namespace LabFusion.Marrow.Integration
             _crateSpawner.manualMode = true;
             _crateSpawner.onSpawnEvent.add_DynamicCalls((Il2CppSystem.Action<CrateSpawner, GameObject>)OnSpawnEvent);
 
-            GamemodeManager.OnGamemodeStarted += OnGamemodeStarted;
-            GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
+            GamemodeManager.GamemodeStarted += OnGamemodeStarted;
+            GamemodeManager.GamemodeStopped += OnGamemodeStopped;
         }
 
         private void OnDestroy()
         {
-            GamemodeManager.OnGamemodeStarted -= OnGamemodeStarted;
-            GamemodeManager.OnGamemodeStopped -= OnGamemodeStopped;
+            GamemodeManager.GamemodeStarted -= OnGamemodeStarted;
+            GamemodeManager.GamemodeStopped -= OnGamemodeStopped;
         }
 
         private void OnSpawnEvent(CrateSpawner spawner, GameObject spawned)

@@ -7,7 +7,7 @@ public static class GamemodeConditionsChecker
 {
     internal static void OnInitializeMelon()
     {
-        GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
+        GamemodeManager.GamemodeChanged += OnGamemodeChanged;
 
         MultiplayerHooking.OnPlayerJoined += OnPlayerCountChanged;
         MultiplayerHooking.OnPlayerLeft += OnPlayerCountChanged;

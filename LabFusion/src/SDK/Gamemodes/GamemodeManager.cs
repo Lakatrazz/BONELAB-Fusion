@@ -4,6 +4,7 @@ using LabFusion.Scene;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+using LabFusion.SDK.Wearables;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -16,10 +17,7 @@ public static class GamemodeManager
     /// </summary>
     public static Gamemode ActiveGamemode
     {
-        get
-        {
-            return _activeGamemode;
-        }
+        get => _activeGamemode;
         private set
         {
             if (_activeGamemode != null)
@@ -38,7 +36,7 @@ public static class GamemodeManager
                 value.OnGamemodeSelected();
             }
 
-            OnGamemodeChanged.InvokeSafe(value, "executing hook OnGamemodeChanged");
+            GamemodeChanged.InvokeSafe(value, "executing GamemodeChanged event");
 
             SendGamemodeChangeNotification();
 
@@ -52,11 +50,11 @@ public static class GamemodeManager
 
     public static bool IsGamemodeReady => ActiveGamemode != null && ActiveGamemode.IsReady;
 
-    public static event Action<Gamemode> OnGamemodeChanged;
+    public static event Action<Gamemode> GamemodeChanged;
 
-    public static event Action OnGamemodeStarted, OnGamemodeStopped, OnGamemodeReady, OnGamemodeUnready;
+    public static event Action GamemodeStarted, GamemodeStopped, GamemodeReady, GamemodeUnready;
 
-    public static event Action<float> OnStartTimerChanged;
+    public static event Action<float> StartTimerChanged;
 
     private static float _startTimer = DefaultStartTime;
     public static float StartTimer
@@ -69,7 +67,7 @@ public static class GamemodeManager
         {
             _startTimer = value;
 
-            OnStartTimerChanged?.InvokeSafe(value, "executing OnStartTimerChanged hook");
+            StartTimerChanged?.InvokeSafe(value, "executing OnStartTimerChanged hook");
         }
     }
 
@@ -167,7 +165,9 @@ public static class GamemodeManager
                 gamemode.OnLevelReady();
             }
 
-            OnGamemodeStarted?.InvokeSafe("executing OnGamemodeStarted");
+            GamemodeStarted?.InvokeSafe("executing GamemodeStarted event");
+
+            WristWatchManager.PanelUI = gamemode;
 
 #if DEBUG
             FusionLogger.Log($"Gamemode {gamemode.Title} started!");
@@ -177,13 +177,15 @@ public static class GamemodeManager
         {
             gamemode.OnGamemodeStopped();
 
-            OnGamemodeStopped?.InvokeSafe("executing OnGamemodeStopped");
+            GamemodeStopped?.InvokeSafe("executing GamemodeStopped event");
 
             // Restart the ready timer
             if (IsGamemodeReady)
             {
                 StartReadyTimer();
             }
+
+            WristWatchManager.PanelUI = null;
 
 #if DEBUG
             FusionLogger.Log($"Gamemode {gamemode.Title} stopped!");
@@ -209,13 +211,13 @@ public static class GamemodeManager
         {
             gamemode.OnGamemodeReady();
 
-            OnGamemodeReady?.InvokeSafe("executing OnGamemodeReady hook");
+            GamemodeReady?.InvokeSafe("executing GamemodeReady event");
         }
         else
         {
             gamemode.OnGamemodeUnready();
 
-            OnGamemodeUnready?.InvokeSafe("executing OnGamemodeUnready hook");
+            GamemodeUnready?.InvokeSafe("executing GamemodeUnready event");
         }
 
         if (IsGamemodeStarted)

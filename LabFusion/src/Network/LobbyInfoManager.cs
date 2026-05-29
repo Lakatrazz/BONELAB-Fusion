@@ -37,7 +37,7 @@ public static class LobbyInfoManager
 
         SavedServerSettings.OnSavedServerSettingsChanged += PushLobbyUpdate;
 
-        GamemodeManager.OnGamemodeChanged += (_) => { PushLobbyUpdate(); };
+        GamemodeManager.GamemodeChanged += (_) => { PushLobbyUpdate(); };
     }
 
     public static void PushLobbyUpdate()

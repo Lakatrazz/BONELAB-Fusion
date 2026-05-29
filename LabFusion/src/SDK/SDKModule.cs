@@ -21,8 +21,7 @@ public sealed class SDKModule : Module
 
         WearableManager.Initialize();
 
-        var wristWatchItem = new WristWatchItem();
-        EquippableManager.RegisterEquippable(wristWatchItem);
-        EquippableManager.EquipEquippable(wristWatchItem.Barcode, true);
+        WristWatchManager.Initialize();
+        WristWatchManager.EquipWristWatch(true);
     }
 }

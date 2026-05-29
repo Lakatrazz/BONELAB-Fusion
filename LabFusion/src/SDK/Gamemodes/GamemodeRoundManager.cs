@@ -70,9 +70,9 @@ public static class GamemodeRoundManager
     {
         LoadSettings();
 
-        GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
-        GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
-        GamemodeManager.OnGamemodeUnready += OnGamemodeUnready;
+        GamemodeManager.GamemodeStopped += OnGamemodeStopped;
+        GamemodeManager.GamemodeChanged += OnGamemodeChanged;
+        GamemodeManager.GamemodeUnready += OnGamemodeUnready;
     }
 
     private static void OnGamemodeUnready()

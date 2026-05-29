@@ -41,12 +41,12 @@ public static class MenuGamemode
 
     public static void OnInitializeMelon()
     {
-        GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
-        GamemodeManager.OnGamemodeStarted += OnGamemodeStarted;
-        GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
-        GamemodeManager.OnGamemodeReady += OnGamemodeReady;
-        GamemodeManager.OnGamemodeUnready += OnGamemodeUnready;
-        GamemodeManager.OnStartTimerChanged += OnStartTimerChanged;
+        GamemodeManager.GamemodeChanged += OnGamemodeChanged;
+        GamemodeManager.GamemodeStarted += OnGamemodeStarted;
+        GamemodeManager.GamemodeStopped += OnGamemodeStopped;
+        GamemodeManager.GamemodeReady += OnGamemodeReady;
+        GamemodeManager.GamemodeUnready += OnGamemodeUnready;
+        GamemodeManager.StartTimerChanged += OnStartTimerChanged;
     }
 
     private static void OnGamemodeChanged(Gamemode gamemode)
