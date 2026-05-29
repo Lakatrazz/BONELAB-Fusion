@@ -1,6 +1,6 @@
 ## **Fusion**
-#### Improved:
-- Additional changes to impersonation check
+#### Changed:
+- Old mod.io API to the new API
 
 ## **Fusion Auto Updater**
 - No changes
