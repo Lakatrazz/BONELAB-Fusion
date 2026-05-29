@@ -22,7 +22,7 @@ public static class GamemodeRegistration
     private static void RegisterGamemode(Type type)
     {
         var gamemodeInstance = Activator.CreateInstance(type) as Gamemode;
-        gamemodeInstance.GamemodeRegistered();
+        gamemodeInstance.Register();
 
         Gamemodes.Add(gamemodeInstance);
         GamemodeLookup.Add(gamemodeInstance.Barcode, gamemodeInstance);

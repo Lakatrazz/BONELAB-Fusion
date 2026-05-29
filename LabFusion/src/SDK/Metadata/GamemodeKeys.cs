@@ -8,6 +8,8 @@ public static class GamemodeKeys
 
     public const string ReadyKey = "Gamemode.Ready";
 
+    public const string ElapsedKey = "Gamemode.Elapsed";
+
     public static Predicate<string> PersistentKeys => (v) =>
     {
         return v switch

@@ -2,7 +2,7 @@
 
 namespace LabFusion.SDK.Metadata;
 
-public class MetadataInt : MetadataVariableT<int>
+public class MetadataInt : MetadataVariable<int>
 {
     public MetadataInt(string key, NetworkMetadata metadata) : base(key, metadata) { }
 
@@ -17,7 +17,7 @@ public class MetadataInt : MetadataVariableT<int>
     }
 }
 
-public class MetadataFloat : MetadataVariableT<float>
+public class MetadataFloat : MetadataVariable<float>
 {
     public MetadataFloat(string key, NetworkMetadata metadata) : base(key, metadata) { }
 
@@ -42,7 +42,7 @@ public class MetadataFloat : MetadataVariableT<float>
     }
 }
 
-public class MetadataBool : MetadataVariableT<bool>
+public class MetadataBool : MetadataVariable<bool>
 {
     public MetadataBool(string key, NetworkMetadata metadata) : base(key, metadata) { }
 

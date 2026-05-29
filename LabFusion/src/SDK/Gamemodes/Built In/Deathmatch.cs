@@ -505,11 +505,9 @@ public class Deathmatch : Gamemode
         LocalControls.DisableSlowMo = false;
     }
 
-    public float GetTimeElapsed() => TimeReferences.TimeSinceStartup - _timeOfStart;
     public float GetMinutesLeft()
     {
-        float elapsed = GetTimeElapsed();
-        return _totalMinutes - (elapsed / 60f);
+        return _totalMinutes - (ElapsedSeconds / 60f);
     }
 
     protected override void OnUpdate()

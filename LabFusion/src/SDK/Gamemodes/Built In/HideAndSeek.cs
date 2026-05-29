@@ -73,11 +73,6 @@ public class HideAndSeek : Gamemode
 
     private readonly HashSet<ulong> _tagRewards = new();
 
-    private float _elapsedTime = 0f;
-
-    public float ElapsedSeconds => _elapsedTime;
-    public int ElapsedMinutes => Mathf.FloorToInt(ElapsedSeconds / 60f);
-
     public override bool DisableDevTools => true;
     public override bool DisableSpawnGun => true;
 
@@ -478,7 +473,6 @@ public class HideAndSeek : Gamemode
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
 
-        _elapsedTime = 0f;
         _lastCheckedMinutes = 0;
         _oneMinuteLeft = false;
     }
@@ -503,7 +497,6 @@ public class HideAndSeek : Gamemode
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
 
-        _elapsedTime = 0f;
         _lastCheckedMinutes = 0;
         _oneMinuteLeft = false;
     }
@@ -515,8 +508,6 @@ public class HideAndSeek : Gamemode
         {
             return;
         }
-
-        _elapsedTime += TimeReferences.DeltaTime;
 
         Playlist.Update();
 
@@ -578,7 +569,6 @@ public class HideAndSeek : Gamemode
     {
         TeamManager.UnassignAllPlayers();
     }
-
 
     private void OnLocalPlayerGrab(Hand hand, Grip grip)
     {

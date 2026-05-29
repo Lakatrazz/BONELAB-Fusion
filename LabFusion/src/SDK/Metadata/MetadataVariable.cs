@@ -63,9 +63,9 @@ public class MetadataVariable
     }
 }
 
-public class MetadataVariableT<TValue> : MetadataVariable
+public class MetadataVariable<TValue> : MetadataVariable
 {
-    public MetadataVariableT(string key, NetworkMetadata metadata) : base(key, metadata) { }
+    public MetadataVariable(string key, NetworkMetadata metadata) : base(key, metadata) { }
 
     public void SetValue(TValue value)
     {

@@ -19,7 +19,7 @@ namespace LabFusion.SDK.Gamemodes;
 /// </summary>
 public abstract class Gamemode : IWearableUIProvider
 {
-    public static event Action<Gamemode, bool> OnStartedKeyChanged, OnSelectedKeyChanged, OnReadyKeyChanged;
+    public static event Action<Gamemode, bool> StartedKeyChanged, SelectedKeyChanged, ReadyKeyChanged;
 
     private bool _isStarted = false;
     
@@ -84,14 +84,19 @@ public abstract class Gamemode : IWearableUIProvider
     public virtual bool DisableSpawnGun { get; } = false;
     public virtual bool DisableManualUnragdoll { get; } = false;
 
+    public NetworkMetadata Metadata { get; } = new();
 
-    private readonly NetworkMetadata _metadata = new();
-    public NetworkMetadata Metadata => _metadata;
+    public TriggerRelay Relay { get; } = new();
 
-    private readonly TriggerRelay _relay = new();
-    public TriggerRelay Relay => _relay;
+    public float ElapsedSeconds => ElapsedVariable?.GetValue() ?? 0f;
 
-    internal void GamemodeRegistered()
+    public int ElapsedMinutes => (int)MathF.Floor(ElapsedSeconds / 60f);
+
+    public MetadataFloat ElapsedVariable { get; private set; } = null;
+
+    public LabelElement ElapsedLabel { get; private set; } = null;
+
+    internal void Register()
     {
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoinedCallback;
@@ -105,6 +110,8 @@ public abstract class Gamemode : IWearableUIProvider
         Metadata.OnMetadataChanged += OnInternalMetadataChanged;
         Metadata.OnMetadataRemoved += OnMetadataRemoved;
 
+        ElapsedVariable = new MetadataFloat(GamemodeKeys.ElapsedKey, Metadata);
+
         // Triggers
         Relay.OnTryInvokeTrigger += OnTryInvokeTrigger;
         Relay.OnTryInvokeTriggerWithValue += OnTryInvokeTriggerWithValue;
@@ -112,7 +119,7 @@ public abstract class Gamemode : IWearableUIProvider
         OnGamemodeRegistered();
     }
 
-    internal void GamemodeUnregistered()
+    internal void Unregister()
     {
         MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
 
@@ -221,8 +228,8 @@ public abstract class Gamemode : IWearableUIProvider
         horizontalLine.AddStyleClass(CommonStyleClasses.HorizontalLine);
         headerGroup.Add(horizontalLine);
 
-        var timerLabel = new LabelElement("00:00.00");
-        headerGroup.Add(timerLabel);
+        ElapsedLabel = new LabelElement("00:00.000");
+        headerGroup.Add(ElapsedLabel);
 
         root.Add(headerGroup);
 
@@ -296,6 +303,10 @@ public abstract class Gamemode : IWearableUIProvider
     public void Update()
     {
         OnUpdate();
+
+        float unscaledDeltaTime = TimeReferences.UnscaledDeltaTime;
+
+        TickElapsed(unscaledDeltaTime);
     }
     protected virtual void OnUpdate() { }
 
@@ -319,7 +330,7 @@ public abstract class Gamemode : IWearableUIProvider
 
                 _isStarted = parsed;
 
-                OnStartedKeyChanged?.Invoke(this, _isStarted);
+                StartedKeyChanged?.Invoke(this, _isStarted);
                 break;
             case GamemodeKeys.SelectedKey:
                 if (_isSelected == parsed)
@@ -329,7 +340,7 @@ public abstract class Gamemode : IWearableUIProvider
 
                 _isSelected = parsed;
 
-                OnSelectedKeyChanged?.Invoke(this, _isSelected);
+                SelectedKeyChanged?.Invoke(this, _isSelected);
                 break;
             case GamemodeKeys.ReadyKey:
                 if (_isReady == parsed)
@@ -339,7 +350,7 @@ public abstract class Gamemode : IWearableUIProvider
 
                 _isReady = parsed;
 
-                OnReadyKeyChanged?.Invoke(this, _isReady);
+                ReadyKeyChanged?.Invoke(this, _isReady);
                 break;
         }
     }
@@ -359,4 +370,22 @@ public abstract class Gamemode : IWearableUIProvider
     /// <param name="player">The player to check.</param>
     /// <returns>True if the player can be attacked, False otherwise.</returns>
     public virtual bool CanAttack(PlayerID player) => true;
+
+    private void TickElapsed(float unscaledDeltaTime)
+    {
+        if (!NetworkInfo.IsHost || !IsStarted)
+        {
+            return;
+        }
+
+        float elapsedTime = ElapsedVariable.GetValue();
+        elapsedTime += unscaledDeltaTime;
+
+        ElapsedVariable.SetValue(elapsedTime);
+
+        if (ElapsedLabel != null)
+        {
+            ElapsedLabel.Text = TimeSpan.FromSeconds(elapsedTime).ToString(@"mm\:ss\.fff");
+        }
+    }
 }

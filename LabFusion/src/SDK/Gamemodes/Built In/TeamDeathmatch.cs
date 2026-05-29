@@ -52,7 +52,6 @@ public class TeamDeathmatch : Gamemode
 
     public MetadataFloat Vitality { get; set; }
 
-    private float _timeOfStart;
     private bool _oneMinuteLeft;
 
     private int _savedMinutes = _defaultMinutes;
@@ -522,7 +521,6 @@ public class TeamDeathmatch : Gamemode
             SetTeams();
         }
 
-        _timeOfStart = TimeReferences.TimeSinceStartup;
         _oneMinuteLeft = false;
 
         // Apply overrides
@@ -602,7 +600,6 @@ public class TeamDeathmatch : Gamemode
             ShowPopup = true,
         });
 
-        _timeOfStart = 0f;
         _oneMinuteLeft = false;
 
         // Reset mortality
@@ -617,15 +614,9 @@ public class TeamDeathmatch : Gamemode
         LocalControls.DisableSlowMo = false;
     }
 
-    public float GetTimeElapsed()
-    {
-        return TimeReferences.TimeSinceStartup - _timeOfStart;
-    }
-
     public float GetMinutesLeft()
     {
-        float elapsed = GetTimeElapsed();
-        return _totalMinutes - (elapsed / 60f);
+        return _totalMinutes - (ElapsedSeconds / 60f);
     }
 
     protected override void OnUpdate()

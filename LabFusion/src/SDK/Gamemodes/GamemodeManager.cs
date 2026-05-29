@@ -80,9 +80,9 @@ public static class GamemodeManager
 
     public static void OnInitializeMelon()
     {
-        Gamemode.OnStartedKeyChanged += OnStartedKeyChanged;
-        Gamemode.OnSelectedKeyChanged += OnSelectedKeyChanged;
-        Gamemode.OnReadyKeyChanged += OnReadyKeyChanged;
+        Gamemode.StartedKeyChanged += OnStartedKeyChanged;
+        Gamemode.SelectedKeyChanged += OnSelectedKeyChanged;
+        Gamemode.ReadyKeyChanged += OnReadyKeyChanged;
 
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnTargetLevelLoaded += OnTargetLevelLoaded;
