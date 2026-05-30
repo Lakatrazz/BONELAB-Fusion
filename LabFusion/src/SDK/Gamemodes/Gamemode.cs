@@ -21,26 +21,59 @@ public abstract class Gamemode : IWearableUIProvider
 {
     public static event Action<Gamemode, bool> StartedKeyChanged, SelectedKeyChanged, ReadyKeyChanged;
 
-    private bool _isStarted = false;
-    
     /// <summary>
     /// Returns if this Gamemode has been started and is running.
     /// </summary>
-    public bool IsStarted => _isStarted;
+    public bool IsStarted
+    {
+        get => _isStarted;
+        set
+        {
+            if (_isStarted == value)
+            {
+                return;
+            }
 
-    private bool _isSelected = false;
+            _isStarted = value;
+            StartedKeyChanged?.Invoke(this, value);
+        }
+    }
 
     /// <summary>
     /// Returns if this is the currently selected Gamemode for this server.
     /// </summary>
-    public bool IsSelected => _isSelected;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value)
+            {
+                return;
+            }
 
-    private bool _isReady = false;
+            _isSelected = value;
+            SelectedKeyChanged?.Invoke(this, value);
+        }
+    }
 
     /// <summary>
     /// Returns if this Gamemode has enough players and is ready to be started.
     /// </summary>
-    public bool IsReady => _isReady;
+    public bool IsReady
+    {
+        get => _isReady;
+        set
+        {
+            if (_isReady == value)
+            {
+                return;
+            }
+
+            _isReady = value;
+            ReadyKeyChanged?.Invoke(this, value);
+        }
+    }
 
     /// <summary>
     /// The title of the Gamemode.
@@ -88,13 +121,17 @@ public abstract class Gamemode : IWearableUIProvider
 
     public TriggerRelay Relay { get; } = new();
 
-    public float ElapsedSeconds => ElapsedVariable?.GetValue() ?? 0f;
+    public float ElapsedSeconds { get; private set; } = 0f;
 
     public int ElapsedMinutes => (int)MathF.Floor(ElapsedSeconds / 60f);
 
     public MetadataFloat ElapsedVariable { get; private set; } = null;
 
     public LabelElement ElapsedLabel { get; private set; } = null;
+
+    private bool _isStarted = false;
+    private bool _isSelected = false;
+    private bool _isReady = false;
 
     internal void Register()
     {
@@ -330,45 +367,6 @@ public abstract class Gamemode : IWearableUIProvider
     }
     protected virtual void OnLateUpdate() { }
 
-    private void OnInternalMetadataChanged(string key, string value)
-    {
-        bool parsed = value == bool.TrueString;
-
-        switch (key)
-        {
-            case GamemodeKeys.StartedKey:
-                if (_isStarted == parsed)
-                {
-                    return;
-                }
-
-                _isStarted = parsed;
-
-                StartedKeyChanged?.Invoke(this, _isStarted);
-                break;
-            case GamemodeKeys.SelectedKey:
-                if (_isSelected == parsed)
-                {
-                    return;
-                }
-
-                _isSelected = parsed;
-
-                SelectedKeyChanged?.Invoke(this, _isSelected);
-                break;
-            case GamemodeKeys.ReadyKey:
-                if (_isReady == parsed)
-                {
-                    return;
-                }
-
-                _isReady = parsed;
-
-                ReadyKeyChanged?.Invoke(this, _isReady);
-                break;
-        }
-    }
-
     protected virtual void OnMetadataChanged(string key, string value) { }
 
     protected virtual void OnMetadataRemoved(string key, string value) { }
@@ -385,6 +383,37 @@ public abstract class Gamemode : IWearableUIProvider
     /// <returns>True if the player can be attacked, False otherwise.</returns>
     public virtual bool CanAttack(PlayerID player) => true;
 
+    private void OnInternalMetadataChanged(string key, string value)
+    {
+        switch (key)
+        {
+            case GamemodeKeys.StartedKey:
+                IsStarted = value == bool.TrueString;
+                break;
+            case GamemodeKeys.SelectedKey:
+                IsSelected = value == bool.TrueString;
+                break;
+            case GamemodeKeys.ReadyKey:
+                IsReady = value == bool.TrueString;
+                break;
+            case GamemodeKeys.ElapsedKey:
+                if (float.TryParse(value, out float elapsed))
+                {
+                    ElapsedSeconds = elapsed;
+                }
+                else
+                {
+                    ElapsedSeconds = 0f;
+                }
+
+                if (ElapsedLabel != null)
+                {
+                    ElapsedLabel.Text = TimeSpan.FromSeconds(ElapsedSeconds).ToString(@"mm\:ss\.fff");
+                }
+                break;
+        }
+    }
+
     private void TickElapsed(float unscaledDeltaTime)
     {
         if (!NetworkInfo.IsHost || !IsStarted)
@@ -396,15 +425,15 @@ public abstract class Gamemode : IWearableUIProvider
         elapsedTime += unscaledDeltaTime;
 
         ElapsedVariable.SetValue(elapsedTime);
-
-        if (ElapsedLabel != null)
-        {
-            ElapsedLabel.Text = TimeSpan.FromSeconds(elapsedTime).ToString(@"mm\:ss\.fff");
-        }
     }
 
     private void ClearElapsed()
     {
-        Metadata.ForceRemoveLocalMetadata(GamemodeKeys.ElapsedKey);
+        ElapsedSeconds = 0f;
+
+        if (NetworkInfo.IsHost)
+        {
+            ElapsedVariable.SetValue(0f);
+        }
     }
 }
