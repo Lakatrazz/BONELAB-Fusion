@@ -138,6 +138,20 @@ public abstract class Gamemode : IWearableUIProvider
         OnGamemodeUnregistered();
     }
 
+    internal void Start()
+    {
+        ClearElapsed();
+
+        OnGamemodeStarted();
+    }
+
+    internal void Stop()
+    {
+        OnGamemodeStopped();
+
+        ClearElapsed();
+    }
+
     private bool OnTryInvokeTrigger(string name)
     {
         GamemodeSender.SendGamemodeTriggerResponse(Barcode, name, null);
@@ -387,5 +401,10 @@ public abstract class Gamemode : IWearableUIProvider
         {
             ElapsedLabel.Text = TimeSpan.FromSeconds(elapsedTime).ToString(@"mm\:ss\.fff");
         }
+    }
+
+    private void ClearElapsed()
+    {
+        Metadata.ForceRemoveLocalMetadata(GamemodeKeys.ElapsedKey);
     }
 }

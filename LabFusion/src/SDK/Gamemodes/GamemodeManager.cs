@@ -158,7 +158,7 @@ public static class GamemodeManager
     {
         if (started)
         {
-            gamemode.OnGamemodeStarted();
+            gamemode.Start();
 
             if (FusionSceneManager.HasTargetLoaded())
             {
@@ -175,7 +175,7 @@ public static class GamemodeManager
         }
         else
         {
-            gamemode.OnGamemodeStopped();
+            gamemode.Stop();
 
             GamemodeStopped?.InvokeSafe("executing GamemodeStopped event");
 

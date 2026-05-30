@@ -9,14 +9,8 @@ public class Team
     private string _displayName = null;
     public string DisplayName 
     {
-        get
-        {
-            return _displayName ?? TeamName;
-        }
-        set
-        {
-            _displayName = value;
-        }
+        get => _displayName ?? TeamName;
+        set => _displayName = value;
     }
 
     public Team(string teamName)
