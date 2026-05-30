@@ -168,27 +168,27 @@ namespace LabFusion.Marrow.Integration
             {
                 var parentStyle = parent.ResolvedStyle;
 
-                var parentDirection = parentStyle.Direction.GetValueOrDefault(Direction.Column);
+                var parentDirection = parentStyle.Direction.GetValueOrDefault(StyleDefaults.Direction);
 
                 var parentIsColumn = parentDirection == Direction.Column || parentDirection == Direction.ColumnReverse;
 
                 var layoutElement = References.LayoutElement;
 
-                layoutElement.preferredWidth = style.Width.GetValueOrDefault(-1f);
-                layoutElement.preferredHeight = style.Height.GetValueOrDefault(-1f);
+                layoutElement.preferredWidth = style.Width.GetValueOrDefault(StyleDefaults.Width);
+                layoutElement.preferredHeight = style.Height.GetValueOrDefault(StyleDefaults.Height);
 
-                var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(Align.Stretch);
-                var alignSelfStretch = style.AlignSelfStretch.GetValueOrDefault(false);
+                var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(StyleDefaults.AlignItems);
+                var alignSelfStretch = style.AlignSelfStretch.GetValueOrDefault(StyleDefaults.AlignSelfStretch);
 
                 bool alignStretch = parentAlignItems == Align.Stretch || alignSelfStretch;
 
-                var flexGrow = style.FlexGrow.GetValueOrDefault(0f);
+                var flexGrow = style.FlexGrow.GetValueOrDefault(StyleDefaults.FlexGrow);
                 var alignGrow = alignStretch ? -1f : 0f;
 
                 layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
                 layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
 
-                bool ignoreLayout = style.Position.GetValueOrDefault(Position.Relative) == Position.Absolute;
+                bool ignoreLayout = style.Position.GetValueOrDefault(StyleDefaults.Position) == Position.Absolute;
 
                 layoutElement.ignoreLayout = ignoreLayout;
 
@@ -212,15 +212,15 @@ namespace LabFusion.Marrow.Integration
             BorderOffsets padding = style.Padding;
             References.MarginsLayoutGroup.padding = new(padding.Left, padding.Right, padding.Top, padding.Bottom);
 
-            References.BackgroundColorView.color = style.BackgroundColor.GetValueOrDefault(Color.clear);
+            References.BackgroundColorView.color = style.BackgroundColor.GetValueOrDefault(StyleDefaults.BackgroundColor);
 
             References.BackgroundImageView.enabled = style.BackgroundImage.Keyword.HasValue();
             References.BackgroundImageView.texture = style.BackgroundImage;
 
-            var direction = style.Direction.GetValueOrDefault(Direction.Column);
+            var direction = style.Direction.GetValueOrDefault(StyleDefaults.Direction);
 
-            Justify justifyContent = style.JustifyContent.GetValueOrDefault(Justify.Start);
-            Align alignItems = style.AlignItems.GetValueOrDefault(Align.Stretch);
+            Justify justifyContent = style.JustifyContent.GetValueOrDefault(StyleDefaults.JustifyContent);
+            Align alignItems = style.AlignItems.GetValueOrDefault(StyleDefaults.AlignItems);
             var isColumn = direction == Direction.Column || direction == Direction.ColumnReverse;
             var isReversed = direction == Direction.ColumnReverse || direction == Direction.RowReverse;
 

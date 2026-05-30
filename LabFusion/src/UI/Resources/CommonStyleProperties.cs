@@ -3,9 +3,11 @@
 public static class CommonStyleProperties
 {
     public static readonly string TextColor = "text-color";
+    public static readonly string TextAlignment = "text-alignment";
     public static readonly string TextGradient = "text-gradient";
 
     public static readonly string Font = "font";
+    public static readonly string FontStyle = "font-style";
     public static readonly string FontSize = "font-size";
 
     public static readonly string BackgroundColor = "background-color";
@@ -31,8 +33,11 @@ public static class CommonStyleProperties
     public static readonly List<string> InheritedProperties = new()
     {
         TextColor,
+        TextAlignment,
         TextGradient,
+
         Font,
+        FontStyle,
         FontSize
     };
 }

@@ -10,7 +10,11 @@ public interface IReadOnlyStyle
 
     StyleValue<VertexColors> TextGradient { get; }
 
+    StyleValue<TextAlignmentOptions> TextAlignment { get; }
+
     StyleValue<TMP_FontAsset> Font { get; }
+
+    StyleValue<FontStyles> FontStyle { get; }
 
     StyleValue<float> FontSize { get; }
 

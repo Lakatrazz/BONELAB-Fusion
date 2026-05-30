@@ -12,6 +12,8 @@ using LabFusion.UI.Styles;
 
 using UnityEngine;
 
+using Il2CppTMPro;
+
 namespace LabFusion.SDK.Gamemodes;
 
 /// <summary>
@@ -280,6 +282,7 @@ public abstract class Gamemode : IWearableUIProvider
         headerGroup.Add(horizontalLine);
 
         ElapsedLabel = new LabelElement("00:00.000");
+        ElapsedLabel.Style.TextAlignment = TextAlignmentOptions.Center;
         headerGroup.Add(ElapsedLabel);
 
         root.Add(headerGroup);
@@ -408,7 +411,8 @@ public abstract class Gamemode : IWearableUIProvider
 
                 if (ElapsedLabel != null)
                 {
-                    ElapsedLabel.Text = TimeSpan.FromSeconds(ElapsedSeconds).ToString(@"mm\:ss\.fff");
+                    string timerText = TimeSpan.FromSeconds(ElapsedSeconds).ToString(@"mm\:ss\.fff");
+                    ElapsedLabel.Text = $"<mspace=0.55em>{timerText}";
                 }
                 break;
         }

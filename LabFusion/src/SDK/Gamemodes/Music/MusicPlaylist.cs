@@ -13,15 +13,9 @@ public class MusicPlaylist
     private int _currentTrack = -1;
     public int CurrentTrack => _currentTrack;
 
-    private float _volume = LocalAudioPlayer.MusicVolume;
-    public float Volume
-    {
-        get { return _volume; }
-        set { _volume = value; }
-    }
+    public float Volume { get; set; } = LocalAudioPlayer.MusicVolume;
 
-    private bool _loopSingle = false;
-    public bool LoopSingle { get { return _loopSingle; } set { _loopSingle = value; } }
+    public bool LoopSingle { get; set; } = false;
 
     private bool _isActive = false;
     public bool IsActive => _isActive;
