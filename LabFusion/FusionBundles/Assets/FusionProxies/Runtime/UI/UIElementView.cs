@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Xml.Linq;
+
 
 #if MELONLOADER
 using MelonLoader;
@@ -137,11 +139,18 @@ namespace LabFusion.Marrow.Integration
         {
             UnassignElement();
 
+            if (element == null)
+            {
+                return;
+            }
+
             Element = element;
 
-            RepaintElement(element);
+            Repaint();
 
-            element.Repainted += OnRepainted;
+            element.ContentGenerated += OnContentGenerated;
+            element.ChildrenGenerated += OnChildrenGenerated;
+            element.StyleResolved += OnStyleResolved;
         }
 
         public void UnassignElement()
@@ -151,18 +160,49 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            Element.Repainted -= OnRepainted;
+            Element.ContentGenerated -= OnContentGenerated;
+            Element.ChildrenGenerated -= OnChildrenGenerated;
+            Element.StyleResolved -= OnStyleResolved;
+
+            Element = null;
         }
 
-        [HideFromIl2Cpp]
-        public void RepaintElement(UIElement element)
+        public void Repaint()
         {
-            var style = element.ResolvedStyle;
+            RepaintStyle();
+            RepaintContent();
+            RepaintChildren();
+        }
+
+        public void RepaintContent()
+        {
+            OnContentRepainted();
+        }
+
+        public void RepaintChildren()
+        {
+            RemoveChildren();
+
+            var spawner = UIElementSpawner.Instance;
+
+            foreach (var childElement in Element.PhysicalChildren)
+            {
+                var childElementView = spawner.CreateElementView(childElement, Container);
+
+                AddChild(childElementView);
+            }
+
+            OnChildrenRepainted();
+        }
+
+        public void RepaintStyle()
+        {
+            var style = Element.ResolvedStyle;
 
             Direction = style.Direction;
             Position = style.Position;
 
-            var parent = element.Parent;
+            var parent = Element.Parent;
 
             if (parent != null)
             {
@@ -264,22 +304,20 @@ namespace LabFusion.Marrow.Integration
             References.ColumnContainer.childAlignment = childAlignment;
             References.RowContainer.childAlignment = childAlignment;
 
-            OnRepaintedElement(element);
+            OnStyleRepainted();
         }
 
-        protected virtual void OnRepaintedElement(UIElement element) { }
+        protected virtual void OnContentRepainted() { }
+        protected virtual void OnChildrenRepainted() { }
+        protected virtual void OnStyleRepainted() { }
 
         protected virtual void OnGetReferences() { }
 
-        private void OnRepainted()
-        {
-            if (Element == null)
-            {
-                return;
-            }
+        private void OnContentGenerated() => RepaintContent();
 
-            RepaintElement(Element);
-        }
+        private void OnChildrenGenerated() => RepaintChildren();
+
+        private void OnStyleResolved() => RepaintStyle();
 
         private void GetReferences()
         {
@@ -328,9 +366,37 @@ namespace LabFusion.Marrow.Integration
             collider.size = new Vector3(rect.width, rect.height, 10f);
         }
 
+        private void UpdateElement()
+        {
+            if (Element == null)
+            {
+                return;
+            }
+
+            if (Element.IsStyleDirty)
+            {
+                Element.ResolveStyle();
+            }
+
+            if (Element.IsContentDirty)
+            {
+                Element.GenerateContent();
+            }
+
+            if (Element.IsChildrenDirty)
+            {
+                Element.GenerateChildren();
+            }
+        }
+
         private void Awake()
         {
             GetReferences();
+        }
+
+        private void Update()
+        {
+            UpdateElement();
         }
 
         private void OnDestroy()

@@ -26,6 +26,6 @@ public abstract class TextElement : UIElement, IValueNotifier<string>
     void IValueNotifier<string>.SetValueWithoutNotify(string value)
     {
         _text = value;
-        Repaint();
+        MarkContentDirty();
     }
 }

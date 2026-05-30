@@ -24,16 +24,22 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public TMP_Text TextView { get; private set; } = null;
 
-        protected override void OnRepaintedElement(UIElement element)
+        protected override void OnContentRepainted()
         {
-            base.OnRepaintedElement(element);
-
-            if (element is not TextElement textElement)
+            if (Element is not TextElement textElement)
             {
                 return;
             }
 
             TextView.text = textElement.Text;
+        }
+
+        protected override void OnStyleRepainted()
+        {
+            if (Element is not TextElement textElement)
+            {
+                return;
+            }
 
             var style = textElement.ResolvedStyle;
 

@@ -7,14 +7,14 @@ namespace LabFusion.UI.Elements;
 /// <summary>
 /// Base class for an element in a UI tree, based loosely on Unity's VisualElement system.
 /// </summary>
-public class UIElement : IRepaintNotifier
+public class UIElement
 {
     private Style _style = null;
     public Style Style
     {
         get
         {
-            _style ??= new(Repaint);
+            _style ??= new(MarkStyleDirty);
             return _style;
         }
     }
@@ -43,15 +43,26 @@ public class UIElement : IRepaintNotifier
 
     public HashSet<string> StyleClasses { get; } = new();
 
-    public List<StyleSheet> StyleSheets { get; } = new();
+    public IReadOnlyList<StyleSheet> StyleSheets => _styleSheets;
+    public IReadOnlyList<StyleSheet> ExternalStyleSheets => _externalStyleSheets;
+    public IReadOnlyList<StyleSheet> ResolvedStyleSheets => _resolvedStyleSheets;
 
-    public event Action Repainted;
+    public bool IsContentDirty { get; private set; } = false;
+
+    public bool IsStyleDirty { get; private set; } = false;
+
+    public bool IsChildrenDirty { get; private set; } = false;
+
+    public event Action ContentGenerated, ChildrenGenerated, StyleResolved;
 
     private readonly List<UIElement> _physicalChildren = new();
 
     private UIElement _physicalParent = null;
-
     private UIElement _logicalParent = null;
+
+    private readonly List<StyleSheet> _styleSheets = new();
+    private List<StyleSheet> _externalStyleSheets = null;
+    private List<StyleSheet> _resolvedStyleSheets = new();
 
     public void Add(UIElement child)
     {
@@ -83,27 +94,55 @@ public class UIElement : IRepaintNotifier
         }
     }
 
-    public void AddStyleClass(string className) => StyleClasses.Add(className);
+    public void AddStyleClass(string className)
+    {
+        StyleClasses.Add(className);
+        MarkStyleDirty();
+    }
 
-    public void RemoveStyleClass(string className) => StyleClasses.Remove(className);
+    public void RemoveStyleClass(string className)
+    {
+        StyleClasses.Remove(className);
+        MarkStyleDirty();
+    }
 
     public bool HasStyleClass(string className) => StyleClasses.Contains(className);
 
-    public void AddStyleSheet(StyleSheet styleSheet) => StyleSheets.Add(styleSheet);
-
-    public void RemoveStyleSheet(StyleSheet styleSheet) => StyleSheets.Remove(styleSheet);
-
-    public void ClearStyleSheets() => StyleSheets.Clear();
-
-    public void Resolve() => Resolve(CollectStyleSheets());
-
-    public void Resolve(List<StyleSheet> styleSheets)
+    public void AddStyleSheet(StyleSheet styleSheet)
     {
+        _styleSheets.Add(styleSheet);
+        MarkStyleDirty();
+    }
+
+    public void RemoveStyleSheet(StyleSheet styleSheet)
+    {
+        _styleSheets.Remove(styleSheet);
+        MarkStyleDirty();
+    }
+
+    public void ClearStyleSheets()
+    {
+        _styleSheets.Clear();
+        MarkStyleDirty();
+    }
+
+    public void SetExternalStyleSheets(List<StyleSheet> externalStyleSheets)
+    {
+        _externalStyleSheets = externalStyleSheets;
+        MarkStyleDirty();
+    }
+
+    public void ClearExternalStyleSheets() => SetExternalStyleSheets(null);
+
+    public void ResolveStyle()
+    {
+        ResolveStyleSheets();
+
         var resolvedStyle = new Style(Style);
 
         InheritProperties(Style, resolvedStyle);
 
-        var uniqueSheets = styleSheets.Distinct();
+        var uniqueSheets = ResolvedStyleSheets.Distinct();
 
         List<StyleRule> matchingRules = new();
 
@@ -121,51 +160,41 @@ public class UIElement : IRepaintNotifier
 
         _resolvedStyle = resolvedStyle;
 
-        // Apply to children
         foreach (var child in PhysicalChildren)
         {
-            var childStyleSheets = styleSheets;
-
-            if (child.StyleSheets.Count > 0)
-            {
-                childStyleSheets = styleSheets.ToList();
-                childStyleSheets.AddRange(child.StyleSheets);
-            }
-
-            child.Resolve(childStyleSheets);
-        }
-    }
-
-    public List<StyleSheet> CollectStyleSheets()
-    {
-        List<StyleSheet> collectedStyleSheets = new();
-
-        collectedStyleSheets.AddRange(StyleSheets);
-
-        var parent = Parent;
-
-        while (parent != null)
-        {
-            var parentStyleSheets = parent.StyleSheets;
-
-            if (parentStyleSheets.Count > 0)
-            {
-                collectedStyleSheets.AddRange(parentStyleSheets);
-            }
-
-            parent = parent.Parent;
+            child.ResolveStyle();
         }
 
-        // Child style sheets should be more specific
-        // Since we went up the hierarchy, the order needs to be reversed for correct specificity
-        collectedStyleSheets.Reverse();
-
-        return collectedStyleSheets;
+        IsStyleDirty = false;
     }
 
-    public void Repaint()
+    public void MarkContentDirty()
     {
-        Repainted?.InvokeSafe("executing Repainted event");
+        IsContentDirty = true;
+    }
+
+    public void MarkStyleDirty()
+    {
+        IsStyleDirty = true;
+    }
+
+    public void MarkChildrenDirty()
+    {
+        IsChildrenDirty = true;
+    }
+
+    public void GenerateContent()
+    {
+        ContentGenerated?.InvokeSafe("executing ContentGenerated event");
+
+        IsContentDirty = false;
+    }
+
+    public void GenerateChildren()
+    {
+        ChildrenGenerated?.InvokeSafe("executing ChildrenGenerated event");
+
+        IsChildrenDirty = false;
     }
 
     protected void AddImmediateChild(UIElement child)
@@ -174,6 +203,8 @@ public class UIElement : IRepaintNotifier
         child._logicalParent = this;
 
         _physicalChildren.Add(child);
+
+        MarkChildrenDirty();
     }
 
     protected void RemoveImmediateChild(UIElement child)
@@ -187,6 +218,27 @@ public class UIElement : IRepaintNotifier
 
         child._physicalParent = null;
         child._logicalParent = null;
+
+        MarkChildrenDirty();
+    }
+
+    private void ResolveStyleSheets()
+    {
+        var resolvedStyleSheets = new List<StyleSheet>();
+
+        if (Parent != null)
+        {
+            resolvedStyleSheets.AddRange(Parent.ResolvedStyleSheets);
+        }
+
+        if (ExternalStyleSheets != null)
+        {
+            resolvedStyleSheets.AddRange(ExternalStyleSheets);
+        }
+
+        resolvedStyleSheets.AddRange(StyleSheets);
+
+        _resolvedStyleSheets = resolvedStyleSheets.Distinct().ToList();
     }
 
     private void InheritProperties(Style originalStyle, Style resolvedStyle)

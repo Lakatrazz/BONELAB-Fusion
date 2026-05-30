@@ -228,14 +228,12 @@ public class WristWatchBehavior : IWearableComponent
             }
         }
 
-        var styleSheets = new List<StyleSheet>()
+        root.SetExternalStyleSheets(new List<StyleSheet>()
         {
             CommonStyleSheets.DefaultStyleSheet,
-        };
+        });
 
-        styleSheets.AddRange(root.StyleSheets);
-
-        root.Resolve(styleSheets);
+        root.ResolveStyle();
 
         UIElementDrawer.DrawUITree(root, RootView);
     }

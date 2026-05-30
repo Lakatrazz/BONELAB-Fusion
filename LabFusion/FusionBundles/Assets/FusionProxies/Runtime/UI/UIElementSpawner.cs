@@ -3,6 +3,8 @@ using UnityEngine;
 #if MELONLOADER
 using MelonLoader;
 
+using LabFusion.UI.Elements;
+
 using Il2CppInterop.Runtime.Attributes;
 #endif
 
@@ -21,6 +23,24 @@ namespace LabFusion.Marrow.Integration
 
         [HideFromIl2Cpp]
         public Dictionary<Type, UIElementView> TypeToTemplateElements { get; } = new();
+
+        [HideFromIl2Cpp]
+        public UIElementView CreateElementView(UIElement element, Transform parent)
+        {
+            UIElementView view;
+
+            if (element is TextElement)
+            {
+                view = CreateElementView<TextElementView>(parent);
+            }
+            else
+            {
+                view = CreateElementView<UIElementView>(parent);
+            }
+
+            view.AssignElement(element);
+            return view;
+        }
 
         [HideFromIl2Cpp]
         public TElementView CreateElementView<TElementView>(Transform parent) where TElementView : UIElementView

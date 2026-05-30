@@ -15,7 +15,7 @@ public abstract class FieldElement<T> : UIElement, IValueNotifier<T>
 
             _label = newLabel;
 
-            Repaint();
+            MarkContentDirty();
 
             LabelChanged?.InvokeSafe(previousLabel, newLabel, "executing LabelChanged event");
         }
@@ -43,6 +43,6 @@ public abstract class FieldElement<T> : UIElement, IValueNotifier<T>
     public void SetValueWithoutNotify(T value)
     {
         _value = value;
-        Repaint();
+        MarkContentDirty();
     }
 }
