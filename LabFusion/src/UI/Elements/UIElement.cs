@@ -160,12 +160,16 @@ public class UIElement
 
         _resolvedStyle = resolvedStyle;
 
+        // Notify listeners that the style has been resolved
+        StyleResolved?.InvokeSafe("executing StyleResolved event");
+
+        IsStyleDirty = false;
+
+        // Resolve the styles for all attached children
         foreach (var child in PhysicalChildren)
         {
             child.ResolveStyle();
         }
-
-        IsStyleDirty = false;
     }
 
     public void MarkContentDirty()
