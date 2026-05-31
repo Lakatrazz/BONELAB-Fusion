@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LabFusion.SDK.Triggers;
+﻿namespace LabFusion.SDK.Triggers;
 
 public class TriggerRelay
 {
@@ -13,8 +7,8 @@ public class TriggerRelay
     public delegate bool TriggerValueDelegate(string name, string value);
 
     // Event callbacks
-    public event Action<string> OnTriggered;
-    public event Action<string, string> OnTriggeredWithValue;
+    public event Action<string> Triggered;
+    public event Action<string, string> TriggeredWithValue;
 
     // Network request callbacks
     public TriggerDelegate OnTryInvokeTrigger;
@@ -42,11 +36,11 @@ public class TriggerRelay
 
     public void ForceInvokeLocalTrigger(string name)
     {
-        OnTriggered?.Invoke(name);
+        Triggered?.Invoke(name);
     }
 
     public void ForceInvokeLocalTrigger(string name, string value)
     {
-        OnTriggeredWithValue?.Invoke(name, value);
+        TriggeredWithValue?.Invoke(name, value);
     }
 }

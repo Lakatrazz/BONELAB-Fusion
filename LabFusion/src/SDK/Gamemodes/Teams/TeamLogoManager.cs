@@ -58,8 +58,8 @@ public class TeamLogoManager
     {
         _teamManager = teamManager;
 
-        teamManager.OnAssignedToTeam += OnAssignedToTeam; 
-        teamManager.OnRemovedFromTeam += OnRemovedFromTeam;
+        teamManager.AssignedToTeam += OnAssignedToTeam; 
+        teamManager.RemovedFromTeam += OnRemovedFromTeam;
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ public class TeamLogoManager
     /// </summary>
     public void Unregister()
     {
-        _teamManager.OnAssignedToTeam -= OnAssignedToTeam;
-        _teamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
+        _teamManager.AssignedToTeam -= OnAssignedToTeam;
+        _teamManager.RemovedFromTeam -= OnRemovedFromTeam;
 
         _teamManager = null;
     }

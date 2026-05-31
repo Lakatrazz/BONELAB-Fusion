@@ -8,8 +8,8 @@ public class TriggerEvent
     public string Name { get; }
     public bool ServerOnly { get; }
 
-    public event Action OnTriggered;
-    public event Action<string> OnTriggeredWithValue;
+    public event Action Triggered;
+    public event Action<string> TriggeredWithValue;
 
     public TriggerEvent(string name, TriggerRelay relay, bool serverOnly = false)
     {
@@ -17,19 +17,19 @@ public class TriggerEvent
         Relay = relay;
         ServerOnly = serverOnly;
 
-        relay.OnTriggered += OnRelayTriggered;
-        relay.OnTriggeredWithValue += OnRelayTriggeredWithValue;
+        relay.Triggered += OnRelayTriggered;
+        relay.TriggeredWithValue += OnRelayTriggeredWithValue;
     }
 
     public void UnregisterEvent()
     {
         // Unhook from relay
-        Relay.OnTriggered -= OnRelayTriggered;
-        Relay.OnTriggeredWithValue -= OnRelayTriggeredWithValue;
+        Relay.Triggered -= OnRelayTriggered;
+        Relay.TriggeredWithValue -= OnRelayTriggeredWithValue;
 
         // Remove trigger hooks
-        OnTriggered = null;
-        OnTriggeredWithValue = null;
+        Triggered = null;
+        TriggeredWithValue = null;
     }
 
     private void OnRelayTriggered(string name)
@@ -39,7 +39,7 @@ public class TriggerEvent
             return;
         }
 
-        OnTriggered?.Invoke();
+        Triggered?.Invoke();
     }
 
     private void OnRelayTriggeredWithValue(string name, string value)
@@ -49,7 +49,7 @@ public class TriggerEvent
             return;
         }
 
-        OnTriggeredWithValue?.Invoke(value);
+        TriggeredWithValue?.Invoke(value);
     }
 
     public bool TryInvoke()

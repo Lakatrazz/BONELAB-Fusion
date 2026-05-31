@@ -95,8 +95,8 @@ public class Juggernaut : Gamemode
         TeamManager.AddTeam(SurvivorTeam);
         TeamManager.AddTeam(JuggernautTeam);
 
-        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
-        TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
+        TeamManager.AssignedToTeam += OnAssignedToTeam;
+        TeamManager.RemovedFromTeam += OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
@@ -111,8 +111,8 @@ public class Juggernaut : Gamemode
     {
         TeamManager.Unregister();
 
-        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
-        TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
+        TeamManager.AssignedToTeam -= OnAssignedToTeam;
+        TeamManager.RemovedFromTeam -= OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;

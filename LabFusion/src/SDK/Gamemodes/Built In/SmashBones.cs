@@ -198,17 +198,17 @@ public class SmashBones : Gamemode
     public override void OnGamemodeRegistered()
     {
         PlayerDamageEvent = new TriggerEvent("PlayerDamage", Relay, false);
-        PlayerDamageEvent.OnTriggeredWithValue += OnPlayerDamageEvent;
+        PlayerDamageEvent.TriggeredWithValue += OnPlayerDamageEvent;
 
         PlayerDeathEvent = new TriggerEvent("PlayerDeath", Relay, false);
-        PlayerDeathEvent.OnTriggeredWithValue += OnPlayerDeathEvent;
+        PlayerDeathEvent.TriggeredWithValue += OnPlayerDeathEvent;
 
         // Register teams
         TeamManager.Register(this);
         TeamManager.AddTeam(FreeForAllTeam);
         TeamManager.AddTeam(SpectatorTeam);
-        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
-        TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
+        TeamManager.AssignedToTeam += OnAssignedToTeam;
+        TeamManager.RemovedFromTeam += OnRemovedFromTeam;
 
         // Register keepers
         PlayerScoreKeeper.Register(Metadata);
@@ -228,8 +228,8 @@ public class SmashBones : Gamemode
 
         // Unregister teams
         TeamManager.Unregister();
-        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
-        TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
+        TeamManager.AssignedToTeam -= OnAssignedToTeam;
+        TeamManager.RemovedFromTeam -= OnRemovedFromTeam;
 
         // Unregister keepers
         PlayerScoreKeeper.Unregister();

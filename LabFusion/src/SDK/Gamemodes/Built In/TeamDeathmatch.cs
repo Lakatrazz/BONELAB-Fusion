@@ -236,7 +236,7 @@ public class TeamDeathmatch : Gamemode
 
         // Register team manager
         TeamManager.Register(this);
-        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+        TeamManager.AssignedToTeam += OnAssignedToTeam;
 
         TeamManager.AddTeam(SabrelakeTeam);
         TeamManager.AddTeam(LavaGangTeam);
@@ -251,10 +251,10 @@ public class TeamDeathmatch : Gamemode
 
         // Create triggers
         OneMinuteLeftTrigger = new TriggerEvent(nameof(OneMinuteLeftTrigger), Relay, true);
-        OneMinuteLeftTrigger.OnTriggered += OnOneMinuteLeft;
+        OneMinuteLeftTrigger.Triggered += OnOneMinuteLeft;
 
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
-        NaturalEndTrigger.OnTriggered += OnNaturalEnd;
+        NaturalEndTrigger.Triggered += OnNaturalEnd;
 
         // Create metadata
         Vitality = new MetadataFloat(nameof(Vitality), Metadata);
@@ -273,7 +273,7 @@ public class TeamDeathmatch : Gamemode
 
         // Unregister team manager
         TeamManager.Unregister();
-        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+        TeamManager.AssignedToTeam -= OnAssignedToTeam;
 
         TeamLogoManager.Unregister();
 

@@ -12,6 +12,7 @@ using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
+using LabFusion.UI.Elements;
 
 using MelonLoader;
 
@@ -45,6 +46,10 @@ public class HideAndSeek : Gamemode
         public const int TimeLimit = 10;
 
         public static readonly MonoDiscReference[] Tracks = FusionMonoDiscPlaylists.AmbientPlaylist;
+
+        public const string SeekerTeamName = "Seekers";
+
+        public const string HiderTeamName = "Hiders";
     }
 
     public int TimeLimit { get; set; } = Defaults.TimeLimit;
@@ -57,16 +62,17 @@ public class HideAndSeek : Gamemode
     private readonly TeamManager _teamManager = new();
     public TeamManager TeamManager => _teamManager;
 
-    private readonly Team _seekerTeam = new("Seekers");
-    public Team SeekerTeam => _seekerTeam;
+    public Team SeekerTeam { get; } = new(Defaults.SeekerTeamName);
 
-    private readonly Team _hiderTeam = new("Hiders");
-    public Team HiderTeam => _hiderTeam;
+    public Team HiderTeam { get; } = new(Defaults.HiderTeamName);
 
     public TriggerEvent TagEvent { get; set; }
     public TriggerEvent OneMinuteLeftEvent { get; set; }
     public TriggerEvent SeekerVictoryEvent { get; set; }
     public TriggerEvent HiderVictoryEvent { get; set; }
+
+    public LabelElement RoleLabel { get; private set; } = null;
+    public LabelElement ObjectiveLabel { get; private set; } = null;
 
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
@@ -117,6 +123,21 @@ public class HideAndSeek : Gamemode
         return group;
     }
 
+    public override UIElement CreateWearableUI()
+    {
+        var root = base.CreateWearableUI();
+
+        var roleObjectiveRoot = CommonGamemodeUI.CreateRoleObjectiveUI(out var roleLabel, out var objectiveLabel);
+        root.Add(roleObjectiveRoot);
+
+        RoleLabel = roleLabel;
+        ObjectiveLabel = objectiveLabel;
+
+        UpdateLabels();
+
+        return root;
+    }
+
     public override void OnGamemodeRegistered()
     {
         FusionOverrides.OnValidateNametag += OnValidateNametag;
@@ -125,19 +146,19 @@ public class HideAndSeek : Gamemode
         TeamManager.AddTeam(SeekerTeam);
         TeamManager.AddTeam(HiderTeam);
 
-        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+        TeamManager.AssignedToTeam += OnAssignedToTeam;
 
         TagEvent = new TriggerEvent("TagPlayer", Relay, false);
-        TagEvent.OnTriggeredWithValue += OnTagTriggered;
+        TagEvent.TriggeredWithValue += OnTagTriggered;
 
         OneMinuteLeftEvent = new TriggerEvent("OneMinuteLeft", Relay, true);
-        OneMinuteLeftEvent.OnTriggered += OnOneMinuteLeft;
+        OneMinuteLeftEvent.Triggered += OnOneMinuteLeft;
 
         SeekerVictoryEvent = new TriggerEvent("SeekerVictory", Relay, true);
-        SeekerVictoryEvent.OnTriggered += OnSeekerVictory;
+        SeekerVictoryEvent.Triggered += OnSeekerVictory;
 
         HiderVictoryEvent = new TriggerEvent("HiderVictory", Relay, true);
-        HiderVictoryEvent.OnTriggered += OnHiderVictory;
+        HiderVictoryEvent.Triggered += OnHiderVictory;
     }
 
     public override void OnGamemodeUnregistered()
@@ -146,7 +167,7 @@ public class HideAndSeek : Gamemode
 
         TeamManager.Unregister();
 
-        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+        TeamManager.AssignedToTeam -= OnAssignedToTeam;
 
         TagEvent.UnregisterEvent();
         TagEvent = null;
@@ -291,6 +312,8 @@ public class HideAndSeek : Gamemode
         {
             return;
         }
+
+        UpdateLabels();
 
         if (_assignedDefaultTeam)
         {
@@ -501,6 +524,26 @@ public class HideAndSeek : Gamemode
         _oneMinuteLeft = false;
     }
 
+    public static string GetTeamRole(Team team)
+    {
+        return team.TeamName switch
+        {
+            Defaults.SeekerTeamName => "Seeker",
+            Defaults.HiderTeamName => "Hider",
+            _ => team.TeamName,
+        };
+    }
+
+    public static string GetTeamObjective(Team team)
+    {
+        return team.TeamName switch
+        {
+            Defaults.SeekerTeamName => "Find and Grab All Hiders",
+            Defaults.HiderTeamName => "Hide from the Seekers",
+            _ => "Unknown Objective",
+        };
+    }
+
     private bool _oneMinuteLeft = false;
     protected override void OnUpdate()
     {
@@ -598,5 +641,31 @@ public class HideAndSeek : Gamemode
 
             TagEvent.TryInvoke(longId.ToString());
         }
+    }
+
+    private void UpdateLabels()
+    {
+        UpdateRoleLabel();
+        UpdateObjectiveLabel();
+    }
+
+    private void UpdateRoleLabel()
+    {
+        if (RoleLabel == null)
+        {
+            return;
+        }
+
+        RoleLabel.Text = GetTeamRole(TeamManager.GetLocalTeam());
+    }
+
+    private void UpdateObjectiveLabel()
+    {
+        if (ObjectiveLabel == null)
+        {
+            return;
+        }
+
+        ObjectiveLabel.Text = GetTeamObjective(TeamManager.GetLocalTeam());
     }
 }

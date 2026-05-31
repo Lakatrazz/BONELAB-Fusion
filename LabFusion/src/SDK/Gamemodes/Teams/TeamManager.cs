@@ -15,7 +15,7 @@ public class TeamManager
     private readonly List<Team> _teams = new();
     public List<Team> Teams => _teams;
 
-    public event Action<PlayerID, Team> OnAssignedToTeam, OnRemovedFromTeam;
+    public event Action<PlayerID, Team> AssignedToTeam, RemovedFromTeam;
 
     private readonly Dictionary<byte, MetadataVariable> _playersToTeam = new();
 
@@ -71,7 +71,7 @@ public class TeamManager
 
             if (playerID != null)
             {
-                OnRemovedFromTeam?.InvokeSafe(playerID, existingTeam, "executing TeamManager.OnRemovedFromTeam");
+                RemovedFromTeam?.InvokeSafe(playerID, existingTeam, "executing TeamManager.OnRemovedFromTeam");
             }
 
             existingTeam.ForceRemovePlayer(player);
@@ -84,7 +84,7 @@ public class TeamManager
         {
             if (playerID != null)
             {
-                OnAssignedToTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnAssignedToTeam");
+                AssignedToTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnAssignedToTeam");
             }
 
             team.ForceAddPlayer(player);
@@ -112,7 +112,7 @@ public class TeamManager
         {
             if (playerID != null)
             {
-                OnRemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
+                RemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
             }
 
             team.ForceRemovePlayer(player);
@@ -129,7 +129,7 @@ public class TeamManager
         {
             if (team.HasPlayer(smallID))
             {
-                OnRemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
+                RemovedFromTeam?.InvokeSafe(playerID, team, "executing TeamManager.OnRemovedFromTeam");
             }
 
             team.ForceRemovePlayer(smallID);

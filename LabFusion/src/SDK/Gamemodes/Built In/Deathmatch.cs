@@ -329,10 +329,10 @@ public class Deathmatch : Gamemode
 
         // Create triggers
         OneMinuteLeftTrigger = new TriggerEvent(nameof(OneMinuteLeftTrigger), Relay, true);
-        OneMinuteLeftTrigger.OnTriggered += OnOneMinuteLeft;
+        OneMinuteLeftTrigger.Triggered += OnOneMinuteLeft;
 
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
-        NaturalEndTrigger.OnTriggered += OnNaturalEnd;
+        NaturalEndTrigger.Triggered += OnNaturalEnd;
 
         // Create metadata
         Vitality = new MetadataFloat(nameof(Vitality), Metadata);
