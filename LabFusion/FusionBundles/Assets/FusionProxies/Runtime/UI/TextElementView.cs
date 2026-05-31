@@ -58,6 +58,17 @@ namespace LabFusion.Marrow.Integration
                 var gradient = style.TextGradient.Value;
                 TextView.colorGradient = new(gradient.TopLeft, gradient.TopRight, gradient.BottomLeft, gradient.BottomRight);
             }
+
+            var autoSize = style.TextAutoSize.Value;
+            bool hasAutoSize = style.TextAutoSize.Keyword.HasValue() && autoSize.Mode == TextAutoSizeMode.BestFit;
+
+            TextView.enableAutoSizing = hasAutoSize;
+
+            if (hasAutoSize)
+            {
+                TextView.fontSizeMin = autoSize.MinSize;
+                TextView.fontSizeMax = autoSize.MaxSize;
+            }
         }
 
         protected override void OnGetReferences()

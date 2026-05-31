@@ -12,6 +12,8 @@ public interface IReadOnlyStyle
 
     StyleValue<TextAlignmentOptions> TextAlignment { get; }
 
+    StyleValue<TextAutoSize> TextAutoSize { get; }
+
     StyleValue<TMP_FontAsset> Font { get; }
 
     StyleValue<FontStyles> FontStyle { get; }

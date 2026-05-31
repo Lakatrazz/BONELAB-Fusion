@@ -12,8 +12,11 @@ using LabFusion.UI.Popups;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.UI.Elements;
 
 using UnityEngine;
+
+using Il2CppTMPro;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -51,22 +54,25 @@ public class Juggernaut : Gamemode
         public const int MaxPoints = 20;
 
         public const int MaxBits = 1000;
+
+        public const string SurvivorTeamName = "Survivors";
+
+        public const string JuggernautTeamName = "Juggernaut";
     }
 
-    private readonly TeamManager _teamManager = new();
-    public TeamManager TeamManager => _teamManager;
+    public TeamManager TeamManager { get; } = new();
 
-    private readonly Team _survivorTeam = new("Survivors");
-    public Team SurvivorTeam => _survivorTeam;
+    public Team SurvivorTeam { get; } = new(Defaults.SurvivorTeamName);
 
-    private readonly Team _juggernautTeam = new("Juggernaut");
-    public Team JuggernautTeam => _juggernautTeam;
+    public Team JuggernautTeam { get; } = new(Defaults.JuggernautTeamName);
 
-    private readonly PlayerScoreKeeper _juggernautScoreKeeper = new();
-    public PlayerScoreKeeper JuggernautScoreKeeper => _juggernautScoreKeeper;
+    public PlayerScoreKeeper JuggernautScoreKeeper { get; } = new();
 
-    private readonly MusicPlaylist _playlist = new();
-    public MusicPlaylist Playlist => _playlist;
+    public MusicPlaylist Playlist { get; } = new();
+
+    public LabelElement RoleLabel { get; private set; } = null;
+    public LabelElement ObjectiveLabel { get; private set; } = null;
+    public LabelElement ScoreLabel { get; private set; } = null;
 
     private MonoDiscReference _victorySongReference = null;
     private MonoDiscReference _failureSongReference = null;
@@ -87,6 +93,25 @@ public class Juggernaut : Gamemode
                 GamemodeManager.ValidateReadyConditions();
             }
         }
+    }
+
+    public override UIElement CreateWearableUI()
+    {
+        var root = base.CreateWearableUI();
+
+        var roleObjectiveRoot = CommonGamemodeUI.CreateRoleObjectiveUI(out var roleLabel, out var objectiveLabel);
+
+        RoleLabel = roleLabel;
+        ObjectiveLabel = objectiveLabel;
+
+        ScoreLabel = new LabelElement("Score 0 / 0");
+        roleObjectiveRoot.Add(ScoreLabel);
+
+        root.Add(roleObjectiveRoot);
+
+        UpdateLabels();
+
+        return root;
     }
 
     public override void OnGamemodeRegistered()
@@ -256,6 +281,36 @@ public class Juggernaut : Gamemode
 
         Playlist.SetPlaylist(playlist);
         Playlist.Shuffle();
+    }
+
+    public static string GetTeamRole(Team team)
+    {
+        if (team == null)
+        {
+            return "No Role";
+        }
+
+        return team.TeamName switch
+        {
+            Defaults.JuggernautTeamName => "Juggernaut",
+            Defaults.SurvivorTeamName => "Survivor",
+            _ => team.TeamName,
+        };
+    }
+
+    public static string GetTeamObjective(Team team)
+    {
+        if (team == null)
+        {
+            return "No Objective";
+        }
+
+        return team.TeamName switch
+        {
+            Defaults.JuggernautTeamName => "Kill Survivors to Secure Victory",
+            Defaults.SurvivorTeamName => "Kill the Juggernaut to Gain Its Power",
+            _ => "Unknown Objective",
+        };
     }
 
     private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
@@ -429,6 +484,11 @@ public class Juggernaut : Gamemode
 
     private void OnScoreChanged(PlayerID player, int score)
     {
+        if (player.IsMe)
+        {
+            UpdateScoreLabel();
+        }
+
         if (score == 0)
         {
             return;
@@ -526,6 +586,8 @@ public class Juggernaut : Gamemode
 
             LocalAvatar.HeightOverride = Defaults.JuggernautHeight;
         }
+
+        UpdateLabels();
     }
 
     private void OnOtherAssignedToTeam(PlayerID player, Team team)
@@ -586,5 +648,42 @@ public class Juggernaut : Gamemode
     private void ClearTeams()
     {
         TeamManager.UnassignAllPlayers();
+    }
+
+    private void UpdateLabels()
+    {
+        UpdateRoleLabel();
+        UpdateObjectiveLabel();
+        UpdateScoreLabel();
+    }
+
+    private void UpdateRoleLabel()
+    {
+        if (RoleLabel == null)
+        {
+            return;
+        }
+
+        RoleLabel.Text = GetTeamRole(TeamManager.GetLocalTeam());
+    }
+
+    private void UpdateObjectiveLabel()
+    {
+        if (ObjectiveLabel == null)
+        {
+            return;
+        }
+
+        ObjectiveLabel.Text = GetTeamObjective(TeamManager.GetLocalTeam());
+    }
+
+    private void UpdateScoreLabel()
+    {
+        if (ScoreLabel == null)
+        {
+            return;
+        }
+
+        ScoreLabel.Text = $"Score {JuggernautScoreKeeper.GetScore(PlayerIDManager.LocalID)} / {Defaults.MaxPoints}";
     }
 }

@@ -526,6 +526,11 @@ public class HideAndSeek : Gamemode
 
     public static string GetTeamRole(Team team)
     {
+        if (team == null)
+        {
+            return "No Role";
+        }
+
         return team.TeamName switch
         {
             Defaults.SeekerTeamName => "Seeker",
@@ -536,6 +541,11 @@ public class HideAndSeek : Gamemode
 
     public static string GetTeamObjective(Team team)
     {
+        if (team == null)
+        {
+            return "No Objective";
+        }
+
         return team.TeamName switch
         {
             Defaults.SeekerTeamName => "Find and Grab All Hiders",

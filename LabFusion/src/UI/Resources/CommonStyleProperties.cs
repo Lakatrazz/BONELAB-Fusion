@@ -4,6 +4,7 @@ public static class CommonStyleProperties
 {
     public static readonly string TextColor = "text-color";
     public static readonly string TextAlignment = "text-alignment";
+    public static readonly string TextAutoSize = "text-auto-size";
     public static readonly string TextGradient = "text-gradient";
 
     public static readonly string Font = "font";

@@ -15,16 +15,22 @@ public class Style : IReadOnlyStyle
         set => SetProperty(CommonStyleProperties.TextColor, value); 
     }
 
+    public StyleValue<VertexColors> TextGradient
+    {
+        get => GetProperty<VertexColors>(CommonStyleProperties.TextGradient);
+        set => SetProperty(CommonStyleProperties.TextGradient, value);
+    }
+
     public StyleValue<TextAlignmentOptions> TextAlignment
     {
         get => GetProperty<TextAlignmentOptions>(CommonStyleProperties.TextAlignment);
         set => SetProperty(CommonStyleProperties.TextAlignment, value);
     }
 
-    public StyleValue<VertexColors> TextGradient
+    public StyleValue<TextAutoSize> TextAutoSize
     {
-        get => GetProperty<VertexColors>(CommonStyleProperties.TextGradient);
-        set => SetProperty(CommonStyleProperties.TextGradient, value);
+        get => GetProperty<TextAutoSize>(CommonStyleProperties.TextAutoSize);
+        set => SetProperty(CommonStyleProperties.TextAutoSize, value);
     }
 
     public StyleValue<TMP_FontAsset> Font
