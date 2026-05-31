@@ -307,8 +307,8 @@ public class Juggernaut : Gamemode
 
         return team.TeamName switch
         {
-            Defaults.JuggernautTeamName => "Kill Survivors to Secure Victory",
-            Defaults.SurvivorTeamName => "Kill the Juggernaut to Gain Its Power",
+            Defaults.JuggernautTeamName => "Kill the Survivors",
+            Defaults.SurvivorTeamName => "Kill the Juggernaut and Gain its Power",
             _ => "Unknown Objective",
         };
     }
