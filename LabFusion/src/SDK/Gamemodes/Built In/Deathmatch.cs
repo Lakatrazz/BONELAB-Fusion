@@ -13,11 +13,13 @@ using LabFusion.SDK.Triggers;
 using LabFusion.Menu;
 using LabFusion.Math;
 using LabFusion.UI.Popups;
-
-using UnityEngine;
-
+using LabFusion.UI.Elements;
 using LabFusion.Menu.Data;
 using LabFusion.SDK.Metadata;
+using LabFusion.UI.Styles;
+using LabFusion.UI.Resources;
+
+using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -55,7 +57,13 @@ public class Deathmatch : Gamemode
     private readonly MusicPlaylist _playlist = new();
     public MusicPlaylist Playlist => _playlist;
 
-    private bool _hasDied;
+    public LabelElement KillCounterLabel { get; private set; } = null;
+
+    public LabelElement DeathCounterLabel { get; private set; } = null;
+
+    public LabelElement RankingCounterLabel { get; private set; } = null;
+
+    private int _deathCount = 0;
 
     private float _timeOfStart;
     private bool _oneMinuteLeft;
@@ -143,6 +151,85 @@ public class Deathmatch : Gamemode
         generalGroup.AddElement(vitalityData);
 
         return group;
+    }
+
+    public override UIElement CreateWearableUI()
+    {
+        var root = base.CreateWearableUI();
+
+        root.Add(CreateStatsRow());
+
+        root.Add(CreateRankingColumn());
+
+        UpdateLabels();
+
+        return root;
+    }
+
+    private UIElement CreateStatsRow()
+    {
+        var statsRow = new UIElement();
+        statsRow.Style.Direction = Direction.Row;
+        statsRow.Style.JustifyContent = Justify.Center;
+        statsRow.Style.FontSize = Length.FromRatio(1.17f);
+
+        statsRow.Add(CreateKillColumn());
+
+        var verticalSeparator = new UIElement();
+        verticalSeparator.AddStyleClass(CommonStyleClasses.VerticalLine);
+        verticalSeparator.Style.Margins = new BorderOffsets(5, 5, 0, 0);
+
+        statsRow.Add(verticalSeparator);
+
+        statsRow.Add(CreateDeathColumn());
+
+        return statsRow;
+    }
+
+    private UIElement CreateKillColumn()
+    {
+        var killColumn = new UIElement();
+        killColumn.Style.AlignItems = Align.Center;
+        killColumn.Style.Margins = new BorderOffsets(10, 15, 0, 0);
+
+        var killLabel = new LabelElement("Kills");
+        killColumn.Add(killLabel);
+
+        KillCounterLabel = new LabelElement("0");
+        killColumn.Add(KillCounterLabel);
+
+        return killColumn;
+    }
+
+    private UIElement CreateDeathColumn()
+    {
+        var deathColumn = new UIElement();
+        deathColumn.Style.AlignItems = Align.Center;
+        deathColumn.Style.Margins = new BorderOffsets(15, -10, 0, 0);
+
+        var deathLabel = new LabelElement("Deaths");
+        deathColumn.Add(deathLabel);
+
+        DeathCounterLabel = new LabelElement("0");
+        deathColumn.Add(DeathCounterLabel);
+
+        return deathColumn;
+    }
+
+    private UIElement CreateRankingColumn()
+    {
+        var rankingColumn = new UIElement();
+        rankingColumn.Style.AlignItems = Align.Center;
+        rankingColumn.Style.FontSize = Length.FromRatio(1.17f);
+        rankingColumn.Style.Margins = new BorderOffsets(0, 0, 5, 0);
+
+        var rankingLabel = new LabelElement("Ranking");
+        rankingColumn.Add(rankingLabel);
+
+        RankingCounterLabel = new LabelElement("0th");
+        rankingColumn.Add(RankingCounterLabel);
+
+        return rankingColumn;
     }
 
     public void ApplyGamemodeSettings()
@@ -254,7 +341,7 @@ public class Deathmatch : Gamemode
 
         // Register score keeper
         ScoreKeeper.Register(Metadata);
-        ScoreKeeper.OnPlayerScoreChanged += OnScoreChanged;
+        ScoreKeeper.PlayerScoreChanged += OnScoreChanged;
     }
 
     public override void OnGamemodeUnregistered()
@@ -271,7 +358,7 @@ public class Deathmatch : Gamemode
 
         // Unregister score keeper
         ScoreKeeper.Unregister();
-        ScoreKeeper.OnPlayerScoreChanged -= OnScoreChanged;
+        ScoreKeeper.PlayerScoreChanged -= OnScoreChanged;
     }
 
     private new void OnMetadataChanged(string key, string value)
@@ -305,7 +392,8 @@ public class Deathmatch : Gamemode
                 // If we died, we can't get the Rampage achievement
                 if (player.IsMe)
                 {
-                    _hasDied = true;
+                    _deathCount++;
+                    UpdateDeathLabel();
                 }
                 break;
             case PlayerActionType.DYING_BY_OTHER_PLAYER:
@@ -354,7 +442,7 @@ public class Deathmatch : Gamemode
         _oneMinuteLeft = false;
 
         // Reset death status
-        _hasDied = false;
+        _deathCount = 0;
 
         // Apply overrides
         LocalHealth.MortalityOverride = true;
@@ -429,6 +517,9 @@ public class Deathmatch : Gamemode
         var secondPlace = ScoreKeeper.GetPlayerByPlace(1);
         var thirdPlace = ScoreKeeper.GetPlayerByPlace(2);
 
+        var numericalPlacement = ScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        var ordinalPlacement = numericalPlacement.ToOrdinal();
+
         var selfPlace = ScoreKeeper.GetPlace(PlayerIDManager.LocalID);
         var selfScore = ScoreKeeper.GetScore(PlayerIDManager.LocalID);
 
@@ -451,7 +542,7 @@ public class Deathmatch : Gamemode
 
         if (selfPlace != -1 && selfPlace > 3)
         {
-            message += $"Your Place: {selfPlace} (Score: {selfScore})";
+            message += $"Your Place: {ordinalPlacement} (Score: {selfScore})";
         }
 
         // Play victory/failure sounds
@@ -462,15 +553,19 @@ public class Deathmatch : Gamemode
             bool isVictory = false;
 
             if (selfPlace < Math.Min(playerCount, 3))
+            {
                 isVictory = true;
+            }
 
             OnVictoryStatus(isVictory);
 
             // If we are first place and haven't died, give Rampage achievement
-            if (selfPlace == 1 && !_hasDied)
+            if (selfPlace == 1 && _deathCount <= 0)
             {
                 if (AchievementManager.TryGetAchievement<Rampage>(out var achievement))
+                {
                     achievement.IncrementTask();
+                }
             }
         }
 
@@ -582,5 +677,45 @@ public class Deathmatch : Gamemode
                 PopupLength = 0.7f,
             });
         }
+
+        UpdateLabels();
+    }
+
+    private void UpdateLabels()
+    {
+        UpdateKillLabel();
+        UpdateDeathLabel();
+        UpdateRankingLabel();
+    }
+
+    private void UpdateKillLabel()
+    {
+        if (KillCounterLabel == null)
+        {
+            return;
+        }
+
+        KillCounterLabel.Text = ScoreKeeper.GetScore(PlayerIDManager.LocalID).ToString();
+    }
+
+    private void UpdateDeathLabel()
+    {
+        if (DeathCounterLabel == null)
+        {
+            return;
+        }
+
+        DeathCounterLabel.Text = _deathCount.ToString();
+    }
+
+    private void UpdateRankingLabel()
+    {
+        if (RankingCounterLabel == null)
+        {
+            return;
+        }
+
+        var place = ScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        RankingCounterLabel.Text = place.ToOrdinal();
     }
 }

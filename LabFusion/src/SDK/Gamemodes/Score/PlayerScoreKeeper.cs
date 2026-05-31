@@ -7,18 +7,18 @@ namespace LabFusion.SDK.Gamemodes;
 
 public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 {
-    public event Action<PlayerID, int> OnPlayerScoreChanged;
+    public event Action<PlayerID, int> PlayerScoreChanged;
 
     protected override void OnRegistered()
     {
-        OnScoreChanged += OnByteScoreChanged;
+        ScoreChanged += OnByteScoreChanged;
 
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
     protected override void OnUnregistered()
     {
-        OnScoreChanged -= OnByteScoreChanged;
+        ScoreChanged -= OnByteScoreChanged;
 
         MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
     }
@@ -29,7 +29,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 
         if (playerID != null)
         {
-            OnPlayerScoreChanged?.InvokeSafe(playerID, score, "executing PlayerScoreKeeper.OnPlayerScoreChanged");
+            PlayerScoreChanged?.InvokeSafe(playerID, score, "executing PlayerScoreKeeper.OnPlayerScoreChanged");
         }
     }
 

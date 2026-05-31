@@ -16,7 +16,7 @@ public interface IReadOnlyStyle
 
     StyleValue<FontStyles> FontStyle { get; }
 
-    StyleValue<float> FontSize { get; }
+    StyleValue<Length> FontSize { get; }
 
     StyleValue<Color> BackgroundColor { get; }
 

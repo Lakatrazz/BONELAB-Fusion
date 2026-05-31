@@ -214,7 +214,7 @@ public class SmashBones : Gamemode
         PlayerScoreKeeper.Register(Metadata);
 
         PlayerStocksKeeper.Register(Metadata, CommonKeys.LivesKey);
-        PlayerStocksKeeper.OnPlayerScoreChanged += OnLivesChanged;
+        PlayerStocksKeeper.PlayerScoreChanged += OnLivesChanged;
 
         PlayerDamageKeeper.Register(Metadata, CommonKeys.DamageKey);
         PlayerDamageKeeper.OnPlayerVariableChanged += OnDamageChanged;
@@ -235,7 +235,7 @@ public class SmashBones : Gamemode
         PlayerScoreKeeper.Unregister();
 
         PlayerStocksKeeper.Unregister();
-        PlayerStocksKeeper.OnPlayerScoreChanged -= OnLivesChanged;
+        PlayerStocksKeeper.PlayerScoreChanged -= OnLivesChanged;
 
         PlayerDamageKeeper.Unregister();
         PlayerDamageKeeper.OnPlayerVariableChanged -= OnDamageChanged;

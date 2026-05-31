@@ -6,7 +6,7 @@ public abstract class ScoreKeeper<TProperty>
 {
     private readonly Dictionary<TProperty, MetadataInt> _propertyToScore = new();
 
-    public event Action<TProperty, int> OnScoreChanged;
+    public event Action<TProperty, int> ScoreChanged;
 
     private NetworkMetadata _metadata = null;
 
@@ -78,7 +78,7 @@ public abstract class ScoreKeeper<TProperty>
             score = parsedScore;
         }
 
-        OnScoreChanged?.Invoke(property, score);
+        ScoreChanged?.Invoke(property, score);
     }
 
     private void OnMetadataRemoved(string key, string value)

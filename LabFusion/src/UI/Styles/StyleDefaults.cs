@@ -1,5 +1,7 @@
 ﻿using Il2CppTMPro;
 
+using LabFusion.UI.Resources;
+
 using UnityEngine;
 
 namespace LabFusion.UI.Styles;
@@ -31,4 +33,19 @@ public static class StyleDefaults
     public static readonly Position Position = Position.Relative;
 
     public static readonly bool AlignSelfStretch = false;
+
+    public static readonly Dictionary<string, float> DefaultLengths = new()
+    {
+        { CommonStyleProperties.FontSize, FontSize },
+    };
+
+    public static float GetDefaultLength(string propertyName)
+    {
+        if (DefaultLengths.TryGetValue(propertyName, out var length))
+        {
+            return length;
+        }
+
+        return 0f;
+    }
 }

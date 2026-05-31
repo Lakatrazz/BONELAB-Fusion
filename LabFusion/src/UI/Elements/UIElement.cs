@@ -158,6 +158,8 @@ public class UIElement
             rule.ApplyRule(Style, resolvedStyle);
         }
 
+        ProcessProperties(resolvedStyle);
+
         _resolvedStyle = resolvedStyle;
 
         // Notify listeners that the style has been resolved
@@ -273,5 +275,46 @@ public class UIElement
                 resolvedStyle.SetProperty(inheritedProperty, inheritedValue);
             }
         }
+    }
+
+    private void ProcessProperties(Style resolvedStyle)
+    {
+        foreach (var propertyPair in resolvedStyle.SetProperties)
+        {
+            var propertyName = propertyPair.Key;
+            var propertyValue = propertyPair.Value;
+
+            ProcessProperty(resolvedStyle, propertyName, propertyValue);
+        }
+    }
+
+    private void ProcessProperty(Style resolvedStyle, string propertyName, IStyleValue propertyValue)
+    {
+        // Convert non-pixel lengths to pixels
+        if (propertyValue is StyleValue<Length> styleLength)
+        {
+            ProcessLength(resolvedStyle, propertyName, styleLength);
+        }
+    }
+
+    private void ProcessLength(Style resolvedStyle, string propertyName, StyleValue<Length> styleLength)
+    {
+        var originalLength = styleLength.Value;
+
+        if (originalLength.Unit == LengthUnit.Pixel)
+        {
+            return;
+        }
+
+        float inheritedPixels = StyleDefaults.GetDefaultLength(propertyName);
+
+        if (Parent.ResolvedStyle.SetProperties.TryGetValue(propertyName, out var inheritedValue) && inheritedValue is StyleValue<Length> inheritedLength)
+        {
+            inheritedPixels = inheritedLength.Value;
+        }
+
+        var resolvedLength = originalLength.ToPixels(inheritedPixels);
+
+        resolvedStyle.SetProperty(propertyName, new StyleValue<Length>(resolvedLength));
     }
 }

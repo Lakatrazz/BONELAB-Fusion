@@ -212,10 +212,12 @@ namespace LabFusion.Marrow.Integration
 
                 var parentIsColumn = parentDirection == Direction.Column || parentDirection == Direction.ColumnReverse;
 
-                var layoutElement = References.LayoutElement;
+                var marginsLayoutElement = References.MarginsLayoutElement;
 
-                layoutElement.preferredWidth = style.Width.GetValueOrDefault(StyleDefaults.Width);
-                layoutElement.preferredHeight = style.Height.GetValueOrDefault(StyleDefaults.Height);
+                marginsLayoutElement.preferredWidth = style.Width.GetValueOrDefault(StyleDefaults.Width);
+                marginsLayoutElement.preferredHeight = style.Height.GetValueOrDefault(StyleDefaults.Height);
+
+                var rectLayoutElement = References.RectLayoutElement;
 
                 var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(StyleDefaults.AlignItems);
                 var alignSelfStretch = style.AlignSelfStretch.GetValueOrDefault(StyleDefaults.AlignSelfStretch);
@@ -225,12 +227,12 @@ namespace LabFusion.Marrow.Integration
                 var flexGrow = style.FlexGrow.GetValueOrDefault(StyleDefaults.FlexGrow);
                 var alignGrow = alignStretch ? -1f : 0f;
 
-                layoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
-                layoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
+                rectLayoutElement.flexibleWidth = parentIsColumn ? alignGrow : flexGrow;
+                rectLayoutElement.flexibleHeight = parentIsColumn ? flexGrow : alignGrow;
 
                 bool ignoreLayout = style.Position.GetValueOrDefault(StyleDefaults.Position) == Position.Absolute;
 
-                layoutElement.ignoreLayout = ignoreLayout;
+                rectLayoutElement.ignoreLayout = ignoreLayout;
 
                 if (ignoreLayout)
                 {

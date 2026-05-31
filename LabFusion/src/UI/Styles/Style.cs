@@ -39,9 +39,9 @@ public class Style : IReadOnlyStyle
         set => SetProperty(CommonStyleProperties.FontStyle, value);
     }
 
-    public StyleValue<float> FontSize
+    public StyleValue<Length> FontSize
     {
-        get => GetProperty<float>(CommonStyleProperties.FontSize);
+        get => GetProperty<Length>(CommonStyleProperties.FontSize);
         set => SetProperty(CommonStyleProperties.FontSize, value);
     }
 

@@ -247,7 +247,7 @@ public class TeamDeathmatch : Gamemode
         _scoreKeeper = new(TeamManager);
         ScoreKeeper.Register(Metadata);
 
-        ScoreKeeper.OnScoreChanged += OnScoreChanged;
+        ScoreKeeper.ScoreChanged += OnScoreChanged;
 
         // Create triggers
         OneMinuteLeftTrigger = new TriggerEvent(nameof(OneMinuteLeftTrigger), Relay, true);
@@ -279,7 +279,7 @@ public class TeamDeathmatch : Gamemode
 
         // Unregister score keeper
         ScoreKeeper.Unregister();
-        ScoreKeeper.OnScoreChanged -= OnScoreChanged;
+        ScoreKeeper.ScoreChanged -= OnScoreChanged;
 
         _scoreKeeper = null;
 

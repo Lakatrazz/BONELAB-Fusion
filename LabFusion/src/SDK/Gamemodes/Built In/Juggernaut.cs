@@ -104,7 +104,7 @@ public class Juggernaut : Gamemode
 
         // Register score keeper
         JuggernautScoreKeeper.Register(Metadata);
-        JuggernautScoreKeeper.OnPlayerScoreChanged += OnScoreChanged;
+        JuggernautScoreKeeper.PlayerScoreChanged += OnScoreChanged;
     }
 
     public override void OnGamemodeUnregistered()
@@ -120,7 +120,7 @@ public class Juggernaut : Gamemode
 
         // Unregister score keeper
         JuggernautScoreKeeper.Unregister();
-        JuggernautScoreKeeper.OnPlayerScoreChanged -= OnScoreChanged;
+        JuggernautScoreKeeper.PlayerScoreChanged -= OnScoreChanged;
     }
 
     public override void OnGamemodeStarted()

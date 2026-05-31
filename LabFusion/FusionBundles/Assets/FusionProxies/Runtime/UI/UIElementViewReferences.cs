@@ -10,11 +10,13 @@ namespace LabFusion.Marrow.Integration
 
         public VerticalLayoutGroup RectLayoutGroup { get; private set; } = null;
 
+        public LayoutElement RectLayoutElement { get; private set; } = null;
+
         public RectTransform MarginsTransform { get; private set; } = null;
 
         public VerticalLayoutGroup MarginsLayoutGroup { get; private set; } = null;
 
-        public LayoutElement LayoutElement { get; private set; } = null;
+        public LayoutElement MarginsLayoutElement { get; private set; } = null;
 
         public Image BackgroundColorView { get; private set; } = null;
 
@@ -39,11 +41,11 @@ namespace LabFusion.Marrow.Integration
 
             RectTransform = transform.GetComponent<RectTransform>();
             RectLayoutGroup = RectTransform.GetComponent<VerticalLayoutGroup>();
+            RectLayoutElement = transform.GetComponent<LayoutElement>();
 
             MarginsTransform = transform.Find("view_Margins").GetComponent<RectTransform>();
             MarginsLayoutGroup = MarginsTransform.GetComponent<VerticalLayoutGroup>();
-
-            LayoutElement = transform.GetComponent<LayoutElement>();
+            MarginsLayoutElement = MarginsTransform.GetComponent<LayoutElement>();
 
             BackgroundColorView = MarginsTransform.Find("view_BackgroundColor").GetComponent<Image>();
 
