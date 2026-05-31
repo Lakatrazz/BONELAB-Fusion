@@ -349,6 +349,8 @@ public class Juggernaut : Gamemode
         var thirdPlace = JuggernautScoreKeeper.GetPlayerByPlace(2);
 
         var selfPlace = JuggernautScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        var ordinalPlace = selfPlace.ToOrdinal();
+
         var selfScore = JuggernautScoreKeeper.GetScore(PlayerIDManager.LocalID);
 
         string message = "No one scored points!";
@@ -368,9 +370,9 @@ public class Juggernaut : Gamemode
             message += $"Third Place: {name} (Score: {JuggernautScoreKeeper.GetScore(thirdPlace)}) \n";
         }
 
-        if (selfPlace != -1 && selfPlace > 3)
+        if (selfPlace > 3)
         {
-            message += $"Your Place: {selfPlace} (Score: {selfScore})";
+            message += $"Your Place: {ordinalPlace} (Score: {selfScore})";
         }
 
         // Play victory/failure sounds

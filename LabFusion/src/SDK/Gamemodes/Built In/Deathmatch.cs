@@ -517,10 +517,9 @@ public class Deathmatch : Gamemode
         var secondPlace = ScoreKeeper.GetPlayerByPlace(1);
         var thirdPlace = ScoreKeeper.GetPlayerByPlace(2);
 
-        var numericalPlacement = ScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
-        var ordinalPlacement = numericalPlacement.ToOrdinal();
+        var selfPlace = ScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        var ordinalPlace = selfPlace.ToOrdinal();
 
-        var selfPlace = ScoreKeeper.GetPlace(PlayerIDManager.LocalID);
         var selfScore = ScoreKeeper.GetScore(PlayerIDManager.LocalID);
 
         string message = "No one scored points!";
@@ -540,9 +539,9 @@ public class Deathmatch : Gamemode
             message += $"Third Place: {name} (Score: {ScoreKeeper.GetScore(thirdPlace)}) \n";
         }
 
-        if (selfPlace != -1 && selfPlace > 3)
+        if (selfPlace > 3)
         {
-            message += $"Your Place: {ordinalPlacement} (Score: {selfScore})";
+            message += $"Your Place: {ordinalPlace} (Score: {selfScore})";
         }
 
         // Play victory/failure sounds
@@ -560,7 +559,7 @@ public class Deathmatch : Gamemode
             OnVictoryStatus(isVictory);
 
             // If we are first place and haven't died, give Rampage achievement
-            if (selfPlace == 1 && _deathCount <= 0)
+            if (selfPlace <= 1 && _deathCount <= 0)
             {
                 if (AchievementManager.TryGetAchievement<Rampage>(out var achievement))
                 {

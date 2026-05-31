@@ -700,6 +700,7 @@ public class SmashBones : Gamemode
         var thirdPlace = PlayerScoreKeeper.GetPlayerByPlace(2);
 
         var selfPlace = PlayerScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        var ordinalPlace = selfPlace.ToOrdinal();
 
         string message = "No one ran out of stocks!";
 
@@ -718,9 +719,9 @@ public class SmashBones : Gamemode
             message += $"Third Place: {name} \n";
         }
 
-        if (selfPlace != -1 && selfPlace > 3)
+        if (selfPlace > 3)
         {
-            message += $"Your Place: {selfPlace}";
+            message += $"Your Place: {ordinalPlace}";
         }
 
         // Play victory/failure sounds
