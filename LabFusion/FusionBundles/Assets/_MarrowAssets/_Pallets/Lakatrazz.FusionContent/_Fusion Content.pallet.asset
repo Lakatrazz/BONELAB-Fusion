@@ -79,6 +79,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ba7241481ff0f1446bc72cb0d6f22554, type: 2}
   - {fileID: 11400000, guid: 8d58e54af2e2ce0439256d0bb5bd2fdd, type: 2}
   - {fileID: 11400000, guid: a044e2747ecb48b408265a67475985d0, type: 2}
+  - {fileID: 11400000, guid: 0b60c382a77b33c478659bf2f8c47f54, type: 2}
   _tags: []
   _changeLogs: []
   _crateTitles:
@@ -138,4 +139,5 @@ MonoBehaviour:
   - MonoDisc  UI Turn On
   - MonoDisc  Jingle Positive Holographic 00
   - MonoDisc  Jingle Negative Holographic 00
+  - MonoDisc  Jingle Positive Holographic 01
   _palletDependencies: []

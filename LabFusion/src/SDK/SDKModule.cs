@@ -1,5 +1,4 @@
-﻿using LabFusion.SDK.Equippables;
-using LabFusion.SDK.Messages;
+﻿using LabFusion.SDK.Messages;
 using LabFusion.SDK.Modules;
 using LabFusion.SDK.Wearables;
 
@@ -22,6 +21,5 @@ public sealed class SDKModule : Module
         WearableManager.Initialize();
 
         WristWatchManager.Initialize();
-        WristWatchManager.EquipWristWatch(true);
     }
 }

@@ -110,6 +110,21 @@ public abstract class Gamemode : IWearableUIProvider
     /// </summary>
     public virtual bool ManualReady => false;
 
+    /// <summary>
+    /// Whether or not the wearable UI watch should be forced on for this gamemode.
+    /// <para>This should be set to true if the information displayed on it is necessary for the gamemode, such as delivering player roles or objectives.</para>
+    /// <para>Defaults to false.</para>
+    /// </summary>
+    public virtual bool ForceWearableOn { get; } = false;
+
+    /// <summary>
+    /// Whether or not the wearable UI watch should automatically beep when equipped for the gamemode.
+    /// <para>This should be set to true if the player must be notified that their watch contains new information.</para>
+    /// <para>Otherwise, you can manually beep the watch by calling <see cref="WristWatchManager.BeepWatch"/>.</para>
+    /// <para>Defaults to false.</para>
+    /// </summary>
+    public virtual bool AutoBeepWearable { get; } = false;
+
     // Gamemode settings
     public virtual bool AutoStopOnSceneLoad { get; } = true;
     public virtual bool AutoHolsterOnDeath { get; } = true;

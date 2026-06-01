@@ -167,7 +167,12 @@ public static class GamemodeManager
 
             GamemodeStarted?.InvokeSafe("executing GamemodeStarted event");
 
-            WristWatchManager.PanelUI = gamemode;
+            WristWatchManager.QueueUI(gamemode);
+
+            if (gamemode.AutoBeepWearable)
+            {
+                WristWatchManager.BeepWatch();
+            }
 
 #if DEBUG
             FusionLogger.Log($"Gamemode {gamemode.Title} started!");
@@ -185,7 +190,7 @@ public static class GamemodeManager
                 StartReadyTimer();
             }
 
-            WristWatchManager.PanelUI = null;
+            WristWatchManager.DequeueUI(gamemode);
 
 #if DEBUG
             FusionLogger.Log($"Gamemode {gamemode.Title} stopped!");
