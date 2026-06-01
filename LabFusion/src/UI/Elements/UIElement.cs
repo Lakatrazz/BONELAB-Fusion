@@ -279,21 +279,13 @@ public class UIElement
 
     private void ProcessProperties(Style resolvedStyle)
     {
-        foreach (var propertyPair in resolvedStyle.SetProperties)
-        {
-            var propertyName = propertyPair.Key;
-            var propertyValue = propertyPair.Value;
-
-            ProcessProperty(resolvedStyle, propertyName, propertyValue);
-        }
-    }
-
-    private void ProcessProperty(Style resolvedStyle, string propertyName, IStyleValue propertyValue)
-    {
         // Convert non-pixel lengths to pixels
-        if (propertyValue is StyleValue<Length> styleLength)
+        foreach (var propertyName in CommonStyleProperties.LengthProperties)
         {
-            ProcessLength(resolvedStyle, propertyName, styleLength);
+            if (resolvedStyle.SetProperties.TryGetValue(propertyName, out var propertyValue) && propertyValue is StyleValue<Length> styleLength)
+            {
+                ProcessLength(resolvedStyle, propertyName, styleLength);
+            }
         }
     }
 

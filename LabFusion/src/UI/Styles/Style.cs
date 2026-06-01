@@ -33,6 +33,24 @@ public class Style : IReadOnlyStyle
         set => SetProperty(CommonStyleProperties.TextAutoSize, value);
     }
 
+    public StyleValue<TextOutline> TextOutline
+    {
+        get => GetProperty<TextOutline>(CommonStyleProperties.TextOutline);
+        set => SetProperty(CommonStyleProperties.TextOutline, value);
+    }
+
+    public StyleValue<TextShadow> TextShadow
+    {
+        get => GetProperty<TextShadow>(CommonStyleProperties.TextShadow);
+        set => SetProperty(CommonStyleProperties.TextShadow, value);
+    }
+
+    public StyleValue<TextGlow> TextGlow
+    {
+        get => GetProperty<TextGlow>(CommonStyleProperties.TextGlow);
+        set => SetProperty(CommonStyleProperties.TextGlow, value);
+    }
+
     public StyleValue<TMP_FontAsset> Font
     {
         get => GetProperty<TMP_FontAsset>(CommonStyleProperties.Font);

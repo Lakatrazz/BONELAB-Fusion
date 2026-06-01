@@ -231,6 +231,7 @@ public class WristWatchBehavior : IWearableComponent
         root.SetExternalStyleSheets(new List<StyleSheet>()
         {
             CommonStyleSheets.DefaultStyleSheet,
+            CommonStyleSheets.WatchStyleSheet,
         });
 
         root.ResolveStyle();

@@ -14,6 +14,12 @@ public interface IReadOnlyStyle
 
     StyleValue<TextAutoSize> TextAutoSize { get; }
 
+    StyleValue<TextOutline> TextOutline { get; }
+
+    StyleValue<TextShadow> TextShadow { get; }
+
+    StyleValue<TextGlow> TextGlow { get; }
+
     StyleValue<TMP_FontAsset> Font { get; }
 
     StyleValue<FontStyles> FontStyle { get; }

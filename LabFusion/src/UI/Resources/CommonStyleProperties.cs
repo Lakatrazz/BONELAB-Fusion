@@ -7,6 +7,10 @@ public static class CommonStyleProperties
     public static readonly string TextAutoSize = "text-auto-size";
     public static readonly string TextGradient = "text-gradient";
 
+    public static readonly string TextOutline = "text-outline";
+    public static readonly string TextShadow = "text-shadow";
+    public static readonly string TextGlow = "text-glow";
+
     public static readonly string Font = "font";
     public static readonly string FontStyle = "font-style";
     public static readonly string FontSize = "font-size";
@@ -37,8 +41,17 @@ public static class CommonStyleProperties
         TextAlignment,
         TextGradient,
 
+        TextOutline,
+        TextShadow,
+        TextGlow,
+
         Font,
         FontStyle,
         FontSize
+    };
+
+    public static readonly List<string> LengthProperties = new()
+    {
+        FontSize,
     };
 }

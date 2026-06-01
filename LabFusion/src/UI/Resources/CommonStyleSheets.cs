@@ -16,9 +16,20 @@ public static class CommonStyleSheets
         }
     }
 
+    private static StyleSheet _watchStyleSheet = null;
+    public static StyleSheet WatchStyleSheet
+    {
+        get
+        {
+            _watchStyleSheet ??= CreateWatchStyleSheet();
+            return _watchStyleSheet;
+        }
+    }
+
     public static void MarkDirty()
     {
         _defaultStyleSheet = null;
+        _watchStyleSheet = null;
     }
 
     private static StyleSheet CreateDefaultStyleSheet()
@@ -49,6 +60,19 @@ public static class CommonStyleSheets
         };
 
         styleSheet.Add(new StyleRule(new ClassSelector(CommonStyleClasses.VerticalLine), verticalLineStyle));
+
+        return styleSheet;
+    }
+
+    private static StyleSheet CreateWatchStyleSheet()
+    {
+        var styleSheet = new StyleSheet();
+
+        var glowStyle = new Style
+        {
+            TextGlow = new TextGlow(new Color(0f, 0.4f, 2f, 1f), 0f, 0f, 1f, 0.1f),
+        };
+        styleSheet.Add(new StyleRule(new RootSelector(), glowStyle));
 
         return styleSheet;
     }
