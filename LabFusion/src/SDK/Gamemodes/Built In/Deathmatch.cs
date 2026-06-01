@@ -159,7 +159,8 @@ public class Deathmatch : Gamemode
 
         root.Add(CreateStatsRow());
 
-        root.Add(CreateRankingColumn());
+        root.Add(CommonGamemodeUI.CreateRankingUI(out var rankingCounterLabel));
+        RankingCounterLabel = rankingCounterLabel;
 
         UpdateLabels();
 
@@ -214,22 +215,6 @@ public class Deathmatch : Gamemode
         deathColumn.Add(DeathCounterLabel);
 
         return deathColumn;
-    }
-
-    private UIElement CreateRankingColumn()
-    {
-        var rankingColumn = new UIElement();
-        rankingColumn.Style.AlignItems = Align.Center;
-        rankingColumn.Style.FontSize = Length.FromRatio(1.17f);
-        rankingColumn.Style.Margins = new BorderOffsets(0, 0, 5, 0);
-
-        var rankingLabel = new LabelElement("Ranking");
-        rankingColumn.Add(rankingLabel);
-
-        RankingCounterLabel = new LabelElement("0th");
-        rankingColumn.Add(RankingCounterLabel);
-
-        return rankingColumn;
     }
 
     public void ApplyGamemodeSettings()

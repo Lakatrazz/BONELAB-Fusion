@@ -7,6 +7,22 @@ namespace LabFusion.SDK.Gamemodes;
 
 public static class CommonGamemodeUI
 {
+    public static UIElement CreateRankingUI(out LabelElement rankingCounterLabel)
+    {
+        var root = new UIElement();
+        root.Style.AlignItems = Align.Center;
+        root.Style.FontSize = Length.FromRatio(1.17f);
+        root.Style.Margins = new BorderOffsets(0, 0, 5, 0);
+
+        var rankingLabel = new LabelElement("Ranking");
+        root.Add(rankingLabel);
+
+        rankingCounterLabel = new LabelElement("0th");
+        root.Add(rankingCounterLabel);
+
+        return root;
+    }
+
     public static UIElement CreateRoleObjectiveUI(out LabelElement roleLabel, out LabelElement objectiveLabel)
     {
         var root = new UIElement();

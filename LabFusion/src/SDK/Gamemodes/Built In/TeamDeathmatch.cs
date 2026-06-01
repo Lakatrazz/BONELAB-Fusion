@@ -1,22 +1,23 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
-
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
-using LabFusion.Network;
-using LabFusion.Player;
-using LabFusion.SDK.Achievements;
-using LabFusion.SDK.Points;
-using LabFusion.SDK.Triggers;
-using LabFusion.Senders;
-using LabFusion.Utilities;
-using LabFusion.Scene;
 using LabFusion.Math;
 using LabFusion.Menu;
 using LabFusion.Menu.Data;
+using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Scene;
+using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Metadata;
+using LabFusion.SDK.Points;
+using LabFusion.SDK.Triggers;
+using LabFusion.Senders;
+using LabFusion.UI.Elements;
 using LabFusion.UI.Popups;
-
+using LabFusion.UI.Resources;
+using LabFusion.UI.Styles;
+using LabFusion.Utilities;
 using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes;
@@ -77,26 +78,28 @@ public class TeamDeathmatch : Gamemode
         }
     }
 
-    private readonly TeamManager _teamManager = new();
-    public TeamManager TeamManager => _teamManager;
+    public TeamManager TeamManager { get; } = new();
 
-    private readonly Team _sabrelakeTeam = new(DefaultSabrelakeName);
-    public Team SabrelakeTeam => _sabrelakeTeam;
+    public Team SabrelakeTeam { get; } = new(DefaultSabrelakeName);
 
-    private readonly Team _lavaGangTeam = new(DefaultLavaGangName);
-    public Team LavaGangTeam => _lavaGangTeam;
+    public Team LavaGangTeam { get; } = new(DefaultLavaGangName);
 
     private TeamScoreKeeper _scoreKeeper = null;
     public TeamScoreKeeper ScoreKeeper => _scoreKeeper;
 
-    private readonly TeamMusicManager _teamMusicManager = new();
-    public TeamMusicManager TeamMusicManager => _teamMusicManager;
+    public TeamMusicManager TeamMusicManager { get; } = new();
 
-    private readonly MusicPlaylist _musicPlaylist = new();
-    public MusicPlaylist MusicPlaylist => _musicPlaylist;
+    public MusicPlaylist MusicPlaylist { get; } = new();
 
-    private readonly TeamLogoManager _teamLogoManager = new();
-    public TeamLogoManager TeamLogoManager => _teamLogoManager;
+    public TeamLogoManager TeamLogoManager { get; } = new();
+
+    public LabelElement YourTeamLabel { get; private set; } = null;
+    public LabelElement YourTeamCounterLabel { get; private set; } = null;
+
+    public LabelElement OpposingTeamLabel { get; private set; } = null;
+    public LabelElement OpposingTeamCounterLabel { get; private set; } = null;
+
+    public LabelElement RankingCounterLabel { get; private set; } = null;
 
     private string _avatarOverride = null;
 
@@ -155,6 +158,64 @@ public class TeamDeathmatch : Gamemode
         generalGroup.AddElement(vitalityData);
 
         return group;
+    }
+
+    public override UIElement CreateWearableUI()
+    {
+        var root = base.CreateWearableUI();
+
+        root.Add(CreateStatsRow());
+
+        root.Add(CommonGamemodeUI.CreateRankingUI(out var rankingCounterLabel));
+        RankingCounterLabel = rankingCounterLabel;
+
+        UpdateLabels();
+
+        return root;
+    }
+
+    private UIElement CreateStatsRow()
+    {
+        var statsRow = new UIElement();
+        statsRow.Style.Direction = Direction.Row;
+        statsRow.Style.JustifyContent = Justify.Center;
+        statsRow.Style.FontSize = Length.FromRatio(1.17f);
+
+        var yourTeamColumn = CreateTeamColumn(out var yourTeamLabel, out var yourTeamCounterLabel);
+        yourTeamLabel.Style.TextColor = new Color(0f, 0.8f, 1f);
+        statsRow.Add(yourTeamColumn);
+
+        var verticalSeparator = new UIElement();
+        verticalSeparator.AddStyleClass(CommonStyleClasses.VerticalLine);
+        verticalSeparator.Style.Margins = new BorderOffsets(5, 5, 0, 0);
+
+        statsRow.Add(verticalSeparator);
+
+        var opposingTeamColumn = CreateTeamColumn(out var opposingTeamLabel, out var opposingTeamCounterLabel);
+        opposingTeamLabel.Style.TextColor = new Color(1f, 0.2f, 0f);
+        statsRow.Add(opposingTeamColumn);
+
+        YourTeamLabel = yourTeamLabel;
+        YourTeamCounterLabel = yourTeamCounterLabel;
+
+        OpposingTeamLabel = opposingTeamLabel;
+        OpposingTeamCounterLabel = opposingTeamCounterLabel;
+
+        return statsRow;
+    }
+
+    private static UIElement CreateTeamColumn(out LabelElement teamLabel, out LabelElement counterLabel)
+    {
+        var teamColumn = new UIElement();
+        teamColumn.Style.AlignItems = Align.Center;
+
+        teamLabel = new LabelElement("Your Team");
+        teamColumn.Add(teamLabel);
+
+        counterLabel = new LabelElement("0");
+        teamColumn.Add(counterLabel);
+
+        return teamColumn;
     }
 
     private void ApplyTeamSettings()
@@ -357,6 +418,8 @@ public class TeamDeathmatch : Gamemode
 
         // Invoke spawn point changes on level load
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
+
+        UpdateLabels();
     }
 
     protected bool OnValidateNametag(PlayerID id)
@@ -619,6 +682,26 @@ public class TeamDeathmatch : Gamemode
         return _totalMinutes - (ElapsedSeconds / 60f);
     }
 
+    public Team GetHighestOpposingTeam()
+    {
+        var teams = TeamManager.Teams.OrderBy(team => ScoreKeeper.GetScore(team)).Reverse();
+        var localTeam = TeamManager.GetLocalTeam();
+
+        for (var i = 0; i < teams.Count(); i++)
+        {
+            var team = teams.ElementAt(i);
+
+            if (team == localTeam)
+            {
+                continue;
+            }
+
+            return team;
+        }
+
+        return null;
+    }
+
     protected override void OnUpdate()
     {
         base.OnUpdate();
@@ -772,6 +855,8 @@ public class TeamDeathmatch : Gamemode
                 PopupLength = 0.7f,
             });
         }
+
+        UpdateLabels();
     }
 
     protected void SetTeams()
@@ -787,5 +872,58 @@ public class TeamDeathmatch : Gamemode
 
         // Reset all scores
         ScoreKeeper.ResetScores();
+    }
+
+    private void UpdateLabels()
+    {
+        UpdateYourTeamLabels();
+        UpdateOpposingTeamLabels();
+        UpdateRankingCounterLabel();
+    }
+
+    private void UpdateYourTeamLabels()
+    {
+        if (YourTeamLabel == null)
+        {
+            return;
+        }
+
+        var localTeam = TeamManager.GetLocalTeam();
+
+        string teamName = localTeam != null ? localTeam.DisplayName : "No Team";
+
+        YourTeamLabel.Text = teamName;
+        YourTeamCounterLabel.Text = ScoreKeeper.GetScore(localTeam).ToString();
+    }
+
+    private void UpdateOpposingTeamLabels()
+    {
+        if (OpposingTeamLabel == null)
+        {
+            return;
+        }
+
+        var highestOpposingTeam = GetHighestOpposingTeam();
+
+        string teamName = highestOpposingTeam != null ? highestOpposingTeam.DisplayName : "No Team";
+
+        OpposingTeamLabel.Text = teamName;
+        OpposingTeamCounterLabel.Text = ScoreKeeper.GetScore(highestOpposingTeam).ToString();
+    }
+
+    private void UpdateRankingCounterLabel()
+    {
+        if (RankingCounterLabel == null)
+        {
+            return;
+        }
+
+        var localTeam = TeamManager.GetLocalTeam();
+
+        var placedTeams = TeamManager.Teams.OrderBy(team => ScoreKeeper.GetScore(team)).Reverse().ToList();
+
+        var place = placedTeams.IndexOf(localTeam) + 1;
+
+        RankingCounterLabel.Text = place.ToOrdinal();
     }
 }
