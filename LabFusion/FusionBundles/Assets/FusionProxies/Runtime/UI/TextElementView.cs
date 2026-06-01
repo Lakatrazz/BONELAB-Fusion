@@ -41,7 +41,7 @@ namespace LabFusion.Marrow.Integration
         public TMP_Text TextView { get; private set; } = null;
 
         [HideFromIl2Cpp]
-        public bool IsMaterialOverriden { get; private set; } = false;
+        public bool IsMaterialOverridden { get; private set; } = false;
 
         protected override void OnContentRepainted()
         {
@@ -69,7 +69,7 @@ namespace LabFusion.Marrow.Integration
 
             if (isFontChanged)
             {
-                IsMaterialOverriden = false;
+                IsMaterialOverridden = false;
             }
 
             TextView.font = style.Font;
@@ -107,10 +107,10 @@ namespace LabFusion.Marrow.Integration
 
             if (hasExtraMaterialProperties)
             {
-                IsMaterialOverriden = true;
+                IsMaterialOverridden = true;
             }
 
-            if (IsMaterialOverriden)
+            if (IsMaterialOverridden)
             {
                 var fontMaterial = TextView.fontMaterial;
 
