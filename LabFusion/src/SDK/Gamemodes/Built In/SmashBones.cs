@@ -20,11 +20,16 @@ using LabFusion.UI.Popups;
 using LabFusion.SDK.Points;
 using LabFusion.Marrow.Pool;
 using LabFusion.Senders;
+using LabFusion.UI.Elements;
+using LabFusion.UI.Styles;
+using LabFusion.UI.Resources;
 
 using UnityEngine;
 
 using System.Text.Json.Serialization;
 using System.Text.Json;
+
+using Il2CppTMPro;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -133,29 +138,25 @@ public class SmashBones : Gamemode
         }
     }
 
-    private readonly MusicPlaylist _playlist = new();
-    public MusicPlaylist Playlist => _playlist;
+    public MusicPlaylist Playlist { get; } = new();
 
-    private readonly PlayerScoreKeeper _playerScoreKeeper = new();
-    public PlayerScoreKeeper PlayerScoreKeeper => _playerScoreKeeper;
+    public PlayerScoreKeeper PlayerScoreKeeper { get; } = new();
 
-    private readonly PlayerScoreKeeper _playerStocksKeeper = new();
-    public PlayerScoreKeeper PlayerStocksKeeper => _playerStocksKeeper;
+    public PlayerScoreKeeper PlayerStocksKeeper { get; } = new();
 
-    private readonly MetadataPlayerDictionary<MetadataFloat> _playerDamageKeeper = new();
-    public MetadataPlayerDictionary<MetadataFloat> PlayerDamageKeeper => _playerDamageKeeper;
+    public MetadataPlayerDictionary<MetadataFloat> PlayerDamageKeeper { get; } = new();
 
-    private readonly TeamManager _teamManager = new();
-    public TeamManager TeamManager => _teamManager;
+    public TeamManager TeamManager { get; } = new();
 
-    private readonly Team _freeForAllTeam = new("Free For All");
-    public Team FreeForAllTeam => _freeForAllTeam;
+    public Team FreeForAllTeam { get; } = new("Free For All");
 
-    private readonly Team _spectatorTeam = new("Spectators");
-    public Team SpectatorTeam => _spectatorTeam;
+    public Team SpectatorTeam { get; } = new("Spectators");
 
     public TriggerEvent PlayerDamageEvent { get; set; }
     public TriggerEvent PlayerDeathEvent { get; set; }
+
+    public LabelElement PercentLabel { get; private set; } = null;
+    public LabelElement StocksLabel { get; private set; } = null;
 
     private int _previousStocks = -1;
 
@@ -188,6 +189,42 @@ public class SmashBones : Gamemode
         generalGroup.AddElement(minimumPlayersData);
 
         return group;
+    }
+
+    public override UIElement CreateWearableUI()
+    {
+        var root = base.CreateWearableUI();
+
+        var statsColumn = new UIElement();
+        statsColumn.Style.FontSize = Length.FromRatio(2f);
+        statsColumn.Style.FontStyle = FontStyles.Bold;
+        statsColumn.Style.TextAlignment = TextAlignmentOptions.Center;
+        statsColumn.Style.AlignItems = Align.Center;
+
+        PercentLabel = new LabelElement("0%");
+        statsColumn.Add(PercentLabel);
+
+        var stocksRow = new UIElement();
+        stocksRow.Style.Direction = Direction.Row;
+        stocksRow.Style.AlignItems = Align.Center;
+
+        var stocksIcon = new UIElement();
+        stocksIcon.Style.BackgroundImage = UIResources.GetCommonIcon(CommonIcons.SkullRetro);
+        stocksIcon.Style.Height = 50f;
+        stocksIcon.Style.Width = 50f;
+        stocksRow.Add(stocksIcon);
+
+        StocksLabel = new LabelElement("x0");
+        StocksLabel.Style.Margins = new BorderOffsets(5, 5, 0, 0);
+        stocksRow.Add(StocksLabel);
+
+        statsColumn.Add(stocksRow);
+
+        root.Add(statsColumn);
+
+        UpdateLabels();
+
+        return root;
     }
 
     public override bool CheckReadyConditions()
@@ -446,9 +483,9 @@ public class SmashBones : Gamemode
 
         var damageInfo = JsonSerializer.Deserialize<DamageInfo>(value);
 
-        var playerId = PlayerIDManager.GetPlayerID(damageInfo.PlatformID);
+        var playerID = PlayerIDManager.GetPlayerID(damageInfo.PlatformID);
 
-        PlayerDamageKeeper.GetVariable(playerId).SetValue(damageInfo.Damage);
+        PlayerDamageKeeper.GetVariable(playerID).SetValue(damageInfo.Damage);
     }
 
     private void OnPlayerDeathEvent(string value)
@@ -581,6 +618,8 @@ public class SmashBones : Gamemode
         }
 
         _previousStocks = lives;
+
+        UpdateStocksLabel();
     }
 
     private void OnDamageChanged(PlayerID player, MetadataFloat damage)
@@ -593,6 +632,11 @@ public class SmashBones : Gamemode
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Damage = damage.GetValue();
+        }
+
+        if (player.IsMe)
+        {
+            UpdatePercentLabel();
         }
     }
 
@@ -1174,5 +1218,36 @@ public class SmashBones : Gamemode
         }
 
         LocalAudioPlayer.Play2dOneShot(new AudioReference(stingerReference), LocalAudioPlayer.MusicSettings);
+    }
+
+    private void UpdateLabels()
+    {
+        UpdatePercentLabel();
+        UpdateStocksLabel();
+    }
+
+    private void UpdatePercentLabel()
+    {
+        if (PercentLabel == null)
+        {
+            return;
+        }
+
+        var damage = PlayerDamageKeeper.GetVariable(PlayerIDManager.LocalID).GetValue();
+
+        PercentLabel.Text = $"{Mathf.RoundToInt(damage)}%";
+        PercentLabel.Style.TextColor = Color.Lerp(Color.white, new Color(0.6f, 0f, 0f, 1f), damage / 300f);
+    }
+
+    private void UpdateStocksLabel()
+    {
+        if (StocksLabel == null)
+        {
+            return;
+        }
+
+        var stocks = PlayerStocksKeeper.GetScore(PlayerIDManager.LocalID);
+
+        StocksLabel.Text = $"x{stocks}";
     }
 }
