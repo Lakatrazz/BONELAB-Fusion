@@ -18,9 +18,8 @@ public class ConnectionRequestData : INetSerializable
     public string AvatarBarcode;
     public SerializedAvatarStats AvatarStats;
     public Dictionary<string, string> InitialMetadata;
-    public List<string> InitialEquippedItems;
 
-    public int? GetSize() => sizeof(ulong) + Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize() + InitialEquippedItems.GetSize();
+    public int? GetSize() => sizeof(ulong) + Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize();
 
     public bool IsValid { get; private set; } = true;
 
@@ -33,7 +32,6 @@ public class ConnectionRequestData : INetSerializable
             serializer.SerializeValue(ref AvatarBarcode);
             serializer.SerializeValue(ref AvatarStats);
             serializer.SerializeValue(ref InitialMetadata);
-            serializer.SerializeValue(ref InitialEquippedItems);
         }
         catch (Exception e)
         {
@@ -54,7 +52,6 @@ public class ConnectionRequestData : INetSerializable
             AvatarBarcode = avatarBarcode,
             AvatarStats = stats,
             InitialMetadata = LocalPlayer.Metadata.Metadata.LocalDictionary,
-            InitialEquippedItems = InternalServerHelpers.GetInitialEquippedItems(),
         };
     }
 }
@@ -162,7 +159,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         data.InitialMetadata[nameof(PlayerMetadata.PermissionLevel)] = level.ToString();
 
         // Create new PlayerID
-        var playerId = new PlayerID(platformID, newSmallId.Value, data.InitialMetadata, data.InitialEquippedItems);
+        var playerId = new PlayerID(platformID, newSmallId.Value, data.InitialMetadata);
 
         // Finally, check for dynamic connection disallowing
         if (!MultiplayerHooking.CheckShouldAllowConnection(playerId, out string reason))

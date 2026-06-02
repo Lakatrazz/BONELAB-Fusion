@@ -326,46 +326,6 @@ public static class PointItemManager
         item.OnEquipChanged(id, isEquipped);
     }
 
-    internal static void Internal_OnTriggerItem(PlayerID id, string barcode, string value = null)
-    {
-        // if (!TryGetPointItem(barcode, out var item))
-        // {
-        //     return;
-        // }
-        // 
-        // // Get the rig info
-        // RigManager manager = null;
-        // PointItemPayloadType type = PointItemPayloadType.SELF;
-        // 
-        // if (id == null || id.IsMe)
-        // {
-        //     manager = RigData.Refs.RigManager;
-        //     type = PointItemPayloadType.SELF;
-        // }
-        // else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
-        // {
-        //     manager = rep.RigRefs.RigManager;
-        //     type = PointItemPayloadType.PLAYER_REP;
-        // }
-        // 
-        // // Update equip
-        // var payload = new PointItemPayload()
-        // {
-        //     type = type,
-        //     playerId = id,
-        //     rigManager = manager,
-        // };
-        // 
-        // if (value != null)
-        // {
-        //     item.OnTrigger(payload, value);
-        // }
-        // else
-        // {
-        //     item.OnTrigger(payload);
-        // }
-    }
-
     public static void SetEquipped(IPointItem item, bool isEquipped)
     {
         if (item == null || (!item.IsUnlocked && !item.IsEquipped))
@@ -375,7 +335,6 @@ public static class PointItemManager
 
         OnEquipChanged(PlayerIDManager.LocalID, item.Barcode, isEquipped);
         PointSaveManager.SetEquipped(item.Barcode, isEquipped);
-        PointItemSender.SendPointItemEquip(item.Barcode, isEquipped);
     }
 
     public static void UnequipAll()

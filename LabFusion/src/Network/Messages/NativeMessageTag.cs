@@ -74,11 +74,6 @@ public static class NativeMessageTag
         GamemodeMetadataRemove = 203,
         GamemodeTriggerResponse = 204,
 
-        // Point items
-        PointItemEquipState = 206,
-        PointItemTrigger = 207,
-        PointItemTriggerValue = 208,
-
         // RPC
         RPCEvent = 209,
         RPCInt = 210,

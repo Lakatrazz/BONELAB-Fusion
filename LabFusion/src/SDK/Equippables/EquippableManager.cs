@@ -1,4 +1,7 @@
-﻿using LabFusion.Player;
+﻿using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.SDK.Messages;
+using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Equippables;
 
@@ -58,6 +61,12 @@ public static class EquippableManager
         BarcodeToEquippableLookup[equippable.Barcode] = equippable;
     }
 
+    internal static void Initialize()
+    {
+        MultiplayerHooking.OnJoinedServer += OnJoinedServer;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoined;
+    }
+
     internal static void ProcessLocalEquip(string barcode, bool equipped)
     {
         var equippedItems = LocalEquippedItems;
@@ -80,6 +89,8 @@ public static class EquippableManager
         {
             equippable.OnLocalEquipChanged(equipped);
         }
+
+        SendEquippableEquip(barcode, equipped, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     internal static void ProcessNetEquip(PlayerID playerID, string barcode, bool equipped)
@@ -133,5 +144,44 @@ public static class EquippableManager
         }
 
         NetEquippedItems.Remove(smallID);
+    }
+
+    private static void OnJoinedServer()
+    {
+        SendAllEquippables(CommonMessageRoutes.ReliableToOtherClients);
+    }
+
+    private static void OnPlayerJoined(PlayerID playerID)
+    {
+        SendAllEquippables(new MessageRoute(playerID.SmallID, NetworkChannel.Reliable));
+    }
+
+    private static void SendAllEquippables(MessageRoute route)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        foreach (var barcode in LocalEquippedItems)
+        {
+            SendEquippableEquip(barcode, true, route);
+        }
+    }
+
+    private static void SendEquippableEquip(string barcode, bool equipped, MessageRoute route)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        var data = new EquippableEquipData()
+        {
+            Barcode = barcode,
+            IsEquipped = equipped,
+        };
+
+        MessageRelay.RelayModule<EquippableEquipMessage, EquippableEquipData>(data, route);
     }
 }

@@ -38,7 +38,7 @@ public static class InternalServerHelpers
         LocalPlayer.InvokeApplyInitialMetadata();
 
         // Create local id
-        var id = new PlayerID(PlayerIDManager.LocalPlatformID, 0, LocalPlayer.Metadata.Metadata.LocalDictionary, GetInitialEquippedItems());
+        var id = new PlayerID(PlayerIDManager.LocalPlatformID, 0, LocalPlayer.Metadata.Metadata.LocalDictionary);
         id.Insert();
         PlayerIDManager.ApplyLocalID();
 
@@ -135,22 +135,5 @@ public static class InternalServerHelpers
         DisposeUser(playerId);
 
         MultiplayerHooking.InvokeOnPlayerLeft(playerId);
-    }
-
-    /// <summary>
-    /// Gets the default list of equipped items.
-    /// </summary>
-    /// <returns></returns>
-    public static List<string> GetInitialEquippedItems()
-    {
-        var list = new List<string>();
-
-        foreach (var item in PointItemManager.LoadedItems)
-        {
-            if (item.IsEquipped)
-                list.Add(item.Barcode);
-        }
-
-        return list;
     }
 }

@@ -1,4 +1,5 @@
-﻿using LabFusion.SDK.Messages;
+﻿using LabFusion.SDK.Equippables;
+using LabFusion.SDK.Messages;
 using LabFusion.SDK.Modules;
 using LabFusion.SDK.Wearables;
 
@@ -15,8 +16,11 @@ public sealed class SDKModule : Module
     protected override void OnModuleRegistered()
     {
         ModuleMessageManager.RegisterHandler<AnimationStateMessage>();
+        ModuleMessageManager.RegisterHandler<EquippableEquipMessage>();
         ModuleMessageManager.RegisterHandler<GamemodeDropperMessage>();
         ModuleMessageManager.RegisterHandler<VoiceProxyInputMessage>();
+
+        EquippableManager.Initialize();
 
         WearableManager.Initialize();
 

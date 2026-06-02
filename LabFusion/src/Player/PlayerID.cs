@@ -50,22 +50,17 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         }
     }
 
-    private List<string> _equippedItems = new();
-    public List<string> EquippedItems => _equippedItems;
-
     public PlayerID() 
     {
         _isValid = false;
     }
 
-    public PlayerID(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
+    public PlayerID(ulong platformID, byte smallID, Dictionary<string, string> metadata)
     {
         Metadata.CreateMetadata();
 
-        PlatformID = longId;
-        SmallID = smallId;
-
-        _equippedItems = equippedItems;
+        PlatformID = platformID;
+        SmallID = smallID;
 
         foreach (var pair in metadata)
         {
@@ -162,22 +157,6 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         return id == null || !id.IsValid;
     }
 
-    internal void ForceSetEquipped(string barcode, bool value)
-    {
-        // Remove/add to the list
-        if (value && !_equippedItems.Contains(barcode))
-        {
-            _equippedItems.Add(barcode);
-        }
-        else if (!value && _equippedItems.Contains(barcode))
-        {
-            _equippedItems.Remove(barcode);
-        }
-
-        // Invoke the events on the item
-        PointItemManager.OnEquipChanged(this, barcode, value);
-    }
-
     public void Insert() => PlayerIDManager.InsertPlayerID(this);
 
     public void Cleanup()
@@ -203,7 +182,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         UnhookMetadata();
     }
 
-    public int? GetSize() => sizeof(ulong) + sizeof(byte) + Metadata.Metadata.LocalDictionary.GetSize() + EquippedItems.GetSize();
+    public int? GetSize() => sizeof(ulong) + sizeof(byte) + Metadata.Metadata.LocalDictionary.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
@@ -215,13 +194,11 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         var platformID = PlatformID;
         var smallID = SmallID;
         var metadata = Metadata.Metadata.LocalDictionary;
-        var equippedItems = _equippedItems.ToArray();
 
         serializer.SerializeValue(ref platformID);
         serializer.SerializeValue(ref smallID);
 
         serializer.SerializeValue(ref metadata);
-        serializer.SerializeValue(ref equippedItems);
 
         if (serializer.IsReader)
         {
@@ -231,11 +208,6 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             foreach (var pair in metadata)
             {
                 Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
-            }
-
-            foreach (var item in equippedItems)
-            {
-                ForceSetEquipped(item, true);
             }
 
             OnAfterCreateID();
