@@ -25,6 +25,8 @@ public class WristWatchBehavior : IWearableComponent
 
     public const int Resolution = 200;
 
+    public const float AwaitingSoundDelay = 0.1f;
+
     public static readonly int StateHash = Animator.StringToHash("State");
 
     public bool IsLocal { get; set; } = false;
@@ -40,7 +42,10 @@ public class WristWatchBehavior : IWearableComponent
 
     public bool IsAwaitingBeep { get; set; } = false;
 
+    public bool IsAwaitingTurnOnSound { get; set; } = false;
+
     private float _awaitingBeepElapsed = 0f;
+    private float _awaitingTurnOnSoundElapsed = 0f;
 
     public void OnInitialize(bool local, PlayerID playerID = null)
     {
@@ -52,6 +57,9 @@ public class WristWatchBehavior : IWearableComponent
         {
             WristWatchManager.ActiveUIChanged += OnActiveUIChanged;
             WristWatchManager.WatchBeeped += OnWatchBeeped;
+
+            IsAwaitingTurnOnSound = true;
+            _awaitingTurnOnSoundElapsed = 0f;
         }
     }
 
@@ -92,6 +100,19 @@ public class WristWatchBehavior : IWearableComponent
             return;
         }
 
+        if (IsAwaitingTurnOnSound)
+        {
+            _awaitingTurnOnSoundElapsed += deltaTime;
+
+            if (_awaitingTurnOnSoundElapsed > AwaitingSoundDelay)
+            {
+                IsAwaitingTurnOnSound = false;
+                _awaitingTurnOnSoundElapsed = 0f;
+
+                References.PlaySound(FusionMonoDiscReferences.UITurnOnReference);
+            }
+        }
+
         SolveState(deltaTime);
 
         Panel.ForceHide = !HasAvailableUI;
@@ -119,7 +140,7 @@ public class WristWatchBehavior : IWearableComponent
         {
             _awaitingBeepElapsed += deltaTime;
 
-            if (_awaitingBeepElapsed > 0.25f)
+            if (_awaitingBeepElapsed > AwaitingSoundDelay)
             {
                 SwitchState(WatchState.Beeping);
             }
@@ -243,7 +264,7 @@ public class WristWatchBehavior : IWearableComponent
 
                 _awaitingBeepElapsed = 0f;
 
-                LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.JinglePositiveHolographic01Reference), References.Origin.position, WristWatchReferences.WatchAudioPlayerSettings);
+                References.PlaySound(FusionMonoDiscReferences.JinglePositiveHolographic01Reference);
                 break;
             case WatchState.Active:
                 Panel.HasShown = true;

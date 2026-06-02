@@ -2,6 +2,9 @@
 
 namespace LabFusion.Marrow;
 
+/// <summary>
+/// References to MonoDiscs included within the Fusion Content pallet.
+/// </summary>
 public static class FusionMonoDiscReferences
 {
     public static readonly MonoDiscReference LavaGangVictoryReference = new("Lakatrazz.FusionContent.MonoDisc.LavaGangTriumphs");
@@ -46,11 +49,29 @@ public static class FusionMonoDiscReferences
     public static readonly MonoDiscReference UIConfirmReference = new("Lakatrazz.FusionContent.MonoDisc.UIConfirm");
     public static readonly MonoDiscReference UIDenyReference = new("Lakatrazz.FusionContent.MonoDisc.UIDeny");
     public static readonly MonoDiscReference UISelectReference = new("Lakatrazz.FusionContent.MonoDisc.UISelect");
+
+    /// <summary>
+    /// A power down sound for when a user interface turns off.
+    /// </summary>
     public static readonly MonoDiscReference UITurnOffReference = new("Lakatrazz.FusionContent.MonoDisc.UITurnOff");
+
+    /// <summary>
+    /// A tube-tv pop sound for when a user interface turns on.
+    /// </summary>
     public static readonly MonoDiscReference UITurnOnReference = new("Lakatrazz.FusionContent.MonoDisc.UITurnOn");
 
+    /// <summary>
+    /// An activation or approval sound for a holographic display.
+    /// </summary>
     public static readonly MonoDiscReference JinglePositiveHolographic00Reference = new("Lakatrazz.FusionContent.MonoDisc.JinglePositiveHolographic00");
+
+    /// <summary>
+    /// An activation or approval sound for a holographic display.
+    /// </summary>
     public static readonly MonoDiscReference JinglePositiveHolographic01Reference = new("Lakatrazz.FusionContent.MonoDisc.JinglePositiveHolographic01");
 
+    /// <summary>
+    /// A deactivation or disapproval sound for a holographic display.
+    /// </summary>
     public static readonly MonoDiscReference JingleNegativeHolographic00Reference = new("Lakatrazz.FusionContent.MonoDisc.JingleNegativeHolographic00");
 }

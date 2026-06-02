@@ -153,7 +153,7 @@ public class WristWatchPanel
                     StorePanelState(References.Panel.position, References.Panel.rotation, 0f);
                     ShowPanel(true);
 
-                    LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.JinglePositiveHolographic00Reference), References.Origin.position, WristWatchReferences.WatchAudioPlayerSettings);
+                    References.PlaySound(FusionMonoDiscReferences.JinglePositiveHolographic00Reference);
                 }
                 break;
             case PanelState.Projecting:
@@ -171,7 +171,7 @@ public class WristWatchPanel
                 {
                     SwitchState(PanelState.Aligning);
 
-                    LocalAudioPlayer.PlayAtPoint(new AudioReference(FusionMonoDiscReferences.JingleNegativeHolographic00Reference), References.Origin.position, WristWatchReferences.WatchAudioPlayerSettings);
+                    References.PlaySound(FusionMonoDiscReferences.JingleNegativeHolographic00Reference);
                     break;
                 }
 

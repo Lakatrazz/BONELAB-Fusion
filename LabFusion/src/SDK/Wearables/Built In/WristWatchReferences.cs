@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
@@ -41,6 +42,11 @@ public class WristWatchReferences
     public List<Transform> Corners { get; } = new();
 
     public List<Transform> Flares { get; } = new();
+
+    public void PlaySound(MonoDiscReference monoDiscReference)
+    {
+        LocalAudioPlayer.PlayAtPoint(new AudioReference(monoDiscReference), Origin.position, WatchAudioPlayerSettings);
+    }
 
     public void GetReferences(Transform root, RigManager rigManager)
     {
