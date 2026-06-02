@@ -73,11 +73,6 @@ public class WristWatchBehavior : IWearableComponent
 
     public void OnMainInstanceCreated(GameObject mainInstance, RigManager rigManager)
     {
-        if (!IsLocal)
-        {
-            return;
-        }
-
         References = new WristWatchReferences();
         References.GetReferences(mainInstance.transform, rigManager);
 

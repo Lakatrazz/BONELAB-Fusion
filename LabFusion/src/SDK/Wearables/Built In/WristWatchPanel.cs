@@ -36,6 +36,10 @@ public class WristWatchPanel
 
     public const float ObserveLookTime = 0.3f;
 
+    public const float ObserveOpenDistance = 0.35f;
+
+    public const float ObserveCloseDistance = 0.5f;
+
     public WristWatchReferences References { get; set; } = null;
 
     public PanelState State { get; private set; } = PanelState.Closed;
@@ -113,7 +117,7 @@ public class WristWatchPanel
         var panelDirection = -References.Origin.up;
 
         float angleMultiplier = IsOpen ? 0.8f : 1f;
-        float maxDistance = IsOpen ? 0.3f : 0.2f;
+        float maxDistance = IsOpen ? ObserveCloseDistance : ObserveOpenDistance;
 
         bool lookingAtOrigin = Vector3.Dot(lookDirection, eyeToOriginDirection) >= 0.95f * angleMultiplier;
         bool originOutwards = Vector3.Dot(panelDirection, eyeToOriginDirection) >= 0.6f * angleMultiplier;
