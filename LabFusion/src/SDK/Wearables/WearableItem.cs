@@ -25,6 +25,6 @@ public abstract class WearableItem : IEquippableItem
 
     public void OnNetEquipChanged(PlayerID playerID, bool equipped)
     {
-        NetEquipped?.InvokeSafe(playerID, equipped, "executing WearableItem.NetEquipped event");
+        NetEquipped?.InvokeSafe(this, playerID, equipped, "executing WearableItem.NetEquipped event");
     }
 }
