@@ -36,7 +36,7 @@ public class WristWatchPanel
 
     public const float ObserveLookTime = 0.3f;
 
-    public const float ObserveOpenDistance = 0.35f;
+    public const float ObserveOpenDistance = 0.4f;
 
     public const float ObserveCloseDistance = 0.5f;
 
