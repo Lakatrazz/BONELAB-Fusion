@@ -502,6 +502,8 @@ public class HideAndSeek : Gamemode
         LocalPlayer.OnGrab += OnLocalPlayerGrab;
         LocalControls.DisableSlowMo = true;
 
+        LocalHealth.MortalityOverride = false;
+
         if (NetworkInfo.IsHost)
         {
             AssignTeams();
@@ -527,6 +529,8 @@ public class HideAndSeek : Gamemode
 
         LocalPlayer.OnGrab -= OnLocalPlayerGrab;
         LocalControls.DisableSlowMo = false;
+
+        LocalHealth.MortalityOverride = null;
 
         if (NetworkInfo.IsHost)
         {
