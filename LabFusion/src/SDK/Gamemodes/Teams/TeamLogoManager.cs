@@ -19,10 +19,7 @@ public class TeamLogoManager
     /// </summary>
     public bool ShowTeammateLogos
     {
-        get
-        {
-            return _showTeammateLogos;
-        }
+        get => _showTeammateLogos;
         set
         {
             _showTeammateLogos = value;
@@ -38,10 +35,7 @@ public class TeamLogoManager
     /// </summary>
     public bool ShowOpponentLogos
     {
-        get
-        {
-            return _showOpponentLogos;
-        }
+        get => _showOpponentLogos;
         set
         {
             _showOpponentLogos = value;

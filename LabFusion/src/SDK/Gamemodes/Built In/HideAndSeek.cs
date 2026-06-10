@@ -13,6 +13,7 @@ using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
 using LabFusion.UI.Elements;
+using LabFusion.UI.Resources;
 
 using MelonLoader;
 
@@ -56,11 +57,11 @@ public class HideAndSeek : Gamemode
 
     public int SeekerCount { get; set; } = Defaults.SeekerCount;
 
-    private readonly MusicPlaylist _playlist = new();
-    public MusicPlaylist Playlist => _playlist;
+    public MusicPlaylist Playlist { get; } = new();
 
-    private readonly TeamManager _teamManager = new();
-    public TeamManager TeamManager => _teamManager;
+    public TeamManager TeamManager { get; } = new();
+
+    public TeamLogoManager TeamLogoManager { get; } = new();
 
     public Team SeekerTeam { get; } = new(Defaults.SeekerTeamName);
 
@@ -148,6 +149,9 @@ public class HideAndSeek : Gamemode
 
         TeamManager.AssignedToTeam += OnAssignedToTeam;
 
+        TeamLogoManager.Register(TeamManager);
+        TeamLogoManager.ShowOpponentLogos = true;
+
         TagEvent = new TriggerEvent("TagPlayer", Relay, false);
         TagEvent.TriggeredWithValue += OnTagTriggered;
 
@@ -169,6 +173,8 @@ public class HideAndSeek : Gamemode
 
         TeamManager.AssignedToTeam -= OnAssignedToTeam;
 
+        TeamLogoManager.Unregister();
+
         TagEvent.UnregisterEvent();
         TagEvent = null;
 
@@ -180,6 +186,16 @@ public class HideAndSeek : Gamemode
 
         HiderVictoryEvent.UnregisterEvent();
         HiderVictoryEvent = null;
+    }
+
+    public override void OnLevelReady()
+    {
+        ApplyTeamSettings();
+    }
+
+    private void ApplyTeamSettings()
+    {
+        TeamLogoManager.SetLogo(HiderTeam, UIResources.GetCommonIcon(CommonIcons.Eye));
     }
 
     protected bool OnValidateNametag(PlayerID id)
