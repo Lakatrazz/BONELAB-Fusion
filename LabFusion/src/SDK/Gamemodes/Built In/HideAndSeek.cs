@@ -74,6 +74,7 @@ public class HideAndSeek : Gamemode
 
     public LabelElement RoleLabel { get; private set; } = null;
     public LabelElement ObjectiveLabel { get; private set; } = null;
+    public LabelElement HiderCountLabel { get; private set; } = null;
 
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
@@ -133,6 +134,9 @@ public class HideAndSeek : Gamemode
 
         RoleLabel = roleLabel;
         ObjectiveLabel = objectiveLabel;
+
+        HiderCountLabel = new LabelElement("0 Hiders Remaining");
+        roleObjectiveRoot.Add(HiderCountLabel);
 
         UpdateLabels();
 
@@ -326,6 +330,7 @@ public class HideAndSeek : Gamemode
 
         if (!player.IsMe)
         {
+            UpdateHiderCountLabel();
             return;
         }
 
@@ -677,6 +682,7 @@ public class HideAndSeek : Gamemode
     {
         UpdateRoleLabel();
         UpdateObjectiveLabel();
+        UpdateHiderCountLabel();
     }
 
     private void UpdateRoleLabel()
@@ -697,5 +703,15 @@ public class HideAndSeek : Gamemode
         }
 
         ObjectiveLabel.Text = GetTeamObjective(TeamManager.GetLocalTeam());
+    }
+
+    private void UpdateHiderCountLabel()
+    {
+        if (HiderCountLabel == null)
+        {
+            return;
+        }
+
+        HiderCountLabel.Text = $"{HiderTeam.PlayerCount} Hiders Remaining";
     }
 }
