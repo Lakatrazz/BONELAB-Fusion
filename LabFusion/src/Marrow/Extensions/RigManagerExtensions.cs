@@ -102,35 +102,16 @@ public static class RigManagerExtensions
 
     public static void TeleportToPosition(this RigManager rigManager, Vector3 position, Vector3 forward, bool resetVelocity = true)
     {
+        TeleportToPosition(rigManager, position, resetVelocity);
+
         var remapRig = rigManager.remapHeptaRig;
-        var physicsRig = rigManager.physicsRig;
-        var marrowEntity = physicsRig.marrowEntity;
-
-        marrowEntity.ResetPose(resetVelocity);
-        physicsRig.centerOfPressure.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-        TeleportRig(physicsRig, position, forward, resetVelocity);
-
-        physicsRig.ResetHands(Handedness.BOTH);
 
         remapRig.SetTwist(Vector3.SignedAngle(remapRig.centerOfPressure.forward, forward, Vector3.up));
-
-        foreach (var rig in rigManager.remapRigs)
-        {
-            TeleportRig(rig, position, forward, resetVelocity);
-        }
     }
 
     private static void TeleportRig(Rig rig, Vector3 position, bool resetVelocity)
     {
         var displace = SimpleTransform.Create(position - rig.centerOfPressure.position, Quaternion.identity);
-
-        rig.Teleport(displace, resetVelocity);
-    }
-
-    private static void TeleportRig(Rig rig, Vector3 position, Vector3 forward, bool resetVelocity)
-    {
-        var displace = SimpleTransform.Create(position - rig.centerOfPressure.position, Quaternion.FromToRotation(rig.centerOfPressure.forward, forward));
 
         rig.Teleport(displace, resetVelocity);
     }
