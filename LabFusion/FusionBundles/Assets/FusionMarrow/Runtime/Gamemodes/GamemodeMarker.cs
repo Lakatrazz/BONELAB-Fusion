@@ -38,12 +38,12 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public HashSet<string> TeamBarcodes => _teamBarcodes; 
 
-        private void Awake()
+        private void OnEnable()
         {
             Markers.Add(this);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             Markers.Remove(this);
         }
