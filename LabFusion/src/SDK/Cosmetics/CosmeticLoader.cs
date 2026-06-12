@@ -3,6 +3,7 @@
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
 using LabFusion.SDK.Points;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -75,6 +76,12 @@ public static class CosmeticLoader
 #if DEBUG
             FusionLogger.Warn($"Crate {crate.Title} has cosmetic tags, but no CosmeticRoot!");
 #endif
+            return;
+        }
+
+        if (!cosmeticRoot.IsValid())
+        {
+            FusionLogger.Warn($"Cosmetic {crate.Title} has an invalid CosmeticRoot. This likely means it was packed on an older Fusion SDK.");
             return;
         }
 

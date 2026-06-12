@@ -14,7 +14,12 @@ namespace LabFusion.Marrow.Integration
     [RegisterTypeInIl2Cpp]
 #endif
     public class CosmeticRoot : MonoBehaviour
+#if !MELONLOADER
+        , ISerializationCallbackReceiver
+#endif
     {
+        public const int CosmeticsVersion = 1;
+
 #if MELONLOADER
         public CosmeticRoot(IntPtr intPtr) : base(intPtr) { }
 
@@ -31,6 +36,8 @@ namespace LabFusion.Marrow.Integration
         public Il2CppValueField<int> RawPrice;
 
         public Il2CppReferenceField<Texture2D> PreviewIcon;
+
+        public Il2CppValueField<int> Version;
 
         public AvatarPoint GetPoint() => (AvatarPoint)Point.Get();
 
@@ -61,6 +68,10 @@ namespace LabFusion.Marrow.Integration
 
             return author;
         }
+
+        public int GetVersion() => Version.Get();
+
+        public bool IsValid() => GetVersion() >= CosmeticsVersion;
 #else
         [FormerlySerializedAs("cosmeticPoint")]
         public AvatarPoint Point = AvatarPoint.Head;
@@ -80,6 +91,13 @@ namespace LabFusion.Marrow.Integration
 
         [FormerlySerializedAs("previewIcon")]
         public Texture2D PreviewIcon = null;
+
+        [HideInInspector]
+        public int Version = 0;
+
+        public void OnBeforeSerialize() => Version = CosmeticsVersion;
+
+        public void OnAfterDeserialize() { }
 
         private void OnDrawGizmos()
         {
