@@ -40,6 +40,8 @@ public interface IReadOnlyStyle
 
     StyleValue<float> FlexGrow { get; }
 
+    StyleValue<int> FlexWrapCount { get; }
+
     StyleValue<Justify> JustifyContent { get; }
 
     StyleValue<Align> AlignItems { get; }

@@ -111,6 +111,12 @@ public class Style : IReadOnlyStyle
         set => SetProperty(CommonStyleProperties.FlexGrow, value);
     }
 
+    public StyleValue<int> FlexWrapCount
+    {
+        get => GetProperty<int>(CommonStyleProperties.FlexWrapCount);
+        set => SetProperty(CommonStyleProperties.FlexWrapCount, value);
+    }
+
     public StyleValue<Justify> JustifyContent
     {
         get => GetProperty<Justify>(CommonStyleProperties.JustifyContent);

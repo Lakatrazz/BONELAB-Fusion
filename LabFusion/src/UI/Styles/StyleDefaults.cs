@@ -24,6 +24,8 @@ public static class StyleDefaults
 
     public static readonly float FlexGrow = 0f;
 
+    public static readonly int FlexWrapCount = 0;
+
     public static readonly Justify JustifyContent = Justify.Start;
 
     public static readonly Align AlignItems = Align.Stretch;
@@ -31,8 +33,6 @@ public static class StyleDefaults
     public static readonly Direction Direction = Direction.Column;
 
     public static readonly Position Position = Position.Relative;
-
-    public static readonly bool AlignSelfStretch = false;
 
     public static readonly Dictionary<string, float> DefaultLengths = new()
     {

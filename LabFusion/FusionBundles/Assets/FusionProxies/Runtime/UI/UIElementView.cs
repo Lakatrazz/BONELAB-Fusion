@@ -29,6 +29,9 @@ namespace LabFusion.Marrow.Integration
         public UIElementView Parent { get; private set; } = null;
 
         [HideFromIl2Cpp]
+        public int SiblingIndex { get; private set; } = -1;
+
+        [HideFromIl2Cpp]
         public List<UIElementView> Children { get; } = new();
 
         [HideFromIl2Cpp]
@@ -53,6 +56,23 @@ namespace LabFusion.Marrow.Integration
                 _direction = value;
 
                 ApplyDirection();
+            }
+        }
+
+        private int _flexWrapCount = 0;
+        public int FlexWrapCount
+        {
+            get => _flexWrapCount;
+            set
+            {
+                if (_flexWrapCount == value)
+                {
+                    return;
+                }
+
+                _flexWrapCount = value;
+
+                ApplyWrapping();
             }
         }
 
@@ -103,9 +123,12 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public void AddChild(UIElementView child)
         {
+            var siblingIndex = Children.Count;
+
             Children.Add(child);
 
             child.Parent = Parent;
+            child.SiblingIndex = siblingIndex;
 
             ReparentChild(child);
         }
@@ -187,7 +210,7 @@ namespace LabFusion.Marrow.Integration
 
             foreach (var childElement in Element.PhysicalChildren)
             {
-                var childElementView = spawner.CreateElementView(childElement, Container);
+                var childElementView = spawner.CreateElementView(childElement, References.MarginsTransform);
 
                 AddChild(childElementView);
             }
@@ -200,6 +223,7 @@ namespace LabFusion.Marrow.Integration
             var style = Element.ResolvedStyle;
 
             Direction = style.Direction;
+            FlexWrapCount = style.FlexWrapCount.GetValueOrDefault(StyleDefaults.FlexWrapCount);
             Position = style.Position;
 
             var parent = Element.Parent;
@@ -219,10 +243,17 @@ namespace LabFusion.Marrow.Integration
 
                 var rectLayoutElement = References.RectLayoutElement;
 
-                var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(StyleDefaults.AlignItems);
-                var alignSelfStretch = style.AlignSelfStretch.GetValueOrDefault(StyleDefaults.AlignSelfStretch);
+                bool alignStretch;
 
-                bool alignStretch = parentAlignItems == Align.Stretch || alignSelfStretch;
+                if (style.AlignSelfStretch.HasValue())
+                {
+                    alignStretch = style.AlignSelfStretch.Value;
+                }
+                else
+                {
+                    var parentAlignItems = parentStyle.AlignItems.GetValueOrDefault(StyleDefaults.AlignItems);
+                    alignStretch = parentAlignItems == Align.Stretch;
+                }
 
                 var flexGrow = style.FlexGrow.GetValueOrDefault(StyleDefaults.FlexGrow);
                 var alignGrow = alignStretch ? -1f : 0f;
@@ -256,7 +287,7 @@ namespace LabFusion.Marrow.Integration
 
             References.BackgroundColorView.color = style.BackgroundColor.GetValueOrDefault(StyleDefaults.BackgroundColor);
 
-            References.BackgroundImageView.enabled = style.BackgroundImage.Keyword.HasValue();
+            References.BackgroundImageView.enabled = style.BackgroundImage.HasValue();
             References.BackgroundImageView.texture = style.BackgroundImage;
 
             var direction = style.Direction.GetValueOrDefault(StyleDefaults.Direction);
@@ -340,6 +371,16 @@ namespace LabFusion.Marrow.Integration
             References.ColumnContainer.reverseArrangement = reversed;
             References.RowContainer.reverseArrangement = reversed;
 
+            ReparentChildren();
+        }
+
+        private void ApplyWrapping()
+        {
+            ReparentChildren();
+        }
+
+        private void ReparentChildren()
+        {
             foreach (var child in Children)
             {
                 ReparentChild(child);
@@ -348,11 +389,39 @@ namespace LabFusion.Marrow.Integration
 
         private void ReparentChild(UIElementView child)
         {
-            var position = child.Position;
-
-            var parent = position == Position.Relative ? Container : References.MarginsTransform;
+            var parent = GetContainerForChild(child);
 
             child.transform.SetParent(parent, false);
+        }
+
+        private Transform GetContainerForChild(UIElementView child)
+        {
+            var position = child.Position;
+
+            if (position == Position.Absolute)
+            {
+                return References.MarginsTransform;
+            }
+
+            if (FlexWrapCount <= 0)
+            {
+                return Direction switch
+                {
+                    Direction.Row or
+                    Direction.RowReverse => References.RowContainer.transform,
+                    _ => References.ColumnContainer.transform,
+                };
+            }
+
+            var siblingIndex = child.SiblingIndex;
+            var groupIndex = Mathf.FloorToInt((float)siblingIndex / (float)FlexWrapCount);
+
+            return Direction switch
+            {
+                Direction.Row or 
+                Direction.RowReverse => References.GetSubRow(groupIndex).transform,
+                _ => References.GetSubColumn(groupIndex).transform,
+            };
         }
 
         private void UpdateColliderSize()

@@ -25,6 +25,7 @@ public static class CommonStyleProperties
     public static readonly string Position = "position";
 
     public static readonly string FlexGrow = "flex-grow";
+    public static readonly string FlexWrapCount = "flex-wrap-count";
 
     public static readonly string JustifyContent = "justify-content";
     public static readonly string AlignItems = "align-items";

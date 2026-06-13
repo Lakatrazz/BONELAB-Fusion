@@ -76,7 +76,7 @@ namespace LabFusion.Marrow.Integration
             TextView.fontStyle = style.FontStyle.GetValueOrDefault(StyleDefaults.FontStyle);
             TextView.fontSize = style.FontSize.GetValueOrDefault(StyleDefaults.FontSize);
 
-            bool hasGradient = style.TextGradient.Keyword.HasValue();
+            bool hasGradient = style.TextGradient.HasValue();
             TextView.enableVertexGradient = hasGradient;
 
             if (hasGradient)
@@ -86,7 +86,7 @@ namespace LabFusion.Marrow.Integration
             }
 
             var autoSize = style.TextAutoSize.Value;
-            bool hasAutoSize = style.TextAutoSize.Keyword.HasValue() && autoSize.Mode == TextAutoSizeMode.BestFit;
+            bool hasAutoSize = style.TextAutoSize.HasValue() && autoSize.Mode == TextAutoSizeMode.BestFit;
 
             TextView.enableAutoSizing = hasAutoSize;
 
@@ -96,11 +96,11 @@ namespace LabFusion.Marrow.Integration
                 TextView.fontSizeMax = autoSize.MaxSize;
             }
 
-            bool hasOutline = style.TextOutline.Keyword.HasValue();
+            bool hasOutline = style.TextOutline.HasValue();
 
-            bool hasShadow = style.TextShadow.Keyword.HasValue();
+            bool hasShadow = style.TextShadow.HasValue();
 
-            bool hasGlow = style.TextGlow.Keyword.HasValue();
+            bool hasGlow = style.TextGlow.HasValue();
 
             bool hasExtraMaterialProperties = hasOutline || hasShadow || hasGlow;
             TextView.extraPadding = hasExtraMaterialProperties;
