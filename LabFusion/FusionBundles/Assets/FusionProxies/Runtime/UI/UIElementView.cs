@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Xml.Linq;
-
 
 #if MELONLOADER
 using MelonLoader;
