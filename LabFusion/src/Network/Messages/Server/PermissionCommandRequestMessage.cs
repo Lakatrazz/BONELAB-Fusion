@@ -86,9 +86,9 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
             case PermissionCommandType.TELEPORT_TO_THEM:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    if (NetworkPlayerManager.TryGetPlayer(playerID, out var player) && player.HasRig)
+                    if (NetworkPlayerManager.TryGetPlayer(otherPlayer, out var otherNetPlayer) && otherNetPlayer.HasRig)
                     {
-                        PlayerSender.SendPlayerTeleport(playerID, player.RigRefs.RigManager.physicsRig.feet.transform.position);
+                        PlayerSender.SendPlayerTeleport(playerID, otherNetPlayer.RigRefs.RigManager.physicsRig.feet.transform.position);
                     }
                 }
                 break;
