@@ -199,7 +199,8 @@ public class HideAndSeek : Gamemode
 
     private void ApplyTeamSettings()
     {
-        TeamLogoManager.SetLogo(HiderTeam, UIResources.GetCommonIcon(CommonIcons.Eye));
+        // All seekers have an eye icon above their head
+        TeamLogoManager.SetLogo(SeekerTeam, UIResources.GetCommonIcon(CommonIcons.Eye));
     }
 
     protected bool OnValidateNametag(PlayerID id)
@@ -712,6 +713,9 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        HiderCountLabel.Text = $"{HiderTeam.PlayerCount} Hiders Remaining";
+        var hiderCount = HiderTeam.PlayerCount;
+        string suffix = hiderCount == 1 ? string.Empty : "s";
+
+        HiderCountLabel.Text = $"{HiderTeam.PlayerCount} Hider{suffix} Remaining";
     }
 }

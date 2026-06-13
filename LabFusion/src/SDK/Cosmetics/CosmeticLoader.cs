@@ -78,7 +78,7 @@ public static class CosmeticLoader
 #endif
             return;
         }
-
+        
         if (!cosmeticRoot.IsValid())
         {
             FusionLogger.Warn($"Cosmetic {crate.Title} has an invalid CosmeticRoot. This likely means it was packed on an older Fusion SDK.");
