@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
@@ -29,7 +30,10 @@ public class NetworkConstraint : IEntityExtender
 
     public ConstrainerPointPair PointPair { get; set; }
 
-    public ushort OtherId { get; set; } = 0;
+    public ushort OtherID { get; set; } = 0;
+
+    public NetworkEntity BodyEntity { get; set; } = null;
+    public NetworkEntity OtherBodyEntity { get; set; } = null;
 
     public NetworkConstraint(NetworkEntity networkEntity, ConstraintTracker tracker)
     {
@@ -48,6 +52,13 @@ public class NetworkConstraint : IEntityExtender
 
         Cache.Add(Tracker, NetworkEntity);
 
+        GetTrackerEntities();
+
+        if (IsFirst)
+        {
+            LinkTrackerEntities();
+        }
+
         AddDestroySensor();
     }
 
@@ -62,10 +73,71 @@ public class NetworkConstraint : IEntityExtender
             Cache.Remove(Tracker);
         }
 
+        if (IsFirst)
+        {
+            UnlinkTrackerEntities();
+        }
+
         RemoveDestroySensor();
+
+        UnregisterOtherConstraint();
 
         _tracker = null;
         _networkEntity = null;
+    }
+
+    private void UnregisterOtherConstraint()
+    {
+        var otherEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(OtherID);
+
+        if (otherEntity == null)
+        {
+            return;
+        }
+
+        if (!otherEntity.IsRegistered)
+        {
+            return;
+        }
+
+        NetworkEntityManager.IDManager.UnregisterEntity(otherEntity);
+    }
+
+    private void GetTrackerEntities()
+    {
+        var trackerBody = MarrowBody.Cache.Get(Tracker.gameObject);
+
+        if (trackerBody != null && trackerBody.Entity != null)
+        {
+            BodyEntity = IMarrowEntityExtender.Cache.Get(trackerBody.Entity);
+        }
+
+        var otherTrackerBody = MarrowBody.Cache.Get(Tracker.otherTracker.gameObject);
+
+        if (otherTrackerBody != null && otherTrackerBody.Entity != null)
+        {
+            OtherBodyEntity = IMarrowEntityExtender.Cache.Get(otherTrackerBody.Entity);
+        }
+    }
+
+    private void LinkTrackerEntities()
+    {
+        if (BodyEntity == null || OtherBodyEntity == null)
+        {
+            return;
+        }
+
+        BodyEntity.LinkEntity(OtherBodyEntity);
+    }
+
+    private void UnlinkTrackerEntities()
+    {
+        if (BodyEntity == null || OtherBodyEntity == null)
+        {
+            return;
+        }
+
+        BodyEntity.UnlinkEntity(OtherBodyEntity);
     }
 
     private void OnEntityCreationCatchup(NetworkEntity entity, PlayerID player)
@@ -78,7 +150,7 @@ public class NetworkConstraint : IEntityExtender
         // Send create message
         var data = ConstraintCreateData.Create(PlayerIDManager.LocalSmallID, null, PointPair);
         data.Point1Id = NetworkEntity.ID;
-        data.Point2Id = OtherId;
+        data.Point2Id = OtherID;
 
         MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }

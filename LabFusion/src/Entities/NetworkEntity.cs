@@ -75,6 +75,13 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public EntitySource Source { get; set; } = EntitySource.None;
 
     /// <summary>
+    /// Entities that are directly linked to this one. 
+    /// Entities can become linked through specific interactions with each other, such as being welded to one another.
+    /// This allows for ownership to be propagated through linked entities to maintain stability.
+    /// </summary>
+    public IReadOnlyList<NetworkEntity> LinkedEntities => _linkedEntities;
+
+    /// <summary>
     /// Invoked when the entity is unregistered.
     /// </summary>
     public event NetworkEntityDelegate OnEntityUnregistered;
@@ -100,6 +107,50 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     private readonly Dictionary<byte, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
     private readonly HashSet<IEntityExtender> _extenders = new();
+
+    private readonly List<NetworkEntity> _linkedEntities = new();
+
+    public void LinkEntity(NetworkEntity entity)
+    {
+        LinkEntityOneWay(entity);
+        entity.LinkEntityOneWay(this);
+    }
+
+    public void UnlinkEntity(NetworkEntity entity)
+    {
+        UnlinkEntityOneWay(entity);
+        entity.UnlinkEntityOneWay(this);
+    }
+
+    public void UnlinkEntities()
+    {
+        foreach (var entity in LinkedEntities)
+        {
+            entity.UnlinkEntityOneWay(this);
+        }
+
+        UnlinkEntitiesOneWay();
+    }
+
+    private void LinkEntityOneWay(NetworkEntity entity)
+    {
+        if (_linkedEntities.Contains(entity))
+        {
+            return;
+        }
+
+        _linkedEntities.Add(entity);
+    }
+
+    private void UnlinkEntityOneWay(NetworkEntity entity)
+    {
+        _linkedEntities.Remove(entity);
+    }
+
+    private void UnlinkEntitiesOneWay()
+    {
+        _linkedEntities.Clear();
+    }
 
     public void ConnectExtender(IEntityExtender extender)
     {
@@ -284,6 +335,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         OnEntityUnregistered = null;
         OnEntityCreationCatchup = null;
         OnEntityDataCatchup = null;
+
+        UnlinkEntities();
 
         RemoveOwner();
     }
