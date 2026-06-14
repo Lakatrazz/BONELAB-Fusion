@@ -1,24 +1,21 @@
-﻿using LabFusion.Data;
-using LabFusion.Player;
-using LabFusion.Utilities;
-using LabFusion.Senders;
-using LabFusion.RPC;
-using LabFusion.Marrow;
-using LabFusion.Entities;
-using LabFusion.Downloading;
-using LabFusion.Preferences.Client;
-using LabFusion.Network.Serialization;
-using LabFusion.Safety;
-using LabFusion.Marrow.Pool;
-using LabFusion.Marrow.Extenders;
-using LabFusion.Marrow.Serialization;
-
+﻿using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Pool;
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Interaction;
-
 using Il2CppSLZ.Marrow.VFX;
-
+using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Data;
+using LabFusion.Downloading;
+using LabFusion.Entities;
+using LabFusion.Marrow;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Pool;
+using LabFusion.Marrow.Serialization;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Preferences.Client;
+using LabFusion.RPC;
+using LabFusion.Safety;
+using LabFusion.Senders;
+using LabFusion.Utilities;
 using UnityEngine;
 
 namespace LabFusion.Network;
@@ -59,6 +56,13 @@ public class SpawnResponseMessage : NativeMessageHandler
         ushort entityID = data.EntityID;
         var trackerID = spawnData.TrackerID;
         var spawnEffect = spawnData.SpawnEffect;
+
+        NetworkEntity newNetworkEntity = null;
+
+        if (!SpawnableBlacklist.IsClientSide(data.SpawnData.Barcode))
+        {
+            newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource);
+        }
 
         // Check for spawnable blacklist
         if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
@@ -118,18 +122,25 @@ public class SpawnResponseMessage : NativeMessageHandler
 
             void OnPooleeSpawned(Poolee poolee)
             {
-                OnSpawnFinished(data, poolee);
+                OnSpawnFinished(data, poolee, newNetworkEntity);
             }
 
             LocalAssetSpawner.Spawn(spawnable, spawnData.SerializedTransform.position, spawnData.SerializedTransform.rotation, OnPooleeSpawned);
         }
     }
 
-    public static void OnSpawnFinished(SpawnResponseData data, Poolee poolee)
+    public static void OnSpawnFinished(SpawnResponseData data, Poolee poolee, NetworkEntity networkEntity)
     {
         // The poolee will never be null, so we don't have to check for it
         // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
         var go = poolee.gameObject;
+
+        // If the NetworkEntity was destroyed while the poolee was being spawned, then it can be despawned
+        if (networkEntity != null && networkEntity.IsDestroyed)
+        {
+            poolee.Despawn();
+            return;
+        }
 
         // Remove the existing entity on this poolee if it exists
         if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
@@ -139,17 +150,15 @@ public class SpawnResponseMessage : NativeMessageHandler
             NetworkEntityManager.IDManager.UnregisterEntity(conflictingEntity);
         }
 
-        NetworkEntity newEntity = null;
-
         // Get the marrow entity on the spawned object
         var marrowEntity = MarrowEntity.Cache.Get(go);
 
         // Make sure we have a marrow entity before creating a prop
         if (marrowEntity != null)
         {
-            if (!SpawnableBlacklist.IsClientSide(data.SpawnData.Barcode))
+            if (networkEntity != null)
             {
-                newEntity = CreateNetworkEntity(go, data.SpawnData.Barcode, marrowEntity, data.OwnerID, data.EntityID, data.SpawnData.SpawnSource);
+                ConvertGhostToProp(networkEntity, go, data.SpawnData.Barcode, marrowEntity);
             }
 
             if (data.SpawnData.SpawnEffect)
@@ -164,14 +173,14 @@ public class SpawnResponseMessage : NativeMessageHandler
             NetworkAssetSpawner.OnSpawnComplete(data.SpawnData.TrackerID, new NetworkAssetSpawner.SpawnCallbackInfo()
             {
                 Spawned = go,
-                Entity = newEntity,
+                Entity = networkEntity,
             });
         }
     }
 
-    private static NetworkEntity CreateNetworkEntity(GameObject gameObject, string barcode, MarrowEntity marrowEntity, byte ownerID, ushort entityID, EntitySource source)
+    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source)
     {
-        // Create a network entity
+        // Create the NetworkEntity and assign its owner
         var playerID = PlayerIDManager.GetPlayerID(ownerID);
 
         NetworkEntity networkEntity = new()
@@ -180,20 +189,33 @@ public class SpawnResponseMessage : NativeMessageHandler
         };
         networkEntity.SetOwner(playerID);
 
-        // Setup a network prop
-        NetworkProp newProp = new(networkEntity, marrowEntity);
-
-        // Register this entity
         NetworkEntityManager.IDManager.RegisterEntity(entityID, networkEntity);
+
+        // Attach a prop ghost to the entity
+        _ = new NetworkPropGhost(networkEntity);
+
+        return networkEntity;
+    }
+
+    private static void ConvertGhostToProp(NetworkEntity networkEntity, GameObject gameObject, string barcode, MarrowEntity marrowEntity)
+    {
+        // Remove the ghost prop
+        var propGhost = networkEntity.GetExtender<NetworkPropGhost>();
+
+        if (propGhost != null)
+        {
+            networkEntity.DisconnectExtender(propGhost);
+        }
+
+        // Create the network prop
+        var newProp = new NetworkProp(networkEntity, marrowEntity);
 
         // Insert the catchup hook for future users
         networkEntity.OnEntityCreationCatchup += (entity, player) =>
         {
-            SpawnSender.SendCatchupSpawn(ownerID, barcode, entityID, new SerializedTransform(gameObject.transform), player, source);
+            SpawnSender.SendCatchupSpawn(networkEntity.OwnerID, barcode, networkEntity.ID, new SerializedTransform(gameObject.transform), player, networkEntity.Source);
         };
 
         CatchupManager.RequestEntityDataCatchup(new(networkEntity));
-
-        return networkEntity;
     }
 }
