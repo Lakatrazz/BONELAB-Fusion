@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
+public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
 {
     private NetworkEntity _networkEntity = null;
 

@@ -37,10 +37,10 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
             return;
         }
 
-        // Get the network prop so we can update its pose
-        var networkProp = entity.GetExtender<NetworkProp>();
+        // Get the pose extender so that it can be received
+        var entityPosable = entity.GetExtender<IEntityPosableExtender>();
 
-        if (networkProp == null)
+        if (entityPosable == null)
         {
             return;
         }
@@ -52,6 +52,6 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
             return;
         }
 
-        networkProp.ReceivePose(pose);
+        entityPosable.ReceivePose(pose);
     }
 }
