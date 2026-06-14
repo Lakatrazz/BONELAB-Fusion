@@ -31,7 +31,7 @@ public static class EntityGraphTraversal
 
         allEntities.Add(entity);
 
-        if (MaxDepth >= depth)
+        if (depth >= MaxDepth)
         {
             return;
         }
@@ -71,7 +71,7 @@ public static class EntityGraphTraversal
 
         allEntities.Add(entity);
 
-        if (MaxDepth >= depth)
+        if (depth >= MaxDepth)
         {
             return;
         }
