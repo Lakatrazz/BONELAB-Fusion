@@ -2,6 +2,56 @@
 
 public static class EntityGraphTraversal
 {
+    public static readonly int MaxDepth = 8;
+
+    public static List<NetworkEntity> GetAllOwnableLinkedEntities(NetworkEntity startEntity, out byte? lockedOwner)
+    {
+        List<NetworkEntity> allEntities = new();
+        HashSet<ushort> visitedEntities = new();
+
+        GetAllOwnableLinkedEntitiesRecursive(startEntity, allEntities, visitedEntities, out lockedOwner);
+
+        return allEntities;
+    }
+
+    private static void GetAllOwnableLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, out byte? lockedOwner, int depth = 0)
+    {
+        lockedOwner = null;
+
+        if (!visitedEntities.Add(entity.ID))
+        {
+            return;
+        }
+
+        if (entity.IsOwnerLocked)
+        {
+            lockedOwner = entity.OwnerID?.SmallID;
+            return;
+        }
+
+        allEntities.Add(entity);
+
+        if (MaxDepth >= depth)
+        {
+            return;
+        }
+
+        foreach (var linkedEntity in entity.LinkedEntities)
+        {
+            if (!linkedEntity.IsRegistered)
+            {
+                continue;
+            }
+
+            GetAllOwnableLinkedEntitiesRecursive(linkedEntity, allEntities, visitedEntities, out var linkedLockedOwner, depth + 1);
+
+            if (!lockedOwner.HasValue && linkedLockedOwner.HasValue)
+            {
+                lockedOwner = linkedLockedOwner.Value;
+            }
+        }
+    }
+
     public static List<NetworkEntity> GetAllLinkedEntities(NetworkEntity startEntity)
     {
         List<NetworkEntity> allEntities = new();
@@ -12,7 +62,7 @@ public static class EntityGraphTraversal
         return allEntities;
     }
 
-    private static void GetAllLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities)
+    private static void GetAllLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, int depth = 0)
     {
         if (!visitedEntities.Add(entity.ID))
         {
@@ -21,6 +71,11 @@ public static class EntityGraphTraversal
 
         allEntities.Add(entity);
 
+        if (MaxDepth >= depth)
+        {
+            return;
+        }
+
         foreach (var linkedEntity in entity.LinkedEntities)
         {
             if (!linkedEntity.IsRegistered)
@@ -28,7 +83,7 @@ public static class EntityGraphTraversal
                 continue;
             }
 
-            GetAllLinkedEntitiesRecursive(linkedEntity, allEntities, visitedEntities);
+            GetAllLinkedEntitiesRecursive(linkedEntity, allEntities, visitedEntities, depth + 1);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Network;
+﻿using LabFusion.Entities;
+
+namespace LabFusion.Network;
 
 public class EntityOwnershipRequestMessage : NativeMessageHandler
 {
@@ -11,11 +13,37 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         // Read request
         var data = received.ReadData<EntityPlayerData>();
 
-        // Send response
+        if (data.Entity.TryGetEntity(out var networkEntity) && networkEntity.HasLinkedEntities)
+        {
+            PropagateOwnership(data.PlayerID, networkEntity);
+        }
+        else
+        {
+            SendOwnershipResponse(data.PlayerID, data.Entity.ID);
+        }
+    }
+
+    private static void PropagateOwnership(byte ownerID, NetworkEntity networkEntity)
+    {
+        var ownableEntities = EntityGraphTraversal.GetAllOwnableLinkedEntities(networkEntity, out var lockedOwner);
+
+        if (lockedOwner.HasValue && lockedOwner != ownerID)
+        {
+            return;
+        }
+
+        foreach (var entity in ownableEntities)
+        {
+            SendOwnershipResponse(ownerID, entity.ID);
+        }
+    }
+
+    private static void SendOwnershipResponse(byte ownerID, ushort entityID)
+    {
         var response = new EntityPlayerData()
         {
-            PlayerID = data.PlayerID,
-            Entity = new(data.Entity.ID),
+            PlayerID = ownerID,
+            Entity = new(entityID),
         };
 
         MessageRelay.RelayNative(response, NativeMessageTag.EntityOwnershipResponse, CommonMessageRoutes.ReliableToClients);

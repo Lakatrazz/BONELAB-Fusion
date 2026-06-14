@@ -82,6 +82,11 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public IReadOnlyList<NetworkEntity> LinkedEntities => _linkedEntities;
 
     /// <summary>
+    /// Returns whether any entities have been directly linked to this entity.
+    /// </summary>
+    public bool HasLinkedEntities => LinkedEntities.Count > 0;
+
+    /// <summary>
     /// Invoked when the entity is unregistered.
     /// </summary>
     public event NetworkEntityDelegate OnEntityUnregistered;
