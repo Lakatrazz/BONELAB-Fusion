@@ -277,8 +277,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void Initialize()
     {
-        NetworkEntity.HookOnRegistered(OnPlayerRegistered);
-        NetworkEntity.OnEntityUnregistered += OnPlayerUnregistered;
+        NetworkEntity.ConnectExtender(this);
     }
 
     public void FindRigManager()
@@ -538,13 +537,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntityManager.IDManager.UnregisterEntity(NetworkEntity);
     }
 
-    private void OnPlayerRegistered(NetworkEntity entity)
+    public void OnExtenderRegistered()
     {
         Players.Add(this);
 
         HookPlayer();
-
-        entity.ConnectExtender(this);
 
         OnReregisterUpdates();
 
@@ -555,7 +552,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         OnNetworkPlayerRegistered?.InvokeSafe(this, "executing OnNetworkPlayerRegistered hook");
     }
 
-    private void OnPlayerUnregistered(NetworkEntity entity)
+    public void OnExtenderUnregistered()
     {
 #if DEBUG
         FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerID.SmallID}.");
@@ -564,8 +561,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         Players.Remove(this);
 
         UnhookPlayer();
-
-        entity.DisconnectExtender(this);
 
         _networkEntity = null;
         _playerID = null;

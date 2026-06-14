@@ -146,4 +146,7 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
     protected abstract void OnRegister(NetworkEntity entity, TComponent[] components);
     protected abstract void OnUnregister(NetworkEntity entity, TComponent[] components);
+
+    void IEntityExtender.OnExtenderRegistered() { }
+    void IEntityExtender.OnExtenderUnregistered() { }
 }

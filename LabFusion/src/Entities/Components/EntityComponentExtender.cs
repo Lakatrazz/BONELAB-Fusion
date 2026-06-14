@@ -68,4 +68,7 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
     protected abstract void OnUnregister(NetworkEntity entity, TComponent component);
 
     protected virtual TComponent GetComponent(GameObject go) => go.GetComponentInChildren<TComponent>(true);
+
+    void IEntityExtender.OnExtenderRegistered() { }
+    void IEntityExtender.OnExtenderUnregistered() { }
 }

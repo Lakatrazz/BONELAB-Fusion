@@ -40,15 +40,12 @@ public class NetworkConstraint : IEntityExtender
         _networkEntity = networkEntity;
         _tracker = tracker;
 
-        networkEntity.HookOnRegistered(OnConstraintRegistered);
-        networkEntity.OnEntityUnregistered += OnConstraintUnregistered;
+        networkEntity.ConnectExtender(this);
     }
 
-    private void OnConstraintRegistered(NetworkEntity entity)
+    public void OnExtenderRegistered()
     {
-        entity.ConnectExtender(this);
-
-        entity.OnEntityCreationCatchup += OnEntityCreationCatchup;
+        NetworkEntity.OnEntityCreationCatchup += OnEntityCreationCatchup;
 
         Cache.Add(Tracker, NetworkEntity);
 
@@ -62,11 +59,9 @@ public class NetworkConstraint : IEntityExtender
         AddDestroySensor();
     }
 
-    private void OnConstraintUnregistered(NetworkEntity entity)
+    public void OnExtenderUnregistered()
     {
-        entity.DisconnectExtender(this);
-
-        entity.OnEntityCreationCatchup -= OnEntityCreationCatchup;
+        NetworkEntity.OnEntityCreationCatchup -= OnEntityCreationCatchup;
 
         if (Tracker != null)
         {

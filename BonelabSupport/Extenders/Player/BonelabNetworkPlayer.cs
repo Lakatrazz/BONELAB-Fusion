@@ -27,21 +27,16 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
 
     private void Initialize()
     {
-        NetworkEntity.HookOnRegistered(OnBonelabPlayerRegistered);
-        NetworkEntity.OnEntityUnregistered += OnBonelabPlayerUnregistered;
+        NetworkEntity.ConnectExtender(this);
     }
 
-    private void OnBonelabPlayerRegistered(NetworkEntity entity)
+    public void OnExtenderRegistered()
     {
-        entity.ConnectExtender(this);
-
         NetworkPlayer.UpdatableManager.LateUpdateManager.Register(this);
     }
 
-    private void OnBonelabPlayerUnregistered(NetworkEntity entity)
+    public void OnExtenderUnregistered()
     {
-        entity.DisconnectExtender(this);
-
         NetworkPlayer.UpdatableManager.LateUpdateManager.Unregister(this);
     }
 

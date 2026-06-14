@@ -112,6 +112,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     private readonly Dictionary<byte, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
     private readonly HashSet<IEntityExtender> _extenders = new();
+    private bool _isUnregisteringExtenders = false;
 
     private readonly List<NetworkEntity> _linkedEntities = new();
 
@@ -157,14 +158,51 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         _linkedEntities.Clear();
     }
 
+    /// <summary>
+    /// Connects an extender to this NetworkEntity. 
+    /// If the NetworkEntity is already registered, it will also immediately invoke <see cref="IEntityExtender.OnExtenderRegistered"/>.
+    /// Otherwise, the method will be invoked when the NetworkEntity gets registered.
+    /// </summary>
+    /// <param name="extender"></param>
     public void ConnectExtender(IEntityExtender extender)
     {
-        _extenders.Add(extender);
+        bool added = _extenders.Add(extender);
+
+        if (!added)
+        {
+            return;
+        }
+
+        if (IsRegistered)
+        {
+            RegisterExtender(extender);
+        }
     }
 
+    /// <summary>
+    /// Disconnects an extender from this NetworkEntity.
+    /// If the NetworkEntity is registered, it will immediately invoke <see cref="IEntityExtender.OnExtenderUnregistered"/>.
+    /// Otherwise, it is assumed that the method was already invoked when the NetworkEntity was unregistered before.
+    /// </summary>
+    /// <param name="extender"></param>
     public void DisconnectExtender(IEntityExtender extender)
     {
-        _extenders.Remove(extender);
+        if (_isUnregisteringExtenders)
+        {
+            return;
+        }
+
+        bool removed = _extenders.Remove(extender);
+
+        if (!removed)
+        {
+            return;
+        }
+
+        if (IsRegistered)
+        {
+            UnregisterExtender(extender);
+        }
     }
 
     public TExtender GetExtender<TExtender>() where TExtender : IEntityExtender
@@ -323,6 +361,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
         _registeredCallback?.Invoke(this);
         _registeredCallback = null;
+
+        RegisterExtenders();
     }
 
     public void Unregister()
@@ -336,6 +376,9 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         _isDestroyed = true;
 
         OnEntityUnregistered?.Invoke(this);
+
+        UnregisterExtenders();
+        DisconnectExtenders();
 
         OnEntityUnregistered = null;
         OnEntityCreationCatchup = null;
@@ -394,5 +437,56 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void UnlockOwner()
     {
         _isOwnerLocked = false;
+    }
+
+    private void RegisterExtenders()
+    {
+        var snapshottedExtenders = _extenders.ToArray();
+
+        foreach (var extender in snapshottedExtenders)
+        {
+            RegisterExtender(extender);
+        }
+    }
+
+    private void UnregisterExtenders()
+    {
+        _isUnregisteringExtenders = true;
+
+        foreach (var extender in _extenders)
+        {
+            UnregisterExtender(extender);
+        }
+
+        _isUnregisteringExtenders = false;
+    }
+
+    private void DisconnectExtenders()
+    {
+        _extenders.Clear();
+    }
+
+    private static void RegisterExtender(IEntityExtender extender)
+    {
+        try
+        {
+            extender.OnExtenderRegistered();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("registering extender", e);
+        }
+    }
+
+    private static void UnregisterExtender(IEntityExtender extender)
+    {
+        try
+        {
+            extender.OnExtenderUnregistered();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("unregistering extender", e);
+        }
     }
 }

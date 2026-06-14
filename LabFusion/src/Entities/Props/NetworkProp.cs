@@ -124,8 +124,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
 
         IMarrowEntityExtender.Cache.Add(marrowEntity, networkEntity);
 
-        networkEntity.HookOnRegistered(OnPropRegistered);
-        networkEntity.OnEntityUnregistered += OnPropUnregistered;
+        networkEntity.ConnectExtender(this);
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
@@ -316,7 +315,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
         return MarrowEntity == null || MarrowEntity.IsDestroyed || MarrowEntity.IsDespawned;
     }
 
-    private void OnPropRegistered(NetworkEntity entity)
+    public void OnExtenderRegistered()
     {
         // Make sure the entity wasn't destroyed while waiting for registration
         if (IsMarrowEntityDestroyed())
@@ -325,10 +324,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
             return;
         }
 
-        entity.ConnectExtender(this);
-
-        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        NetworkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        NetworkEntity.OnEntityDataCatchup += OnEntityDataCatchup;
 
         OnReregisterUpdates();
 
@@ -344,16 +341,14 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
         _onReadyCallback = null;
     }
 
-    private void OnPropUnregistered(NetworkEntity entity)
+    public void OnExtenderUnregistered()
     {
         Unfreeze();
 
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
-        entity.DisconnectExtender(this);
-
-        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        NetworkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        NetworkEntity.OnEntityDataCatchup -= OnEntityDataCatchup;
 
         _networkEntity = null;
         _marrowEntity = null;
