@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.VFX;
 using Il2CppSLZ.Marrow.Warehouse;
+
 using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Entities;
@@ -16,6 +17,7 @@ using LabFusion.RPC;
 using LabFusion.Safety;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+
 using UnityEngine;
 
 namespace LabFusion.Network;
@@ -58,10 +60,11 @@ public class SpawnResponseMessage : NativeMessageHandler
         var spawnEffect = spawnData.SpawnEffect;
 
         NetworkEntity newNetworkEntity = null;
+        NetworkPropGhost propGhost = null;
 
         if (!SpawnableBlacklist.IsClientSide(data.SpawnData.Barcode))
         {
-            newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource);
+            newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource, spawnData.Bounds.ToBounds(), out propGhost);
         }
 
         // Check for spawnable blacklist
@@ -74,7 +77,7 @@ public class SpawnResponseMessage : NativeMessageHandler
             return;
         }
 
-        bool hasCrate = CrateFilterer.HasCrate<SpawnableCrate>(new(barcode));
+        bool hasCrate = AssetWarehouseSearcher.HasCrate<SpawnableCrate>(new(barcode));
 
         if (!hasCrate)
         {
@@ -94,12 +97,15 @@ public class SpawnResponseMessage : NativeMessageHandler
                 Barcode = barcode,
                 FinishDownloadCallback = OnModDownloaded,
                 MaxBytes = maxBytes,
+                Reporter = propGhost,
             });
 
             void OnModDownloaded(DownloadCallbackInfo info)
             {
                 if (info.Result != ModResult.SUCCEEDED)
                 {
+                    propGhost?.OnDownloadFailed();
+
                     FusionLogger.Warn($"Failed downloading spawnable {barcode}!");
                     return;
                 }
@@ -178,7 +184,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         }
     }
 
-    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source)
+    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source, Bounds bounds, out NetworkPropGhost propGhost)
     {
         // Create the NetworkEntity and assign its owner
         var playerID = PlayerIDManager.GetPlayerID(ownerID);
@@ -192,7 +198,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         NetworkEntityManager.IDManager.RegisterEntity(entityID, networkEntity);
 
         // Attach a prop ghost to the entity
-        _ = new NetworkPropGhost(networkEntity);
+        propGhost = new NetworkPropGhost(networkEntity, bounds);
 
         return networkEntity;
     }

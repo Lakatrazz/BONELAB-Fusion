@@ -26,11 +26,11 @@ MonoBehaviour:
     _assetGUID: d83d8915bf1f8e844a31f3db81a580ae
     _editorAssetChanged: 0
   _previewMesh:
-    _assetGUID: 0822dea9dc7863845b80a071a275ec4d
+    _assetGUID: 4e9d129057e5e054aaffe2abe3f4855e
     _editorAssetChanged: 1
   _customQuality: 0
   _previewMeshQuality: 0.5
   _maxLODLevel: 0
   _colliderBounds:
-    m_Center: {x: 0, y: 1.1417873, z: -0.00000020861626}
-    m_Extent: {x: 0.50519913, y: 1.1339467, z: 0.267407}
+    m_Center: {x: 0, y: 1.1417872, z: -0.00000020861626}
+    m_Extent: {x: 0.5051991, y: 1.1339468, z: 0.267407}

@@ -122,7 +122,7 @@ public struct LobbyMetadataInfo
         }
 
         // Check if we have the level the host has
-        info.ClientHasLevel = CrateFilterer.HasCrate<LevelCrate>(new(info.LobbyInfo.LevelBarcode));
+        info.ClientHasLevel = AssetWarehouseSearcher.HasCrate<LevelCrate>(new(info.LobbyInfo.LevelBarcode));
 
         return info;
     }

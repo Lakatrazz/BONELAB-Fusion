@@ -59,7 +59,7 @@ namespace LabFusion.Marrow.Proxies
         {
             GetReferences();
 
-            var levelCrate = CrateFilterer.GetCrate<LevelCrate>(new(barcode));
+            var levelCrate = AssetWarehouseSearcher.GetCrate<LevelCrate>(new(barcode));
 
             if (levelCrate == null)
             {
@@ -71,7 +71,7 @@ namespace LabFusion.Marrow.Proxies
             var title = levelCrate.Title;
             LevelNameText.text = title;
 
-            var modID = CrateFilterer.GetModID(levelCrate.Pallet);
+            var modID = AssetWarehouseSearcher.GetModID(levelCrate.Pallet);
 
             ElementIconHelper.SetLevelIcon(LevelIcon, title, modID);
         }

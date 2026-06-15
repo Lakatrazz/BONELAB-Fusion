@@ -53,7 +53,7 @@ public class RigAvatarSetter
         ProgressBar.Visible = false;
 
         // Check if we need to install the avatar
-        bool hasCrate = CrateFilterer.HasCrate<AvatarCrate>(new(barcode));
+        bool hasCrate = AssetWarehouseSearcher.HasCrate<AvatarCrate>(new(barcode));
 
         if (hasCrate)
         {

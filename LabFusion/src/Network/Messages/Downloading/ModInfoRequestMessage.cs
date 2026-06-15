@@ -48,7 +48,7 @@ public class ModInfoRequestMessage : NativeMessageHandler
         }
 
         // Get the crate from the barcode
-        var crate = CrateFilterer.GetCrate<Crate>(new(data.Barcode));
+        var crate = AssetWarehouseSearcher.GetCrate<Crate>(new(data.Barcode));
 
         if (crate == null)
         {
@@ -64,7 +64,7 @@ public class ModInfoRequestMessage : NativeMessageHandler
         }
 
         // Get the mod info
-        var manifest = CrateFilterer.GetManifest(pallet);
+        var manifest = AssetWarehouseSearcher.GetManifest(pallet);
 
         if (manifest == null)
         {

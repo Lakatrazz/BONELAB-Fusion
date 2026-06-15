@@ -2,10 +2,27 @@
 
 using LabFusion.Downloading.ModIO;
 
+using UnityEngine;
+
 namespace LabFusion.Marrow;
 
-public static class CrateFilterer
+public static class AssetWarehouseSearcher
 {
+    public static bool TryGetBounds(Barcode barcode, out Bounds bounds)
+    {
+        bounds = default;
+
+        var crate = GetCrate<SpawnableCrate>(barcode);
+
+        if (crate == null)
+        {
+            return false;
+        }
+
+        bounds = crate.ColliderBounds;
+        return true;
+    }
+
     public static int GetModID(Pallet pallet)
     {
         // Get the mod info

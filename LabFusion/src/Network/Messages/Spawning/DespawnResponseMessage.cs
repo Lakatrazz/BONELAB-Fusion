@@ -1,11 +1,6 @@
-﻿using LabFusion.Marrow.Extenders;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
-using LabFusion.Marrow.Patching;
-using LabFusion.Utilities;
-
-using Il2CppSLZ.Marrow.VFX;
 
 namespace LabFusion.Network;
 
@@ -39,7 +34,6 @@ public class DespawnResponseMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // Despawn the poolee if it exists
         var data = received.ReadData<DespawnResponseData>();
 
         if (!data.Entity.TryGetEntity(out var entity))
@@ -47,38 +41,26 @@ public class DespawnResponseMessage : NativeMessageHandler
             return;
         }
 
-        // Don't allow the despawning of players
-        if (entity.GetExtender<NetworkPlayer>() != null)
+        // Only entities that implement despawning functionality can be despawned
+        // This inherently accounts for players, as players should not implement despawning
+        var despawnableExtender = entity.GetExtender<IEntityDespawnableExtender>();
+
+        if (despawnableExtender == null)
         {
             return;
         }
-
-        var pooleeExtender = entity.GetExtender<PooleeExtender>();
-
-        if (pooleeExtender == null)
-        {
-            return;
-        }
-
-        PooleeDespawnPatch.IgnorePatch = true;
-
-        var poolee = pooleeExtender.Component;
 
 #if DEBUG
         FusionLogger.Log($"Unregistering entity at ID {entity.ID} after despawning.");
 #endif
 
-        var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
-
-        if (marrowEntity != null && data.DespawnEffect)
+        if (data.DespawnEffect)
         {
-            SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
+            despawnableExtender.PlayDespawnEffect();
         }
 
-        poolee.Despawn();
+        despawnableExtender.OnDespawnReceived();
 
         NetworkEntityManager.IDManager.UnregisterEntity(entity);
-
-        PooleeDespawnPatch.IgnorePatch = false;
     }
 }

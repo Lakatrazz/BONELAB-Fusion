@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.VFX;
 
 using LabFusion.Math;
 using LabFusion.MonoBehaviours;
@@ -7,12 +8,13 @@ using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+using LabFusion.Marrow.Patching;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
+public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IMarrowEntityExtender, IEntityUpdatable, IParallelFixedUpdatable
 {
     private NetworkEntity _networkEntity = null;
 
@@ -21,6 +23,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
     public NetworkEntity NetworkEntity => _networkEntity;
 
     public MarrowEntity MarrowEntity => _marrowEntity;
+
+    public bool IsRegistered { get; private set; } = false;
 
     private MarrowBody[] _bodies = null;
     private SPDState _spdState = null;
@@ -182,7 +186,38 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
         _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
     }
 
-    public void ReceivePose(EntityPose pose)
+    public void OnDespawnReceived()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        var poolee = MarrowEntity._poolee;
+
+        if (poolee == null)
+        {
+            return;
+        }
+
+        PooleeDespawnPatch.IgnorePatch = true;
+
+        poolee.Despawn();
+
+        PooleeDespawnPatch.IgnorePatch = false;
+    }
+
+    public void PlayDespawnEffect()
+    {
+        if (MarrowEntity == null)
+        {
+            return;
+        }
+
+        SpawnEffects.CallDespawnEffect(MarrowEntity);
+    }
+
+    public void OnPoseReceived(EntityPose pose)
     {
         if (HasReceivedPose)
         {
@@ -317,6 +352,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
 
     public void OnExtenderRegistered()
     {
+        IsRegistered = true;
+
         // Make sure the entity wasn't destroyed while waiting for registration
         if (IsMarrowEntityDestroyed())
         {
@@ -343,6 +380,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IMarrowEntit
 
     public void OnExtenderUnregistered()
     {
+        IsRegistered = false;
+
         Unfreeze();
 
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);

@@ -5,7 +5,6 @@ using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Safety;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -31,7 +30,7 @@ public class SpawnRequestMessage : NativeMessageHandler
         }
 
         // Check for singleplayer only tag
-        if (CrateFilterer.HasTags<SpawnableCrate>(new(data.Barcode), FusionTags.SingleplayerOnly))
+        if (AssetWarehouseSearcher.HasTags<SpawnableCrate>(new(data.Barcode), FusionTags.SingleplayerOnly))
         {
 #if DEBUG
             FusionLogger.Warn($"Blocking server spawn of spawnable {data.Barcode} because it is tagged Singleplayer Only!");

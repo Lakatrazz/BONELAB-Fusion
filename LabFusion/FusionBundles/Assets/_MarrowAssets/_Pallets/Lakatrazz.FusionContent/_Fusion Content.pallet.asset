@@ -43,6 +43,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e858b72b189697444a0786ecee7b3c49, type: 2}
   - {fileID: 11400000, guid: 769946c322989c948b2b413379363cfc, type: 2}
   - {fileID: 11400000, guid: 7fc89870fd8901e47bf283964f7b4b91, type: 2}
+  - {fileID: 11400000, guid: 244fa6f5ac1203d4b893f7cd2faa17da, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -103,6 +104,7 @@ MonoBehaviour:
   - Spawnable  Laser Cursor
   - Spawnable  Entangled Line
   - Spawnable  Wrist Watch
+  - Spawnable  Entity Ghost
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge

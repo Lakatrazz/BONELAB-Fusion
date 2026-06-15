@@ -138,7 +138,7 @@ public static partial class FusionSceneManager
         // If we aren't loading and we have a target scene, change to it
         if (IsDelayedLoadDone() && !_hasStartedDownloadingTarget && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
         {
-            bool hasLevel = CrateFilterer.HasCrate<LevelCrate>(new(_targetServerScene));
+            bool hasLevel = AssetWarehouseSearcher.HasCrate<LevelCrate>(new(_targetServerScene));
 
             if (hasLevel)
             {

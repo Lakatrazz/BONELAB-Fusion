@@ -12,6 +12,8 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
     public NetworkEntity NetworkEntity => _networkEntity;
 
+    public bool IsRegistered { get; private set; } = false;
+
     public TComponent[] Components => _components;
 
     public bool TryRegister(NetworkEntity entity, GameObject parent)
@@ -147,6 +149,6 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
     protected abstract void OnRegister(NetworkEntity entity, TComponent[] components);
     protected abstract void OnUnregister(NetworkEntity entity, TComponent[] components);
 
-    void IEntityExtender.OnExtenderRegistered() { }
-    void IEntityExtender.OnExtenderUnregistered() { }
+    void IEntityExtender.OnExtenderRegistered() { IsRegistered = true; }
+    void IEntityExtender.OnExtenderUnregistered() { IsRegistered = false; }
 }

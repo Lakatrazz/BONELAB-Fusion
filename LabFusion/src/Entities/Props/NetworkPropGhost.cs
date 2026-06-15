@@ -1,52 +1,175 @@
-﻿using UnityEngine;
+﻿using Il2CppSLZ.Marrow.Pool;
+
+using LabFusion.Marrow;
+using LabFusion.Marrow.Pool;
+
+using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender
+public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IProgress<float>
 {
+    private static readonly int FillID = Shader.PropertyToID("_Fill");
+
+    public bool IsRegistered { get; private set; } = false;
+
     public NetworkEntity NetworkEntity { get; private set; } = null;
 
-    public Transform TestTransform;
+    public Bounds Bounds { get; private set; } = default;
 
-    public NetworkPropGhost(NetworkEntity networkEntity)
+    public Poolee GhostPoolee { get; private set; } = null;
+
+    public Transform GhostRoot { get; private set; } = null;
+
+    public Transform GhostOrigin { get; private set; } = null;
+
+    public GameObject DownloadingRoot { get; private set; } = null;
+    public GameObject FailedRoot { get; private set; } = null;
+
+    public MeshRenderer DownloadingInsideRenderer { get; private set; } = null;
+    public MeshRenderer FailedInsideRenderer { get; private set; } = null;
+
+    public bool HasDownloadFailed { get; private set; } = false;
+
+    public float DownloadProgress { get; private set; } = 0f;
+
+    public NetworkPropGhost(NetworkEntity networkEntity, Bounds bounds)
     {
         NetworkEntity = networkEntity;
+        Bounds = bounds;
 
         networkEntity.ConnectExtender(this);
     }
 
-    public void ReceivePose(EntityPose entityPose)
+    public void OnPoseReceived(EntityPose entityPose)
     {
-        if (TestTransform != null)
+        var pose = entityPose.Bodies[0];
+
+        if (GhostRoot != null)
         {
-            var pose = entityPose.Bodies[0];
-            TestTransform.SetPositionAndRotation(pose.Position, pose.Rotation);
+            GhostRoot.SetPositionAndRotation(pose.Position, pose.Rotation);
         }
     }
 
     public void OnExtenderRegistered()
     {
+        IsRegistered = true;
+
         CreateGhost();
     }
 
     public void OnExtenderUnregistered()
     {
+        IsRegistered = false;
+
         DestroyGhost();
     }
 
     private void CreateGhost()
     {
-        var testCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        GameObject.Destroy(testCube.GetComponent<BoxCollider>());
-        testCube.GetComponent<MeshRenderer>().sharedMaterial = Resources.FindObjectsOfTypeAll<Material>().FirstOrDefault(m => m.name.ToLower().Contains("concrete"));
-        TestTransform = testCube.transform;
+        var ghostSpawnable = LocalAssetSpawner.CreateSpawnable(FusionSpawnableReferences.EntityGhostReference);
+        LocalAssetSpawner.Register(ghostSpawnable);
+
+        LocalAssetSpawner.Spawn(ghostSpawnable, Vector3.zero, Quaternion.identity, OnGhostSpawned);
     }
 
     private void DestroyGhost()
     {
-        if (TestTransform != null)
+        if (GhostPoolee != null)
         {
-            GameObject.Destroy(TestTransform.gameObject);
+            GhostPoolee.Despawn();
         }
     }
+    
+    private void OnGhostSpawned(Poolee poolee)
+    {
+        if (!IsRegistered)
+        {
+            poolee.Despawn();
+            return;
+        }
+
+        GhostPoolee = poolee;
+        GhostRoot = poolee.transform;
+
+        GhostOrigin = GhostRoot.Find("Origin");
+
+        if (GhostOrigin == null)
+        {
+            return;
+        }
+
+        GhostOrigin.localPosition = Bounds.center;
+        GhostOrigin.localScale = Bounds.size;
+
+        var downloadingRoot = GhostOrigin.Find("Downloading");
+        DownloadingRoot = downloadingRoot.gameObject;
+
+        var downloadingInside = downloadingRoot.Find("Inside");
+
+        if (downloadingInside != null)
+        {
+            DownloadingInsideRenderer = downloadingInside.GetComponent<MeshRenderer>();
+        }
+
+        var failedRoot = GhostOrigin.Find("Failed");
+        FailedRoot = failedRoot.gameObject;
+
+        var failedInside = failedRoot.Find("Inside");
+
+        if (failedInside != null)
+        {
+            FailedInsideRenderer = failedInside.GetComponent<MeshRenderer>();
+        }
+
+        ApplyDownloadResult();
+        ApplyDownloadProgress();
+    }
+
+    public void Report(float value)
+    {
+        DownloadProgress = value;
+
+        ApplyDownloadProgress();
+    }
+
+    public void OnDownloadFailed()
+    {
+        HasDownloadFailed = true;
+
+        ApplyDownloadResult();
+    }
+
+    private void ApplyDownloadResult()
+    {
+        if (DownloadingRoot != null)
+        {
+            DownloadingRoot.SetActive(!HasDownloadFailed);
+        }
+
+        if (FailedRoot != null)
+        {
+            FailedRoot.SetActive(HasDownloadFailed);
+        }
+    }
+
+    private void ApplyDownloadProgress()
+    {
+        MaterialPropertyBlock propertyBlock = new();
+        propertyBlock.SetFloat(FillID, DownloadProgress);
+
+        if (DownloadingInsideRenderer != null)
+        {
+            DownloadingInsideRenderer.SetPropertyBlock(propertyBlock);
+        }
+
+        if (FailedInsideRenderer != null)
+        {
+            FailedInsideRenderer.SetPropertyBlock(propertyBlock);
+        }
+    }
+
+    public void OnDespawnReceived() { }
+
+    public void PlayDespawnEffect() { }
 }

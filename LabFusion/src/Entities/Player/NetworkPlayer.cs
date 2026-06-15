@@ -49,6 +49,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private MarrowEntity _marrowEntity = null;
     public MarrowEntity MarrowEntity => _marrowEntity;
 
+    public bool IsRegistered { get; private set; } = false;
+
     public PlayerID PlayerID => _playerID;
 
     public string Username => _username;
@@ -539,6 +541,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnExtenderRegistered()
     {
+        IsRegistered = true;
+
         Players.Add(this);
 
         HookPlayer();
@@ -554,6 +558,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnExtenderUnregistered()
     {
+        IsRegistered = false;
+
 #if DEBUG
         FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerID.SmallID}.");
 #endif

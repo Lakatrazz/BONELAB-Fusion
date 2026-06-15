@@ -137,7 +137,7 @@ public class LobbyInfo
         LevelTitle = FusionSceneManager.Title;
         LevelBarcode = FusionSceneManager.Barcode;
 
-        LevelModID = CrateFilterer.GetModID(FusionSceneManager.Level.Pallet);
+        LevelModID = AssetWarehouseSearcher.GetModID(FusionSceneManager.Level.Pallet);
 
         // Gamemode
         GamemodeTitle = string.Empty;

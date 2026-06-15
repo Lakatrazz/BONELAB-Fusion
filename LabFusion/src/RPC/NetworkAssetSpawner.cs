@@ -1,7 +1,9 @@
 ﻿using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Network;
 
@@ -62,13 +64,22 @@ public static class NetworkAssetSpawner
             _callbackQueue.Add(trackerID, info.SpawnCallback);
         }
 
+        Barcode barcode = info.Spawnable.crateRef.Barcode;
+        SerializedBounds serializedBounds = SerializedBounds.Fallback;
+
+        if (AssetWarehouseSearcher.TryGetBounds(barcode, out var bounds))
+        {
+            serializedBounds = new(bounds);
+        }
+
         var data = new SerializedSpawnData()
         {
-            Barcode = info.Spawnable.crateRef.Barcode.ID,
+            Barcode = barcode.ID,
             SerializedTransform = new SerializedTransform(info.Position, info.Rotation),
             SpawnEffect = info.SpawnEffect,
             TrackerID = trackerID,
             SpawnSource = info.SpawnSource,
+            Bounds = serializedBounds,
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, CommonMessageRoutes.ReliableToServer);

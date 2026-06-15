@@ -6,7 +6,7 @@ namespace LabFusion.Marrow.Serialization;
 
 public sealed class SerializedSpawnData : INetSerializable
 {
-    public int? GetSize() => Barcode.GetSize() + SerializedTransform.Size + sizeof(uint) + sizeof(bool) + sizeof(byte);
+    public int? GetSize() => Barcode.GetSize() + SerializedTransform.Size + sizeof(uint) + sizeof(bool) + sizeof(byte) + Bounds.GetSize();
 
     public string Barcode;
 
@@ -18,6 +18,8 @@ public sealed class SerializedSpawnData : INetSerializable
 
     public EntitySource SpawnSource;
 
+    public SerializedBounds Bounds = SerializedBounds.Fallback;
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref Barcode);
@@ -25,5 +27,6 @@ public sealed class SerializedSpawnData : INetSerializable
         serializer.SerializeValue(ref TrackerID);
         serializer.SerializeValue(ref SpawnEffect);
         serializer.SerializeValue(ref SpawnSource, Precision.OneByte);
+        serializer.SerializeValue(ref Bounds);
     }
 }

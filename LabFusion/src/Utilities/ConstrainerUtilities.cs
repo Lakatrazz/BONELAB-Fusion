@@ -23,7 +23,7 @@ public static class ConstrainerUtilities
     public static void OnMainSceneInitialized()
     {
         // Get the constrainer crate so we can create a global constrainer
-        var crate = CrateFilterer.GetCrate<SpawnableCrate>(BacklotReferences.ConstrainerReference.Barcode);
+        var crate = AssetWarehouseSearcher.GetCrate<SpawnableCrate>(BacklotReferences.ConstrainerReference.Barcode);
 
         if (crate == null)
         {

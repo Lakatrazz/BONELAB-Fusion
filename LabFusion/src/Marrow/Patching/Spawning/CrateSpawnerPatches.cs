@@ -161,7 +161,7 @@ public static class CrateSpawnerPatches
         }
 
         // Check for the Singleplayer Only tag
-        if (CrateFilterer.HasTags(spawnable.crateRef.Crate, FusionTags.SingleplayerOnly))
+        if (AssetWarehouseSearcher.HasTags(spawnable.crateRef.Crate, FusionTags.SingleplayerOnly))
         {
             return true;
         }

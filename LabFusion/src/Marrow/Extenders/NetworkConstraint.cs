@@ -24,6 +24,8 @@ public class NetworkConstraint : IEntityExtender
 
     public NetworkEntity NetworkEntity => _networkEntity;
 
+    public bool IsRegistered { get; private set; } = false;
+
     public ConstraintTracker Tracker => _tracker;
 
     public bool IsFirst { get; set; } = false;
@@ -45,6 +47,8 @@ public class NetworkConstraint : IEntityExtender
 
     public void OnExtenderRegistered()
     {
+        IsRegistered = true;
+
         NetworkEntity.OnEntityCreationCatchup += OnEntityCreationCatchup;
 
         Cache.Add(Tracker, NetworkEntity);
@@ -61,6 +65,8 @@ public class NetworkConstraint : IEntityExtender
 
     public void OnExtenderUnregistered()
     {
+        IsRegistered = false;
+
         NetworkEntity.OnEntityCreationCatchup -= OnEntityCreationCatchup;
 
         if (Tracker != null)

@@ -36,14 +36,14 @@ public static class CosmeticLoader
             return;
         }
 
-        var cosmeticCrates = CrateFilterer.FilterByTags<SpawnableCrate>(pallet, RequiredTags);
+        var cosmeticCrates = AssetWarehouseSearcher.FilterByTags<SpawnableCrate>(pallet, RequiredTags);
 
         LoadAllCosmetics(cosmeticCrates);
     }
 
     public static void LoadAllCosmetics()
     {
-        var cosmeticCrates = CrateFilterer.FilterByTags<SpawnableCrate>(RequiredTags);
+        var cosmeticCrates = AssetWarehouseSearcher.FilterByTags<SpawnableCrate>(RequiredTags);
 
         LoadAllCosmetics(cosmeticCrates);
     }

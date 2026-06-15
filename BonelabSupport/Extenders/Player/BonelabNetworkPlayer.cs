@@ -6,6 +6,8 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
 {
     public NetworkEntity NetworkEntity { get; private set; } = null;
 
+    public bool IsRegistered { get; private set; } = false;
+
     public NetworkPlayer NetworkPlayer { get; private set; } = null;
 
     public BonelabRigVitals RigVitals { get; } = new();
@@ -32,11 +34,15 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
 
     public void OnExtenderRegistered()
     {
+        IsRegistered = true;
+
         NetworkPlayer.UpdatableManager.LateUpdateManager.Register(this);
     }
 
     public void OnExtenderUnregistered()
     {
+        IsRegistered = false;
+
         NetworkPlayer.UpdatableManager.LateUpdateManager.Unregister(this);
     }
 

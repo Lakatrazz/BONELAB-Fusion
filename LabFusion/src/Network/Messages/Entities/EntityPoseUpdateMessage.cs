@@ -52,6 +52,6 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
             return;
         }
 
-        entityPosable.ReceivePose(pose);
+        entityPosable.OnPoseReceived(pose);
     }
 }

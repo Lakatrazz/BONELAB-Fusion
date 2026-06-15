@@ -9,6 +9,8 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     public NetworkEntity NetworkEntity => _networkEntity;
 
+    public bool IsRegistered { get; private set; } = false;
+
     public TComponent Component => _component;
 
     public bool TryRegister(NetworkEntity entity, GameObject parent)
@@ -69,6 +71,6 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     protected virtual TComponent GetComponent(GameObject go) => go.GetComponentInChildren<TComponent>(true);
 
-    void IEntityExtender.OnExtenderRegistered() { }
-    void IEntityExtender.OnExtenderUnregistered() { }
+    void IEntityExtender.OnExtenderRegistered() { IsRegistered = true; }
+    void IEntityExtender.OnExtenderUnregistered() { IsRegistered = false; }
 }
