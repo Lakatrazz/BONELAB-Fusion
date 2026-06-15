@@ -2,5 +2,5 @@
 
 public interface IEntityPosableExtender : IEntityExtender
 {
-    void OnPoseReceived(EntityPose entityPose);
+    void OnPoseReceived(EntityPose pose);
 }

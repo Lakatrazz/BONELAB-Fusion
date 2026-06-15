@@ -64,47 +64,9 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
     public bool HasCapturedPose { get; private set; } = false;
 
     /// <summary>
-    /// The pose in use right before the latest pose was received from the prop's owner.
-    /// Used for interpolation to smooth out network latency.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// The receiver for a pose from the prop's owner that handles interpolation and prediction.
     /// </summary>
-    public EntityPose LastReceivedPose { get; private set; } = null;
-
-    /// <summary>
-    /// The latest pose received from the prop's owner.
-    /// This is the pose that prediction is based on, and will be used to replicate the prop locally if the owner stops sending messages.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public EntityPose ReceivedPose { get; private set; } = null;
-
-    /// <summary>
-    /// The <see cref="ReceivedPose"/>, but predicted right after being received based on the network latency.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public EntityPose PredictedPose { get; private set; } = null;
-
-    /// <summary>
-    /// The current interpolated pose between <see cref="LastReceivedPose"/> and <see cref="PredictedPose"/>.
-    /// Additional prediction based on velocity is applied on top to simulate the object's travel while waiting for the next pose.
-    /// This is the pose actively used to replicate props locally per physics update.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public EntityPose InterpolatedPose { get; private set; } = null;
-
-    /// <summary>
-    /// Whether an updated pose has been received from the prop's owner and applied to <see cref="ReceivedPose"/>.
-    /// </summary>
-    public bool HasReceivedPose { get; private set; } = false;
-
-    /// <summary>
-    /// The time in seconds since we received an EntityPose from the prop's owner.
-    /// </summary>
-    public float TimeSinceReceivedPose { get; private set; } = 0f;
-
-    /// <summary>
-    /// The percent from 0 to 1 of interpolation from <see cref="LastReceivedPose"/> to <see cref="PredictedPose"/>.
-    /// </summary>
-    public float InterpolationPercent { get; private set; } = 0f;
+    public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
     public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
 
@@ -173,10 +135,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
         CapturedPose = new(bodyCount);
         SentPose = new(bodyCount);
 
-        LastReceivedPose = new(bodyCount);
-        ReceivedPose = new(bodyCount);
-        PredictedPose = new(bodyCount);
-        InterpolatedPose = new(bodyCount);
+        PoseReceiver.InitializePoses(bodyCount);
 
         HoldReceivedPose();
     }
@@ -219,42 +178,18 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
     public void OnPoseReceived(EntityPose pose)
     {
-        if (HasReceivedPose)
-        {
-            InterpolatedPose.WriteTo(LastReceivedPose);
-        }
-        else
-        {
-            pose.WriteTo(LastReceivedPose);
-        }
-
-        pose.WriteTo(ReceivedPose);
-
-        pose.WriteTo(PredictedPose);
-
-        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
-
-        PredictedPose.Predict(predictionTime);
-
-        LastReceivedPose.WriteTo(InterpolatedPose);
+        PoseReceiver.ReceivePose(pose);
 
         RefreshReceivedState();
     }
 
     public void HoldReceivedPose()
     {
-        WriteToPose(ReceivedPose);
+        WriteToPose(PoseReceiver.ReceivedPose);
 
-        ResyncReceivedPose();
+        PoseReceiver.ResyncReceivedPose();
 
         RefreshReceivedState();
-    }
-
-    public void ResyncReceivedPose()
-    {
-        ReceivedPose.WriteTo(LastReceivedPose);
-        ReceivedPose.WriteTo(PredictedPose);
-        ReceivedPose.WriteTo(InterpolatedPose);
     }
 
     public void ReceiveCullStatus(bool isCulled)
@@ -266,25 +201,24 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
     {
         Unfreeze();
 
-        TimeSinceReceivedPose = 0f;
-        HasReceivedPose = true;
+        PoseReceiver.RefreshPoseState();
     }
 
     private void ResetPoseState()
     {
-        TimeSinceReceivedPose = 0f;
-        HasReceivedPose = false;
+        PoseReceiver.ClearPoseState();
+
         HasCapturedPose = false;
     }
 
     public void TeleportToPose()
     {
-        if (!HasReceivedPose)
+        if (!PoseReceiver.HasReceivedPose)
         {
             return;
         }
 
-        TeleportToPose(InterpolatedPose);
+        TeleportToPose(PoseReceiver.InterpolatedPose);
     }
 
     public void TeleportToPose(EntityPose pose)
@@ -675,29 +609,11 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
     private void OnProcessReceivedPose(float deltaTime)
     {
-        // The time since a pose has been received should still increment regardless if the first pose has been received
-        // This is so that initial prediction still works during the time when ownership has changed and a new pose hasn't been received yet
         float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
 
-        TimeSinceReceivedPose += unscaledDeltaTime;
+        bool resolvePose = !IsSleeping;
 
-        if (IsSleeping)
-        {
-            return;
-        }
-
-        if (!HasReceivedPose)
-        {
-            return;
-        }
-
-        InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
-
-        InterpolatedPose.Interpolate(LastReceivedPose, PredictedPose, InterpolationPercent);
-
-        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
-
-        InterpolatedPose.PredictFrom(predictionTime, ReceivedPose);
+        PoseReceiver.TickPose(unscaledDeltaTime, resolvePose);
     }
 
     private void OnPreCalculateForces(float deltaTime)
@@ -712,16 +628,16 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
         }
 
         // Make sure we actually have a pose
-        if (!HasReceivedPose)
+        if (!PoseReceiver.HasReceivedPose)
         {
             return;
         }
 
         // Check if this hasn't received an update in a while
-        if (TimeSinceReceivedPose >= SleepTimer)
+        if (PoseReceiver.TimeSinceReceivedPose >= SleepTimer)
         {
-            ResyncReceivedPose();
-            TeleportToPose(ReceivedPose);
+            PoseReceiver.ResyncReceivedPose();
+            TeleportToPose(PoseReceiver.ReceivedPose);
             Freeze();
             return;
         }
@@ -755,7 +671,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
             return;
         }
 
-        var bodyPose = InterpolatedPose.Bodies[index];
+        var bodyPose = PoseReceiver.InterpolatedPose.Bodies[index];
 
         _spdState.SetLinearInput(index, rigidbody.position.ToNumericsVector3(), rigidbody.velocity.ToNumericsVector3(), bodyPose.Position.ToNumericsVector3(), bodyPose.Velocity.ToNumericsVector3());
         _spdState.EnabledForces[index] = true;

@@ -2,12 +2,13 @@
 
 using LabFusion.Marrow;
 using LabFusion.Marrow.Pool;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IProgress<float>
+public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IEntityFixedUpdatable, IProgress<float>
 {
     private static readonly int FillID = Shader.PropertyToID("_Fill");
 
@@ -33,6 +34,8 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
 
     public float DownloadProgress { get; private set; } = 0f;
 
+    public EntityPoseReceiver PoseReceiver { get; private set; } = new();
+
     public NetworkPropGhost(NetworkEntity networkEntity, Bounds bounds)
     {
         NetworkEntity = networkEntity;
@@ -41,14 +44,14 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
         networkEntity.ConnectExtender(this);
     }
 
-    public void OnPoseReceived(EntityPose entityPose)
+    public void OnPoseReceived(EntityPose pose)
     {
-        var pose = entityPose.Bodies[0];
-
-        if (GhostRoot != null)
+        if (PoseReceiver.BodyCount != pose.BodyCount)
         {
-            GhostRoot.SetPositionAndRotation(pose.Position, pose.Rotation);
+            PoseReceiver.InitializePoses(pose.BodyCount);
         }
+
+        PoseReceiver.ReceivePose(pose);
     }
 
     public void OnExtenderRegistered()
@@ -56,6 +59,8 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
         IsRegistered = true;
 
         CreateGhost();
+
+        NetworkEntityManager.UpdatableManager.FixedUpdateManager.Register(this);
     }
 
     public void OnExtenderUnregistered()
@@ -63,6 +68,8 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
         IsRegistered = false;
 
         DestroyGhost();
+
+        NetworkEntityManager.UpdatableManager.FixedUpdateManager.Unregister(this);
     }
 
     private void CreateGhost()
@@ -172,4 +179,23 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
     public void OnDespawnReceived() { }
 
     public void PlayDespawnEffect() { }
+
+    public void OnEntityFixedUpdate(float deltaTime)
+    {
+        if (!PoseReceiver.HasReceivedPose)
+        {
+            return;
+        }
+
+        float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
+
+        PoseReceiver.TickPose(unscaledDeltaTime);
+
+        if (GhostRoot != null)
+        {
+            var bodyPose = PoseReceiver.InterpolatedPose.Bodies[0];
+
+            GhostRoot.SetPositionAndRotation(bodyPose.Position, bodyPose.Rotation);
+        }
+    }
 }
