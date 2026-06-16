@@ -22,14 +22,18 @@ public static class NetworkEntityManager
 
     private static readonly Dictionary<ushort, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
 
-    public static void OnInitializeManager()
+    internal static void OnInitializeManager()
     {
         CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
         IDManager.OnEntityRegistered += OnEntityRegistered;
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }
 
-    public static void OnCleanupIds()
+    /// <summary>
+    /// Resets the incrementing server IDs for network entities to be the lowest unused ID.
+    /// This should be called when a large amount of entities are known to be unregistered, like when changing levels.
+    /// </summary>
+    public static void CleanupIDs()
     {
         IDManager.RegisteredEntities.ClearID();
         IDManager.QueuedEntities.ClearID();
@@ -37,7 +41,10 @@ public static class NetworkEntityManager
         _entityRegisteredCallbacks.Clear();
     }
 
-    public static void OnCleanupEntities()
+    /// <summary>
+    /// Unregisters all network entities. This should be called when the client disconnects or the server is closed.
+    /// </summary>
+    public static void CleanupEntities()
     {
         // Clear registered entities
         var registeredEntities = IDManager.RegisteredEntities.EntityIDLookup.Keys.ToList();

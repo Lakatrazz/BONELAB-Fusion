@@ -84,7 +84,7 @@ public static class InternalServerHelpers
     {
         // Cleanup information
         DisposeUsers();
-        NetworkEntityManager.OnCleanupEntities();
+        NetworkEntityManager.CleanupEntities();
 
         // Update hooks
         MultiplayerHooking.InvokeOnDisconnected();

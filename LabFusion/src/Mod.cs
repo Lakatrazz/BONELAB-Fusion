@@ -217,7 +217,7 @@ public class FusionMod : MelonMod
 #endif
 
         // Cache info
-        NetworkEntityManager.OnCleanupIds();
+        NetworkEntityManager.CleanupIDs();
 
         RigData.OnCacheRigInfo();
         PersistentAssetCreator.OnMainSceneInitialized();
