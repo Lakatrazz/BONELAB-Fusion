@@ -1,6 +1,7 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 

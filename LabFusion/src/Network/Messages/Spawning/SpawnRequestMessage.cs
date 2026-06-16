@@ -5,6 +5,7 @@ using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Safety;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
