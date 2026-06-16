@@ -137,6 +137,12 @@ public class SpawnResponseMessage : NativeMessageHandler
 
     public static void OnSpawnFinished(SpawnResponseData data, Poolee poolee, NetworkEntity networkEntity)
     {
+        // Clear the prop ghost, if it exists
+        if (networkEntity != null)
+        {
+            ClearGhost(networkEntity);
+        }
+
         // The poolee will never be null, so we don't have to check for it
         // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
         var go = poolee.gameObject;
@@ -164,7 +170,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         {
             if (networkEntity != null)
             {
-                ConvertGhostToProp(networkEntity, go, data.SpawnData.Barcode, marrowEntity);
+                AttachProp(networkEntity, go, data.SpawnData.Barcode, marrowEntity);
             }
 
             if (data.SpawnData.SpawnEffect)
@@ -203,16 +209,18 @@ public class SpawnResponseMessage : NativeMessageHandler
         return networkEntity;
     }
 
-    private static void ConvertGhostToProp(NetworkEntity networkEntity, GameObject gameObject, string barcode, MarrowEntity marrowEntity)
+    private static void ClearGhost(NetworkEntity networkEntity)
     {
-        // Remove the ghost prop
         var propGhost = networkEntity.GetExtender<NetworkPropGhost>();
 
         if (propGhost != null)
         {
             networkEntity.DisconnectExtender(propGhost);
         }
+    }
 
+    private static void AttachProp(NetworkEntity networkEntity, GameObject gameObject, string barcode, MarrowEntity marrowEntity)
+    {
         // Create the network prop
         var newProp = new NetworkProp(networkEntity, marrowEntity);
 
