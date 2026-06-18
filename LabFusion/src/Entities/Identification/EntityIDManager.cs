@@ -13,14 +13,21 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 
     public EntityIDList<TEntity> QueuedEntities => _queuedEntities;
 
-    public event Action<TEntity> OnEntityRegistered, OnEntityUnregistered;
+    public event Action<TEntity> EntityRegistered, EntityUnregistered;
 
     public void RegisterEntity(ushort id, TEntity entity)
     {
+        if (RegisteredEntities.HasEntity(id))
+        {
+            FusionLogger.Warn($"Tried registering an entity with ID {id}, but an entity was already registered. The original entity will be unregistered.");
+
+            UnregisterEntity(id);
+        }
+
         RegisteredEntities.AddEntity(id, entity);
         entity.Register(id);
 
-        OnEntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
+        EntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
     public void UnregisterEntity(ushort id)
@@ -36,7 +43,7 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 
         entity.Unregister();
 
-        OnEntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
+        EntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
     }
 
     public void UnregisterEntity(TEntity entity)
@@ -64,23 +71,23 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         return id;
     }
 
-    public (bool, TEntity) UnqueueEntity(ushort queuedId, ushort allocatedId)
+    public (bool, TEntity) UnqueueEntity(ushort queuedID, ushort allocatedID)
     {
-        if (!QueuedEntities.HasEntity(queuedId))
+        if (!QueuedEntities.HasEntity(queuedID))
         {
             return (false, default);
         }
 
-        var entity = QueuedEntities.GetEntity(queuedId);
+        var entity = QueuedEntities.GetEntity(queuedID);
         QueuedEntities.RemoveEntity(entity);
 
         if (entity.IsDestroyed)
         {
-            FusionLogger.Warn($"Attempted to unqueue an Entity with allocated id {allocatedId}, but it was destroyed!");
+            FusionLogger.Warn($"Attempted to unqueue an Entity with allocated id {allocatedID}, but it was destroyed!");
             return (false, default);
         }
 
-        RegisterEntity(allocatedId, entity);
+        RegisterEntity(allocatedID, entity);
 
         return (true, entity);
     }
