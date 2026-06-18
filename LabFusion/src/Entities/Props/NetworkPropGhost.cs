@@ -1,22 +1,24 @@
 ﻿using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow;
+using LabFusion.Marrow.Data;
+using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Pool;
+using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IEntityFixedUpdatable, IProgress<float>
+public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntityDespawnableExtender, IMarrowEntityRepresentationExtender, IEntityFixedUpdatable, IProgress<float>
 {
     private static readonly int FillID = Shader.PropertyToID("_Fill");
 
     public bool IsRegistered { get; private set; } = false;
 
     public NetworkEntity NetworkEntity { get; private set; } = null;
-
-    public Bounds Bounds { get; private set; } = default;
 
     public Poolee GhostPoolee { get; private set; } = null;
 
@@ -36,16 +38,24 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
 
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
-    public NetworkPropGhost(NetworkEntity networkEntity, Bounds bounds)
+    public MarrowEntityRepresentation Representation { get; private set; } = null;
+
+    public bool HasRequestedRepresentation { get; private set; } = false;
+
+    public NetworkPropGhost(NetworkEntity networkEntity)
     {
         NetworkEntity = networkEntity;
-        Bounds = bounds;
 
         networkEntity.ConnectExtender(this);
     }
 
     public void OnPoseReceived(EntityPose pose)
     {
+        if (!HasRequestedRepresentation)
+        {
+            RequestRepresentation();
+        }
+
         if (PoseReceiver.BodyCount != pose.BodyCount)
         {
             PoseReceiver.InitializePoses(pose.BodyCount);
@@ -106,8 +116,7 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
             return;
         }
 
-        GhostOrigin.localPosition = Bounds.center;
-        GhostOrigin.localScale = Bounds.size;
+        ApplyRepresentation();
 
         var downloadingRoot = GhostOrigin.Find("Downloading");
         DownloadingRoot = downloadingRoot.gameObject;
@@ -197,5 +206,45 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
 
             GhostRoot.SetPositionAndRotation(bodyPose.Position, bodyPose.Rotation);
         }
+    }
+
+    public void OnRepresentationReceived(MarrowEntityRepresentation representation)
+    {
+        Representation = representation;
+
+        ApplyRepresentation();
+    }
+
+    private void RequestRepresentation()
+    {
+        byte target = NetworkEntity.HasOwner ? NetworkEntity.OwnerID.SmallID : PlayerIDManager.HostSmallID;
+
+        MessageRelay.RelayModule<EntityRepresentationRequestMessage, NetworkEntityReference>(new(NetworkEntity), new MessageRoute(target, NetworkChannel.Reliable));
+
+        HasRequestedRepresentation = true;
+    }
+
+    private void ApplyRepresentation()
+    {
+        if (GhostPoolee == null)
+        {
+            return;
+        }
+
+        if (Representation == null)
+        {
+            GhostOrigin.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            GhostOrigin.localScale = Vector3.zero;
+            return;
+        }
+
+        var bounds = Representation.Bounds.ToBounds();
+        var offset = Representation.Offset;
+
+        var localPosition = offset.position + bounds.center;
+        var localRotation = offset.rotation;
+
+        GhostOrigin.SetLocalPositionAndRotation(localPosition, localRotation);
+        GhostOrigin.localScale = bounds.size;
     }
 }

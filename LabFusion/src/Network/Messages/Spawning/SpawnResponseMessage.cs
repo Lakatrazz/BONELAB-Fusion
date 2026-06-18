@@ -64,7 +64,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         if (!SpawnableBlacklist.IsClientSide(data.SpawnData.Barcode))
         {
-            newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource, spawnData.Bounds.ToBounds(), out propGhost);
+            newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource, out propGhost);
         }
 
         // Check for spawnable blacklist
@@ -190,7 +190,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         }
     }
 
-    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source, Bounds bounds, out NetworkPropGhost propGhost)
+    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source, out NetworkPropGhost propGhost)
     {
         // Create the NetworkEntity and assign its owner
         var playerID = PlayerIDManager.GetPlayerID(ownerID);
@@ -204,7 +204,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         NetworkEntityManager.IDManager.RegisterEntity(entityID, networkEntity);
 
         // Attach a prop ghost to the entity
-        propGhost = new NetworkPropGhost(networkEntity, bounds);
+        propGhost = new NetworkPropGhost(networkEntity);
 
         return networkEntity;
     }

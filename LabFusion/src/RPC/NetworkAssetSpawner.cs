@@ -65,12 +65,6 @@ public static class NetworkAssetSpawner
         }
 
         Barcode barcode = info.Spawnable.crateRef.Barcode;
-        SerializedBounds serializedBounds = SerializedBounds.Fallback;
-
-        if (AssetWarehouseSearcher.TryGetBounds(barcode, out var bounds))
-        {
-            serializedBounds = new(bounds);
-        }
 
         var data = new SerializedSpawnData()
         {
@@ -79,7 +73,6 @@ public static class NetworkAssetSpawner
             SpawnEffect = info.SpawnEffect,
             TrackerID = trackerID,
             SpawnSource = info.SpawnSource,
-            Bounds = serializedBounds,
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, CommonMessageRoutes.ReliableToServer);
