@@ -1,4 +1,5 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Marrow.Serialization;
+using LabFusion.Network.Serialization;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 
@@ -6,25 +7,16 @@ namespace LabFusion.Network;
 
 public class LevelLoadData : INetSerializable
 {
-    public string LevelBarcode;
+    public SerializedCrateReference LevelReference;
 
     public string LoadingScreenBarcode;
 
-    public int? GetSize() => LevelBarcode.GetSize() + LoadingScreenBarcode.GetSize();
+    public int? GetSize() => LevelReference.GetSize() + LoadingScreenBarcode.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref LevelBarcode);
+        serializer.SerializeValue(ref LevelReference);
         serializer.SerializeValue(ref LoadingScreenBarcode);
-    }
-
-    public static LevelLoadData Create(string levelBarcode, string loadBarcode)
-    {
-        return new LevelLoadData()
-        {
-            LevelBarcode = levelBarcode,
-            LoadingScreenBarcode = loadBarcode
-        };
     }
 }
 
@@ -39,9 +31,9 @@ public class LevelLoadMessage : NativeMessageHandler
         var data = received.ReadData<LevelLoadData>();
 
 #if DEBUG
-        FusionLogger.Log($"Received level load for {data.LevelBarcode}!");
+        FusionLogger.Log($"Received level load for {data.LevelReference.Barcode}!");
 #endif
 
-        FusionSceneManager.SetTargetScene(data.LevelBarcode, data.LoadingScreenBarcode);
+        FusionSceneManager.SetTargetScene(data.LevelReference, data.LoadingScreenBarcode);
     }
 }

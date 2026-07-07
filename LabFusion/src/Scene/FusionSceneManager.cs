@@ -6,6 +6,7 @@ using LabFusion.Player;
 using LabFusion.Preferences.Client;
 using LabFusion.Marrow.Patching;
 using LabFusion.Extensions;
+using LabFusion.Marrow.Serialization;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -27,7 +28,7 @@ public static partial class FusionSceneManager
     private static void Internal_OnCleanup()
     {
         // Reset target scenes
-        _targetServerScene = string.Empty;
+        _targetServerScene = SerializedCrateReference.None;
         _targetServerLoadScene = string.Empty;
         _hasStartedLoadingTarget = false;
         _hasEnteredTargetLoadingScreen = false;
@@ -35,14 +36,14 @@ public static partial class FusionSceneManager
         _hasStartedDownloadingTarget = false;
     }
 
-    private static void Internal_SetServerScene(string barcode, string loadBarcode)
+    private static void Internal_SetServerScene(SerializedCrateReference levelReference, string loadBarcode)
     {
         // This is a brand new scene, so reset the download check
         _hasStartedDownloadingTarget = false;
 
         // Here we set the target server scene
         // This is the scene barcode sent by the server to the client, which we want to load
-        _targetServerScene = barcode;
+        _targetServerScene = levelReference;
         _targetServerLoadScene = loadBarcode;
         _hasStartedLoadingTarget = false;
         _hasEnteredTargetLoadingScreen = false;
@@ -136,9 +137,9 @@ public static partial class FusionSceneManager
         }
 
         // If we aren't loading and we have a target scene, change to it
-        if (IsDelayedLoadDone() && !_hasStartedDownloadingTarget && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
+        if (IsDelayedLoadDone() && !_hasStartedDownloadingTarget && !_hasStartedLoadingTarget && _targetServerScene.IsValid)
         {
-            bool hasLevel = AssetWarehouseSearcher.HasCrate<LevelCrate>(new(_targetServerScene));
+            bool hasLevel = _targetServerScene.HasCrate<LevelCrate>();
 
             if (hasLevel)
             {
@@ -153,7 +154,7 @@ public static partial class FusionSceneManager
                 {
                     LevelDownloaderManager.DownloadLevel(new LevelDownloaderManager.LevelDownloadInfo()
                     {
-                        LevelBarcode = _targetServerScene,
+                        LevelReference = _targetServerScene,
                         LevelHost = PlayerIDManager.HostSmallID,
                         OnDownloadSucceeded = OnDownloadSucceeded,
                         OnDownloadFailed = OnDownloadFailed,
@@ -196,7 +197,7 @@ public static partial class FusionSceneManager
     {
         SceneStreamerPatches.IgnorePatches = true;
 
-        SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
+        SceneStreamer.Load(new Barcode(_targetServerScene.Barcode), new Barcode(_targetServerLoadScene));
 
         SceneStreamerPatches.IgnorePatches = false;
 
@@ -215,8 +216,8 @@ public static partial class FusionSceneManager
         Internal_UpdateTargetScene();
     }
 
-    public static void SetTargetScene(string barcode, string loadBarcode)
+    public static void SetTargetScene(SerializedCrateReference levelReference, string loadBarcode)
     {
-        Internal_SetServerScene(barcode, loadBarcode);
+        Internal_SetServerScene(levelReference, loadBarcode);
     }
 }

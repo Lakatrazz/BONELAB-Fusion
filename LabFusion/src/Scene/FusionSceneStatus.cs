@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Marrow.Serialization;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -18,7 +19,7 @@ public static partial class FusionSceneManager
     private static float _loadingTimer = 0f;
 
     // Target scene logic
-    private static string _targetServerScene = string.Empty;
+    private static SerializedCrateReference _targetServerScene = SerializedCrateReference.None;
     private static string _targetServerLoadScene = string.Empty;
     private static bool _hasStartedLoadingTarget = false;
     private static bool _hasEnteredTargetLoadingScreen = false;

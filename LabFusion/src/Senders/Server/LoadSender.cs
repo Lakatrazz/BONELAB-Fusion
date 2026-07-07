@@ -35,7 +35,7 @@ public static class LoadSender
 
         var data = new LevelLoadData()
         {
-            LevelBarcode = barcode,
+            LevelReference = new(barcode),
             LoadingScreenBarcode = loadBarcode,
         };
 
@@ -59,7 +59,7 @@ public static class LoadSender
 
         var data = new LevelLoadData()
         {
-            LevelBarcode = barcode,
+            LevelReference = new(barcode),
             LoadingScreenBarcode = loadBarcode,
         };
 

@@ -58,38 +58,37 @@ public static class AssetWarehouseSearcher
         return manifests[barcode];
     }
 
-    public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate
+    public static bool HasCrate(Barcode barcode) => GetCrate(barcode) != null;
+
+    public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate => GetCrate<TCrate>(barcode) != null;
+
+    public static Crate GetCrate(Barcode barcode)
     {
         if (barcode == null)
         {
-            return false;
+            return null;
         }
 
         var warehouse = AssetWarehouse.Instance;
 
         if (!warehouse._crateRegistry.ContainsKey(barcode))
         {
-            return false;
+            return null;
         }
 
-        return warehouse._crateRegistry[barcode].TryCast<TCrate>() != null;
+        return warehouse._crateRegistry[barcode];
     }
 
     public static TCrate GetCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
-        if (barcode == null)
+        var crate = GetCrate(barcode);
+
+        if (crate == null)
         {
             return null;
         }
 
-        var warehouse = AssetWarehouse.Instance;
-
-        if (!warehouse._crateRegistry.ContainsKey(barcode))
-        {
-            return null;
-        }
-
-        return warehouse._crateRegistry[barcode].TryCast<TCrate>();
+        return crate.TryCast<TCrate>();
     }
 
     public static TCrate[] FilterByTags<TCrate>(Pallet pallet, params string[] tags) where TCrate : Crate

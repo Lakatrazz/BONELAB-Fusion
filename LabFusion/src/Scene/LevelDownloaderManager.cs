@@ -11,6 +11,7 @@ using LabFusion.Marrow.Patching;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Serialization;
 
 namespace LabFusion.Scene;
 
@@ -18,16 +19,18 @@ public static class LevelDownloaderManager
 {
     public struct LevelDownloadInfo
     {
-        public string LevelBarcode;
+        public SerializedCrateReference LevelReference;
         public byte LevelHost;
 
         public Action OnDownloadSucceeded, OnDownloadFailed, OnDownloadCanceled;
     }
 
+    public static bool IsDownloadingLevel { get; private set; } = false;
+
+    public static SerializedCrateReference TargetLevel { get; private set; } = SerializedCrateReference.None;
+
     private static bool _initializedDownloadUI = false;
-    private static bool _downloadingLevel = false;
     private static ModIOFile _downloadingFile = new(-1);
-    private static string _downloadingBarcode = null;
     private static LevelDownloadInfo _downloadingInfo;
 
     public static void OnInitializeMelon()
@@ -45,7 +48,7 @@ public static class LevelDownloaderManager
 
     public static void DownloadLevel(LevelDownloadInfo info)
     {
-        _downloadingBarcode = info.LevelBarcode;
+        TargetLevel = info.LevelReference;
         _downloadingInfo = info;
 
         // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
@@ -55,7 +58,7 @@ public static class LevelDownloaderManager
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
             Target = info.LevelHost,
-            Barcode = info.LevelBarcode,
+            Barcode = info.LevelReference.Barcode,
             BeginDownloadCallback = OnDownloadBegin,
             FinishDownloadCallback = OnDownloadFinished,
             MaxBytes = maxBytes,
@@ -66,7 +69,7 @@ public static class LevelDownloaderManager
     private static void OnDownloadBegin(NetworkModRequester.ModCallbackInfo info)
     {
         _initializedDownloadUI = false;
-        _downloadingLevel = true;
+        IsDownloadingLevel = true;
         _downloadingFile = info.ModFile;
 
         NetworkSceneManager.Purgatory = true;
@@ -78,7 +81,7 @@ public static class LevelDownloaderManager
     {
         NetworkSceneManager.Purgatory = false;
 
-        _downloadingLevel = false;
+        IsDownloadingLevel = false;
         _downloadingFile = new ModIOFile(-1);
 
         if (info.Result == ModResult.CANCELED)
@@ -107,7 +110,7 @@ public static class LevelDownloaderManager
 
     private static void OnUpdate()
     {
-        if (!_downloadingLevel || ModIODownloader.CurrentTransaction == null)
+        if (!IsDownloadingLevel || ModIODownloader.CurrentTransaction == null)
         {
             return;
         }
@@ -125,7 +128,7 @@ public static class LevelDownloaderManager
         {
             MenuButtonHelper.PopulateTexts(ui.gameObject);
 
-            ui.LevelTitleText.text = $"DOWNLOADING {_downloadingBarcode}";
+            ui.LevelTitleText.text = $"DOWNLOADING {TargetLevel.Title}";
 
             SetUIIcon(ui);
 
