@@ -1,5 +1,8 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Data;
+using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Preferences.Client;
+using LabFusion.RPC;
 using LabFusion.SDK.Messages;
 using LabFusion.Utilities;
 
@@ -124,6 +127,10 @@ public static class EquippableManager
         {
             equippable.OnNetEquipChanged(playerID, equipped);
         }
+        else
+        {
+            DownloadEquippable(playerID, barcode);
+        }
     }
 
     internal static void ClearNetEquippedItems(PlayerID playerID)
@@ -213,5 +220,24 @@ public static class EquippableManager
                 equippable.OnNetEquipChanged(playerID, true);
             }
         }
+    }
+
+    private static void DownloadEquippable(PlayerID playerID, string barcode)
+    {
+        bool shouldDownload = ClientSettings.Downloading.DownloadCosmetics.Value;
+
+        if (!shouldDownload)
+        {
+            return;
+        }
+
+        long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
+
+        NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
+        {
+            Target = playerID.SmallID,
+            Barcode = barcode,
+            MaxBytes = maxBytes,
+        });
     }
 }

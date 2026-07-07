@@ -179,6 +179,9 @@ public static class MenuSettings
         generalGroup.AddElement<BoolElement>("Download Levels")
             .AsPref(ClientSettings.Downloading.DownloadLevels);
 
+        generalGroup.AddElement<BoolElement>("Download Cosmetics")
+            .AsPref(ClientSettings.Downloading.DownloadCosmetics);
+
         generalGroup.AddElement<BoolElement>("Keep Downloaded Mods")
             .AsPref(ClientSettings.Downloading.KeepDownloadedMods);
 
