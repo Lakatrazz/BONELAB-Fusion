@@ -70,7 +70,7 @@ public static class ModIODownloader
         // If this mod is already being downloaded, just forward the download to the existing transaction
         if (existingTransaction != null)
         {
-            existingTransaction.HookDownload(transaction.Callback);
+            existingTransaction.HookTransaction(transaction);
             return;
         }
 

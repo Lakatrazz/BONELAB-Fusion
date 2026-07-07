@@ -120,14 +120,20 @@ public static class NetworkModRequester
                 ModIODownloader.CancelQueue();
             }
 
-            ModIODownloader.EnqueueDownload(new ModTransaction()
+            var transaction = new ModTransaction()
             {
                 ModFile = info.ModFile,
                 Temporary = temporary,
                 Callback = installInfo.FinishDownloadCallback,
                 MaxBytes = installInfo.MaxBytes,
-                Reporter = installInfo.Reporter,
-            });
+            };
+
+            if (installInfo.Reporter != null)
+            {
+                transaction.AddReporter(installInfo.Reporter);
+            }
+
+            ModIODownloader.EnqueueDownload(transaction);
         }
     }
 
