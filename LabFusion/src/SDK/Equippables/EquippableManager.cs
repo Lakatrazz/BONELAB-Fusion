@@ -59,6 +59,8 @@ public static class EquippableManager
         Equippables.Add(equippable);
 
         BarcodeToEquippableLookup[equippable.Barcode] = equippable;
+
+        InvokeAllEquipEvents(equippable);
     }
 
     internal static void Initialize()
@@ -183,5 +185,33 @@ public static class EquippableManager
         };
 
         MessageRelay.RelayModule<EquippableEquipMessage, EquippableEquipData>(data, route);
+    }
+
+    private static void InvokeAllEquipEvents(IEquippableItem equippable)
+    {
+        var barcode = equippable.Barcode;
+
+        if (IsLocalEquipped(barcode))
+        {
+            equippable.OnLocalEquipChanged(true);
+        }
+
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        foreach (var playerID in PlayerIDManager.PlayerIDs)
+        {
+            if (playerID.IsMe)
+            {
+                continue;
+            }
+
+            if (IsNetEquipped(playerID, barcode))
+            {
+                equippable.OnNetEquipChanged(playerID, true);
+            }
+        }
     }
 }
