@@ -52,14 +52,36 @@ public class RigProgressBar : IPopupLayoutElement, IProgress<float>
             if (value)
             {
                 _poolee.gameObject.SetActive(true);
+
+                CancelDelayedDisable();
             }
             else
             {
-                MelonCoroutines.Start(CoDelayedDisable(1.2f));
+                StartDelayedDisable(1.2f);
             }
 
             _animator.SetBool(_visibilityParameterName, Visible);
         }
+    }
+
+    private object _disableCoroutine = null;
+
+    private void StartDelayedDisable(float time)
+    {
+        CancelDelayedDisable();
+
+        _disableCoroutine = MelonCoroutines.Start(CoDelayedDisable(time));
+    }
+
+    private void CancelDelayedDisable()
+    {
+        if (_disableCoroutine == null)
+        {
+            return;
+        }
+
+        MelonCoroutines.Stop(_disableCoroutine);
+        _disableCoroutine = null;
     }
 
     private IEnumerator CoDelayedDisable(float time)
@@ -70,6 +92,12 @@ public class RigProgressBar : IPopupLayoutElement, IProgress<float>
         {
             elapsed += TimeReferences.DeltaTime;
             yield return null;
+        }
+
+        // If visibility was enabled during the coroutine, don't disable it
+        if (Visible)
+        {
+            yield break;
         }
 
         if (_poolee != null)
