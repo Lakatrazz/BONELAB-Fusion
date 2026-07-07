@@ -639,6 +639,9 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
             PoseReceiver.ResyncReceivedPose();
             TeleportToPose(PoseReceiver.ReceivedPose);
             Freeze();
+
+            // The pose is cleared to prevent issues when the prop wakes up again, especially when exiting a socket
+            PoseReceiver.ClearPoseState();
             return;
         }
 

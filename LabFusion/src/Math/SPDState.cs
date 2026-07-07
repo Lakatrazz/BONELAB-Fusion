@@ -2,6 +2,9 @@
 
 namespace LabFusion.Math;
 
+/// <summary>
+/// Holds the inputs and outputs of an SPD Controller so that the forces and torques may be calculated on a separate thread.
+/// </summary>
 public sealed class SPDState
 {
     public int Count { get; }
@@ -21,8 +24,14 @@ public sealed class SPDState
     public Vector3[] Torques { get; }
     public bool[] EnabledTorques { get; }
 
+    /// <summary>
+    /// Whether or not one of the rigidbodies faced a significant desync from the target transform, requiring them to be teleported to resync.
+    /// </summary>
     public bool Desynced { get; set; } = false;
 
+    /// <summary>
+    /// Whether or not forces should be calculated this frame.
+    /// </summary>
     public bool CalculatingForces { get; set; } = false;
 
     public SPDState(int count)
