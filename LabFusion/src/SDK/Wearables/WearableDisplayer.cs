@@ -89,20 +89,42 @@ public class WearableDisplayer
         RigManager = null;
     }
 
+    /// <summary>
+    /// Adds a reflection origin transform to the displayer, where reflections of wearables will be shown from.
+    /// </summary>
+    /// <param name="reflectionOrigin"></param>
     public void AddReflectionOrigin(Transform reflectionOrigin)
     {
+        // Don't add multiple of the same origin
+        if (ReflectionOrigins.Contains(reflectionOrigin))
+        {
+            return;
+        }
+
         ReflectionOrigins.Add(reflectionOrigin);
 
         ApplyWearableReflections();
     }
 
+    /// <summary>
+    /// Removes a reflection origin from the displayer.
+    /// </summary>
+    /// <param name="reflectionOrigin"></param>
     public void RemoveReflectionOrigin(Transform reflectionOrigin)
     {
-        ReflectionOrigins.Remove(reflectionOrigin);
+        bool removed = ReflectionOrigins.Remove(reflectionOrigin);
+
+        if (!removed)
+        {
+            return;
+        }
 
         ApplyWearableReflections();
     }
 
+    /// <summary>
+    /// Removes all reflection origins from the displayer.
+    /// </summary>
     public void ClearReflectionOrigins()
     {
         ReflectionOrigins.Clear();
