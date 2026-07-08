@@ -1,6 +1,8 @@
 ﻿using Il2CppSLZ.Marrow.Forklift.Model;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Downloading.ModIO;
+using LabFusion.Marrow;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -14,121 +16,15 @@ namespace LabFusion.Downloading;
 
 public static class ModDownloadManager
 {
-    public static string ModsPath => Application.persistentDataPath + "/Mods";
-
-    public static string ModsTempPath => Application.persistentDataPath + "/ModsTemp";
-
-    public static string StagingPath => Application.persistentDataPath + "/FusionStaging";
-
-    public static string DownloadPath => StagingPath + "/Downloads";
-
-    public static string ExportPath => StagingPath + "/Exports";
-
-    private const string _palletExtension = ".pallet.json";
-
-    /// <summary>
-    /// Returns the amount of free space on the drive containing downloaded mods, in bytes.
-    /// </summary>
-    /// <returns></returns>
-    public static long GetAvailableFreeSpace()
+    public static void LoadPalletFromZip(string path, ModIOFile modFile, bool cache, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
-        var root = Path.GetPathRoot(ModsPath);
-
-        if (string.IsNullOrWhiteSpace(root))
-        {
-            return 0;
-        }
-
-        var drive = new DriveInfo(root);
-
-        if (!drive.IsReady)
-        {
-            return 0;
-        }
-
-        return drive.AvailableFreeSpace;
+        MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, cache, scheduledCallback, downloadCallback));
     }
 
-    /// <summary>
-    /// Returns if there is enough space for a file to be downloaded given a size in bytes.
-    /// </summary>
-    /// <param name="fileSize"></param>
-    /// <returns></returns>
-    public static bool HasEnoughSpace(long fileSize)
-    {
-        var freeSpace = GetAvailableFreeSpace();
-        var allocatedSize = fileSize * 1.2;
-
-        return freeSpace >= allocatedSize;
-    }
-
-    public static void DeleteTemporaryDirectories()
-    {
-        if (Directory.Exists(ModsTempPath))
-        {
-            Directory.Delete(ModsTempPath, true);
-        }
-    }
-
-    public static void ValidateDirectories()
-    {
-        // Create the base staging directory
-        if (!Directory.Exists(StagingPath))
-        {
-            Directory.CreateDirectory(StagingPath);
-        }
-
-        // Create the file path for temporarily loaded mods
-        if (!Directory.Exists(ModsTempPath))
-        {
-            Directory.CreateDirectory(ModsTempPath);
-        }
-
-        // Create the file path for downloads
-        if (!Directory.Exists(DownloadPath))
-        {
-            Directory.CreateDirectory(DownloadPath);
-        }
-
-        // Create the file path for extracted zips
-        if (!Directory.Exists(ExportPath))
-        {
-            Directory.CreateDirectory(ExportPath);
-        }
-    }
-
-    public static string FindPalletJson(string directory)
-    {
-        foreach (var file in Directory.GetFiles(directory))
-        {
-            if (file.EndsWith(_palletExtension))
-            {
-                return file;
-            }
-        }
-
-        foreach (var subDirectory in Directory.GetDirectories(directory))
-        {
-            var file = FindPalletJson(subDirectory);
-
-            if (!string.IsNullOrEmpty(file))
-            {
-                return file;
-            }
-        }
-
-        return string.Empty;
-    }
-
-    public static void LoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
-    {
-        MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, temporary, scheduledCallback, downloadCallback));
-    }
-
-    private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
+    private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, bool cache, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
         var fileName = Path.GetFileNameWithoutExtension(path);
-        var extractedDirectory = ExportPath + "/" + fileName;
+        var extractedDirectory = ModPathManager.ExportPath + "/" + fileName;
 
         // Delete the files if they already exist
         if (Directory.Exists(extractedDirectory))
@@ -169,7 +65,7 @@ public static class ModDownloadManager
 #endif
 
         // Search for pallet path
-        var extractedPallet = FindPalletJson(extractedDirectory);
+        var extractedPallet = ModPathManager.FindPalletJson(extractedDirectory);
 
         if (string.IsNullOrWhiteSpace(extractedPallet))
         {
@@ -198,16 +94,15 @@ public static class ModDownloadManager
         var palletDirectoryInfo = new DirectoryInfo(palletDirectory);
         var palletDirectoryName = palletDirectoryInfo.Name;
 
-        var modsPalletPath = ModsPath + $"/{palletDirectoryName}";
-        var tempPalletPath = ModsTempPath + $"/{palletDirectoryName}";
+        string modsDirectory = cache ? ModPathManager.CachePath : ModPathManager.ModsPath;
 
-        string palletPath = modsPalletPath;
+        string palletPath = modsDirectory + $"/{palletDirectoryName}";
 
-        // If the download is a temporary download, make sure the mod isn't already regularly installed by the user
-        // If it is, force the regular mod path so that it replaces the existing file
-        if (temporary && !Directory.Exists(modsPalletPath))
+        var existingPalletManifest = AssetWarehouseSearcher.GetManifest(new Barcode(palletDirectoryName));
+
+        if (existingPalletManifest != null)
         {
-            palletPath = tempPalletPath;
+            palletPath = Path.GetDirectoryName(existingPalletManifest.PalletPath);
         }
 
         // Delete pallet folder if it already exists
@@ -223,7 +118,7 @@ public static class ModDownloadManager
         Directory.Delete(extractedDirectory, true);
 
         // Add pallet to load queue
-        var jsonPath = FindPalletJson(palletPath);
+        var jsonPath = ModPathManager.FindPalletJson(palletPath);
 
 #if DEBUG
         FusionLogger.Log($"Scheduling pallet for load at path {jsonPath}");
@@ -258,5 +153,11 @@ public static class ModDownloadManager
 
         // Run scheduled callback
         scheduledCallback?.Invoke();
+    }
+
+    internal static void Initialize()
+    {
+        ModPathManager.Initialize();
+        ModCacheManager.Initialize();
     }
 }

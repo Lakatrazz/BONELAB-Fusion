@@ -194,8 +194,8 @@ public static class ModIODownloader
 
     private static IEnumerator CoDownloadWithToken(string token, ModTransaction transaction, ModIOFile modFile, string url)
     {
-        // Before doing anything, make sure all mod directories are valid
-        ModDownloadManager.ValidateDirectories();
+        // Before doing anything, make sure all mod directories are created
+        ModPathManager.CreateDirectories();
 
         // Initialize the transaction progress at 0%
         transaction.Report(0f);
@@ -245,7 +245,7 @@ public static class ModIODownloader
         }
 
         // Check if there's enough space on disk
-        if (ModDownloadManager.HasEnoughSpace(contentLength))
+        if (!ModPathManager.HasEnoughSpace(contentLength))
         {
             FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to there not being enough disk space.");
 
@@ -255,7 +255,7 @@ public static class ModIODownloader
         }
 
         // Install the content into a zip file
-        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
+        var zipPath = ModPathManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
 
         // Make sure this using statement ends before we load the pallet, so that the file is not in use
         using (var copyStream = new FileStream(zipPath, FileMode.Create))
@@ -283,7 +283,7 @@ public static class ModIODownloader
         transaction.Report(1f);
 
         // Load the pallet
-        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Temporary, OnScheduledLoad, transaction.Callback);
+        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Cache, OnScheduledLoad, transaction.Callback);
 
         void OnScheduledLoad()
         {

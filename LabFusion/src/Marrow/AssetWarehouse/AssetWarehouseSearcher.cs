@@ -45,10 +45,31 @@ public static class AssetWarehouseSearcher
         return (int)modTarget.ModId;
     }
 
-    public static PalletManifest GetManifest(Pallet pallet)
+    public static Pallet GetPallet(Barcode barcode)
     {
+        if (barcode == null)
+        {
+            return null;
+        }
+
+        var warehouse = AssetWarehouse.Instance;
+
+        if (!warehouse._palletRegistry.ContainsKey(barcode))
+        {
+            return null;
+        }
+
+        return warehouse._palletRegistry[barcode];
+    }
+
+    public static PalletManifest GetManifest(Barcode barcode)
+    {
+        if (barcode == null)
+        {
+            return null;
+        }
+
         var manifests = AssetWarehouse.Instance.palletManifests;
-        var barcode = pallet.Barcode;
 
         if (!manifests.ContainsKey(barcode))
         {
@@ -57,6 +78,8 @@ public static class AssetWarehouseSearcher
 
         return manifests[barcode];
     }
+
+    public static PalletManifest GetManifest(Pallet pallet) => GetManifest(pallet.Barcode);
 
     public static bool HasCrate(Barcode barcode) => GetCrate(barcode) != null;
 

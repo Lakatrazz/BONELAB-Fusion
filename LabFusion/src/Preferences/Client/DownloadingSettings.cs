@@ -12,10 +12,10 @@ public class DownloadingSettings
     public FusionPref<bool> DownloadLevels { get; private set; }
     public FusionPref<bool> DownloadCosmetics { get; private set; }
 
-    public FusionPref<bool> KeepDownloadedMods { get; private set; }
-
     public FusionPref<int> MaxFileSize { get; private set; }
     public FusionPref<int> MaxLevelSize { get; private set; }
+
+    public FusionPref<string> DownloadPathOverride { get; private set; }
 
     public void CreatePrefs(MelonPreferences_Category category)
     {
@@ -24,9 +24,9 @@ public class DownloadingSettings
         DownloadLevels = new FusionPref<bool>(category, "Download Levels", true, PrefUpdateMode.IGNORE);
         DownloadCosmetics = new FusionPref<bool>(category, "Download Cosmetics", true, PrefUpdateMode.IGNORE);
 
-        KeepDownloadedMods = new FusionPref<bool>(category, "Keep Downloaded Mods", false, PrefUpdateMode.IGNORE);
-
         MaxFileSize = new FusionPref<int>(category, "Max File Size", DefaultMaxFileSize, PrefUpdateMode.IGNORE);
         MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);
+
+        DownloadPathOverride = new FusionPref<string>(category, "Download Path Override", string.Empty, PrefUpdateMode.IGNORE);
     }
 }

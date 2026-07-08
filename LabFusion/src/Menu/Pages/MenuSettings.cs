@@ -1,11 +1,13 @@
 ﻿using Il2CppSLZ.Marrow.SceneStreaming;
 
 using LabFusion.Data;
+using LabFusion.Downloading;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Marrow.Rig;
 using LabFusion.Preferences.Client;
+using LabFusion.Utilities;
 using LabFusion.Voice;
 
 using UnityEngine;
@@ -225,9 +227,6 @@ public static class MenuSettings
         generalGroup.AddElement<BoolElement>("Download Cosmetics")
             .AsPref(ClientSettings.Downloading.DownloadCosmetics);
 
-        generalGroup.AddElement<BoolElement>("Keep Downloaded Mods")
-            .AsPref(ClientSettings.Downloading.KeepDownloadedMods);
-
         generalGroup.AddElement<IntElement>("Max File Size (MB)")
             .AsPref(ClientSettings.Downloading.MaxFileSize)
             .WithIncrement(10)
@@ -237,6 +236,19 @@ public static class MenuSettings
             .AsPref(ClientSettings.Downloading.MaxLevelSize)
             .WithIncrement(100)
             .WithLimits(0, 10000);
+
+        if (!PlatformHelper.IsAndroid)
+        {
+            generalGroup.AddElement<StringElement>("Download Path Override")
+                .AsPref(ClientSettings.Downloading.DownloadPathOverride)
+                .EmptyFormat = $"Download Path Override";
+        }
+
+        var cacheGroup = page.AddElement<GroupElement>("Cache");
+
+        cacheGroup.AddElement<FunctionElement>("Clear Mod Cache")
+            .Do(ModCacheManager.ClearCache)
+            .WithColor(Color.red);
     }
 
     private static void PopulateSafetySettings(PageElement page)

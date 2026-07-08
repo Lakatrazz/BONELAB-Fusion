@@ -112,8 +112,6 @@ public static class NetworkModRequester
 
             installInfo.BeginDownloadCallback?.Invoke(info);
 
-            bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
-
             // If high priority, cancel other downloads
             if (installInfo.HighPriority)
             {
@@ -123,7 +121,7 @@ public static class NetworkModRequester
             var transaction = new ModTransaction()
             {
                 ModFile = info.ModFile,
-                Temporary = temporary,
+                Cache = true,
                 Callback = installInfo.FinishDownloadCallback,
                 MaxBytes = installInfo.MaxBytes,
             };

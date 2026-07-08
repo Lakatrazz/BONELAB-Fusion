@@ -6,7 +6,7 @@ public class ModTransaction : IProgress<float>
 {
     public ModIOFile ModFile { get; set; } = default;
 
-    public bool Temporary { get; set; } = false;
+    public bool Cache { get; set; } = false;
 
     public DownloadCallback Callback { get; set; } = null;
 

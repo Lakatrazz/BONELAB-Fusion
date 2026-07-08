@@ -77,9 +77,6 @@ public class FusionMod : MelonMod
         Instance = this;
         FusionAssembly = MelonAssembly.Assembly;
 
-        // Delete temporary downloads from the last session
-        ModDownloadManager.DeleteTemporaryDirectories();
-
         // Prepare the data path for writing files
         PersistentData.OnPathInitialize();
         
@@ -141,6 +138,9 @@ public class FusionMod : MelonMod
         LobbyInfoManager.OnInitialize();
 
         MenuCreator.OnInitializeMelon();
+
+        // Initialize mod download logic
+        ModDownloadManager.Initialize();
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
