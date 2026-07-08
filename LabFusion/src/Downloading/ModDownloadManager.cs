@@ -26,6 +26,42 @@ public static class ModDownloadManager
 
     private const string _palletExtension = ".pallet.json";
 
+    /// <summary>
+    /// Returns the amount of free space on the drive containing downloaded mods, in bytes.
+    /// </summary>
+    /// <returns></returns>
+    public static long GetAvailableFreeSpace()
+    {
+        var root = Path.GetPathRoot(ModsPath);
+
+        if (string.IsNullOrWhiteSpace(root))
+        {
+            return 0;
+        }
+
+        var drive = new DriveInfo(root);
+
+        if (!drive.IsReady)
+        {
+            return 0;
+        }
+
+        return drive.AvailableFreeSpace;
+    }
+
+    /// <summary>
+    /// Returns if there is enough space for a file to be downloaded given a size in bytes.
+    /// </summary>
+    /// <param name="fileSize"></param>
+    /// <returns></returns>
+    public static bool HasEnoughSpace(long fileSize)
+    {
+        var freeSpace = GetAvailableFreeSpace();
+        var allocatedSize = fileSize * 1.2;
+
+        return freeSpace >= allocatedSize;
+    }
+
     public static void DeleteTemporaryDirectories()
     {
         if (Directory.Exists(ModsTempPath))

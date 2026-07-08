@@ -244,6 +244,16 @@ public static class ModIODownloader
             yield break;
         }
 
+        // Check if there's enough space on disk
+        if (ModDownloadManager.HasEnoughSpace(contentLength))
+        {
+            FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to there not being enough disk space.");
+
+            FailDownload();
+
+            yield break;
+        }
+
         // Install the content into a zip file
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
 
