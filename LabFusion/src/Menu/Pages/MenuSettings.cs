@@ -22,6 +22,10 @@ public static class MenuSettings
 
         PopulateClientSettings(clientPage);
 
+        var wearablesPage = rootPage.AddPage();
+
+        PopulateWearableSettings(wearablesPage);
+
         var notificationsPage = rootPage.AddPage();
 
         PopulateNotificationSettings(notificationsPage);
@@ -45,6 +49,7 @@ public static class MenuSettings
         var categoriesPage = categoriesRoot.AddPage("Default");
 
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
+        categoriesPage.AddElement<FunctionElement>("Wearables").Link(wearablesPage).WithColor(Color.magenta);
         categoriesPage.AddElement<FunctionElement>("Notifications").Link(notificationsPage).WithColor(Color.green);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
         categoriesPage.AddElement<FunctionElement>("Safety").Link(safetyPage).WithColor(Color.yellow);
@@ -169,6 +174,14 @@ public static class MenuSettings
                 element.Value.Color = Color.gray;
             }
         }
+    }
+
+    private static void PopulateWearableSettings(PageElement page)
+    {
+        var wristWatchGroup = page.AddElement<GroupElement>("Wrist Watch");
+
+        wristWatchGroup.AddElement<BoolElement>("Show Wrist Watch in Gamemodes")
+            .AsPref(ClientSettings.Wearables.ShowWristWatchInGamemodes);
     }
 
     private static void PopulateNotificationSettings(PageElement page)

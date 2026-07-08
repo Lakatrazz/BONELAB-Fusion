@@ -5,6 +5,7 @@ using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
 using LabFusion.SDK.Wearables;
+using LabFusion.Preferences.Client;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -167,7 +168,12 @@ public static class GamemodeManager
 
             GamemodeStarted?.InvokeSafe("executing GamemodeStarted event");
 
-            WristWatchManager.QueueUI(gamemode);
+            bool showWristWatch = gamemode.ForceWearableOn || ClientSettings.Wearables.ShowWristWatchInGamemodes.Value;
+
+            if (showWristWatch)
+            {
+                WristWatchManager.QueueUI(gamemode);
+            }
 
             if (gamemode.AutoBeepWearable)
             {
