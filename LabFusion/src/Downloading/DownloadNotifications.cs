@@ -9,7 +9,7 @@ public static class DownloadNotifications
 
     public static void SendDownloadNotification(string palletTitle)
     {
-        if (!ClientSettings.Downloading.NotifyDownloads.Value)
+        if (!ClientSettings.Notifications.NotifyDownloads.Value)
         {
             return;
         }

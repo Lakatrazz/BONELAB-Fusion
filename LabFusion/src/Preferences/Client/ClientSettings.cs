@@ -35,6 +35,8 @@ public static class ClientSettings
 
     public static VoiceChatSettings VoiceChat { get; private set; }
 
+    public static NotificationSettings Notifications { get; private set; }
+
     public static DownloadingSettings Downloading { get; private set; }
 
     public static SafetySettings Safety { get; private set; }
@@ -78,6 +80,9 @@ public static class ClientSettings
 
         VoiceChat = new VoiceChatSettings();
         VoiceChat.CreatePrefs(category);
+
+        Notifications = new NotificationSettings();
+        Notifications.CreatePrefs(category);
 
         Downloading = new DownloadingSettings();
         Downloading.CreatePrefs(category);

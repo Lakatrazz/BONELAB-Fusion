@@ -1,4 +1,6 @@
-﻿using LabFusion.UI.Popups;
+﻿using LabFusion.Preferences.Client;
+
+using LabFusion.UI.Popups;
 
 namespace LabFusion.Network;
 
@@ -8,6 +10,11 @@ public static class NetworkNotifications
 
     public static void SendStartedServerNotification()
     {
+        if (!ClientSettings.Notifications.NotifyServerStarted.Value)
+        {
+            return;
+        }
+
         Notifier.Cancel(NotificationTag);
 
         Notifier.Send(new Notification()
@@ -23,6 +30,11 @@ public static class NetworkNotifications
 
     public static void SendJoinedServerNotification()
     {
+        if (!ClientSettings.Notifications.NotifyServerJoined.Value)
+        {
+            return;
+        }
+
         Notifier.Cancel(NotificationTag);
 
         Notifier.Send(new Notification()
@@ -43,6 +55,11 @@ public static class NetworkNotifications
 
     public static void SendDisconnectedNotification(string reason)
     {
+        if (!ClientSettings.Notifications.NotifyServerLeft.Value)
+        {
+            return;
+        }
+
         Notifier.Cancel(NotificationTag);
 
         if (string.IsNullOrWhiteSpace(reason))
@@ -73,6 +90,11 @@ public static class NetworkNotifications
 
     public static void SendPlayerJoinedNotification(string name)
     {
+        if (!ClientSettings.Notifications.NotifyPlayerJoined.Value)
+        {
+            return;
+        }
+
         Notifier.Cancel(NotificationTag);
 
         Notifier.Send(new Notification()
@@ -87,6 +109,11 @@ public static class NetworkNotifications
 
     public static void SendPlayerLeftNotification(string name)
     {
+        if (!ClientSettings.Notifications.NotifyPlayerLeft.Value)
+        {
+            return;
+        }
+
         Notifier.Cancel(NotificationTag);
 
         Notifier.Send(new Notification()

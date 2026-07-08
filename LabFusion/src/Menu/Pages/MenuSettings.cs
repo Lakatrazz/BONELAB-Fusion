@@ -22,6 +22,10 @@ public static class MenuSettings
 
         PopulateClientSettings(clientPage);
 
+        var notificationsPage = rootPage.AddPage();
+
+        PopulateNotificationSettings(notificationsPage);
+
         var downloadingPage = rootPage.AddPage();
 
         PopulateDownloadingSettings(downloadingPage);
@@ -41,6 +45,7 @@ public static class MenuSettings
         var categoriesPage = categoriesRoot.AddPage("Default");
 
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
+        categoriesPage.AddElement<FunctionElement>("Notifications").Link(notificationsPage).WithColor(Color.green);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
         categoriesPage.AddElement<FunctionElement>("Safety").Link(safetyPage).WithColor(Color.yellow);
 
@@ -166,6 +171,31 @@ public static class MenuSettings
         }
     }
 
+    private static void PopulateNotificationSettings(PageElement page)
+    {
+        var serverGroup = page.AddElement<GroupElement>("Server");
+
+        serverGroup.AddElement<BoolElement>("Notify Server Started")
+            .AsPref(ClientSettings.Notifications.NotifyServerStarted);
+
+        serverGroup.AddElement<BoolElement>("Notify Server Joined")
+            .AsPref(ClientSettings.Notifications.NotifyServerJoined);
+
+        serverGroup.AddElement<BoolElement>("Notify Server Left")
+            .AsPref(ClientSettings.Notifications.NotifyServerLeft);
+
+        serverGroup.AddElement<BoolElement>("Notify Player Joined")
+            .AsPref(ClientSettings.Notifications.NotifyPlayerJoined);
+
+        serverGroup.AddElement<BoolElement>("Notify Player Left")
+            .AsPref(ClientSettings.Notifications.NotifyPlayerLeft);
+
+        var downloadingGroup = page.AddElement<GroupElement>("Downloading");
+
+        downloadingGroup.AddElement<BoolElement>("Notify Downloads")
+            .AsPref(ClientSettings.Notifications.NotifyDownloads);
+    }
+
     private static void PopulateDownloadingSettings(PageElement page)
     {
         var generalGroup = page.AddElement<GroupElement>("General");
@@ -184,9 +214,6 @@ public static class MenuSettings
 
         generalGroup.AddElement<BoolElement>("Keep Downloaded Mods")
             .AsPref(ClientSettings.Downloading.KeepDownloadedMods);
-
-        generalGroup.AddElement<BoolElement>("Notify Downloads")
-            .AsPref(ClientSettings.Downloading.NotifyDownloads);
 
         generalGroup.AddElement<IntElement>("Max File Size (MB)")
             .AsPref(ClientSettings.Downloading.MaxFileSize)
