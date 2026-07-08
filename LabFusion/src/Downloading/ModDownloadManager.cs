@@ -196,15 +196,19 @@ public static class ModDownloadManager
         }
 
         var palletDirectoryInfo = new DirectoryInfo(palletDirectory);
+        var palletDirectoryName = palletDirectoryInfo.Name;
 
-        var parentPath = ModsPath;
+        var modsPalletPath = ModsPath + $"/{palletDirectoryName}";
+        var tempPalletPath = ModsTempPath + $"/{palletDirectoryName}";
 
-        if (temporary)
+        string palletPath = modsPalletPath;
+
+        // If the download is a temporary download, make sure the mod isn't already regularly installed by the user
+        // If it is, force the regular mod path so that it replaces the existing file
+        if (temporary && !Directory.Exists(modsPalletPath))
         {
-            parentPath = ModsTempPath;
+            palletPath = tempPalletPath;
         }
-
-        var palletPath = parentPath + $"/{palletDirectoryInfo.Name}";
 
         // Delete pallet folder if it already exists
         if (Directory.Exists(palletPath))
