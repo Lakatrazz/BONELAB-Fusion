@@ -196,7 +196,7 @@ public static class ModDownloadManager
             ModId = modFile.ModID,
             ModfileId = modFile.FileID.Value,
         };
-        targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
+        targets.Add(ModIOManager.GetActiveModTarget(), modIoModTarget);
 
         ModListing listing = new()
         {

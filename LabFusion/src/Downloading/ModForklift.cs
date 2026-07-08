@@ -35,6 +35,16 @@ public static class ModForklift
         }
     }
 
+    public static void SchedulePalletLoad(PalletShipment shipment)
+    {
+        if (_scheduledShipments.Contains(shipment))
+        {
+            return;
+        }
+
+        _scheduledShipments.Enqueue(shipment);
+    }
+
     private static void LoadPallet(PalletShipment shipment)
     {
         var palletPath = shipment.palletPath;
@@ -49,28 +59,32 @@ public static class ModForklift
         var onCompleted = () =>
         {
             // Get pallet from path
-            Pallet pallet = null;
+            Pallet foundPallet = null;
+            PalletManifest foundManifest = null;
+
             var manifests = AssetWarehouse.Instance.GetPalletManifests();
 
             foreach (var manifest in manifests)
             {
                 if (manifest.PalletPath == palletPath)
                 {
-                    pallet = manifest.Pallet;
+                    foundPallet = manifest.Pallet;
+                    foundManifest = manifest;
                     break;
                 }
             }
 
-            // Send download notification
-            if (pallet != null)
+            if (foundPallet != null)
             {
-                DownloadNotifications.SendDownloadNotification(pallet.Title);
+                UpdateModListing(foundPallet, foundManifest);
+
+                DownloadNotifications.SendDownloadNotification(foundPallet.Title);
             }
 
             // Invoke complete callback
             var info = new DownloadCallbackInfo()
             {
-                Pallet = pallet,
+                Pallet = foundPallet,
                 Result = ModResult.SUCCEEDED,
             };
 
@@ -79,13 +93,21 @@ public static class ModForklift
         palletTask.GetAwaiter().OnCompleted(onCompleted);
     }
 
-    public static void SchedulePalletLoad(PalletShipment shipment)
+    private static void UpdateModListing(Pallet pallet, PalletManifest palletManifest)
     {
-        if (_scheduledShipments.Contains(shipment))
+        var modListing = palletManifest.ModListing;
+
+        if (modListing == null)
         {
             return;
         }
 
-        _scheduledShipments.Enqueue(shipment);
+        modListing.Barcode = pallet.Barcode;
+        modListing.Title = pallet.Title;
+        modListing.Description = pallet.Description;
+        modListing.Author = pallet.Author;
+        modListing.Version = pallet.Version;
+
+        AssetWarehouse.Instance.UpdatePalletManifest(palletManifest);
     }
 }

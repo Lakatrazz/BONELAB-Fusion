@@ -136,6 +136,26 @@ public static class ModIOManager
         modCallback?.Invoke(modCallbackInfo);
     }
 
+    /// <summary>
+    /// Gets the proper name for the active platform for a ModIOModTarget in a pallet manifest.
+    /// </summary>
+    /// <returns></returns>
+    public static string GetActiveModTarget()
+    {
+        if (PlatformHelper.IsAndroid)
+        {
+            return "quest";
+        }
+        else
+        {
+            return "pc";
+        }
+    }
+
+    /// <summary>
+    /// Gets the mod.io platform name for the active platform.
+    /// </summary>
+    /// <returns></returns>
     public static string GetActivePlatform()
     {
         if (PlatformHelper.IsAndroid)
