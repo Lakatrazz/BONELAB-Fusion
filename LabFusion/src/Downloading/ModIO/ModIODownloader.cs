@@ -117,6 +117,15 @@ public static class ModIODownloader
                 return;
             }
 
+            // Check for blacklisted tags
+            if (ModIOTagReferences.HasBlacklistedTag(info.Data))
+            {
+                FusionLogger.Warn($"Skipped download of mod {info.Data.NameID} due to it having a blacklisted tag.");
+
+                FailDownload();
+                return;
+            }
+
             // Check for blacklist
             if (ModBlacklist.IsBlacklisted(info.Data.NameID) || GlobalModBlacklistManager.IsNameIDBlacklisted(info.Data.NameID))
             {

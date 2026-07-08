@@ -4,9 +4,8 @@ using LabFusion.Utilities;
 
 using MelonLoader;
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections;
+using System.Text.Json;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -123,17 +122,25 @@ public static class ModIOManager
             yield break;
         }
 
-        // Convert to ModData
-        var jObject = JObject.Parse(jsonTask.Result);
+        // Read ModData from the returned json
+        var json = jsonTask.Result;
 
-        var modData = new ModData(jObject);
-        var modCallbackInfo = new ModCallbackInfo()
+        try
         {
-            Data = modData,
-            Result = ModResult.SUCCEEDED,
-        };
+            var modData = JsonSerializer.Deserialize<ModData>(json);
 
-        modCallback?.Invoke(modCallbackInfo);
+            var modCallbackInfo = new ModCallbackInfo()
+            {
+                Data = modData,
+                Result = ModResult.SUCCEEDED,
+            };
+
+            modCallback?.Invoke(modCallbackInfo);
+        }
+        catch
+        {
+            modCallback?.Invoke(ModCallbackInfo.FailedCallback);
+        }
     }
 
     /// <summary>

@@ -55,7 +55,7 @@ public static class ModIOThumbnailDownloader
                 return;
             }
 
-            var url = info.Data.ThumbnailUrl;
+            var url = info.Data.Logo.ThumbnailLowUrl;
 
             GetThumbnail(url, callback);
         }

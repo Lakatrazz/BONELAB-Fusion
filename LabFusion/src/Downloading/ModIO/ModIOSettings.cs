@@ -4,9 +4,8 @@ using LabFusion.Utilities;
 
 using MelonLoader;
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections;
+using System.Text.Json;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -93,11 +92,18 @@ public static class ModIOSettings
             yield break;
         }
 
-        JObject settingsJson = JObject.Parse(settingsTask.Result);
+        try
+        {
+            var token = JsonSerializer.Deserialize<ModSettingsData>(settingsTask.Result).ModIOAccessToken;
 
-        var token = settingsJson["mod.io.access_token"].ToString();
+            EndLoadToken(token);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("reading mod.io token from settings", e);
 
-        EndLoadToken(token);
+            EndLoadToken(null);
+        }
     }
 
     private static void EndLoadToken(string token)

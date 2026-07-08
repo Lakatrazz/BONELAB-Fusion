@@ -1,17 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Downloading.ModIO;
 
 [Serializable]
 public readonly struct ModPlatformData
 {
-    public string Platform { get; }
+    [JsonPropertyName("platform")]
+    public string Platform { get; init; }
 
-    public int ModFileLive { get; }
-
-    public ModPlatformData(JToken token)
-    {
-        Platform = token.Value<string>("platform");
-        ModFileLive = token.Value<int>("modfile_live");
-    }
+    [JsonPropertyName("modfile_live")]
+    public int ModFileLive { get; init; }
 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -20,36 +20,67 @@ public struct ModCallbackInfo
 [Serializable]
 public readonly struct ModData
 {
-    public string NameID { get; }
+    /// <summary>
+    /// The mod's name ID.
+    /// </summary>
+    [JsonPropertyName("name_id")]
+    public string NameID { get; init; }
 
-    public int ID { get; }
+    /// <summary>
+    /// The mod's integer ID.
+    /// </summary>
+    [JsonPropertyName("id")]
+    public int ID { get; init; }
 
-    public int MaturityOption { get; }
+    /// <summary>
+    /// The maturity setting for the mod.
+    /// </summary>
+    [JsonPropertyName("maturity_option")]
+    public int MaturityOption { get; init; }
 
-    public IReadOnlyList<ModPlatformData> Platforms { get; }
+    /// <summary>
+    /// The platform data for each platform the mod has uploaded.
+    /// </summary>
+    [JsonPropertyName("platforms")]
+    public List<ModPlatformData> Platforms { get; init; }
 
-    public string ThumbnailUrl { get; }
+    /// <summary>
+    /// The logo data for the mod, containing the url for the thumbnail.
+    /// </summary>
+    [JsonPropertyName("logo")]
+    public ModLogoData Logo { get; init; }
 
+    /// <summary>
+    /// The tag data for every tag added to this mod.
+    /// </summary>
+    [JsonPropertyName("tags")]
+    public List<ModTagData> Tags { get; init; }
+
+    /// <summary>
+    /// Whether or not this mod is marked as mature.
+    /// </summary>
     public bool Mature => MaturityOption > 0;
 
-    public ModData(JToken token)
+    /// <summary>
+    /// Checks if the mod has a certain tag.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <returns></returns>
+    public bool HasTag(string tag)
     {
-        NameID = token.Value<string>("name_id");
-
-        ID = token.Value<int>("id");
-
-        MaturityOption = token.Value<int>("maturity_option");
-
-        List<ModPlatformData> modPlatformList = new();
-
-        var platforms = token["platforms"].ToArray();
-        foreach (var platform in platforms)
+        if (Tags == null)
         {
-            modPlatformList.Add(new ModPlatformData(platform));
+            return false;
         }
 
-        Platforms = modPlatformList;
+        foreach (var modTag in Tags)
+        {
+            if (modTag.Name == tag)
+            {
+                return true;
+            }
+        }
 
-        ThumbnailUrl = token["logo"]["thumb_640x360"].ToString();
+        return false;
     }
 }
