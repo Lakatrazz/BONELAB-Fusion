@@ -1,38 +1,35 @@
-﻿using LabFusion.Data;
-
-using System.Text.Json.Serialization;
+﻿using LabFusion.Preferences.Client;
 
 namespace LabFusion.Safety;
 
-[Serializable]
-public class URLInfo
-{
-    [JsonPropertyName("domain")]
-    public string Domain { get; set; }
-}
-
-[Serializable]
-public class URLWhitelist
-{
-    [JsonPropertyName("whitelist")]
-    public List<URLInfo> Whitelist { get; set; } = new();
-}
-
 public static class URLWhitelistManager
 {
-    public const string FileName = "urlWhitelist.json";
-
-    public static URLWhitelist List { get; private set; } = new();
-
-    public static void FetchFile()
+    /// <summary>
+    /// Domains that are allowed, but only if the client has "Allow Untrusted URLs" enabled.
+    /// Typically domains that point to direct, unmoderated. files.
+    /// </summary>
+    public static readonly List<string> UntrustedDomains = new()
     {
-        ListFetcher.FetchFile(FileName, OnFileFetched);
-    }
+        "cdn.discordapp.com",
+        "imgur.com",
+        "video.twimg.com",
+        "catbox.moe",
+        "files.catbox.moe",
+        "litter.catbox.moe",
+        "drive.google.com",
+        "packaged-media.redd.it",
+        "www.dropbox.com",
+        "archive.org",
+        "dl.dropboxusercontent.com",
+        "drive.usercontent.google.com",
+        "d.uguu.se",
+    };
 
-    private static void OnFileFetched(string text)
-    {
-        List = DataSaver.ReadJsonFromText<URLWhitelist>(text);
-    }
+    /// <summary>
+    /// Domains that are always allowed for video players.
+    /// Typically domains for videos hosted on moderated websites.
+    /// </summary>
+    public static readonly List<string> TrustedDomains = new();
 
     public static bool IsURLWhitelisted(string url)
     {
@@ -50,12 +47,16 @@ public static class URLWhitelistManager
 
         var domain = uri.Host;
 
-        foreach(var whitelist in List.Whitelist)
+        if (TrustedDomains.Contains(domain))
         {
-            if (domain == whitelist.Domain)
-            {
-                return true;
-            }
+            return true;
+        }
+
+        bool allowUntrustedURLs = ClientSettings.Safety.AllowUntrustedURLs.Value;
+
+        if (allowUntrustedURLs && UntrustedDomains.Contains(domain))
+        {
+            return true;
         }
 
         return false;

@@ -205,6 +205,11 @@ public static class MenuSettings
 
         generalGroup.AddElement<BoolElement>("Filter Profanity")
             .AsPref(ClientSettings.Safety.FilterProfanity);
+
+        var videoGroup = page.AddElement<GroupElement>("Video");
+
+        videoGroup.AddElement<BoolElement>("Allow Untrusted URLs")
+            .AsPref(ClientSettings.Safety.AllowUntrustedURLs);
     }
 
 #if DEBUG
