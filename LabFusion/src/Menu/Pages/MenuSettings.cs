@@ -239,9 +239,9 @@ public static class MenuSettings
 
         if (!PlatformHelper.IsAndroid)
         {
-            generalGroup.AddElement<StringElement>("Download Path Override")
-                .AsPref(ClientSettings.Downloading.DownloadPathOverride)
-                .EmptyFormat = $"Download Path Override";
+            generalGroup.AddElement<StringElement>("Download Directory")
+                .AsPref(ClientSettings.Downloading.DownloadDirectory)
+                .EmptyFormat = $"Download Directory";
         }
 
         var cacheGroup = page.AddElement<GroupElement>("Cache");

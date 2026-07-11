@@ -146,7 +146,7 @@ public static class ModPathManager
     {
         DetermineRootPath();
 
-        ClientSettings.Downloading.DownloadPathOverride.OnValueChanged += OnDownloadPathOverrideChanged;
+        ClientSettings.Downloading.DownloadDirectory.OnValueChanged += OnDownloadPathOverrideChanged;
     }
 
     private static void OnDownloadPathOverrideChanged(string value) => DetermineRootPath();
@@ -160,7 +160,7 @@ public static class ModPathManager
             return defaultPath;
         }
 
-        string overridePath = ClientSettings.Downloading.DownloadPathOverride.Value;
+        string overridePath = ClientSettings.Downloading.DownloadDirectory.Value;
 
         if (string.IsNullOrWhiteSpace(overridePath))
         {
