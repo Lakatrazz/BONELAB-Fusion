@@ -246,10 +246,13 @@ public static class MenuSettings
 
         var cacheGroup = page.AddElement<GroupElement>("Cache");
 
-        cacheGroup.AddElement<IntElement>("Max Cache Size (GB)")
-            .AsPref(ClientSettings.Downloading.MaxCacheSize)
-            .WithIncrement(1)
-            .WithLimits(30, 1000);
+        if (!PlatformHelper.IsAndroid)
+        {
+            cacheGroup.AddElement<IntElement>("Max Cache Size (GB)")
+                .AsPref(ClientSettings.Downloading.MaxCacheSize)
+                .WithIncrement(1)
+                .WithLimits(30, 1000);
+        }
 
         cacheGroup.AddElement<FunctionElement>("Clear Mod Cache")
             .Do(ModCacheManager.ClearCache)

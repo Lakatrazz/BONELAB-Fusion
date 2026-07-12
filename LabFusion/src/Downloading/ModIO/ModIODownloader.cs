@@ -254,6 +254,16 @@ public static class ModIODownloader
             yield break;
         }
 
+        // Clear the cache if needed
+        if (!ModCacheManager.FreeCache(contentLength))
+        {
+            FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to the cache being unable to be cleared.");
+
+            FailDownload();
+
+            yield break;
+        }
+
         // Install the content into a zip file
         var zipPath = ModPathManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
 
