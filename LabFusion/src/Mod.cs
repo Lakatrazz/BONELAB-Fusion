@@ -191,9 +191,6 @@ public class FusionMod : MelonMod
         // Log out of the current layer
         NetworkLayerManager.LogOut();
 
-        // Backup files
-        FusionFileLoader.OnDeinitializeMelon();
-
         // Unhook assembly loads
         PointItemManager.UnhookEvents();
 
