@@ -7,6 +7,8 @@ public class DownloadingSettings
     public const int DefaultMaxFileSize = 2000;
     public const int DefaultMaxLevelSize = 4000;
 
+    public const int DefaultMaxCacheSize = 30;
+
     public FusionPref<bool> DownloadSpawnables { get; private set; }
     public FusionPref<bool> DownloadAvatars { get; private set; }
     public FusionPref<bool> DownloadLevels { get; private set; }
@@ -16,6 +18,8 @@ public class DownloadingSettings
     public FusionPref<int> MaxLevelSize { get; private set; }
 
     public FusionPref<string> DownloadDirectory { get; private set; }
+
+    public FusionPref<int> MaxCacheSize { get; private set; }
 
     public void CreatePrefs(MelonPreferences_Category category)
     {
@@ -28,5 +32,7 @@ public class DownloadingSettings
         MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);
 
         DownloadDirectory = new FusionPref<string>(category, "Download Directory", string.Empty, PrefUpdateMode.IGNORE);
+
+        MaxCacheSize = new FusionPref<int>(category, "Max Cache Size", DefaultMaxCacheSize, PrefUpdateMode.IGNORE);
     }
 }
