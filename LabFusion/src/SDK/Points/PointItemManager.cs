@@ -143,14 +143,6 @@ public static class PointItemManager
         return $"{price} Bits";
     }
 
-    internal static void HookEvents()
-    {
-    }
-
-    internal static void UnhookEvents()
-    {
-    }
-
     public static void LoadItems(Assembly assembly)
     {
         if (assembly == null)

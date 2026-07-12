@@ -85,7 +85,6 @@ public class FusionMod : MelonMod
         SteamAPILoader.OnLoadSteamAPI();
 
         // Initialize data and hooks
-        PointItemManager.HookEvents();
         RpcManager.OnInitialize();
     }
 
@@ -190,9 +189,6 @@ public class FusionMod : MelonMod
     {
         // Log out of the current layer
         NetworkLayerManager.LogOut();
-
-        // Unhook assembly loads
-        PointItemManager.UnhookEvents();
 
         // Undo game changes
         MuteUIHelper.OnDeinitializeMelon();
