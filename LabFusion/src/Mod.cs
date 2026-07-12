@@ -224,10 +224,6 @@ public class FusionMod : MelonMod
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
 
-        // Update the use time of the level's crate and clear other uses
-        PalletUseHistoryManager.ClearActivelyUsedPallets();
-        PalletUseHistoryManager.MarkCrateUsed(FusionSceneManager.Level);
-
         // Update hooks
         MultiplayerHooking.InvokeOnMainSceneInitialized();
 
@@ -253,6 +249,9 @@ public class FusionMod : MelonMod
     private void OnLoadingBegin()
     {
         ModIOThumbnailDownloader.ClearCache();
+
+        PalletUseHistoryManager.ClearActivelyUsedPallets();
+        PalletUseHistoryManager.MarkCrateUsed(FusionSceneManager.Level);
     }
 
     public override void OnUpdate()
