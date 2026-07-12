@@ -10,8 +10,6 @@ using MelonLoader;
 using System.Collections;
 using System.IO.Compression;
 
-using UnityEngine;
-
 namespace LabFusion.Downloading;
 
 public static class ModDownloadManager
@@ -102,6 +100,20 @@ public static class ModDownloadManager
 
         if (existingPalletManifest != null)
         {
+            var existingPallet = existingPalletManifest.Pallet;
+
+            // Do not allow pallets matching internal pallets (pallets included with the game) to be replaced
+            if (existingPallet.Internal)
+            {
+                FusionLogger.Warn($"Downloaded pallet matched an existing internal pallet, aborting download!");
+
+                downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+                scheduledCallback?.Invoke();
+
+                yield break;
+            }
+
             palletPath = Path.GetDirectoryName(existingPalletManifest.PalletPath);
         }
 
