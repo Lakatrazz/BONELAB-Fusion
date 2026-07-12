@@ -9,26 +9,15 @@ public static class FileSizeHelper
             return 0;
         }
 
-        long fileSize = 0;
+        long directorySize = 0;
 
-        try
+        var directoryInfo = new DirectoryInfo(path);
+
+        foreach (FileInfo file in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories))
         {
-            foreach (string filePath in Directory.EnumerateFiles(path))
-            {
-                fileSize += new FileInfo(filePath).Length;
-            }
+            directorySize += file.Length;
         }
-        catch (UnauthorizedAccessException) { }
 
-        try
-        {
-            foreach (string directoryPath in Directory.EnumerateDirectories(path))
-            {
-                fileSize += GetDirectorySize(directoryPath);
-            }
-        }
-        catch (UnauthorizedAccessException) { }
-
-        return fileSize;
+        return directorySize;
     }
 }
