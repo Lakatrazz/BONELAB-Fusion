@@ -255,7 +255,7 @@ public static class ModIODownloader
         }
 
         // Clear the cache if needed
-        if (!ModCacheManager.FreeCache(contentLength))
+        if (transaction.Cache && !ModCacheManager.FreeCache(contentLength))
         {
             FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to the cache being unable to be cleared.");
 

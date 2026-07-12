@@ -39,7 +39,7 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<MagazineInsertMessage>();
         ModuleMessageManager.RegisterHandler<NimbusGunNoClipMessage>();
         ModuleMessageManager.RegisterHandler<ObjectDestructibleDestroyMessage>();
-
+        
         ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
@@ -48,6 +48,8 @@ public class MarrowModule : Module
 
         RigAdditions.Initialize();
         DefaultRigAdditions.Initialize();
+
+        PalletUseHistoryManager.Initialize();
 
         if (PlatformHelper.IsAndroid)
         {

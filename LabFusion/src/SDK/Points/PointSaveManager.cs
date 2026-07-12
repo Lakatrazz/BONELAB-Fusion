@@ -38,25 +38,15 @@ public static class PointSaveManager
     }
 
     private const string _filePath = "point_shop.dat";
-    private const string _backupPath = "point_shop.dat.bak";
 
     public static void WriteToFile()
     {
-        DataSaver.WriteJsonToFile(_filePath, PointSaveData.CreateCurrent());
-    }
-
-    public static void WriteBackup()
-    {
-        string filePath = PersistentData.GetPath(_filePath);
-        string backupPath = PersistentData.GetPath(_backupPath);
-
-        if (File.Exists(filePath))
-            File.Copy(filePath, backupPath, true);
+        JsonSaver.WriteJsonToFileWithBackup(_filePath, PointSaveData.CreateCurrent());
     }
 
     public static void ReadFile()
     {
-        var data = DataSaver.ReadJsonFromFile<PointSaveData>(_filePath);
+        var data = JsonSaver.ReadJsonFromFileWithBackup<PointSaveData>(_filePath);
 
         if (data == null)
         {

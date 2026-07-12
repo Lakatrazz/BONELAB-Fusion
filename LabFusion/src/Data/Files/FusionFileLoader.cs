@@ -20,11 +20,5 @@ namespace LabFusion.Data
             ModBlacklist.OnInitializeMelon();
             ModBlacklist.ReadFile();
         }
-
-        public static void OnDeinitializeMelon()
-        {
-            PointSaveManager.WriteBackup();
-            AchievementSaveManager.WriteBackup();
-        }
     }
 }

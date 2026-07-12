@@ -152,12 +152,12 @@ public static class GamemodeRoundManager
 
     public static void SaveSettings()
     {
-        DataSaver.WriteJsonToFile(FileName, Settings);
+        JsonSaver.WriteJsonToFileWithBackup(FileName, Settings);
     }
 
     public static void LoadSettings()
     {
-        var loadedSettings = DataSaver.ReadJsonFromFile<GamemodeRoundSettings>(FileName);
+        var loadedSettings = JsonSaver.ReadJsonFromFileWithBackup<GamemodeRoundSettings>(FileName);
 
         if (loadedSettings != null)
         {

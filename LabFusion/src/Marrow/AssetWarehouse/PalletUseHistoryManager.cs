@@ -1,5 +1,8 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Data;
+using LabFusion.Utilities;
+
 using System.Text.Json.Serialization;
 
 namespace LabFusion.Marrow;
@@ -27,6 +30,31 @@ public static class PalletUseHistoryManager
 
     public static HashSet<string> ActivelyUsedPallets { get; } = new();
 
+    public static readonly string FileName = "palletUseHistory.json";
+
+    public static bool IsDirty { get; private set; } = false;
+
+    public const float AutoSaveTimer = 30f;
+
+    private static float _autoSaveElapsed = 0f;
+
+    public static void ReadFile()
+    {
+        var readHistory = JsonSaver.ReadJsonFromFileWithBackup<PalletUseHistory>(FileName);
+
+        if (readHistory != null)
+        {
+            History = readHistory;
+        }
+    }
+
+    public static void WriteFile()
+    {
+        JsonSaver.WriteJsonToFileWithBackup(FileName, History);
+
+        IsDirty = false;
+    }
+
     public static bool IsPalletActivelyUsed(string barcode) => ActivelyUsedPallets.Contains(barcode);
 
     public static void ClearActivelyUsedPallets()
@@ -41,6 +69,8 @@ public static class PalletUseHistoryManager
         entry.LastUseTime = DateTime.UtcNow;
 
         ActivelyUsedPallets.Add(barcode);
+
+        IsDirty = true;
     }
 
     public static void MarkPalletUsed(Pallet pallet) 
@@ -93,5 +123,35 @@ public static class PalletUseHistoryManager
         }
 
         return DateTime.MinValue;
+    }
+
+    internal static void Initialize()
+    {
+        ReadFile();
+
+        MultiplayerHooking.OnUpdate += OnUpdate;
+    }
+
+    internal static void Tick(float deltaTime)
+    {
+        if (!IsDirty)
+        {
+            return;
+        }
+
+        _autoSaveElapsed += deltaTime;
+
+        if (_autoSaveElapsed >= AutoSaveTimer)
+        {
+            _autoSaveElapsed = 0f;
+            WriteFile();
+        }
+    }
+
+    private static void OnUpdate()
+    {
+        float unscaledDeltaTime = TimeReferences.DeltaTime / TimeReferences.SafeTimeScale;
+
+        Tick(unscaledDeltaTime);
     }
 }

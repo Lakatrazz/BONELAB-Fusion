@@ -25,12 +25,12 @@ public static class GlobalModBlacklistManager
 
     private static void OnFileFetched(string text)
     {
-        List = DataSaver.ReadJsonFromText<GlobalModBlacklist>(text);
+        List = JsonSaver.ReadJsonFromText<GlobalModBlacklist>(text);
     }
 
     public static void ExportFile()
     {
-        DataSaver.WriteJsonToFile(FileName, List);
+        JsonSaver.WriteJsonToFileWithBackup(FileName, List);
     }
 
     public static bool BlacklistEnabled => LobbyInfoManager.LobbyInfo.Privacy == ServerPrivacy.PUBLIC;

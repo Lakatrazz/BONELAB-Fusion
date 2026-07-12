@@ -1,6 +1,6 @@
 ﻿namespace LabFusion.Data;
 
-public static class FileHelper
+public static class FileSizeHelper
 {
     public static long GetDirectorySize(string path)
     {

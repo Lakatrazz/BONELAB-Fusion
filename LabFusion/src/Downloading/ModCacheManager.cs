@@ -93,7 +93,7 @@ public static class ModCacheManager
 
                 var barcode = directoryInfo.Name;
                 var lastUseTime = PalletUseHistoryManager.GetLastUseTime(barcode);
-                var directorySize = FileHelper.GetDirectorySize(directoryPath);
+                var directorySize = FileSizeHelper.GetDirectorySize(directoryPath);
 
                 var cachePalletInfo = new CachePalletInfo()
                 {
@@ -214,7 +214,7 @@ public static class ModCacheManager
     {
         var cachePath = Path.GetFullPath(ModPathManager.CachePath);
 
-        return FileHelper.GetDirectorySize(cachePath);
+        return FileSizeHelper.GetDirectorySize(cachePath);
     }
 
     internal static void Initialize()

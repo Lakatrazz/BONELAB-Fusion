@@ -54,7 +54,6 @@ public static class AchievementSaveManager
     }
 
     private const string _filePath = "achievements.dat";
-    private const string _backupPath = "achievements.dat.bak";
 
     public static void OnInitializeMelon()
     {
@@ -63,21 +62,12 @@ public static class AchievementSaveManager
 
     public static void WriteToFile()
     {
-        DataSaver.WriteJsonToFile(_filePath, AchievementSaveData.CreateCurrent());
-    }
-
-    public static void WriteBackup()
-    {
-        string filePath = PersistentData.GetPath(_filePath);
-        string backupPath = PersistentData.GetPath(_backupPath);
-
-        if (File.Exists(filePath))
-            File.Copy(filePath, backupPath, true);
+        JsonSaver.WriteJsonToFileWithBackup(_filePath, AchievementSaveData.CreateCurrent());
     }
 
     public static void ReadFile()
     {
-        var data = DataSaver.ReadJsonFromFile<AchievementSaveData>(_filePath);
+        var data = JsonSaver.ReadJsonFromFileWithBackup<AchievementSaveData>(_filePath);
 
         if (data == null)
         {

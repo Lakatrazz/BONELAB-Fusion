@@ -24,12 +24,12 @@ public static class ProfanityListManager
 
     private static void OnFileFetched(string text)
     {
-        List = DataSaver.ReadJsonFromText<ProfanityList>(text);
+        List = JsonSaver.ReadJsonFromText<ProfanityList>(text);
     }
 
     public static void ExportFile()
     {
-        DataSaver.WriteJsonToFile(FileName, List);
+        JsonSaver.WriteJsonToFileWithBackup(FileName, List);
     }
 
     public static void ExportWord(string word)
