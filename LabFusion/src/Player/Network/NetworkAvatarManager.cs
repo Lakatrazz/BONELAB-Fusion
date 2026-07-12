@@ -1,5 +1,8 @@
-﻿using LabFusion.Entities;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Entities;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
@@ -19,5 +22,8 @@ public static class NetworkAvatarManager
         networkPlayer.OnAvatarBarcodeChanged(barcode);
 
         OnNetworkPlayerAvatarChanged?.InvokeSafe(networkPlayer, avatar, barcode, "executing NetworkAvatarManager.OnNetworkPlayerAvatarChanged");
+
+        // Update the use time of the avatar's crate
+        PalletUseHistoryManager.MarkCrateUsed(AssetWarehouseSearcher.GetCrate<AvatarCrate>(new(barcode)));
     }
 }

@@ -24,6 +24,7 @@ using LabFusion.UI.Popups;
 using LabFusion.Safety;
 using LabFusion.Support;
 using LabFusion.Math;
+using LabFusion.Marrow;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -222,6 +223,10 @@ public class FusionMod : MelonMod
         RigData.OnCacheRigInfo();
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
+
+        // Update the use time of the level's crate and clear other uses
+        PalletUseHistoryManager.ClearActivelyUsedPallets();
+        PalletUseHistoryManager.MarkCrateUsed(FusionSceneManager.Level);
 
         // Update hooks
         MultiplayerHooking.InvokeOnMainSceneInitialized();

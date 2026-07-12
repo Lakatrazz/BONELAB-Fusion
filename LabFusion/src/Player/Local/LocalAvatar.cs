@@ -96,6 +96,9 @@ public static class LocalAvatar
         AvatarMass = avatar.massTotal;
 
         OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
+
+        // Update the use time of the avatar's crate
+        PalletUseHistoryManager.MarkCrateUsed(AssetWarehouseSearcher.GetCrate<AvatarCrate>(new(barcode)));
     }
 
     private static void OnCheckAvatar(Avatar avatar, string barcode)

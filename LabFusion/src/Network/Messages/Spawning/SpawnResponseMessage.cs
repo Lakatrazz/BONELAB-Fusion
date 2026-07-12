@@ -154,6 +154,9 @@ public class SpawnResponseMessage : NativeMessageHandler
             return;
         }
 
+        // Update the use time of the poolee's crate
+        PalletUseHistoryManager.MarkCrateUsed(poolee.SpawnableCrate);
+
         // Remove the existing entity on this poolee if it exists
         if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
         {
