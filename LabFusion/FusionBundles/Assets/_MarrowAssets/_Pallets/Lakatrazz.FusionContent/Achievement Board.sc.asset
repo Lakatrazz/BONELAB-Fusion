@@ -18,9 +18,10 @@ MonoBehaviour:
   _description: Challenge board containing multiple objectives completable with pals
     in MythOS.
   _unlockable: 0
-  _redacted: 1
+  _redacted: 0
   _tags:
   - Fusion
+  - Singleplayer Only
   _boneTags:
     _tags: []
   _mainAsset:

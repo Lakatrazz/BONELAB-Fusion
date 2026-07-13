@@ -1,2 +1,51 @@
+Added:
+- Gamemode wrist watch
+- New UI API to help creating menus from code
+- New Equippable system separate from BitMart items
+- Mod cache system
+- Toggles for certain notifications
+- Singleplayer Only tags to Fusion machines
+- Changelog to Thunderstore release
+- Toggle to enable untrusted video players (off by default)
+- Cosmetic auto downloading
+- Downloading a level will now show you the level name while in the regular loading screen
+- Visualization for props that aren't downloaded yet
+- Propagation of object ownership to constrained objects
+- Icon for seekers in Hide and Seek
+- More safety checks for NaN object positions
+- Prop desync teleporting
+- Hiding lobbies with impossible information
+- Disabling drag on objects owned by other players
+- Prop interpolation to improve smoothness
+- Rotation prediction
+
+Changed:
+- Made Hide and Seek players immortal
+- Made Gamemode Markers add/remove themselves when enabled or disabled instead of awake/destroy
+- Invalidated existing cosmetics to prevent issues with the new system
+- Cosmetic points now have a few body points with many directional options
+- Consolidated username filters to make changing them easier
+- Reordered prop updates for performance
+- Decreased max prediction time and limited player prediction
+- Made guns still fire even if a magazine isn't loaded locally
+
 Improved:
-- Additional changes to impersonation check
+- Player desync teleporting
+- Players getting stuck outside of vehicles with unsynced doors
+- PD controller force calculations
+- Impersonation check, again
+
+Fixed:
+- Rubberbanding when players are moving extremely fast
+- Mods still installing even if the user ran out of space
+- Avatar download bar disappearing before finishing
+- Download progress for one instance of a mod not applying to all instances
+- GamemodeMarker respawns causing the player to get stuck in the floor if rotated
+- Player positional offsets due to ground friction
+- Players being able to modify their own permission metadata variable visually
+- Player blood decals not clearing properly
+- Avatar SurfaceData for modded avatars
+
+Removed:
+- Link censoring
+- Unnecessary writing of embedded txt files to disk

@@ -110,8 +110,6 @@ public class SpawnResponseMessage : NativeMessageHandler
                     return;
                 }
 
-                // In the future we'll replace an already existing "dummy" spawnable, so that if its been despawned we won't respawn it
-                // This will also let us show previews while its downloading
                 BeginSpawn();
             }
 
@@ -122,6 +120,16 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         void BeginSpawn()
         {
+            // Check for singleplayer only tag
+            if (AssetWarehouseSearcher.HasTags<SpawnableCrate>(new(barcode), FusionTags.SingleplayerOnly))
+            {
+#if DEBUG
+                FusionLogger.Warn($"Blocking local spawn of spawnable {data.Barcode} because it is tagged Singleplayer Only!");
+#endif
+
+                return;
+            }
+
             var spawnable = LocalAssetSpawner.CreateSpawnable(barcode);
 
             LocalAssetSpawner.Register(spawnable);
