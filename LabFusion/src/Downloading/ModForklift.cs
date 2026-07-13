@@ -10,13 +10,15 @@ public static class ModForklift
 {
     public struct PalletShipment
     {
-        public string palletPath;
-        public ModListing modListing;
-        public DownloadCallback callback;
+        public string Path;
+
+        public ModListing Listing;
+
+        public DownloadCallback Callback;
 
         public override readonly int GetHashCode()
         {
-            return palletPath.GetHashCode();
+            return Path.GetHashCode();
         }
     }
 
@@ -47,14 +49,14 @@ public static class ModForklift
 
     private static void LoadPallet(PalletShipment shipment)
     {
-        var palletPath = shipment.palletPath;
+        var palletPath = shipment.Path;
 
 #if DEBUG
         FusionLogger.Log($"Loading pallet at path {palletPath}.");
 #endif
 
         var warehouse = AssetWarehouse.Instance;
-        var palletTask = warehouse.LoadPalletFromFolderAsync(palletPath, true, null, shipment.modListing);
+        var palletTask = warehouse.LoadPalletFromFolderAsync(palletPath, true, null, shipment.Listing);
 
         var onCompleted = () =>
         {
@@ -88,7 +90,7 @@ public static class ModForklift
                 Result = ModResult.SUCCEEDED,
             };
 
-            shipment.callback?.Invoke(info);
+            shipment.Callback?.Invoke(info);
         };
         palletTask.GetAwaiter().OnCompleted(onCompleted);
     }

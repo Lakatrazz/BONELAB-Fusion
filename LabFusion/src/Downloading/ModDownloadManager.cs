@@ -156,9 +156,9 @@ public static class ModDownloadManager
 
         var shipment = new ModForklift.PalletShipment()
         {
-            palletPath = jsonPath,
-            modListing = listing,
-            callback = downloadCallback,
+            Path = jsonPath,
+            Listing = listing,
+            Callback = downloadCallback,
         };
 
         ModForklift.SchedulePalletLoad(shipment);
