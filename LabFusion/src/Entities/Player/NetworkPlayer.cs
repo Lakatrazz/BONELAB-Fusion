@@ -911,13 +911,29 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
+        // Get the rig's body mass
+        // This is applied based on distance to make the rig easy to move when slow but stay synced when fast
+        var physTorso = rigManager.physicsRig.torso;
+
+        float pelvisMass = physTorso.rbPelvis.mass;
+        float upperBodyMass = pelvisMass + physTorso.rbSpine.mass + physTorso.rbChest.mass + physTorso.rbNeck.mass + physTorso.rbHead.mass;
+
+        float positionError = (numericsPelvisTargetPosition - numericsPelvisPosition).Length();
+        float positionStrength = ManagedMathf.Clamp01(positionError);
+
+        float forceMultiplier = ManagedMathf.Lerp(pelvisMass * 0.25f, upperBodyMass, positionStrength);
+
         // Apply forces
-        pelvis.AddForce(SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3(), ForceMode.Acceleration);
+        var force = SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3();
+
+        pelvis.AddForce(force * forceMultiplier, ForceMode.Force);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
         {
-            pelvis.AddTorque(SPDController.CalculateTorque(pelvisRotation.ToNumericsQuaternion(), pelvis.angularVelocity.ToNumericsVector3(), pelvisPose.Rotation.ToNumericsQuaternion(), pelvisPose.AngularVelocity.ToNumericsVector3(), deltaTime).ToUnityVector3(), ForceMode.Acceleration);
+            var torque = SPDController.CalculateTorque(pelvisRotation.ToNumericsQuaternion(), pelvis.angularVelocity.ToNumericsVector3(), pelvisPose.Rotation.ToNumericsQuaternion(), pelvisPose.AngularVelocity.ToNumericsVector3(), deltaTime).ToUnityVector3();
+            
+            pelvis.AddTorque(torque, ForceMode.Acceleration);
         }
 
         // Have the rig walk any extra distance into place
