@@ -47,7 +47,14 @@ public static class ModCacheManager
 
         var assetWarehouse = AssetWarehouse.Instance;
 
-        assetWarehouse.LoadPalletsFromFolderAsync(cachePath).Forget();
+        try
+        {
+            assetWarehouse.LoadPalletsFromFolderAsync(cachePath).Forget();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("loading mods from cache", e);
+        }
     }
 
     public static void UnloadModsFromCache()
