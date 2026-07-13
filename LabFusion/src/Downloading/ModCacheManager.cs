@@ -1,8 +1,8 @@
-﻿using Il2CppCysharp.Threading.Tasks;
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;
 using LabFusion.Marrow;
+using LabFusion.Marrow.Patching;
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
@@ -49,11 +49,17 @@ public static class ModCacheManager
 
         try
         {
-            assetWarehouse.LoadPalletsFromFolderAsync(cachePath).Forget();
+            var loadCacheTask = assetWarehouse.LoadPalletsFromFolderAsync(cachePath);
+
+            var awaiter = loadCacheTask.GetAwaiter();
+
+            awaiter.OnCompleted((Action)OnAdditionalModsLoaded);
         }
         catch (Exception e)
         {
             FusionLogger.LogException("loading mods from cache", e);
+
+            OnAdditionalModsLoaded();
         }
     }
 
@@ -235,5 +241,10 @@ public static class ModCacheManager
     private static void OnAssetWarehouseReady()
     {
         LoadModsFromCache();
+    }
+
+    private static void OnAdditionalModsLoaded()
+    {
+        AssetWarehousePatches.LoadedAdditionalMods = true;
     }
 }
