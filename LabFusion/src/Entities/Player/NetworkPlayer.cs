@@ -911,20 +911,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
+        var numericsPelvisVelocity = pelvis.velocity.ToNumericsVector3();
+
         // Get the rig's body mass
-        // This is applied based on distance to make the rig easy to move when slow but stay synced when fast
+        // This is applied based on distance to make the rig easy to move when close to the target but harder when far from the target
         var physTorso = rigManager.physicsRig.torso;
 
         float pelvisMass = physTorso.rbPelvis.mass;
-        float upperBodyMass = pelvisMass + physTorso.rbSpine.mass + physTorso.rbChest.mass + physTorso.rbNeck.mass + physTorso.rbHead.mass;
-
         float positionError = (numericsPelvisTargetPosition - numericsPelvisPosition).Length();
         float positionStrength = ManagedMathf.Clamp01(positionError);
 
-        float forceMultiplier = ManagedMathf.Lerp(pelvisMass * 0.25f, upperBodyMass, positionStrength);
+        float forceMultiplier = ManagedMathf.Lerp(pelvisMass * 0.1f, pelvisMass, positionStrength);
 
         // Apply forces
-        var force = SPDController.CalculateForce(numericsPelvisPosition, pelvis.velocity.ToNumericsVector3(), numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3();
+        var force = SPDController.CalculateForce(numericsPelvisPosition, numericsPelvisVelocity, numericsPelvisTargetPosition, numericsPelvisTargetVelocity, deltaTime).ToUnityVector3();
 
         pelvis.AddForce(force * forceMultiplier, ForceMode.Force);
 
