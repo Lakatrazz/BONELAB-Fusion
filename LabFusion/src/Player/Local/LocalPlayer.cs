@@ -5,6 +5,7 @@ using Il2CppSLZ.Marrow;
 using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
+using LabFusion.Marrow.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 

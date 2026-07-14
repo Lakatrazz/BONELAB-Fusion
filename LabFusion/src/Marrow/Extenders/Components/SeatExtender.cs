@@ -2,6 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.Entities;
+using LabFusion.Marrow.Extensions;
 
 using Il2CppSLZ.Marrow;
 
@@ -11,6 +12,8 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
 {
     public static readonly FusionComponentCache<Seat, NetworkEntity> Cache = new();
 
+    public IMarrowEntityExtender MarrowEntityExtender { get; set; } = null;
+
     protected override void OnRegister(NetworkEntity entity, Seat[] components)
     {
         foreach (var component in components)
@@ -19,6 +22,13 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
         }
 
         entity.OnEntityDataCatchup += OnEntityDataCatchup;
+
+        MarrowEntityExtender = entity.GetExtender<IMarrowEntityExtender>();
+
+        if (MarrowEntityExtender != null)
+        {
+            MarrowEntityExtender.OnAfterTeleportToPose += OnAfterTeleportToPose;
+        }
     }
 
     protected override void OnUnregister(NetworkEntity entity, Seat[] components)
@@ -29,6 +39,12 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
         }
 
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+
+        if (MarrowEntityExtender != null)
+        {
+            MarrowEntityExtender.OnAfterTeleportToPose -= OnAfterTeleportToPose;
+            MarrowEntityExtender = null;
+        }
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
@@ -59,5 +75,13 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
+    }
+
+    private void OnAfterTeleportToPose()
+    {
+        foreach (var component in Components)
+        {
+            component.TeleportRigToSeat();
+        }
     }
 }

@@ -5,6 +5,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Marrow.Extensions;
 using LabFusion.Math;
 using LabFusion.Network;
 using LabFusion.Representation;

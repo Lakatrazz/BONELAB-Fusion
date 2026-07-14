@@ -8,9 +8,9 @@ public class HandExtender : EntityComponentArrayExtender<Hand>
 {
     public IMarrowEntityExtender MarrowEntityExtender { get; set; } = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Hand[] components)
+    protected override void OnRegister(NetworkEntity entity, Hand[] components)
     {
-        MarrowEntityExtender = networkEntity.GetExtender<IMarrowEntityExtender>();
+        MarrowEntityExtender = entity.GetExtender<IMarrowEntityExtender>();
 
         if (MarrowEntityExtender != null)
         {
@@ -18,7 +18,7 @@ public class HandExtender : EntityComponentArrayExtender<Hand>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Hand[] components)
+    protected override void OnUnregister(NetworkEntity entity, Hand[] components)
     {
         if (MarrowEntityExtender != null)
         {

@@ -13,6 +13,7 @@ using LabFusion.Math;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Rig;
 using LabFusion.Math.Numerics;
+using LabFusion.Marrow.Extensions;
 
 using MelonLoader;
 

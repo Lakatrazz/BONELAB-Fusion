@@ -4,7 +4,7 @@ using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Entities;
-using LabFusion.Marrow.Extensions;
+using LabFusion.Extensions;
 
 using MelonLoader;
 
@@ -14,7 +14,9 @@ using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
-namespace LabFusion.Extensions;
+namespace LabFusion.Marrow.Extensions;
+
+using Rig = Il2CppSLZ.Marrow.Rig;
 
 public static class RigManagerExtensions
 {
