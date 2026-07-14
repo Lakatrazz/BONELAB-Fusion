@@ -18,7 +18,7 @@ public struct SerializedCrateReference : INetSerializable
 
     public readonly bool IsValid => !string.IsNullOrWhiteSpace(Barcode);
 
-    public readonly int? GetSize() => Barcode.GetSize();
+    public readonly int? GetSize() => Barcode.GetSize() + Title.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
