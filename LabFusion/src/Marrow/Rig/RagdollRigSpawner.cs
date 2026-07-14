@@ -178,11 +178,15 @@ public static class RagdollRigSpawner
 
     private static void DisableUnnecessaryRigs(RigManager rigManager)
     {
+        // Disable all of the rigs other than the physics rig
         foreach (var remapRig in rigManager.remapRigs)
         {
             remapRig.gameObject.SetActive(false);
         }
 
         rigManager.ControllerRig.gameObject.SetActive(false);
+
+        // Disable the mouth source
+        rigManager.physicsRig.headSfx.mouthSrc.enabled = false;
     }
 }
