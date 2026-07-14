@@ -3,7 +3,6 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Marrow;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Network;
 

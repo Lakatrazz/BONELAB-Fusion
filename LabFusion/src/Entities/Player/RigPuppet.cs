@@ -38,21 +38,6 @@ public class RigPuppet
         // Add poolee to the PhysicsRig for spawn/despawn VFX
         rig.physicsRig.gameObject.AddComponent<Poolee>();
 
-        // Swap the open controllers for generic controllers
-        // Left hand
-        var leftHaptor = rig.ControllerRig.leftController.haptor;
-        rig.ControllerRig.leftController = rig.ControllerRig.leftController.gameObject.AddComponent<BaseController>();
-        rig.ControllerRig.leftController.contRig = rig.ControllerRig;
-        leftHaptor.device_Controller = rig.ControllerRig.leftController;
-        rig.ControllerRig.leftController.handedness = Handedness.LEFT;
-
-        // Right hand
-        var rightHaptor = rig.ControllerRig.rightController.haptor;
-        rig.ControllerRig.rightController = rig.ControllerRig.rightController.gameObject.AddComponent<BaseController>();
-        rig.ControllerRig.rightController.contRig = rig.ControllerRig;
-        rightHaptor.device_Controller = rig.ControllerRig.rightController;
-        rig.ControllerRig.rightController.handedness = Handedness.RIGHT;
-
         // Get references
         _selfReferences = new RigRefs(rig);
 

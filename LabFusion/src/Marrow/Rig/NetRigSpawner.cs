@@ -1,8 +1,6 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
-using LabFusion.MonoBehaviours;
-using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -28,58 +26,32 @@ public static class NetRigSpawner
     /// <summary>
     /// Spawns a RigManager to be used for network players.
     /// </summary>
-    /// <param name="onSpawnCallback"></param>
-    public static void SpawnNetRig(Action<RigManager> onSpawnCallback)
+    /// <param name="spawnCallback"></param>
+    public static void SpawnNetRig(Action<RigManager> spawnCallback)
     {
-        var marrowSettings = MarrowSettings.RuntimeInstance;
-
-        if (marrowSettings == null)
-        {
-            return;
-        }
-
-        var defaultPlayerRig = marrowSettings.DefaultPlayerRig.Crate;
-
-        if (defaultPlayerRig == null)
-        {
-            return;
-        }
-
-        defaultPlayerRig.LoadAsset((Action<GameObject>)((go) => OnDefaultRigLoaded(go, onSpawnCallback)));
-    }
-
-    private static void OnDefaultRigLoaded(GameObject asset, Action<RigManager> onSpawnCallback)
-    {
-        var rigManagerAsset = asset.GetComponentInChildren<RigManager>().gameObject;
-
-        var newRigGameObject = GameObject.Instantiate(rigManagerAsset, DisabledContainer.ContainerTransform);
-        newRigGameObject.name = NetRigName;
-        newRigGameObject.SetActive(false);
+        Vector3 position = Vector3.zero;
+        Quaternion rotation = Quaternion.identity;
 
         // Give it a known valid spawn position to prevent any weird collision issues at 0, 0, 0
         if (RigData.Refs.RigManager)
         {
-            newRigGameObject.transform.position = RigData.RigSpawn;
-            newRigGameObject.transform.rotation = RigData.RigSpawnRot;
+            position = RigData.RigSpawn;
+            rotation = RigData.RigSpawnRot;
         }
 
-        var newRigManager = newRigGameObject.GetComponent<RigManager>();
-        ConvertToNetRig(newRigManager);
-
-        newRigGameObject.transform.parent = null;
-        newRigGameObject.SetActive(true);
-
-        onSpawnCallback?.Invoke(newRigManager);
+        DummyRigCreator.CreateDummyRig(new DummyRigCreator.DummyRigCreationInfo()
+        {
+            Position = position,
+            Rotation = rotation,
+            BeforeEnableCallback = OnBeforeNetRigEnabled,
+            SpawnCallback = spawnCallback,
+        });
     }
 
-    private static void ConvertToNetRig(RigManager rigManager)
+    private static void OnBeforeNetRigEnabled(RigManager rigManager)
     {
-        // Since the net rig is not part of the pool, an AntiHasher needs to be added
-        // This prevents Fusion from hashing its MarrowEntity, which could cause syncing issues
-        rigManager.gameObject.AddComponent<AntiHasher>();
-
-        // Strip all components from the rig that are unnecessary/interfere with the local player
-        RigStripper.StripRigManager(rigManager);
+        // Rename the net rig
+        rigManager.gameObject.name = NetRigName;
 
         // Add the FusionPlayer BoneTag for identifying net rigs
         rigManager.physicsRig.marrowEntity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
