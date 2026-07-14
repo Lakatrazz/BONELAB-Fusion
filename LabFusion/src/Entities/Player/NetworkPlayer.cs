@@ -840,6 +840,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
 
+        TeleportToPoseWithoutNotify();
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
+    }
+
+    public void TeleportToPoseWithoutNotify()
+    {
+        // Don't teleport if no pose
+        if (!HasReceivedPose || !HasRig)
+        {
+            return;
+        }
+
         // Find the offsets for position and velocity to apply to the rig
         var pelvis = RigSkeleton.PhysicsPelvis;
 
@@ -853,8 +866,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
 
         RigRefs.RigManager.TeleportWithOffset(positionOffset, velocityOffset);
-
-        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     private void OnOwnedUpdate()

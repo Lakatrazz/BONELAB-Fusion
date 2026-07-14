@@ -221,10 +221,27 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
         TeleportToPose(PoseReceiver.InterpolatedPose);
     }
 
+    public void TeleportToPoseWithoutNotify()
+    {
+        if (!PoseReceiver.HasReceivedPose)
+        {
+            return;
+        }
+
+        TeleportToPoseWithoutNotify(PoseReceiver.InterpolatedPose);
+    }
+
     public void TeleportToPose(EntityPose pose)
     {
         OnBeforeTeleportToPose?.InvokeSafe($"executing {nameof(OnBeforeTeleportToPose)} hook");
 
+        TeleportToPoseWithoutNotify(pose);
+
+        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
+    }
+
+    public void TeleportToPoseWithoutNotify(EntityPose pose)
+    {
         for (var i = 0; i < _bodies.Length; i++)
         {
             var body = _bodies[i];
@@ -250,8 +267,6 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
             rigidbody.velocity = bodyPose.Velocity;
             rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
-
-        OnAfterTeleportToPose?.InvokeSafe($"executing {nameof(OnAfterTeleportToPose)} hook");
     }
 
     public void CapturePose()

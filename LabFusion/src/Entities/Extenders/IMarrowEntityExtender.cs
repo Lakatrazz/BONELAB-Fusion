@@ -19,5 +19,7 @@ public interface IMarrowEntityExtender : IEntityExtender
 
     void TeleportToPose();
 
+    void TeleportToPoseWithoutNotify();
+
     void HookOnReady(Action callback);
 }

@@ -70,6 +70,6 @@ public class HandExtender : EntityComponentArrayExtender<Hand>
             return;
         }
 
-        gripMarrowEntityExtender.TeleportToPose();
+        gripMarrowEntityExtender.TeleportToPoseWithoutNotify();
     }
 }
