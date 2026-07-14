@@ -1,5 +1,4 @@
-﻿using LabFusion.Utilities;
-using LabFusion.Player;
+﻿using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.Marrow.Messages;
 using LabFusion.Entities;
