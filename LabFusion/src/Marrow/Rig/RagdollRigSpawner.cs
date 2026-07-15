@@ -6,10 +6,21 @@ using UnityEngine;
 
 namespace LabFusion.Marrow.Rig;
 
+/// <summary>
+/// Manages the spawning of a ragdolled rig for representing dead bodies.
+/// </summary>
 public static class RagdollRigSpawner
 {
+    /// <summary>
+    /// This is the base name of ragdolled rigs.
+    /// </summary>
     public const string RagdollRigName = "[RigManager (Ragdoll)]";
 
+    /// <summary>
+    /// Spawns a ragdoll rig using another rig as a reference for its pose and avatar.
+    /// </summary>
+    /// <param name="referenceRig"></param>
+    /// <param name="spawnCallback"></param>
     public static void SpawnRagdollRig(RigManager referenceRig, Action<RigManager> spawnCallback)
     {
         var transform = referenceRig.transform;
@@ -26,6 +37,10 @@ public static class RagdollRigSpawner
         }
     }
 
+    /// <summary>
+    /// Spawns a dummy ragdoll rig.
+    /// </summary>
+    /// <param name="spawnCallback"></param>
     public static void SpawnRagdollRig(Action<RigManager> spawnCallback)
     {
         DummyRigCreator.CreateDummyRig(new DummyRigCreator.DummyRigCreationInfo()
