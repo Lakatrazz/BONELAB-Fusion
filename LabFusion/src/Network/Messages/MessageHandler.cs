@@ -1,5 +1,4 @@
 ﻿using LabFusion.Exceptions;
-using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -7,6 +6,14 @@ namespace LabFusion.Network;
 public abstract class MessageHandler
 {
     public virtual ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.Both;
+
+    /// <summary>
+    /// Allows this message to be sent by Clients using the <see cref="RelayType.None"/> relay type.
+    /// This should only be enabled for initial connection messages and nothing else for security reasons.
+    /// <para>Regardless of this setting, the Server can always send messages to Clients using <see cref="RelayType.None"/>.</para>
+    /// <para>Defaults to false.</para>
+    /// </summary>
+    public virtual bool AllowDirectRelay => false;
 
     public Net.NetAttribute[] NetAttributes { get; set; }
 
@@ -76,7 +83,7 @@ public abstract class MessageHandler
     internal bool ProcessPreRelayMessage(ReceivedMessage received) => OnPreRelayMessage(received);
 
     /// <summary>
-    /// Throws exceptions if the conditions set by <see cref="ExpectedReceiver"/> fail.
+    /// Throws exceptions and/or disconnects the sender if the conditions set by <see cref="ExpectedReceiver"/> or <see cref="AllowDirectRelay"/> fail.
     /// </summary>
     /// <param name="received"></param>
     /// <exception cref="MessageExpectedServerException"></exception>
@@ -85,6 +92,16 @@ public abstract class MessageHandler
     {
         bool isServerHandled = received.IsServerHandled;
 
+        // Check for the relay type
+        bool isDirectRelay = received.Route.Type == RelayType.None;
+
+        if (isServerHandled && !AllowDirectRelay && isDirectRelay)
+        {
+            DisconnectSenderAndThrowException();
+            return;
+        }
+
+        // Check for the expected receiver
         if (ExpectedReceiver == ExpectedReceiverType.ServerOnly && !isServerHandled)
         {
             throw new MessageExpectedServerException();
@@ -92,6 +109,18 @@ public abstract class MessageHandler
         else if (ExpectedReceiver == ExpectedReceiverType.ClientsOnly && isServerHandled)
         {
             throw new MessageExpectedClientException();
+        }
+
+        void DisconnectSenderAndThrowException()
+        {
+            var platformID = received.PlatformID;
+
+            if (platformID.HasValue)
+            {
+                NetworkConnectionManager.DisconnectUser(platformID.Value);
+            }
+
+            throw new MessageSpoofedException(platformID.ToString());
         }
     }
 

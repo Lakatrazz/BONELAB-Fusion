@@ -1,9 +1,14 @@
 ﻿namespace LabFusion.Network;
 
+/// <summary>
+/// The target that a message will be relayed to.
+/// </summary>
 public enum RelayType : byte
 {
     /// <summary>
-    /// Relays the message to the server, but without a proper "Sender" set. Only use this before a proper ID has been established.
+    /// Relays the message to the server, but without a proper "Sender" set. 
+    /// Only use this before a proper ID has been established.
+    /// <para>This relay type can only be used if the message has <see cref="MessageHandler.AllowDirectRelay"/> enabled OR when sent by the server.</para>
     /// </summary>
     None,
 

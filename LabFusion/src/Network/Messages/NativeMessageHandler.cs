@@ -7,6 +7,11 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
+/// <summary>
+/// A message handler for a message built into Fusion.
+/// This should never be extended outside of Fusion. 
+/// <para>For registering additional messages in Modules, the <see cref="LabFusion.SDK.Modules.ModuleMessageHandler"/> should be used instead.</para>
+/// </summary>
 public abstract class NativeMessageHandler : MessageHandler
 {
     public abstract byte Tag { get; }
@@ -70,7 +75,8 @@ public abstract class NativeMessageHandler : MessageHandler
             if (isServerHandled && !ValidateReceivedID(route.Type, ref sender, ref platformID))
             {
                 NetworkConnectionManager.DisconnectUser(platformID.Value);
-                return;
+
+                throw new IDSpoofedException(platformID.ToString());
             }
 
             var bytes = reader.ReadBytes();

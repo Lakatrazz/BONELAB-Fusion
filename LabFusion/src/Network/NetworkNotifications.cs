@@ -4,6 +4,9 @@ using LabFusion.UI.Popups;
 
 namespace LabFusion.Network;
 
+/// <summary>
+/// Common notifications for network related events.
+/// </summary>
 public static class NetworkNotifications
 {
     public const string NotificationTag = "Network";
