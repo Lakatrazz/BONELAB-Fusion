@@ -40,6 +40,10 @@ public static class DefaultRigAdditions
 
         // Allows for blood decals
         rigManager.health._testVisualDamage = true;
+
+        // Makes the neck easier to grab
+        var neckGrip = rigManager.physicsRig.torso.gNeck;
+        neckGrip.priority = 0.1f;
     }
 
     private static void OnRemoveRigAdditions(RigManager rigManager)
@@ -48,6 +52,10 @@ public static class DefaultRigAdditions
 
         // Remove the enabled blood decals
         rigManager.health._testVisualDamage = false;
+
+        // Remove the neck grip change
+        var neckGrip = rigManager.physicsRig.torso.gNeck;
+        neckGrip.priority = 1f;
     }
 
     private static void OnApplyLocalRigAdditions(RigManager rigManager)
