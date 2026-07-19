@@ -39,111 +39,55 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     /// </summary>
     public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
 
-    private NetworkEntity _networkEntity = null;
+    public NetworkEntity NetworkEntity { get; private set; } = null;
 
-    private PlayerID _playerID = null;
-
-    private string _username = "No Name";
-
-    public NetworkEntity NetworkEntity => _networkEntity;
-
-    private MarrowEntity _marrowEntity = null;
-    public MarrowEntity MarrowEntity => _marrowEntity;
+    public MarrowEntity MarrowEntity { get; private set; } = null;
 
     public bool IsRegistered { get; private set; } = false;
 
-    public PlayerID PlayerID => _playerID;
+    public PlayerID PlayerID { get; private set; } = null;
 
-    public string Username => _username;
+    public string Username { get; private set; } = "No Name";
 
-    private RigRefs _rigRefs = null;
-    public RigRefs RigRefs => _rigRefs;
+    public RigRefs RigRefs { get; private set; } = null;
 
-    private RigSkeleton _rigSkeleton = null;
-    public RigSkeleton RigSkeleton => _rigSkeleton;
+    public RigSkeleton RigSkeleton { get; private set; } = null;
 
     private ManagedTransform[] _smoothTrackedTransforms = null;
     public ManagedTransform[] SmoothTrackedTransforms => _smoothTrackedTransforms;
 
-    private RigPose _pose = null;
-    public RigPose RigPose => _pose;
+    public RigPose RigPose { get; private set; } = null;
 
     /// <summary>
-    /// The pose in use right before the latest pose was received from the player.
-    /// Used for interpolation to smooth out network latency.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
+    /// The receiver for the MarrowEntity pose from the player that handles interpolation and prediction.
     /// </summary>
-    public BodyPose LastReceivedPelvisPose { get; private set; } = new();
-
-    /// <summary>
-    /// The latest pose received from the player.
-    /// This is the pose that prediction is based on.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public BodyPose ReceivedPelvisPose { get; private set; } = new();
-
-    /// <summary>
-    /// The <see cref="ReceivedPelvisPose"/>, but predicted right after being received based on the network latency.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public BodyPose PredictedPelvisPose { get; private set; } = new();
-
-    /// <summary>
-    /// The current interpolated pelvis pose between <see cref="LastReceivedPelvisPose"/> and <see cref="PredictedPelvisPose"/>.
-    /// Additional prediction based on velocity is applied on top to simulate the player's travel while waiting for the next pose.
-    /// This is the pose actively used to replicate the player locally per physics update.
-    /// <para>Only valid if <see cref="HasReceivedPose"/> is true.</para>
-    /// </summary>
-    public BodyPose InterpolatedPelvisPose { get; private set; } = new();
-
-    /// <summary>
-    /// Whether an updated RigPose has been received from the player.
-    /// </summary>
-    public bool HasReceivedPose { get; private set; } = false;
-
-    /// <summary>
-    /// The time in seconds since we received a RigPose from the player.
-    /// </summary>
-    public float TimeSinceReceivedPose { get; private set; } = 0f;
-
-    /// <summary>
-    /// The percent from 0 to 1 of interpolation from <see cref="LastReceivedPelvisPose"/> to <see cref="PredictedPelvisPose"/>.
-    /// </summary>
-    public float InterpolationPercent { get; private set; } = 0f;
+    public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
     /// <summary>
     /// Tracks entities that the player will ignore collision with for a specific amount of time.
     /// </summary>
     public EntityIgnorer Ignorer { get; private set; } = null;
 
-    private RigPuppet _puppet = null;
-    public RigPuppet Puppet => _puppet;
+    public RigPuppet Puppet { get; private set; } = null;
 
     private RigNameTag _nametag = null;
 
-    private RigIcon _icon = null;
-    public RigIcon Icon => _icon;
+    public RigIcon Icon { get; private set; } = null;
 
-    private RigHeadUI _headUI = null;
-    public RigHeadUI HeadUI => _headUI;
+    public RigHeadUI HeadUI { get; private set; } = null;
 
     private RigArt _art = null;
     private RigPhysics _physics = null;
 
-    private RigGrabber _grabber = null;
-    public RigGrabber Grabber => _grabber;
+    public RigGrabber Grabber { get; private set; } = null;
 
-    private RigAvatarSetter _avatarSetter = null;
-    public RigAvatarSetter AvatarSetter => _avatarSetter;
+    public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
-    private RigHealthBar _healthBar = null;
-    public RigHealthBar HealthBar => _healthBar;
+    public RigHealthBar HealthBar { get; private set; } = null;
 
-    private RigLivesBar _livesBar = null;
-    public RigLivesBar LivesBar => _livesBar;
+    public RigLivesBar LivesBar { get; private set; } = null;
 
-    private RigVoiceSource _voiceSource = null;
-    public RigVoiceSource VoiceSource => _voiceSource;
+    public RigVoiceSource VoiceSource { get; private set; } = null;
 
     private bool _isPhysicsRigDirty = false;
     private Queue<PhysicsRigStateData> _physicsRigStates = new();
@@ -215,7 +159,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public event Action<bool> OnHiddenChanged;
 
     /// <summary>
-    /// The distance of this PlayerRep's head to the local player's head (squared).
+    /// The distance of this NetworkPlayer's head to the local player's head (squared).
     /// </summary>
     public float DistanceSqr { get; private set; }
 
@@ -226,8 +170,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public event Action OnBeforeTeleportToPose, OnAfterTeleportToPose;
 
-    private readonly JawFlapper _jawFlapper = new();
-    public JawFlapper JawFlapper => _jawFlapper;
+    public JawFlapper JawFlapper { get; private set; } = new();
+
+    private readonly EntityPose _receivedEntityPose = new(1);
 
     public static NetworkPlayer CreatePlayer(NetworkEntity networkEntity, PlayerID playerID)
     {
@@ -240,42 +185,45 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private NetworkPlayer(NetworkEntity networkEntity, PlayerID playerID)
     {
-        _networkEntity = networkEntity;
-        _playerID = playerID;
+        NetworkEntity = networkEntity;
+        PlayerID = playerID;
 
-        _puppet = new();
+        Puppet = new();
 
         _nametag = new()
         {
             CrownVisible = playerID.IsHost,
         };
 
-        _headUI = new();
+        HeadUI = new();
 
-        _icon = new()
+        Icon = new()
         {
             Visible = false,
         };
 
-        _healthBar = new()
+        HealthBar = new()
         {
             Visible = false,
         };
 
-        _livesBar = new()
+        LivesBar = new()
         {
             Visible = false,
         };
 
-        _avatarSetter = new(networkEntity);
-        _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
+        AvatarSetter = new(networkEntity);
+        AvatarSetter.OnAvatarChanged += UpdateAvatarSettings;
+
+        // The only synced body is the pelvis, so its initialized with one
+        PoseReceiver.InitializePoses(1);
 
         // Register the default head UI elements so they're automatically spawned in
         HeadUI.RegisterElement(_nametag);
-        HeadUI.RegisterElement(_avatarSetter.ProgressBar);
-        HeadUI.RegisterElement(_icon);
-        HeadUI.RegisterElement(_healthBar);
-        HeadUI.RegisterElement(_livesBar);
+        HeadUI.RegisterElement(AvatarSetter.ProgressBar);
+        HeadUI.RegisterElement(Icon);
+        HeadUI.RegisterElement(HealthBar);
+        HeadUI.RegisterElement(LivesBar);
     }
 
     private void Initialize()
@@ -325,7 +273,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             yield break;
         }
 
-        _puppet.CreatePuppet(OnPuppetCreated);
+        Puppet.CreatePuppet(OnPuppetCreated);
 
         bool IsPlayerLoading()
         {
@@ -359,7 +307,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnPuppetCreated(RigManager rigManager)
     {
         // Spawn the head ui
-        _headUI.Spawn();
+        HeadUI.Spawn();
 
         // Mark our rig dirty for setting updates
         MarkDirty();
@@ -466,15 +414,15 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void DestroyPuppet()
     {
-        if (_puppet.HasPuppet)
+        if (Puppet.HasPuppet)
         {
-            _puppet.DestroyPuppet();
+            Puppet.DestroyPuppet();
         }
 
         _nametag.Despawn();
 
         // Despawn the head UI
-        _headUI.Despawn();
+        HeadUI.Despawn();
     }
 
     private void OnMetadataChanged(string key, string value)
@@ -487,7 +435,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Read display name
         if (PlayerID.TryGetDisplayName(out var name))
         {
-            _username = name;
+            Username = name;
         }
 
         // Update nametag
@@ -569,11 +517,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         UnhookPlayer();
 
-        _networkEntity = null;
-        _playerID = null;
+        NetworkEntity = null;
+        PlayerID = null;
 
         VoiceSource?.DestroyVoiceSource();
-        _voiceSource = null;
+        VoiceSource = null;
 
         OnUnregisterUpdates();
     }
@@ -642,15 +590,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         float unscaledDeltaTime = deltaTime / TimeReferences.SafeTimeScale;
 
-        TimeSinceReceivedPose += unscaledDeltaTime;
-
-        InterpolationPercent = ManagedMathf.Clamp01(TimeSinceReceivedPose / NetworkTickManager.LinearInterpolationLength);
-
-        InterpolatedPelvisPose.Interpolate(LastReceivedPelvisPose, PredictedPelvisPose, InterpolationPercent);
-
-        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
-
-        InterpolatedPelvisPose.PredictFrom(predictionTime, ReceivedPelvisPose);
+        PoseReceiver.TickPose(unscaledDeltaTime);
     }
 
     public void OnEntityFixedUpdate(float deltaTime)
@@ -692,7 +632,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        _headUI.UpdateTransform(RigRefs.RigManager);
+        HeadUI.UpdateTransform(RigRefs.RigManager);
 
         // Update the player if its dirty and has an avatar
         var rm = RigRefs.RigManager;
@@ -741,7 +681,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnCullExtras()
     {
-        _headUI.Visible = false;
+        HeadUI.Visible = false;
 
         if (HasRig)
         {
@@ -752,7 +692,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnUncullExtras()
     {
-        _headUI.Visible = true;
+        HeadUI.Visible = true;
 
         if (HasRig)
         {
@@ -834,7 +774,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void TeleportToPose()
     {
         // Don't teleport if no pose
-        if (!HasReceivedPose || !HasRig)
+        if (!PoseReceiver.HasReceivedPose || !HasRig)
         {
             return;
         }
@@ -849,7 +789,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void TeleportToPoseWithoutNotify()
     {
         // Don't teleport if no pose
-        if (!HasReceivedPose || !HasRig)
+        if (!PoseReceiver.HasReceivedPose || !HasRig)
         {
             return;
         }
@@ -860,8 +800,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var currentPelvisPosition = pelvis.transform.position;
         var currentPelvisVelocity = pelvis.velocity;
 
-        var targetPelvisPosition = InterpolatedPelvisPose.Position;
-        var targetPelvisVelocity = InterpolatedPelvisPose.Velocity;
+        var pelvisPose = PoseReceiver.InterpolatedPose.Bodies[0];
+
+        var targetPelvisPosition = pelvisPose.Position;
+        var targetPelvisVelocity = pelvisPose.Velocity;
 
         var positionOffset = targetPelvisPosition - currentPelvisPosition;
         var velocityOffset = targetPelvisVelocity - currentPelvisVelocity;
@@ -886,12 +828,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnApplyBodyForces(float deltaTime)
     {
-        if (!HasReceivedPose)
+        if (!PoseReceiver.HasReceivedPose)
         {
             return;
         }
 
-        var pelvisPose = InterpolatedPelvisPose;
+        var pelvisPose = PoseReceiver.InterpolatedPose.Bodies[0];
 
         // Stop bodies
         if (pelvisPose == null)
@@ -972,35 +914,22 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        _pose = pose;
+        RigPose = pose;
 
-        if (HasReceivedPose)
-        {
-            InterpolatedPelvisPose.WriteTo(LastReceivedPelvisPose);
-        }
-        else
-        {
-            pose.PelvisPose.WriteTo(LastReceivedPelvisPose);
-        }
+        bool hadReceivedPose = PoseReceiver.HasReceivedPose;
 
-        pose.PelvisPose.WriteTo(ReceivedPelvisPose);
+        pose.PelvisPose.WriteTo(_receivedEntityPose.Bodies[0]);
 
-        pose.PelvisPose.WriteTo(PredictedPelvisPose);
-
-        float predictionTime = MathF.Min(TimeSinceReceivedPose, NetworkTickManager.MaxPredictionTime);
-
-        PredictedPelvisPose.Predict(predictionTime);
-
-        LastReceivedPelvisPose.WriteTo(InterpolatedPelvisPose);
+        PoseReceiver.ReceivePose(_receivedEntityPose);
 
         // Teleport to the pose if this is our first
-        if (!HasReceivedPose)
+        if (!hadReceivedPose)
         {
             TeleportToPose();
             CopyPosePointsToSmoothPoints();
         }
 
-        RefreshReceivedState();
+        PoseReceiver.RefreshPoseState();
 
         // Update the health
         HealthBar.Health = pose.Health;
@@ -1010,15 +939,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         RigSkeleton.Health.max_Health = pose.MaxHealth;
     }
 
-    private void RefreshReceivedState()
-    {
-        TimeSinceReceivedPose = 0f;
-        HasReceivedPose = true;
-    }
-
     private void CopyPosePointsToSmoothPoints()
     {
-        if (!HasReceivedPose)
+        if (!PoseReceiver.HasReceivedPose)
         {
             return;
         }
@@ -1032,7 +955,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnOverrideControllerRig()
     {
-        if (!HasReceivedPose)
+        if (!PoseReceiver.HasReceivedPose)
         {
             RigRefs.RigManager.remapHeptaRig.inWeight = 0f;
             return;
@@ -1058,8 +981,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnRigDestroyed()
     {
-        _pose = null;
-        HasReceivedPose = false;
+        RigPose = null;
+        PoseReceiver.ClearPoseState();
 
         NetworkEntity?.ClearDataCaughtUpPlayers();
 
@@ -1068,20 +991,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnFoundRigManager(RigManager rigManager)
     {
-        _marrowEntity = rigManager.physicsRig.marrowEntity;
+        MarrowEntity = rigManager.physicsRig.marrowEntity;
 
-        Ignorer = new(_marrowEntity);
+        Ignorer = new(MarrowEntity);
 
-        _rigSkeleton = new(rigManager);
-        _rigRefs = new(rigManager);
+        RigSkeleton = new(rigManager);
+        RigRefs = new(rigManager);
 
         _smoothTrackedTransforms = new ManagedTransform[RigAbstractor.TransformSyncCount];
 
-        _rigRefs.HookOnDestroy(OnRigDestroyed);
+        RigRefs.HookOnDestroy(OnRigDestroyed);
 
-        _pose = new();
+        RigPose = new();
 
-        _grabber = new RigGrabber(RigRefs);
+        Grabber = new RigGrabber(RigRefs);
 
         _art = new(rigManager);
         _physics = new(rigManager);
@@ -1100,8 +1023,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             OnEntityCull(MarrowEntity.IsCulled);
 
             // Create voice source
-            _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
-            _voiceSource.CreateVoiceSource(PlayerID.SmallID);
+            VoiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
+            VoiceSource.CreateVoiceSource(PlayerID.SmallID);
         }
 
         // Run events
