@@ -87,7 +87,7 @@ public static class MirrorPatches
 
             if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var player))
             {
-                rig = player.RigRefs.RigManager;
+                rig = player.NetworkRig.RigRefs.RigManager;
             }
         }
         // Otherwise, clone the mirror and setup IDs
@@ -148,7 +148,7 @@ public static class MirrorPatches
 
             if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var identifiedPlayer))
             {
-                rig = identifiedPlayer.RigRefs.RigManager;
+                rig = identifiedPlayer.NetworkRig.RigRefs.RigManager;
             }
         }
 
@@ -206,7 +206,7 @@ public static class MirrorPatches
 
             if (playerId != null && NetworkPlayerManager.TryGetPlayer(playerId, out var identifiedPlayer))
             {
-                rig = identifiedPlayer.RigRefs.RigManager;
+                rig = identifiedPlayer.NetworkRig.RigRefs.RigManager;
             }
         }
 

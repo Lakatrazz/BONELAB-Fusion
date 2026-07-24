@@ -55,7 +55,7 @@ public class PlayerRepSeatMessage : NativeMessageHandler
             return;
         }
 
-        player.HookOnReady(OnPlayerReady);
+        player.NetworkRig.HookOnReady(OnPlayerReady);
 
         void OnPlayerReady()
         {
@@ -86,20 +86,20 @@ public class PlayerRepSeatMessage : NativeMessageHandler
 
             if (data.IsIngress)
             {
-                seat.IngressRig(player.RigRefs.RigManager);
+                seat.IngressRig(player.NetworkRig.RigRefs.RigManager);
 
                 if (marrowEntity != null)
                 {
-                    player.Ignorer.TimedIgnoreEntity(marrowEntity, SeatIgnoreTime);
+                    player.NetworkRig.Ignorer.TimedIgnoreEntity(marrowEntity, SeatIgnoreTime);
                 }
             }
-            else if (player.RigRefs.RigManager.activeSeat)
+            else if (player.NetworkRig.RigRefs.RigManager.activeSeat)
             {
-                player.RigRefs.RigManager.activeSeat.EgressRig(true);
+                player.NetworkRig.RigRefs.RigManager.activeSeat.EgressRig(true);
 
                 if (marrowEntity != null)
                 {
-                    player.Ignorer.CancelIgnoreEntity(marrowEntity);
+                    player.NetworkRig.Ignorer.CancelIgnoreEntity(marrowEntity);
                 }
             }
         }

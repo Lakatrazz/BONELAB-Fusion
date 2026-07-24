@@ -27,12 +27,12 @@ public class BodyLogEffectMessage : ModuleMessageHandler
 
     private static void PlayPullCordEffects(NetworkPlayer player)
     {
-        if (!player.HasRig)
+        if (!player.NetworkRig.HasRig)
         {
             return;
         }
 
-        var pullCord = player.RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
+        var pullCord = player.NetworkRig.RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
 
         if (pullCord == null)
         {

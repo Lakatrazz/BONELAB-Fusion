@@ -56,7 +56,7 @@ public abstract class SerializedGrab : INetSerializable
         }
 
         // Don't grab if the player rig doesn't exist
-        if (!player.HasRig)
+        if (!player.NetworkRig.HasRig)
         {
             return;
         }

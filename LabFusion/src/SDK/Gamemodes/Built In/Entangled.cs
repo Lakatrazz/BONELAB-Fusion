@@ -64,14 +64,14 @@ public class Entangled : Gamemode
                 return;
 
             // Validate pelvis rigidbodies
-            if (selfPelvis == null && NetworkPlayerManager.TryGetPlayer(player1, out var netPlayer1) && netPlayer1.HasRig)
+            if (selfPelvis == null && NetworkPlayerManager.TryGetPlayer(player1, out var netPlayer1) && netPlayer1.NetworkRig.HasRig)
             {
-                selfPelvis = netPlayer1.RigRefs.RigManager.physicsRig.torso._pelvisRb;
+                selfPelvis = netPlayer1.NetworkRig.RigRefs.RigManager.physicsRig.torso._pelvisRb;
             }
 
-            if (otherPelvis == null && NetworkPlayerManager.TryGetPlayer(player2, out var netPlayer2) && netPlayer2.HasRig)
+            if (otherPelvis == null && NetworkPlayerManager.TryGetPlayer(player2, out var netPlayer2) && netPlayer2.NetworkRig.HasRig)
             {
-                otherPelvis = netPlayer2.RigRefs.RigManager.physicsRig.torso._pelvisRb;
+                otherPelvis = netPlayer2.NetworkRig.RigRefs.RigManager.physicsRig.torso._pelvisRb;
             }
 
             // If we have both pelvises, update them
@@ -312,9 +312,9 @@ public class Entangled : Gamemode
         Metadata.TrySetMetadata(GetPartnerKey(player2), player1.PlatformID.ToString());
 
         // Teleport the first player to the second
-        if (NetworkPlayerManager.TryGetPlayer(player2, out var rep) && rep.HasRig)
+        if (NetworkPlayerManager.TryGetPlayer(player2, out var rep) && rep.NetworkRig.HasRig)
         {
-            PlayerSender.SendPlayerTeleport(player1, rep.RigRefs.RigManager.physicsRig._feetRb.position);
+            PlayerSender.SendPlayerTeleport(player1, rep.NetworkRig.RigRefs.RigManager.physicsRig._feetRb.position);
         }
     }
 

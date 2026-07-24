@@ -44,12 +44,12 @@ public class BodyLogToggleMessage : ModuleMessageHandler
 
     private static void SetBallEnabled(NetworkPlayer player, bool isEnabled)
     {
-        if (!player.HasRig)
+        if (!player.NetworkRig.HasRig)
         {
             return;
         }
 
-        var pullCord = player.RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
+        var pullCord = player.NetworkRig.RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
 
         if (pullCord == null)
         {

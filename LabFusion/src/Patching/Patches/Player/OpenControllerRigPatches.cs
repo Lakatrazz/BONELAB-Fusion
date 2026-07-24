@@ -63,15 +63,17 @@ public static class OpenEarlyUpdatePatch
     }
 }
 
-// Overrides hand and headset positions for external players
+// Overrides hand and headset positions for external rigs
 [HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.OnRealHeptaEarlyUpdate))]
 public static class OpenRealHeptaEarlyUpdatePatch
 {
     public static void Prefix(OpenControllerRig __instance, float deltaTime)
     {
-        if (NetworkPlayerManager.TryGetPlayer(__instance.manager, out var player) && !player.NetworkEntity.IsOwner)
+        var rigManager = __instance.manager;
+
+        if (NetworkRig.Cache.TryGet(rigManager, out var networkRig) && !networkRig.NetworkEntity.IsOwner)
         {
-            player.OnOverrideControllerRig();
+            networkRig.OnOverrideControllerRig();
         }
     }
 }

@@ -236,12 +236,12 @@ namespace LabFusion.Marrow.Integration
                 return 1f;
             }
 
-            if (!NetworkPlayerManager.TryGetPlayer((byte)InputID.Value, out var networkPlayer) || !networkPlayer.HasRig)
+            if (!NetworkPlayerManager.TryGetPlayer((byte)InputID.Value, out var networkPlayer) || !networkPlayer.NetworkRig.HasRig)
             {
                 return 1f;
             }
 
-            var distance = (networkPlayer.RigRefs.Mouth.position - transform.position).magnitude;
+            var distance = (networkPlayer.NetworkRig.RigRefs.Mouth.position - transform.position).magnitude;
 
             return CalculateVolumeFalloff(distance);
         }

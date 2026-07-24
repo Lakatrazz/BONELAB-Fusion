@@ -71,6 +71,6 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
         }
 
         // Apply pose
-        networkPlayer.ReceivePose(pose);
+        networkPlayer.NetworkRig.OnPoseReceived(pose);
     }
 }

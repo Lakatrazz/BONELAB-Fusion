@@ -46,9 +46,9 @@ public class PlayerRepActionMessage : NativeMessageHandler
         PlayerID otherPlayer = data.OtherPlayer.HasValue ? PlayerIDManager.GetPlayerID(data.OtherPlayer.Value) : null;
 
         // If this isn't our rig, call these functions
-        if (!player.NetworkEntity.IsOwner && player.HasRig)
+        if (!player.NetworkEntity.IsOwner && player.NetworkRig.HasRig)
         {
-            var rm = player.RigRefs.RigManager;
+            var rm = player.NetworkRig.RigRefs.RigManager;
 
             switch (data.Type)
             {
@@ -60,7 +60,7 @@ public class PlayerRepActionMessage : NativeMessageHandler
                     break;
                 case PlayerActionType.DEATH:
                     rm.physicsRig.headSfx.DeathVocal();
-                    player.RigRefs.DisableInteraction();
+                    player.NetworkRig.RigRefs.DisableInteraction();
                     break;
                 case PlayerActionType.DYING:
                     rm.physicsRig.headSfx.DyingVocal();

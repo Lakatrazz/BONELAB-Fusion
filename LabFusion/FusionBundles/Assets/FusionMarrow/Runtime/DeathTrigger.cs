@@ -88,7 +88,7 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            var health = networkPlayer.RigRefs.Health;
+            var health = networkPlayer.NetworkRig.RigRefs.Health;
 
             if (!KillDamageOverride.HasValue || KillDamageOverride.Value == true)
             {

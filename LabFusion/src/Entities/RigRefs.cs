@@ -84,6 +84,43 @@ public class RigRefs
         DelayUtilities.InvokeDelayed(Internal_DelayedEnableInteraction, 300);
     }
 
+    public void DetachSlottedTransforms(TemporaryTransformDetacher detacher)
+    {
+        foreach (var slot in RigSlots)
+        {
+            var slottedWeapon = slot._slottedWeapon;
+
+            if (slottedWeapon == null)
+            {
+                continue;
+            }
+
+            var host = slottedWeapon.interactableHost;
+
+            if (host == null)
+            {
+                continue;
+            }
+
+            var entity = host.marrowEntity;
+
+            if (entity == null)
+            {
+                continue;
+            }
+
+            detacher.DetachTransform(entity.transform);
+        }
+
+        foreach (var receiver in AmmoReceivers)
+        {
+            foreach (var artTarget in receiver._ammoArtTargets)
+            {
+                detacher.DetachTransform(artTarget.transform);
+            }
+        }
+    }
+
     private void Internal_DelayedEnableInteraction()
     {
         if (RigGrips == null)

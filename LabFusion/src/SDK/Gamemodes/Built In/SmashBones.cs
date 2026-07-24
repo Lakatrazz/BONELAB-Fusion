@@ -288,7 +288,7 @@ public class SmashBones : Gamemode
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = !spectator;
-            networkPlayer.ForceHide = spectator && !selfSpectator;
+            networkPlayer.NetworkRig.ForceHide = spectator && !selfSpectator;
         }
 
         if (player.IsMe)
@@ -302,7 +302,7 @@ public class SmashBones : Gamemode
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = false;
-            networkPlayer.ForceHide = false;
+            networkPlayer.NetworkRig.ForceHide = false;
         }
     }
 
@@ -333,7 +333,7 @@ public class SmashBones : Gamemode
 
             bool spectator = TeamManager.GetPlayerTeam(player) == SpectatorTeam;
 
-            networkPlayer.ForceHide = spectator && !selfSpectator;
+            networkPlayer.NetworkRig.ForceHide = spectator && !selfSpectator;
         }
     }
 

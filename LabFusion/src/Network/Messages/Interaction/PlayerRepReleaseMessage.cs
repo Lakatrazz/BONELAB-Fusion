@@ -40,7 +40,7 @@ public class PlayerRepReleaseMessage : NativeMessageHandler
             return;
         }
 
-        if (!player.HasRig)
+        if (!player.NetworkRig.HasRig)
         {
             return;
         }

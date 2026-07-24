@@ -512,9 +512,9 @@ public static class MenuLocation
             var avatarTitle = player.Metadata.AvatarTitle.GetValue();
             var modId = player.Metadata.AvatarModID.GetValue();
 
-            if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
+            if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.NetworkRig.HasRig)
             {
-                avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
+                avatarTitle = networkPlayer.NetworkRig.RigRefs.RigManager.AvatarCrate.Crate.Title;
             }
 
             ElementIconHelper.SetProfileResultIcon(playerResult, avatarTitle, modId);

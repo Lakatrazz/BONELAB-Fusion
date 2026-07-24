@@ -39,9 +39,9 @@ public class SerializedWorldGrab : SerializedGrab
 
     public override Grip GetGrip()
     {
-        if (NetworkPlayerManager.TryGetPlayer(grabberId, out var player) && player.HasRig)
+        if (NetworkPlayerManager.TryGetPlayer(grabberId, out var player) && player.NetworkRig.HasRig)
         {
-            var worldGrip = player.RigRefs.RigManager.worldGrip;
+            var worldGrip = player.NetworkRig.RigRefs.RigManager.worldGrip;
             return worldGrip;
         }
 

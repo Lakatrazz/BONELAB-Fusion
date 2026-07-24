@@ -37,11 +37,11 @@ public static class MagazineUtilities
 
     public static void GrabMagazine(Magazine magazine, NetworkPlayer player, Handedness handedness)
     {
-        player.HookOnReady(OnPlayerReady);
+        player.NetworkRig.HookOnReady(OnPlayerReady);
 
         void OnPlayerReady()
         {
-            var rigManager = player.RigRefs.RigManager;
+            var rigManager = player.NetworkRig.RigRefs.RigManager;
 
             var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
 

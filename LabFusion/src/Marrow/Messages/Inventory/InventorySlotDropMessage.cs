@@ -78,10 +78,10 @@ public class InventorySlotDropMessage : ModuleMessageHandler
         {
             if (weaponSlot && weaponSlot.grip)
             {
-                weaponSlot.grip.MoveIntoHand(grabber.RigRefs.GetHand(data.Handedness));
+                weaponSlot.grip.MoveIntoHand(grabber.NetworkRig.RigRefs.GetHand(data.Handedness));
             }
 
-            var hand = grabber.RigRefs.GetHand(data.Handedness);
+            var hand = grabber.NetworkRig.RigRefs.GetHand(data.Handedness);
 
             if (hand)
             {

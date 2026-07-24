@@ -385,9 +385,9 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        if (player.HasRig)
+        if (player.NetworkRig.HasRig)
         {
-            var feetPosition = player.RigRefs.RigManager.physicsRig.feet.transform.position;
+            var feetPosition = player.NetworkRig.RigRefs.RigManager.physicsRig.feet.transform.position;
 
             LocalPlayer.TeleportToPosition(feetPosition, Vector3.forward);
         }

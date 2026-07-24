@@ -52,8 +52,8 @@ public class DescentNooseMessage : ModuleMessageHandler
                         // Assign the RigManager and Health to the noose
                         // We assign the rigmanager so the noose knows what neck to joint to
                         // The player health is also assigned so it doesn't damage the local player
-                        DescentEventHandler.Noose.rM = player.RigRefs.RigManager;
-                        DescentEventHandler.Noose.pH = player.RigRefs.Health;
+                        DescentEventHandler.Noose.rM = player.NetworkRig.RigRefs.RigManager;
+                        DescentEventHandler.Noose.pH = player.NetworkRig.RigRefs.Health;
 
                         // Now we actually attach the neck of the player
                         DescentEventHandler.Noose.AttachNeck();

@@ -36,7 +36,7 @@ public static class PhysLimbPatches
             return;
         }
 
-        var physicsRig = networkPlayer.RigRefs.RigManager.physicsRig;
+        var physicsRig = networkPlayer.NetworkRig.RigRefs.RigManager.physicsRig;
 
         bool left = __instance == physicsRig.legLf;
 

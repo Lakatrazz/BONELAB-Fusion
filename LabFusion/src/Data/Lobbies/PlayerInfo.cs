@@ -44,9 +44,9 @@ public class PlayerInfo
         playerID.TryGetPermissionLevel(out var level);
         PermissionLevel = level;
 
-        if (NetworkPlayerManager.TryGetPlayer(playerID, out var networkPlayer) && networkPlayer.HasRig)
+        if (NetworkPlayerManager.TryGetPlayer(playerID, out var networkPlayer) && networkPlayer.NetworkRig.HasRig)
         {
-            var crate = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate;
+            var crate = networkPlayer.NetworkRig.RigRefs.RigManager.AvatarCrate.Crate;
             AvatarTitle = crate.Title;
         }
 

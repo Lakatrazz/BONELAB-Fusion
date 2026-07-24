@@ -53,11 +53,11 @@ public class BonelabNetworkPlayer : IEntityExtender, IPlayerLateUpdatable
             return;
         }
 
-        if (!NetworkPlayer.HasRig)
+        if (!NetworkPlayer.NetworkRig.HasRig)
         {
             return;
         }
 
-        RigVitals.Resolve(NetworkPlayer.RigRefs);
+        RigVitals.Resolve(NetworkPlayer.NetworkRig.RigRefs);
     }
 }

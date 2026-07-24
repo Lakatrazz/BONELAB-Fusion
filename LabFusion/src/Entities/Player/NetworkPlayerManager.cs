@@ -43,7 +43,7 @@ public static class NetworkPlayerManager
 
     public static bool HasPlayer(RigManager rigManager)
     {
-        return NetworkPlayer.RigCache.ContainsSource(rigManager);
+        return TryGetPlayer(rigManager, out _);
     }
 
     public static bool HasPlayer(byte playerID)
@@ -68,7 +68,14 @@ public static class NetworkPlayerManager
 
     public static bool TryGetPlayer(RigManager rigManager, out NetworkPlayer player)
     {
-        return NetworkPlayer.RigCache.TryGet(rigManager, out player);
+        if (NetworkRig.Cache.TryGet(rigManager, out var networkRig))
+        {
+            player = networkRig.NetworkEntity.GetExtender<NetworkPlayer>();
+            return player != null;
+        }
+
+        player = null;
+        return false;
     }
 
     public static bool TryGetPlayer(MarrowEntity marrowEntity, out NetworkPlayer player)

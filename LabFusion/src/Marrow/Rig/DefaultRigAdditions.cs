@@ -31,7 +31,7 @@ public static class DefaultRigAdditions
     private static void OnNetworkPlayerAvatarChanged(NetworkPlayer networkPlayer, Avatar avatar, string barcode)
     {
         // Reset blood hits so that they're properly cleared
-        networkPlayer.RigRefs.Health.ResetHits();
+        networkPlayer.NetworkRig.RigRefs.Health.ResetHits();
     }
 
     private static void OnApplyRigAdditions(RigManager rigManager)
