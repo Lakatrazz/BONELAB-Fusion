@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace LabFusion.Network.EpicGames;
 
-internal class EOSOculusAuth : EOSAuthInterface
+internal class EOSDeviceIDAuth : EOSAuthInterface
 {
-    internal override ExternalAccountType AccountType => ExternalAccountType.Oculus;
+    internal override ExternalAccountType AccountType => ExternalAccountType.Epic;
 
     internal override ExternalCredentialType CredentialType => ExternalCredentialType.DeviceidAccessToken;
 
@@ -17,6 +17,29 @@ internal class EOSOculusAuth : EOSAuthInterface
     internal override bool LoginWithDisplayName => true;
     
     internal override IEnumerator GetDisplayNameAsync(Action<string> onDisplayNameReceived)
+    {
+        var platform = PlatformHelper.GetPlatform();
+
+        switch (platform)
+        {
+            case PlatformHelper.Platform.Steam:
+                yield return GetDisplayNameSteamAsync(onDisplayNameReceived);
+                yield break;
+            case PlatformHelper.Platform.Rift:
+            case PlatformHelper.Platform.Quest:
+                yield return GetDisplayNameOculusAsync(onDisplayNameReceived);
+                yield break;
+        }
+    }
+    
+    private IEnumerator GetDisplayNameSteamAsync(Action<string> onDisplayNameReceived)
+    {
+        string displayName = Il2CppSteamworks.SteamClient.Name;
+        onDisplayNameReceived?.Invoke(displayName);
+        yield break;
+    }
+    
+    private IEnumerator GetDisplayNameOculusAsync(Action<string> onDisplayNameReceived)
     {
         string displayName = null;
         bool requestComplete = false;

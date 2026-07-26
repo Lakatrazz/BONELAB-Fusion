@@ -33,7 +33,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     private EOSManager _eosManager;
     private EOSAuthManager _authManager;
-    private EOSFriendsManager _friendsManager;
     private EOSLobbyManager _lobbyManager;
     private EOSP2PManager _p2pManager;
     private EOSConnectionStateManager  _connectionStateManager;
@@ -101,9 +100,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
         // Initialize managers
         InitializeManagers();
-        
-        // Initialize friends
-        MelonCoroutines.Start(_friendsManager?.InitializeAsync());
 
         // Hook events
         HookEvents();
@@ -145,7 +141,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     private void InitializeManagers()
     {
-        _friendsManager = new EOSFriendsManager(LocalUserId, _authManager.authInterface.AccountType);
         _lobbyManager = new EOSLobbyManager(LocalUserId);
         _p2pManager = new EOSP2PManager(LocalUserId, EOSMessenger.SocketId);
         _connectionStateManager = new EOSConnectionStateManager();
@@ -163,8 +158,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
         _connectionHandler = null;
         _p2pManager = null;
         _lobbyManager = null;
-        _friendsManager.Shutdown();
-        _friendsManager = null;
 
         EOSMessenger.Reset();
     }
@@ -176,10 +169,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
         return "FusionPlayer";
     }
 
+    // EOS doesn't have a friends system when using device Ids.
     public override bool IsFriend(string userId)
     {
-        var productUserId = ProductUserId.FromString(userId);
-        return _friendsManager.IsFriend(productUserId);
+        return  userId != null && userId == LocalUserId.ToString();
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)

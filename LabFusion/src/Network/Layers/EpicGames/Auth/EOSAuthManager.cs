@@ -11,30 +11,17 @@ namespace LabFusion.Network.EpicGames;
 /// </summary>
 internal class EOSAuthManager
 {
-    internal const string UnknownDisplayName = "Unknown";
+    private const string UnknownDisplayName = "Unknown";
     
     internal ProductUserId LocalUserId { get; private set; }
-    internal EOSAuthInterface authInterface { get; set; }
+    private EOSAuthInterface authInterface { get; set; }
     private bool IsLoggedIn => LocalUserId != null;
     
     private ulong _expirationNotificationId;
 
     internal EOSAuthManager()
-    {
-        var platform = PlatformHelper.GetPlatform();
-
-        switch (platform)
-        {
-            case PlatformHelper.Platform.Steam:
-                authInterface = new EOSSteamAuth();
-                break;
-            case PlatformHelper.Platform.Rift:
-            case PlatformHelper.Platform.Quest:
-                authInterface = new EOSOculusAuth();
-                break;
-            default:
-                throw new NotSupportedException($"Platform {platform} not supported");
-        }
+    { 
+        authInterface = new EOSDeviceIDAuth();
     }
 
     internal IEnumerator LoginAsync(Action<bool> onComplete)
@@ -68,6 +55,10 @@ internal class EOSAuthManager
         yield return authInterface.GetDisplayNameAsync(name => displayName = name);
 
         onComplete?.Invoke(!string.IsNullOrEmpty(displayName) ? displayName : UnknownDisplayName);
+        
+#if DEBUG
+        FusionLogger.Log($"Resolved display name: {displayName ?? UnknownDisplayName}");
+#endif
     }
 
     private IEnumerator LoginWithInterfaceAsync(Action<bool> onComplete)
@@ -184,7 +175,7 @@ internal class EOSAuthManager
         _expirationNotificationId = EOSInterfaces.Connect.AddNotifyAuthExpiration(ref expirationOptions, null, (ref AuthExpirationCallbackInfo _) =>
             {
 #if DEBUG
-                FusionLogger.Log("EOS token expiring - starting refresh...");
+                FusionLogger.Log("EOS token expiring. Starting refresh...");
 #endif
                 MelonCoroutines.Start(RefreshTokenAsync());
             }
@@ -219,7 +210,7 @@ internal class EOSAuthManager
         }
         else
         {
-            FusionLogger.Error("EOS token refresh failed - user may need to re-authenticate.");
+            FusionLogger.Error("EOS token refresh failed! The user may need to re-launch the game.");
             LocalUserId = null;
         }
     }
