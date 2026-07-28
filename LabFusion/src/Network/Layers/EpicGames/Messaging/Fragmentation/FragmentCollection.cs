@@ -9,17 +9,21 @@ internal struct FragmentCollection
     internal bool[] ReceivedFlags;
     internal int ReceivedCount;
     internal int TotalSize;
+    internal DateTime FirstReceived;
     internal DateTime LastReceived;
 
     internal static FragmentCollection Create(int totalFragments)
     {
+        var now = DateTime.UtcNow;
+
         return new FragmentCollection
         {
             Fragments = new byte[totalFragments][],
             ReceivedFlags = new bool[totalFragments],
             ReceivedCount = 0,
             TotalSize = 0,
-            LastReceived = DateTime.UtcNow
+            FirstReceived = now,
+            LastReceived = now
         };
     }
 

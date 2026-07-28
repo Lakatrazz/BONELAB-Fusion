@@ -92,7 +92,7 @@ internal class EpicLobby : NetworkLobby
         if (lobbyInterface == null)
         {
             FusionLogger.Error("LobbyInterface is null, cannot set metadata");
-            CompleteUpdate(success: false, changes);
+            CompleteUpdate(false, changes);
             return;
         }
 
@@ -100,7 +100,7 @@ internal class EpicLobby : NetworkLobby
         if (localUserId == null)
         {
             FusionLogger.Error("Local user ID is null, cannot set metadata");
-            CompleteUpdate(success: false, changes);
+            CompleteUpdate(false, changes);
             return;
         }
 
@@ -115,7 +115,7 @@ internal class EpicLobby : NetworkLobby
         if (result != Result.Success || modification == null)
         {
             FusionLogger.Error($"Failed to create lobby modification: {result}");
-            CompleteUpdate(success: false, changes);
+            CompleteUpdate(false, changes);
             return;
         }
 
@@ -139,12 +139,14 @@ internal class EpicLobby : NetworkLobby
             };
 
             lobbyInterface.UpdateLobby(ref applyOptions, changes, OnLobbyUpdateComplete);
+            
+            modification.Release();
         }
         catch (Exception ex)
         {
             FusionLogger.LogException("applying lobby metadata batch", ex);
-            modification?.Release();
-            CompleteUpdate(success: false, changes);
+            modification.Release();
+            CompleteUpdate(false, changes);
         }
     }
 

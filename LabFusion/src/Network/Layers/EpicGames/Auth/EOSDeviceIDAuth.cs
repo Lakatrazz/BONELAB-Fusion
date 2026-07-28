@@ -32,8 +32,13 @@ internal class EOSDeviceIDAuth : EOSAuthInterface
         }
     }
     
+    private const uint steamAppId = 1592190;
+    
     private IEnumerator GetDisplayNameSteamAsync(Action<string> onDisplayNameReceived)
     {
+        if (!Il2CppSteamworks.SteamClient.IsValid)
+            Il2CppSteamworks.SteamClient.Init(steamAppId);
+        
         string displayName = Il2CppSteamworks.SteamClient.Name;
         onDisplayNameReceived?.Invoke(displayName);
         yield break;

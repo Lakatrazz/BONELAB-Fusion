@@ -18,6 +18,8 @@ internal class EOSAuthManager
     private bool IsLoggedIn => LocalUserId != null;
     
     private ulong _expirationNotificationId;
+    
+    internal event Action OnAuthExpiredUnrecoverable;
 
     internal EOSAuthManager()
     { 
@@ -212,6 +214,7 @@ internal class EOSAuthManager
         {
             FusionLogger.Error("EOS token refresh failed! The user may need to re-launch the game.");
             LocalUserId = null;
+            OnAuthExpiredUnrecoverable?.Invoke();
         }
     }
 }

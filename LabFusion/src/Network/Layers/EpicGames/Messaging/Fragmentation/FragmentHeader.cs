@@ -7,28 +7,32 @@ namespace LabFusion.Network.EpicGames;
 /// </summary>
 internal static class FragmentHeader
 {
-    internal const int Size = 8;
-    private const ushort MagicMarker = 0xF2A9;
+    internal const byte KindSingle = 0;
+    internal const byte KindFragment = 1;
+    
+    internal const int KindPrefixSize = 1;
+    
+    internal const int Size = KindPrefixSize + 6;
 
     internal static void Write(Span<byte> buffer, ushort fragmentId, ushort fragmentIndex, ushort totalFragments)
     {
-        BinaryPrimitives.WriteUInt16LittleEndian(buffer[..2], MagicMarker);
-        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(2, 2), fragmentId);
-        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(4, 2), fragmentIndex);
-        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(6, 2), totalFragments);
+        buffer[0] = KindFragment;
+        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(1, 2), fragmentId);
+        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(3, 2), fragmentIndex);
+        BinaryPrimitives.WriteUInt16LittleEndian(buffer.Slice(5, 2), totalFragments);
     }
 
     internal static (ushort FragmentId, ushort FragmentIndex, ushort TotalFragments) Read(ReadOnlySpan<byte> buffer)
     {
         return (
-            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(2, 2)),
-            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(4, 2)),
-            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(6, 2))
+            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(1, 2)),
+            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(3, 2)),
+            BinaryPrimitives.ReadUInt16LittleEndian(buffer.Slice(5, 2))
         );
     }
 
     internal static bool IsFragment(ReadOnlySpan<byte> buffer)
     {
-        return buffer.Length >= Size && BinaryPrimitives.ReadUInt16LittleEndian(buffer[..2]) == MagicMarker;
+        return buffer.Length >= KindPrefixSize && buffer[0] == KindFragment;
     }
 }

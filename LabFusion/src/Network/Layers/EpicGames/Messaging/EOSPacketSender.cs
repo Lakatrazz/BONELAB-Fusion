@@ -31,8 +31,8 @@ internal class EOSPacketSender
 
         byte[] data = message.ToByteArray();
         byte targetChannel = isServerHandled ? ServerChannel : ClientChannel;
-
-        return data.Length > MaxPacketSize
+        
+        return data.Length + FragmentHeader.KindPrefixSize > MaxPacketSize
             ? _fragmentSender.SendFragmented(remoteUserId, data, channel, isServerHandled, _socketId, targetChannel)
             : SendSingle(remoteUserId, data, channel, targetChannel);
     }
@@ -52,19 +52,32 @@ internal class EOSPacketSender
         if (localUserId == null)
             return Result.InvalidState;
 
-        var options = new SendPacketOptions
-        {
-            LocalUserId = localUserId,
-            RemoteUserId = remoteUserId,
-            SocketId = _socketId,
-            Channel = targetChannel,
-            Data = new ArraySegment<byte>(data),
-            AllowDelayedDelivery = false,
-            Reliability = GetReliability(channel),
-            DisableAutoAcceptConnection = false
-        };
+        int packetSize = data.Length + FragmentHeader.KindPrefixSize;
+        var packet = _bufferPool.Rent(packetSize);
 
-        return EOSInterfaces.P2P.SendPacket(ref options);
+        try
+        {
+            packet[0] = FragmentHeader.KindSingle;
+            Array.Copy(data, 0, packet, FragmentHeader.KindPrefixSize, data.Length);
+
+            var options = new SendPacketOptions
+            {
+                LocalUserId = localUserId,
+                RemoteUserId = remoteUserId,
+                SocketId = _socketId,
+                Channel = targetChannel,
+                Data = new ArraySegment<byte>(packet, 0, packetSize),
+                AllowDelayedDelivery = false,
+                Reliability = GetReliability(channel),
+                DisableAutoAcceptConnection = false
+            };
+
+            return EOSInterfaces.P2P.SendPacket(ref options);
+        }
+        finally
+        {
+            _bufferPool.Return(packet);
+        }
     }
 
     private static PacketReliability GetReliability(NetworkChannel channel)

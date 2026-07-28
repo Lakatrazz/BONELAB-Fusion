@@ -9,7 +9,6 @@ using MelonLoader;
 
 namespace LabFusion.Network.EpicGames;
 
-// TODO: Fix disconnecting when logging out of layer.
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -47,12 +46,27 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void LogIn()
     {
-        _authManager ??= new EOSAuthManager();
-        _eosManager ??= new EOSManager(_authManager);
+        if (_authManager == null)
+        {
+            _authManager = new EOSAuthManager();
+            _authManager.OnAuthExpiredUnrecoverable += OnAuthExpiredUnrecoverable;
+        }
+        
+        if (_eosManager == null)
+        {
+            _eosManager = new EOSManager(_authManager);
+        }
 
         NetworkLayerNotifications.SendLoggingInNotification();
 
         MelonCoroutines.Start(_eosManager.InitializeAsync(OnLoginComplete));
+    }
+    
+    private void OnAuthExpiredUnrecoverable()
+    {
+        Disconnect("Authentication expired");
+
+        InvokeLoggedOutEvent();
     }
 
     private void OnLoginComplete(bool success)
@@ -114,12 +128,13 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void OnDeinitializeLayer()
     {
-        Disconnect();
-
         _voiceManager?.Disable();
         _voiceManager = null;
 
         _matchmaker = null;
+        
+        // Jank
+        ForceDisconnect();
 
         CleanupManagers();
 
@@ -127,6 +142,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
         _eosManager?.Shutdown();
         _eosManager = null;
+        _authManager.OnAuthExpiredUnrecoverable -= OnAuthExpiredUnrecoverable;
         _authManager?.Shutdown();
         _authManager = null;
     }
@@ -294,6 +310,27 @@ public class EpicGamesNetworkLayer : NetworkLayer
         }
     }
 
+    // Disconnects without waiting for EOS to tell us that we fully disconnected.
+    // Mainly used on logout because the EOSSDK gets shutdown and is never able to run OnDisconnectComplete.
+    private void ForceDisconnect(string reason = "")
+    {
+        if (!_isServerActive && !_isConnectionActive)
+            return;
+        
+        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnecting);
+        
+        if (IsHost)
+        {
+            _lobbyManager?.DestroyLobby(null);
+        }
+        else
+        {
+            _lobbyManager?.LeaveLobby(null);
+        }
+        
+        OnDisconnectComplete(reason);
+    }
+
     private void OnDisconnectedFromHost()
     {
         Disconnect("Lobby closed");
@@ -324,7 +361,17 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (!_isServerActive)
             return;
 
-        _lobbyManager?.KickMember(platformID);
+        _lobbyManager?.KickMember(platformID, success =>
+        {
+            if (!success)
+                return;
+
+            var targetId = ProductUserId.FromString(platformID);
+            if (targetId != null)
+            {
+                _p2pManager?.CloseConnection(targetId);
+            }
+        });
     }
 
     public override string GetServerCode() => _serverCode;

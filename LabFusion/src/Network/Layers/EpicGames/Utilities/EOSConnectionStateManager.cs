@@ -11,8 +11,6 @@ internal class EOSConnectionStateManager
     }
     
     private ConnectionState _connectionState = ConnectionState.Disconnected;
-    
-    internal ConnectionState GetConnectionState() => _connectionState;
 
     internal void SetConnectionState(ConnectionState newConnectionState) => _connectionState = newConnectionState;
 

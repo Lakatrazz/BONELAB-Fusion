@@ -114,9 +114,13 @@ internal class EOSPacketReceiver
     {
         try
         {
+            if (packet.BytesWritten < FragmentHeader.KindPrefixSize)
+                return;
+
+            ReadOnlySpan<byte> raw = packet.Buffer.AsSpan(0, packet.BytesWritten);
             ReadOnlySpan<byte> messageBuffer;
 
-            if (FragmentHeader.IsFragment(packet.Buffer.AsSpan(0, packet.BytesWritten)))
+            if (FragmentHeader.IsFragment(raw))
             {
                 if (!_fragmentReceiver.TryHandleFragment(
                     packet.Buffer,
@@ -130,7 +134,7 @@ internal class EOSPacketReceiver
             }
             else
             {
-                messageBuffer = new ReadOnlySpan<byte>(packet.Buffer, 0, packet.BytesWritten);
+                messageBuffer = raw[FragmentHeader.KindPrefixSize..];
             }
 
             NativeMessageHandler.ReadMessage(new ReadableMessage

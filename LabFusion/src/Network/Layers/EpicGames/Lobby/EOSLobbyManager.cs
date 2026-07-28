@@ -15,6 +15,7 @@ internal class EOSLobbyManager
     internal static LobbyDetails CurrentLobbyDetails { get; private set; }
 
     private readonly ProductUserId _localUserId;
+    private OnJoinLobbyCallback _pendingJoinCallback;
 
     internal EpicLobby CurrentLobby { get; private set; }
 
@@ -65,7 +66,7 @@ internal class EOSLobbyManager
             onComplete?.Invoke(lobby);
         });
     }
-
+    
     internal void JoinLobby(LobbyDetails lobbyDetails, Action<EpicLobby> onComplete)
     {
         var joinOptions = new JoinLobbyOptions
@@ -76,8 +77,10 @@ internal class EOSLobbyManager
             PresenceEnabled = false,
         };
         
-        EOSInterfaces.Lobby.JoinLobby(ref joinOptions, null, (ref JoinLobbyCallbackInfo info) =>
+        _pendingJoinCallback = (ref JoinLobbyCallbackInfo info) =>
         {
+            _pendingJoinCallback = null;
+
             if (info.ResultCode != Result.Success)
             {
                 FusionLogger.Error($"Failed to join EOS lobby: {info.ResultCode}");
@@ -87,7 +90,9 @@ internal class EOSLobbyManager
 
             var lobby = CreateLobbyFromInfo(lobbyDetails, info.LobbyId);
             onComplete?.Invoke(lobby);
-        });
+        };
+
+        EOSInterfaces.Lobby.JoinLobby(ref joinOptions, null, _pendingJoinCallback);
     }
 
     internal void LeaveLobby(Action onComplete)

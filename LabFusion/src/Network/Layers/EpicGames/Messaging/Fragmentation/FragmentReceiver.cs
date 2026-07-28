@@ -9,6 +9,8 @@ internal class FragmentReceiver
 {
     private const int MaxFragments = 1000;
     private const int CleanupIntervalSeconds = 30;
+    private const int MaxPendingCollections = 64;
+    private const int MaxAssemblyTimeSeconds = 60;
 
     private readonly Dictionary<(string SenderId, ushort FragmentId), FragmentCollection> _pendingFragments = new();
     private readonly object _lock = new();
@@ -25,7 +27,7 @@ internal class FragmentReceiver
         if (bytesWritten < FragmentHeader.Size)
             return false;
 
-        var (fragmentId, fragmentIndex, totalFragments) = FragmentHeader.Read(buffer.AsSpan());
+        var (fragmentId, fragmentIndex, totalFragments) = FragmentHeader.Read(buffer.AsSpan(0, bytesWritten));
 
         if (!ValidateHeader(totalFragments, fragmentIndex))
             return false;
@@ -37,6 +39,9 @@ internal class FragmentReceiver
         {
             if (!_pendingFragments.TryGetValue(key, out var collection))
             {
+                if (_pendingFragments.Count >= MaxPendingCollections)
+                    return false;
+
                 collection = FragmentCollection.Create(totalFragments);
             }
 
@@ -90,12 +95,13 @@ internal class FragmentReceiver
 
     private void CleanupStaleFragments()
     {
-        var cutoffTime = DateTime.UtcNow.AddSeconds(-CleanupIntervalSeconds);
+        var idleCutoff = DateTime.UtcNow.AddSeconds(-CleanupIntervalSeconds);
+        var assemblyCutoff = DateTime.UtcNow.AddSeconds(-MaxAssemblyTimeSeconds);
 
         lock (_lock)
         {
             var keysToRemove = _pendingFragments
-                .Where(kvp => kvp.Value.LastReceived < cutoffTime)
+                .Where(kvp => kvp.Value.LastReceived < idleCutoff || kvp.Value.FirstReceived < assemblyCutoff)
                 .Select(kvp => kvp.Key)
                 .ToList();
 

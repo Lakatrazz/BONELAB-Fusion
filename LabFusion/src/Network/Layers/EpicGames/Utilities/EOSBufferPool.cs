@@ -19,13 +19,14 @@ internal class EOSBufferPool
 
     internal byte[] Rent(int minimumSize)
     {
-        if (_pool.TryDequeue(out var buffer) && buffer.Length >= minimumSize)
-            return buffer;
+        if (minimumSize <= _maxBufferSize)
+        {
+            if (_pool.TryDequeue(out var buffer))
+                return buffer;
 
-        // Return undersized buffer to pool
-        if (buffer != null && buffer.Length < minimumSize)
-            Return(buffer);
-
+            return new byte[_maxBufferSize];
+        }
+        
         return new byte[minimumSize];
     }
 

@@ -28,6 +28,8 @@ internal class EOSConnectionHandler
             return;
 
         var result = _p2pManager.AcceptConnection(info.RemoteUserId);
+        if (result != Result.Success)
+            FusionLogger.Error($"Failed to accept incoming P2P connection from {info.RemoteUserId}: {result}");
     }
     
     internal void OnConnectionEstablishedAsClient(ref OnPeerConnectionEstablishedInfo info)

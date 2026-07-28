@@ -12,7 +12,7 @@ namespace LabFusion.Network.EpicGames;
 /// </summary>
 internal class EOSManager
 {
-    private const float TickInterval = 1f / 20f;
+    private const float TickInterval = 1f / 30f;
 
     private readonly EOSAuthManager _authManager;
     private bool _isInitialized;
