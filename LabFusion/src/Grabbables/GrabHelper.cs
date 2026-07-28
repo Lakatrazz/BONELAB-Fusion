@@ -5,8 +5,10 @@ using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Patching;
 using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
+using LabFusion.Marrow.Interaction;
 
 namespace LabFusion.Grabbables;
 
@@ -18,7 +20,7 @@ public static class GrabHelper
         {
             return;
         }
-
+        
         Internal_ObjectForcePull(hand, grip);
     }
 
@@ -84,8 +86,6 @@ public static class GrabHelper
 
         // Get base values for the message
         byte smallId = PlayerIDManager.LocalSmallID;
-        GrabGroup group = GrabGroup.UNKNOWN;
-        SerializedGrab serializedGrab = null;
 
         // If the grip exists, we'll check its stuff
         if (grip == null)
@@ -93,34 +93,9 @@ public static class GrabHelper
             return;
         }
 
-        // Check for static grips
-        if (grip.IsStatic)
-        {
-            if (grip.TryCast<WorldGrip>() != null)
-            {
-                group = GrabGroup.WORLD;
-                serializedGrab = new SerializedWorldGrab(smallId);
-                OnFinish();
-            }
-            else
-            {
-                group = GrabGroup.STATIC;
-
-                var gripHash = GripPatches.HashTable.GetDataFromComponent(grip);
-
-                if (gripHash == null)
-                {
-                    return;
-                }
-
-                serializedGrab = new SerializedStaticGrab(gripHash);
-                OnFinish();
-            }
-        }
         // Check for entity grips
-        else if (grip.HasRigidbody)
+        if (grip.HasRigidbody)
         {
-            group = GrabGroup.ENTITY;
             var marrowEntity = grip._marrowEntity;
 
             // It SHOULD always have a marrow entity, but just in case
@@ -129,65 +104,37 @@ public static class GrabHelper
                 return;
             }
 
-            // Do we already have a synced object?
             if (GripExtender.Cache.TryGet(grip, out var entity))
             {
-                // Make sure to only run after the entity is registered
-                entity.HookOnRegistered((entity) =>
-                {
-                    var gripExtender = entity.GetExtender<GripExtender>();
-
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.ID);
-                    OnFinish();
-                });
+                entity.HookOnRegistered(OnEntityRegistered);
             }
             else
             {
-                // Invoked when the NetworkProp is finished being created
-                void OnEntityFinish(NetworkProp prop)
-                {
-                    var gripExtender = prop.NetworkEntity.GetExtender<GripExtender>();
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, prop.NetworkEntity.ID);
+                PropSender.SendPropCreation(marrowEntity, OnEntityRegistered);
+            }
 
-                    OnFinish();
-                }
-
-                // Send the marrow entity to be registered as a NetworkProp
-                PropSender.SendPropCreation(marrowEntity, (networkEntity) =>
-                {
-                    NetworkProp prop = networkEntity.GetExtender<NetworkProp>();
-
-                    if (prop == null)
-                    {
-                        return;
-                    }
-
-                    OnEntityFinish(prop);
-                });
+            void OnEntityRegistered(NetworkEntity networkEntity)
+            {
+                TrySendGrab(hand, grip);
             }
         }
 
-        // Send the message when whatever task is finished
-        void OnFinish()
+        void TrySendGrab(Hand hand, Grip grip)
         {
-            // Write the default grip values
-            serializedGrab.WriteDefaultGrip(hand, grip);
-
-            var data = new PlayerRepGrabData()
+            if (hand.AttachedReceiver != grip)
             {
-                Handedness = handedness,
-                Group = group,
-                SerializedGrab = serializedGrab,
+                return;
+            }
+
+            var data = new RigGrabData()
+            {
+                RigReference = new(smallId),
+                Grab = SerializedGrab.CreateFromHandGripPair(hand, grip),
             };
 
-            if (target == null)
-            {
-                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, CommonMessageRoutes.ReliableToOtherClients);
-            }
-            else
-            {
-                MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, new MessageRoute(target.SmallID, NetworkChannel.Reliable));
-            }
+            var route = target != null ? new MessageRoute(target.SmallID, NetworkChannel.Reliable) : CommonMessageRoutes.ReliableToOtherClients;
+
+            MessageRelay.RelayModule<RigGrabMessage, RigGrabData>(data, route);
         }
     }
 
@@ -210,11 +157,12 @@ public static class GrabHelper
             return;
         }
 
-        var data = new PlayerRepReleaseData()
+        var data = new RigReleaseData()
         {
+            RigReference = new(PlayerIDManager.LocalSmallID),
             Handedness = handedness,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, CommonMessageRoutes.ReliableToOtherClients);
+        MessageRelay.RelayModule<RigReleaseMessage, RigReleaseData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

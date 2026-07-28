@@ -3,7 +3,9 @@ using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Extensions;
+using LabFusion.Marrow.Interaction;
 using LabFusion.Utilities;
+
 using MelonLoader;
 
 using System.Collections;
@@ -28,6 +30,21 @@ public class RigGrabber
     public RigGrabber(RigRefs references)
     {
         _references = references;
+    }
+
+    public void OnGrabReceived(SerializedGrab grab)
+    {
+        var gripReference = grab.GripReference;
+
+        if (!gripReference.TryGetGrip(out var grip))
+        {
+            return;
+        }
+
+        SimpleTransform targetInBase = SimpleTransform.Create(grab.TargetInBase.position, grab.TargetInBase.rotation);
+        var handedness = grab.Handedness;
+
+        Attach(handedness, grip, targetInBase);
     }
 
     public void OnEntityCull(bool isInactive)

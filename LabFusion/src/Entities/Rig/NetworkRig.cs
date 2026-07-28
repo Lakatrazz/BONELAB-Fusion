@@ -19,6 +19,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 {
     public static readonly FusionComponentCache<RigManager, NetworkRig> Cache = new();
 
+    public static readonly FusionComponentCache<WorldGrip, NetworkRig> WorldGripCache = new();
+
     public bool IsRegistered { get; private set; } = false;
 
     public NetworkEntity NetworkEntity { get; private set; } = null;
@@ -36,6 +38,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     public RigArt RigArt { get; private set; } = null;
 
     public RigPhysics RigPhysics { get; private set; } = null;
+
+    public RigGrabber RigGrabber { get; private set; } = null;
 
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
@@ -455,6 +459,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
             TeleportToPose();
         }
+
+        RigGrabber.OnEntityCull(hidden);
     }
 
     private void OnCullRig()
@@ -493,6 +499,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         RigArt = new(rigManager);
 
         RigPhysics = new(rigManager);
+
+        RigGrabber = new(RigRefs);
 
         HookRig();
 
@@ -546,20 +554,38 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     private void HookRig()
     {
-        Cache.Add(RigRefs.RigManager, this);
+        var rigManager = RigRefs.RigManager;
+
+        Cache.Add(rigManager, this);
         IMarrowEntityExtender.Cache.Add(MarrowEntity, NetworkEntity);
+
+        var worldGrip = rigManager.worldGrip;
+
+        if (worldGrip != null)
+        {
+            WorldGripCache.Add(worldGrip, this);
+        }
 
         _onAvatarSwappedAction = (Action)OnAvatarSwapped;
 
-        RigRefs.RigManager.onAvatarSwapped += _onAvatarSwappedAction;
+        rigManager.onAvatarSwapped += _onAvatarSwappedAction;
     }
 
     private void UnhookRig()
     {
-        Cache.Remove(RigRefs.RigManager);
+        var rigManager = RigRefs.RigManager;
+
+        Cache.Remove(rigManager);
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
-        RigRefs.RigManager.onAvatarSwapped -= _onAvatarSwappedAction;
+        var worldGrip = rigManager.worldGrip;
+
+        if (worldGrip != null)
+        {
+            WorldGripCache.Remove(worldGrip);
+        }
+
+        rigManager.onAvatarSwapped -= _onAvatarSwappedAction;
 
         _onAvatarSwappedAction = null;
     }

@@ -146,7 +146,7 @@ public static class GripPatches
     {
         try
         {
-            networkPlayer.Grabber.CheckDetachAndReattach(hand, grip);
+            networkPlayer.NetworkRig.RigGrabber.CheckDetachAndReattach(hand, grip);
         }
         catch (Exception e)
         {

@@ -4,7 +4,6 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Scene;
-using LabFusion.Grabbables;
 using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
@@ -103,7 +102,6 @@ public class FusionMod : MelonMod
 
         // Register our base handlers
         NativeMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
-        GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
         PointItemManager.LoadItems(FusionAssembly);

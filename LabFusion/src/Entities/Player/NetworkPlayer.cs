@@ -49,8 +49,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
 
     public RigHeadUI HeadUI { get; private set; } = null;
 
-    public RigGrabber Grabber { get; private set; } = null;
-
     public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
     public RigHealthBar HealthBar { get; private set; } = null;
@@ -319,8 +317,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
     {
         NetworkRig.AssignRig(rigManager);
 
-        Grabber = new RigGrabber(NetworkRig.RigRefs);
-
         bool isLocalPlayer = NetworkEntity.IsOwner;
 
         // Create the audio source for voice chat
@@ -575,8 +571,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
         {
             OnReregisterUpdates();
         }
-
-        Grabber.OnEntityCull(hidden);
     }
 
     private void UpdateNametagVisibility()

@@ -17,10 +17,6 @@ public static class NativeMessageTag
         PhysicsRigState = 7,
         PlayerRepSeat = 8,
 
-        PlayerRepGrab = 9,
-        PlayerRepRelease = 10,
-        PlayerRepAnchors = 11,
-
         SceneLoad = 12,
 
         EntityUnqueueRequest = 13,
