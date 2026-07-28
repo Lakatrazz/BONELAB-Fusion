@@ -7,6 +7,7 @@ using LabFusion.Marrow.Extensions;
 using LabFusion.Math;
 using LabFusion.Math.Numerics;
 using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Scene;
 using LabFusion.Utilities;
@@ -133,9 +134,19 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public void OnEntityCull(bool isInactive) => IsCulled = isInactive;
 
-    public void OnExtenderRegistered() => IsRegistered = true;
+    public void OnExtenderRegistered()
+    {
+        IsRegistered = true;
 
-    public void OnExtenderUnregistered() => IsRegistered = false;
+        NetworkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+    }
+
+    public void OnExtenderUnregistered()
+    {
+        IsRegistered = false;
+
+        NetworkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+    }
 
     public void OnPoseReceived(RigPose pose)
     {
@@ -593,5 +604,12 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     private void OnAvatarSwapped()
     {
         RegisterDynamicComponents();
+    }
+
+    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
+    {
+        bool isOwner = entity.IsOwner;
+
+        RigGrabber?.OnRigOwnershipTransfer(isOwner);
     }
 }

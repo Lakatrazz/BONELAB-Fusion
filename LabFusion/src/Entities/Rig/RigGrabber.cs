@@ -14,18 +14,11 @@ namespace LabFusion.Entities;
 
 public class RigGrabber
 {
-    public class GrabberData
-    {
-        public Grip Grip;
-        public SimpleTransform? TargetInBase = null;
-    }
+    public bool IsCulled { get; private set; } = false;
+
+    public Dictionary<Handedness, GrabSnapshot> ReceivedGrabs { get; } = new();
 
     private readonly RigRefs _references = null;
-
-    private bool _isCulled = false;
-    public bool IsCulled => _isCulled;
-
-    private Dictionary<Handedness, GrabberData> _lastGrabs = new();
 
     public RigGrabber(RigRefs references)
     {
@@ -34,53 +27,64 @@ public class RigGrabber
 
     public void OnGrabReceived(SerializedGrab grab)
     {
-        var gripReference = grab.GripReference;
+        SetGrab(grab);
 
-        if (!gripReference.TryGetGrip(out var grip))
-        {
-            return;
-        }
+        TryReattachGrip(grab.Handedness);
+    }
 
-        SimpleTransform targetInBase = SimpleTransform.Create(grab.TargetInBase.position, grab.TargetInBase.rotation);
-        var handedness = grab.Handedness;
+    public void OnReleaseReceived(Handedness handedness)
+    {
+        ClearGrab(handedness);
 
-        Attach(handedness, grip, targetInBase);
+        DetachGrip(handedness);
     }
 
     public void OnEntityCull(bool isInactive)
     {
-        _isCulled = isInactive;
+        IsCulled = isInactive;
 
         if (isInactive)
         {
-            DetachWithoutClear(Handedness.LEFT);
-            DetachWithoutClear(Handedness.RIGHT);
+            DetachGrips();
         }
         else
         {
-            MelonCoroutines.Start(WaitAndUncullGrips());
+            MelonCoroutines.Start(CoWaitAndReattachGrips());
         }
     }
 
-    private IEnumerator WaitAndUncullGrips()
+    public void OnRigOwnershipTransfer(bool isOwner)
     {
-        for (var i = 0; i < 120; i++)
+        if (isOwner)
         {
-            yield return null;
+            ClearGrabs();
         }
-
-        UncullGrip(Handedness.LEFT);
-        UncullGrip(Handedness.RIGHT);
     }
 
-    public void Attach(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null)
+    public void ReattachGrips()
     {
-        _lastGrabs[handedness] = new GrabberData()
-        {
-            Grip = grip,
-            TargetInBase = targetInBase
-        };
+        TryReattachGrip(Handedness.LEFT);
+        TryReattachGrip(Handedness.RIGHT);
+    }
 
+    public bool TryReattachGrip(Handedness handedness)
+    {
+        if (!ReceivedGrabs.TryGetValue(handedness, out var grabSnapshot))
+        {
+            return false;
+        }
+
+        if (!grabSnapshot.TryGetGrip(out var grip))
+        {
+            return false;
+        }
+
+        AttachGrip(handedness, grip, grabSnapshot.TargetInBase);
+        return true;
+    }
+
+    public void AttachGrip(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null)
+    {
         if (IsCulled)
         {
             return;
@@ -93,30 +97,26 @@ public class RigGrabber
             return;
         }
 
-        if (grip)
+        if (grip == null)
         {
-            // Detach existing grip
-            hand.TryDetach();
-
-            // Check if the grip can be interacted with
-            if (grip.IsInteractionDisabled || (grip.HasHost && grip.Host.IsInteractionDisabled))
-            {
-                return;
-            }
-
-            // Attach the hand
-            grip.TryAttach(hand, false, targetInBase);
+            return;
         }
+
+        // Detach existing grip
+        hand.TryDetach();
+
+        bool interactionDisabled = grip.IsInteractionDisabled || (grip.HasHost && grip.Host.IsInteractionDisabled);
+
+        if (interactionDisabled)
+        {
+            return;
+        }
+
+        // Attach the hand
+        grip.TryAttach(hand, false, targetInBase);
     }
 
-    public void Detach(Handedness handedness)
-    {
-        _lastGrabs.Remove(handedness);
-
-        DetachWithoutClear(handedness);
-    }
-
-    private void DetachWithoutClear(Handedness handedness)
+    public void DetachGrip(Handedness handedness)
     {
         var hand = _references.GetHand(handedness);
 
@@ -128,36 +128,26 @@ public class RigGrabber
         hand.TryDetach();
     }
 
-    private void UncullGrip(Handedness handedness)
+    public void DetachGrips()
     {
-        if (!_lastGrabs.TryGetValue(handedness, out var data))
-        {
-            return;
-        }
-
-        if (data.Grip == null)
-        {
-            _lastGrabs.Remove(handedness);
-            return;
-        }
-
-        Attach(handedness, data.Grip, data.TargetInBase);
+        DetachGrip(Handedness.LEFT);
+        DetachGrip(Handedness.RIGHT);
     }
 
-    public void CheckDetachAndReattach(Hand hand, Grip grip)
+    public void ValidateDetach(Hand hand, Grip grip)
     {
         DelayUtilities.InvokeNextFrame(OnNextFrame);
 
         void OnNextFrame()
         {
-            if (!ValidateDetach(hand, grip) && hand.AttachedReceiver != grip)
+            if (!CanDetach(hand, grip) && hand.AttachedReceiver != grip)
             {
-                UncullGrip(hand.handedness);
+                TryReattachGrip(hand.handedness);
             }
         }
     }
 
-    private bool ValidateDetach(Hand hand, Grip grip)
+    public bool CanDetach(Hand hand, Grip grip)
     {
         if (IsCulled)
         {
@@ -166,7 +156,7 @@ public class RigGrabber
 
         var handedness = hand.handedness;
 
-        if (!_lastGrabs.TryGetValue(handedness, out var existingGrab))
+        if (!ReceivedGrabs.TryGetValue(handedness, out var existingGrab))
         {
             return true;
         }
@@ -177,5 +167,30 @@ public class RigGrabber
         }
 
         return true;
+    }
+
+    private void SetGrab(SerializedGrab grab)
+    {
+        ReceivedGrabs[grab.Handedness] = new GrabSnapshot(grab);
+    }
+
+    private void ClearGrab(Handedness handedness)
+    {
+        ReceivedGrabs.Remove(handedness);
+    }
+
+    private void ClearGrabs()
+    {
+        ReceivedGrabs.Clear();
+    }
+
+    private IEnumerator CoWaitAndReattachGrips()
+    {
+        for (var i = 0; i < 120; i++)
+        {
+            yield return null;
+        }
+
+        ReattachGrips();
     }
 }

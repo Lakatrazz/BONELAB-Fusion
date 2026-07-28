@@ -146,11 +146,11 @@ public static class GripPatches
     {
         try
         {
-            networkPlayer.NetworkRig.RigGrabber.CheckDetachAndReattach(hand, grip);
+            networkPlayer.NetworkRig.RigGrabber.ValidateDetach(hand, grip);
         }
         catch (Exception e)
         {
-            FusionLogger.LogException("running RigGrabber.CheckDetachAndReattach", e);
+            FusionLogger.LogException("running RigGrabber.ValidateDetach", e);
         }
     }
 }

@@ -81,7 +81,7 @@ public class MagazineEjectMessage : ModuleMessageHandler
 
             if (data.Handedness != Handedness.UNDEFINED && NetworkPlayerManager.TryGetPlayer(data.PlayerID, out var player) && !player.NetworkEntity.IsOwner)
             {
-                player.NetworkRig.RigGrabber.Attach(data.Handedness, ammoPlug.magazine.grip);
+                player.NetworkRig.RigGrabber.AttachGrip(data.Handedness, ammoPlug.magazine.grip);
             }
         }
         catch (Exception e)

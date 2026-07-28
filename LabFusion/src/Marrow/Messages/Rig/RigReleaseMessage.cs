@@ -54,6 +54,6 @@ public class RigReleaseMessage : ModuleMessageHandler
 
         var rig = rigEntity.GetExtender<NetworkRig>();
 
-        rig.RigGrabber.Detach(data.Handedness);
+        rig.RigGrabber.OnReleaseReceived(data.Handedness);
     }
 }
