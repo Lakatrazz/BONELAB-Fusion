@@ -2,6 +2,7 @@
 
 using LabFusion.Entities;
 using LabFusion.Network;
+using LabFusion.Network.Messages;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
@@ -25,23 +26,7 @@ public class RigReleaseData : INetSerializable
 
 public class RigReleaseMessage : ModuleMessageHandler
 {
-    protected override bool OnPreRelayMessage(ReceivedMessage received)
-    {
-        // The NetworkEntityReference is the first thing written to the RigReleaseData, so we can just read that
-        var rigReference = received.ReadData<NetworkEntityReference>();
-
-        // The sender should always be valid for this message, if not it should fail anyways
-        var sender = received.Sender.Value;
-
-        // The sender of the grab message should own that rig
-        // If not, prevent the relaying of the message
-        if (rigReference.TryGetEntity(out var rigEntity) && rigEntity.HasOwner && rigEntity.OwnerID.SmallID != sender)
-        {
-            return false;
-        }
-
-        return true;
-    }
+    protected override bool OnPreRelayMessage(ReceivedMessage received) => CommonMessageValidation.ValidateSenderOwnsEntity(received);
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

@@ -40,6 +40,7 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<NimbusGunNoClipMessage>();
         ModuleMessageManager.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
+        ModuleMessageManager.RegisterHandler<PhysicsRigStateMessage>();
         ModuleMessageManager.RegisterHandler<RigGrabMessage>();
         ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
 

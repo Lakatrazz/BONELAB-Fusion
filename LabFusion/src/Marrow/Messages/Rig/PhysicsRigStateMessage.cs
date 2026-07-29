@@ -4,6 +4,7 @@ using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
+using LabFusion.Network.Messages;
 
 namespace LabFusion.Marrow.Messages;
 
@@ -86,23 +87,7 @@ public class PhysicsRigStateData : INetSerializable
 [Net.SkipHandleWhileLoading]
 public class PhysicsRigStateMessage : ModuleMessageHandler
 {
-    protected override bool OnPreRelayMessage(ReceivedMessage received)
-    {
-        // The NetworkEntityReference is the first thing written to the PhysicsRigStateData, so we can just read that
-        var rigReference = received.ReadData<NetworkEntityReference>();
-
-        // The sender should always be valid for this message, if not it should fail anyways
-        var sender = received.Sender.Value;
-
-        // The sender of the grab message should own that rig
-        // If not, prevent the relaying of the message
-        if (rigReference.TryGetEntity(out var rigEntity) && rigEntity.HasOwner && rigEntity.OwnerID.SmallID != sender)
-        {
-            return false;
-        }
-
-        return true;
-    }
+    protected override bool OnPreRelayMessage(ReceivedMessage received) => CommonMessageValidation.ValidateSenderOwnsEntity(received);
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
