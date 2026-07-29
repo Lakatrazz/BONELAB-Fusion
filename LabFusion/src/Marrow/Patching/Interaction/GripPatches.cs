@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Utilities;
-using LabFusion.Grabbables;
 using LabFusion.Player;
 using LabFusion.Data;
 using LabFusion.Marrow;
@@ -89,21 +88,16 @@ public static class GripPatches
             return;
         }
 
-        // Make sure this is the local player
-        if (!hand.manager.IsLocalPlayer())
+        var rigManager = hand.manager;
+
+        if (NetworkRig.Cache.TryGet(rigManager, out var networkRig) && networkRig.NetworkEntity.IsOwner)
         {
-            return;
+            OnAttachedToOwnedRig(__instance, hand, networkRig);
         }
 
-        GrabHelper.SendObjectAttach(hand, __instance);
-
-        try
+        if (rigManager.IsLocalPlayer())
         {
-            LocalPlayer.OnGrab?.Invoke(hand, __instance);
-        }
-        catch (Exception e)
-        {
-            FusionLogger.LogException("running LocalPlayer.OnGrab", e);
+            OnAttachedToLocalPlayer(__instance, hand);
         }
     }
 
@@ -118,6 +112,11 @@ public static class GripPatches
 
         var rigManager = hand.manager;
 
+        if (NetworkRig.Cache.TryGet(rigManager, out var networkRig) && networkRig.NetworkEntity.IsOwner)
+        {
+            OnDetachedFromOwnedRig(__instance, hand, networkRig);
+        }
+
         if (rigManager.IsLocalPlayer())
         {
             OnDetachedFromLocalPlayer(__instance, hand);
@@ -128,10 +127,30 @@ public static class GripPatches
         }
     }
 
+    private static void OnAttachedToOwnedRig(Grip grip, Hand hand, NetworkRig networkRig)
+    {
+        networkRig.RigGrabber.OnOwnedHandAttach(hand, grip);
+    }
+
+    private static void OnDetachedFromOwnedRig(Grip grip, Hand hand, NetworkRig networkRig)
+    {
+        networkRig.RigGrabber.OnOwnedHandDetach(hand, grip);
+    }
+
+    private static void OnAttachedToLocalPlayer(Grip grip, Hand hand)
+    {
+        try
+        {
+            LocalPlayer.OnGrab?.Invoke(hand, grip);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("running LocalPlayer.OnGrab", e);
+        }
+    }
+
     private static void OnDetachedFromLocalPlayer(Grip grip, Hand hand)
     {
-        GrabHelper.SendObjectDetach(hand);
-
         try
         {
             LocalPlayer.OnRelease?.Invoke(hand, grip);

@@ -3,7 +3,12 @@ using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Extensions;
+using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Interaction;
+using LabFusion.Marrow.Messages;
+using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -18,11 +23,117 @@ public class RigGrabber
 
     public Dictionary<Handedness, GrabSnapshot> ReceivedGrabs { get; } = new();
 
+    private readonly NetworkEntity _networkEntity = null;
     private readonly RigRefs _references = null;
 
-    public RigGrabber(RigRefs references)
+    public RigGrabber(NetworkEntity networkEntity, RigRefs references)
     {
+        _networkEntity = networkEntity;
         _references = references;
+    }
+
+    public bool TrySendGrab(Hand hand, Grip grip, PlayerID target = null)
+    {
+        if (!_networkEntity.IsOwner)
+        {
+            return false;
+        }
+
+        if (hand.AttachedReceiver != grip)
+        {
+            return false;
+        }
+
+        var data = new RigGrabData()
+        {
+            RigReference = new(_networkEntity.ID),
+            Grab = SerializedGrab.CreateFromHandGripPair(hand, grip),
+        };
+
+        var route = target != null ? new MessageRoute(target.SmallID, NetworkChannel.Reliable) : CommonMessageRoutes.ReliableToOtherClients;
+
+        MessageRelay.RelayModule<RigGrabMessage, RigGrabData>(data, route);
+
+        return true;
+    }
+
+    public bool TrySendRelease(Hand hand)
+    {
+        if (!_networkEntity.IsOwner)
+        {
+            return false;
+        }
+
+        if (hand.m_CurrentAttachedGO != null)
+        {
+            return false;
+        }
+
+        var data = new RigReleaseData()
+        {
+            RigReference = new(_networkEntity.ID),
+            Handedness = hand.handedness,
+        };
+
+        MessageRelay.RelayModule<RigReleaseMessage, RigReleaseData>(data, CommonMessageRoutes.ReliableToOtherClients);
+
+        return true;
+    }
+
+    public void OnOwnedHandForcePull(Hand hand, Grip grip)
+    {
+        var marrowEntity = grip._marrowEntity;
+
+        if (marrowEntity == null)
+        {
+            return;
+        }
+
+        if (GripExtender.Cache.TryGet(grip, out var entity))
+        {
+            entity.HookOnRegistered(NetworkEntityManager.TakeOwnership);
+        }
+        else
+        {
+            PropSender.SendPropCreation(marrowEntity, null, false);
+        }
+    }
+
+    public void OnOwnedHandAttach(Hand hand, Grip grip)
+    {
+        var handedness = hand.handedness;
+
+        if (!grip.HasRigidbody)
+        {
+            TrySendGrab(hand, grip);
+            return;
+        }
+
+        var marrowEntity = grip._marrowEntity;
+
+        if (marrowEntity == null)
+        {
+            return;
+        }
+
+        if (GripExtender.Cache.TryGet(grip, out var entity))
+        {
+            entity.HookOnRegistered(OnEntityRegistered);
+        }
+        else
+        {
+            PropSender.SendPropCreation(marrowEntity, OnEntityRegistered);
+        }
+
+        void OnEntityRegistered(NetworkEntity networkEntity)
+        {
+            TrySendGrab(hand, grip);
+        }
+    }
+
+    public void OnOwnedHandDetach(Hand hand, Grip grip)
+    {
+        TrySendRelease(hand);
     }
 
     public void OnGrabReceived(SerializedGrab grab)

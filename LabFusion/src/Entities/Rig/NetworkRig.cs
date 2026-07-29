@@ -511,7 +511,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         RigPhysics = new(rigManager);
 
-        RigGrabber = new(RigRefs);
+        RigGrabber = new(NetworkEntity, RigRefs);
 
         HookRig();
 

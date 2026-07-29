@@ -3,7 +3,6 @@
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Player;
-using LabFusion.Grabbables;
 
 namespace LabFusion.Marrow.Extenders;
 
@@ -122,13 +121,6 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
 
     private static void OnEntityDataCatchup(Grip grip, NetworkEntity entity, PlayerID player)
     {
-        var localPlayer = LocalPlayer.GetNetworkPlayer();
-
-        if (localPlayer == null)
-        {
-            return;
-        }
-
         foreach (var hand in grip.attachedHands)
         {
             if (hand == null)
@@ -136,18 +128,27 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
                 continue;
             }
 
-            if (hand.manager.IsLocalPlayer())
+            if (!NetworkRig.Cache.TryGet(hand.manager, out var networkRig))
             {
-                localPlayer.NetworkEntity.HookOnDataCatchup(player, (playerEntity, playerPlayer) =>
-                {
-                    if (hand.AttachedReceiver != grip)
-                    {
-                        return;
-                    }
-
-                    GrabHelper.SendObjectAttach(hand, grip, player);
-                });
+                continue;
             }
+
+            var networkRigEntity = networkRig.NetworkEntity;
+
+            if (!networkRigEntity.IsOwner)
+            {
+                continue;
+            }
+
+            networkRigEntity.HookOnDataCatchup(player, (playerEntity, playerPlayer) =>
+            {
+                if (hand.AttachedReceiver != grip)
+                {
+                    return;
+                }
+
+                networkRig.RigGrabber.TrySendGrab(hand, grip, player);
+            });
         }
     }
 }

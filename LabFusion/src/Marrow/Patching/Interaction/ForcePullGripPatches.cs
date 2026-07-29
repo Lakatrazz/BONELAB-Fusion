@@ -3,7 +3,6 @@
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
-using LabFusion.Grabbables;
 using LabFusion.Scene;
 
 namespace LabFusion.Marrow.Patching;
@@ -34,6 +33,11 @@ public static class ForcePullGripPatches
             return;
         }
 
-        GrabHelper.SendObjectForcePull(hand, __instance._grip);
+        var rigManager = hand.manager;
+
+        if (NetworkRig.Cache.TryGet(rigManager, out var networkRig) && networkRig.NetworkEntity.IsOwner)
+        {
+            networkRig.RigGrabber.OnOwnedHandForcePull(hand, __instance._grip);
+        }
     }
 }
