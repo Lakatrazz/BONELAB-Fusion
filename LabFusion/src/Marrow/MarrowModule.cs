@@ -39,7 +39,10 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<MagazineInsertMessage>();
         ModuleMessageManager.RegisterHandler<NimbusGunNoClipMessage>();
         ModuleMessageManager.RegisterHandler<ObjectDestructibleDestroyMessage>();
-        
+
+        ModuleMessageManager.RegisterHandler<RigGrabMessage>();
+        ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
+
         ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
