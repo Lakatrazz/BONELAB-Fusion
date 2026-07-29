@@ -117,7 +117,16 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public void UnassignRig()
     {
+        UnregisterComponents();
 
+        UnhookRig();
+
+        RigRefs = null;
+
+        RigPose = null;
+        PoseReceiver.ClearPoseState();
+
+        NetworkEntity?.ClearDataCaughtUpPlayers();
     }
 
     public void HookOnReady(Action callback)
@@ -529,15 +538,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         _onReadyCallback = null;
     }
 
-    private void OnRigDestroyed()
-    {
-        RigPose = null;
-        PoseReceiver.ClearPoseState();
-
-        NetworkEntity?.ClearDataCaughtUpPlayers();
-
-        UnregisterComponents();
-    }
+    private void OnRigDestroyed() => UnassignRig();
 
     private void RegisterComponents()
     {
