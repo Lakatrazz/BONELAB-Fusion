@@ -4,11 +4,11 @@ using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
 using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Messages;
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Scene;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(PhysLimb))]
 public static class PhysLimbPatches
@@ -29,19 +29,25 @@ public static class PhysLimbPatches
             return;
         }
 
-        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+        var networkRig = networkEntity.GetExtender<NetworkRig>();
 
-        if (networkPlayer == null)
+        if (networkRig == null)
         {
             return;
         }
 
-        var physicsRig = networkPlayer.NetworkRig.RigRefs.RigManager.physicsRig;
+        var physicsRig = networkRig.RigRefs.RigManager.physicsRig;
 
         bool left = __instance == physicsRig.legLf;
 
-        var data = PhysicsRigStateData.Create(PhysicsRigStateType.LEG_SHUTDOWN, true, left);
+        var data = new PhysicsRigStateData()
+        {
+            RigReference = new(networkEntity),
+            Type = PhysicsRigStateType.LegShutdown,
+            Enabled = true,
+            Left = left,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+        MessageRelay.RelayModule<PhysicsRigStateMessage, PhysicsRigStateData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

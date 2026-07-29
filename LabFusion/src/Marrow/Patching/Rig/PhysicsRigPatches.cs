@@ -4,11 +4,14 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.VRMK;
 
-namespace LabFusion.Patching;
+using LabFusion.Entities;
+
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(PhysicsRig))]
 public static class PhysicsRigPatches
@@ -46,12 +49,7 @@ public static class PhysicsRigPatches
             return;
         }
 
-        if (__instance.manager.IsLocalPlayer())
-        {
-            var data = PhysicsRigStateData.Create(PhysicsRigStateType.RAGDOLL, true);
-
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
-        }
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.Ragdoll, true);
     }
 
     [HarmonyPrefix]
@@ -65,16 +63,15 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            // Check if we can unragdoll
-            if (!ForceAllowUnragdoll && LocalRagdoll.RagdollLocked)
+            bool canUnragdoll = !LocalRagdoll.RagdollLocked || ForceAllowUnragdoll;
+
+            if (!canUnragdoll)
             {
                 return false;
             }
-
-            var data = PhysicsRigStateData.Create(PhysicsRigStateType.RAGDOLL, false);
-
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
         }
+
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.Ragdoll, false);
 
         return true;
     }
@@ -88,12 +85,7 @@ public static class PhysicsRigPatches
             return;
         }
 
-        if (__instance.manager.IsLocalPlayer())
-        {
-            var data = PhysicsRigStateData.Create(PhysicsRigStateType.SHUTDOWN, true);
-
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
-        }
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.Shutdown, true);
     }
 
     [HarmonyPrefix]
@@ -105,20 +97,17 @@ public static class PhysicsRigPatches
             return true;
         }
 
-        if (!__instance.manager.IsLocalPlayer())
+        if (__instance.manager.IsLocalPlayer())
         {
-            return true;
+            bool canUnragdoll = !LocalRagdoll.RagdollLocked || ForceAllowUnragdoll;
+
+            if (!canUnragdoll)
+            {
+                return false;
+            }
         }
 
-        // Check if we can unragdoll
-        if (!ForceAllowUnragdoll && LocalRagdoll.RagdollLocked)
-        {
-            return false;
-        }
-
-        var data = PhysicsRigStateData.Create(PhysicsRigStateType.SHUTDOWN, false);
-
-        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.Shutdown, false);
 
         return true;
     }
@@ -132,12 +121,7 @@ public static class PhysicsRigPatches
             return;
         }
 
-        if (__instance.manager.IsLocalPlayer())
-        {
-            var data = PhysicsRigStateData.Create(PhysicsRigStateType.PHYSICAL_LEGS, true);
-
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
-        }
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.PhysicalLegs, true);
     }
 
     [HarmonyPrefix]
@@ -149,11 +133,32 @@ public static class PhysicsRigPatches
             return;
         }
 
-        if (__instance.manager.IsLocalPlayer())
-        {
-            var data = PhysicsRigStateData.Create(PhysicsRigStateType.PHYSICAL_LEGS, false);
+        TrySendPhysicsRigState(__instance, PhysicsRigStateType.PhysicalLegs, false);
+    }
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, CommonMessageRoutes.ReliableToOtherClients);
+    private static void TrySendPhysicsRigState(PhysicsRig physicsRig, PhysicsRigStateType type, bool enabled)
+    {
+        var rigManager = physicsRig.manager;
+
+        if (!NetworkRig.Cache.TryGet(rigManager, out var networkRig))
+        {
+            return;
         }
+
+        var networkEntity = networkRig.NetworkEntity;
+
+        if (!networkEntity.IsOwner)
+        {
+            return;
+        }
+
+        var data = new PhysicsRigStateData()
+        {
+            RigReference = new(networkRig.NetworkEntity),
+            Type = type,
+            Enabled = enabled,
+        };
+
+        MessageRelay.RelayModule<PhysicsRigStateMessage, PhysicsRigStateData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

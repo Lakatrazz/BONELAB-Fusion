@@ -11,6 +11,7 @@ using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Scene;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Messages;
 
 using UnityEngine;
 
@@ -94,6 +95,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     private Action _onReadyCallback = null;
 
     private readonly EntityPose _receivedEntityPose = new(1);
+
+    private readonly Queue<PhysicsRigStateData> _physicsRigStates = new();
 
     public NetworkRig()
     {
@@ -281,6 +284,16 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         }
     }
 
+    public void MarkDirty()
+    {
+        _physicsRigStates.Clear();
+    }
+
+    public void EnqueuePhysicsRigState(PhysicsRigStateData data)
+    {
+        _physicsRigStates.Enqueue(data);
+    }
+
     public void OnOverrideControllerRig()
     {
         var rigManager = RigRefs.RigManager;
@@ -348,6 +361,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         OnProcessReceivedHands();
 
+        OnProcessPhysicsRigState(RigRefs.RigManager.physicsRig);
+
         var remapRig = RigRefs.RigManager.remapHeptaRig;
 
         remapRig._crouchTarget = RigPose.CrouchTarget;
@@ -376,6 +391,14 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         var controllerPose = hand.handedness == Handedness.LEFT ? RigPose.LeftController : RigPose.RightController;
 
         controllerPose?.CopyTo(hand.Controller);
+    }
+
+    private void OnProcessPhysicsRigState(PhysicsRig physicsRig)
+    {
+        while (_physicsRigStates.Count > 0)
+        {
+            _physicsRigStates.Dequeue().Apply(physicsRig);
+        }
     }
 
     private void OnTickReceivedPhysics(float deltaTime)
@@ -536,6 +559,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         RigGrabber = new(NetworkEntity, RigRefs);
 
         HookRig();
+
+        MarkDirty();
 
         // Register components for the rig objects
         RegisterComponents();

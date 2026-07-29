@@ -57,9 +57,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
 
     public RigVoiceSource VoiceSource { get; private set; } = null;
 
-    private bool _isPhysicsRigDirty = false;
-    private Queue<PhysicsRigStateData> _physicsRigStates = new();
-
     private bool _isSettingsDirty = false;
     private bool _isServerDirty = false;
 
@@ -236,9 +233,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
 
         _isSettingsDirty = true;
         _isServerDirty = true;
-
-        _isPhysicsRigDirty = true;
-        _physicsRigStates.Clear();
     }
 
     private void OnLevelLoad()
@@ -373,12 +367,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
         _isServerDirty = true;
 
         OnMetadataChanged();
-    }
-
-    public void EnqueuePhysicsRigState(PhysicsRigStateData data)
-    {
-        _physicsRigStates.Enqueue(data);
-        _isPhysicsRigDirty = true;
     }
 
     public void SetSettings(SerializedPlayerSettings settings)
@@ -519,19 +507,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
         // Update the player if its dirty and has an avatar
         // Resolve avatar changes
         AvatarSetter.Resolve(rigRefs);
-
-        // Apply physics rig states
-        if (_isPhysicsRigDirty)
-        {
-            var physicsRig = rigManager.physicsRig;
-
-            while (_physicsRigStates.Count > 0)
-            {
-                _physicsRigStates.Dequeue().Apply(physicsRig);
-            }
-
-            _isPhysicsRigDirty = false;
-        }
 
         // Update settings
         if (_isSettingsDirty)

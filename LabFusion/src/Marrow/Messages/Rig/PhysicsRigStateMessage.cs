@@ -2,28 +2,36 @@
 
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public enum PhysicsRigStateType
 {
-    SHUTDOWN,
-    RAGDOLL,
-    LEG_SHUTDOWN,
-    PHYSICAL_LEGS,
+    Shutdown,
+    Ragdoll,
+    LegShutdown,
+    PhysicalLegs,
 }
 
 public class PhysicsRigStateData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 4;
+    public const int Size = NetworkEntityReference.Size + sizeof(byte) * 3;
+
+    public NetworkEntityReference RigReference;
 
     public PhysicsRigStateType Type;
     public bool Enabled;
 
     public bool Left;
 
+    public int? GetSize() => Size;
+
     public void Serialize(INetSerializer serializer)
     {
+        serializer.SerializeValue(ref RigReference);
+
         serializer.SerializeValue(ref Type, Precision.OneByte);
         serializer.SerializeValue(ref Enabled);
         serializer.SerializeValue(ref Left);
@@ -33,7 +41,7 @@ public class PhysicsRigStateData : INetSerializable
     {
         switch (Type)
         {
-            case PhysicsRigStateType.SHUTDOWN:
+            case PhysicsRigStateType.Shutdown:
                 if (Enabled)
                 {
                     physicsRig.ShutdownRig();
@@ -43,7 +51,7 @@ public class PhysicsRigStateData : INetSerializable
                     physicsRig.TurnOnRig();
                 }
                 break;
-            case PhysicsRigStateType.RAGDOLL:
+            case PhysicsRigStateType.Ragdoll:
                 if (Enabled)
                 {
                     physicsRig.RagdollRig();
@@ -53,7 +61,7 @@ public class PhysicsRigStateData : INetSerializable
                     physicsRig.UnRagdollRig();
                 }
                 break;
-            case PhysicsRigStateType.LEG_SHUTDOWN:
+            case PhysicsRigStateType.LegShutdown:
                 var leg = Left ? physicsRig.legLf : physicsRig.legRt;
 
                 if (Enabled)
@@ -61,7 +69,7 @@ public class PhysicsRigStateData : INetSerializable
                     leg.ShutdownLimb();
                 }
                 break;
-            case PhysicsRigStateType.PHYSICAL_LEGS:
+            case PhysicsRigStateType.PhysicalLegs:
                 if (Enabled)
                 {
                     physicsRig.PhysicalLegs();
@@ -73,37 +81,45 @@ public class PhysicsRigStateData : INetSerializable
                 break;
         }
     }
-
-    public static PhysicsRigStateData Create(PhysicsRigStateType type, bool enabled, bool left = false)
-    {
-        return new PhysicsRigStateData
-        {
-            Type = type,
-            Enabled = enabled,
-            Left = left,
-        };
-    }
 }
 
 [Net.SkipHandleWhileLoading]
-public class PhysicsRigStateMessage : NativeMessageHandler
+public class PhysicsRigStateMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.PhysicsRigState;
+    protected override bool OnPreRelayMessage(ReceivedMessage received)
+    {
+        // The NetworkEntityReference is the first thing written to the PhysicsRigStateData, so we can just read that
+        var rigReference = received.ReadData<NetworkEntityReference>();
+
+        // The sender should always be valid for this message, if not it should fail anyways
+        var sender = received.Sender.Value;
+
+        // The sender of the grab message should own that rig
+        // If not, prevent the relaying of the message
+        if (rigReference.TryGetEntity(out var rigEntity) && rigEntity.HasOwner && rigEntity.OwnerID.SmallID != sender)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var sender = received.Sender;
+        var data = received.ReadData<PhysicsRigStateData>();
 
-        if (!sender.HasValue)
+        if (!data.RigReference.TryGetEntity(out var networkEntity))
         {
             return;
         }
 
-        var data = received.ReadData<PhysicsRigStateData>();
+        var networkRig = networkEntity.GetExtender<NetworkRig>();
 
-        if (NetworkPlayerManager.TryGetPlayer(sender.Value, out var player))
+        if (networkRig == null)
         {
-            player.EnqueuePhysicsRigState(data);
+            return;
         }
+
+        networkRig.EnqueuePhysicsRigState(data);
     }
 }

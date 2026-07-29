@@ -27,7 +27,7 @@ public class RigReleaseMessage : ModuleMessageHandler
 {
     protected override bool OnPreRelayMessage(ReceivedMessage received)
     {
-        // The NetworkEntityReference is the first thing written to the RigGrabData, so we can just read that
+        // The NetworkEntityReference is the first thing written to the RigReleaseData, so we can just read that
         var rigReference = received.ReadData<NetworkEntityReference>();
 
         // The sender should always be valid for this message, if not it should fail anyways

@@ -1,7 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
-using LabFusion.Patching;
+using LabFusion.Marrow.Patching;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
