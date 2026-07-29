@@ -24,6 +24,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public bool IsRegistered { get; private set; } = false;
 
+    public bool IsRigAssigned { get; private set; } = false;
+
     public NetworkEntity NetworkEntity { get; private set; } = null;
 
     public MarrowEntity MarrowEntity { get; private set; } = null;
@@ -113,10 +115,19 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     public void AssignRig(RigManager rigManager)
     {
         OnRigAssigned(rigManager);
+
+        IsRigAssigned = true;
     }
 
     public void UnassignRig()
     {
+        if (!IsRigAssigned)
+        {
+            return;
+        }
+
+        IsRigAssigned = false;
+
         UnregisterComponents();
 
         UnhookRig();
@@ -155,6 +166,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         IsRegistered = false;
 
         NetworkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+
+        UnassignRig();
     }
 
     public void OnPoseReceived(RigPose pose)
