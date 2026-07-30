@@ -116,7 +116,7 @@ public static class GunPatches
                 var data = new GunShotData()
                 {
                     AmmoCount = ammoCount,
-                    Gun = ComponentIndexData.Create(gunEntity.ID, gunExtender.GetIndex(__instance).Value)
+                    Gun = ComponentIndexData.CreateFromEntity(gunEntity.ID, gunExtender.GetIndex(__instance).Value)
                 };
 
                 MessageRelay.RelayModule<GunShotMessage, GunShotData>(data, CommonMessageRoutes.ReliableToOtherClients);

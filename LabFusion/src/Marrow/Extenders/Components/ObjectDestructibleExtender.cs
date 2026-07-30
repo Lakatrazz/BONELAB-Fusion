@@ -49,7 +49,7 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
             return;
         }
 
-        var data = ComponentIndexData.Create(entity.ID, GetIndex(destructible).Value);
+        var data = ComponentIndexData.CreateFromEntity(entity.ID, GetIndex(destructible).Value);
 
         MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }

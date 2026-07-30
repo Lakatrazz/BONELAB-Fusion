@@ -9,12 +9,13 @@ namespace LabFusion.Network;
 
 public class ComponentPathData : INetSerializable
 {
-    public const int Size = sizeof(byte) + NetworkEntityReference.Size + sizeof(ushort) + sizeof(bool) + ComponentHashData.Size;
+    public const int Size = sizeof(bool) * 2 + ComponentIndexData.Size + ComponentHashData.Size;
 
-    public bool HasEntity;
+    public bool HasEntity => IndexData != null;
 
-    public NetworkEntityReference Entity;
-    public ushort ComponentIndex;
+    public bool HasHash => HashData != null;
+
+    public ComponentIndexData IndexData;
 
     public ComponentHashData HashData;
 
@@ -22,15 +23,20 @@ public class ComponentPathData : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref HasEntity);
-        serializer.SerializeValue(ref Entity);
-        serializer.SerializeValue(ref ComponentIndex);
+        bool hasEntity = HasEntity;
 
-        bool hasHashData = HashData != null;
+        serializer.SerializeValue(ref hasEntity);
 
-        serializer.SerializeValue(ref hasHashData);
+        if (hasEntity)
+        {
+            serializer.SerializeValue(ref IndexData);
+        }
 
-        if (hasHashData)
+        bool hasHash = HasHash;
+
+        serializer.SerializeValue(ref hasHash);
+
+        if (hasHash)
         {
             serializer.SerializeValue(ref HashData);
         }
@@ -38,59 +44,31 @@ public class ComponentPathData : INetSerializable
 
     public static ComponentPathData CreateFromComponent<TComponent, TExtender>(TComponent component, ComponentHashTable<TComponent> hashTable, FusionComponentCache<TComponent, NetworkEntity> cache) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
     {
+        var indexData = ComponentIndexData.CreateFromComponent<TComponent, TExtender>(component, cache);
+
         var hashData = hashTable.GetDataFromComponent(component);
-
-        var hasNetworkEntity = false;
-        ushort entityID = 0;
-        ushort componentIndex = 0;
-
-        if (cache.TryGet(component, out var entity))
-        {
-            hasNetworkEntity = true;
-            var extender = entity.GetExtender<TExtender>();
-
-            entityID = entity.ID;
-            componentIndex = extender.GetIndex(component).Value;
-        }
 
         return new ComponentPathData()
         {
-            HasEntity = hasNetworkEntity,
-            Entity = new(entityID),
-            ComponentIndex = componentIndex,
+            IndexData = indexData,
             HashData = hashData,
         };
     }
 
     public bool TryGetComponent<TComponent, TExtender>(ComponentHashTable<TComponent> hashTable, out TComponent component) where TComponent : Component where TExtender : EntityComponentArrayExtender<TComponent>
     {
-        component = null;
-
         if (HasEntity)
         {
-            var entity = Entity.GetEntity();
-
-            if (entity == null)
-            {
-                return false;
-            }
-
-            var extender = entity.GetExtender<TExtender>();
-
-            if (extender == null)
-            {
-                return false;
-            }
-
-            component = extender.GetComponent(ComponentIndex);
-
-            return component != null;
+            return IndexData.TryGetComponent<TComponent, TExtender>(out component);
         }
-        else
+        else if (HasHash)
         {
             component = hashTable.GetComponentFromData(HashData);
 
             return component != null;
         }
+
+        component = null;
+        return false;
     }
 }

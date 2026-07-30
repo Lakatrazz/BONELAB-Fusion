@@ -4,6 +4,7 @@ using LabFusion.Network;
 using LabFusion.RPC;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Messages;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow;
@@ -57,7 +58,7 @@ public static class ObjectDestructiblePatches
 
     private static void OnDestruction(ObjectDestructible destructible)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -74,7 +75,7 @@ public static class ObjectDestructiblePatches
         // Send object destroy
         if (entity.IsOwner)
         {
-            var data = ComponentIndexData.Create(entity.ID, extender.GetIndex(destructible).Value);
+            var data = ComponentIndexData.CreateFromEntity(entity.ID, extender.GetIndex(destructible).Value);
 
             MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, CommonMessageRoutes.ReliableToOtherClients);
         }
@@ -86,8 +87,8 @@ public static class ObjectDestructiblePatches
     {
         __state = new(__instance);
 
-        // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        // Make sure the level is networked
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -114,8 +115,8 @@ public static class ObjectDestructiblePatches
     [HarmonyPostfix]
     public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
     {
-        // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        // Make sure the level is networked
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
