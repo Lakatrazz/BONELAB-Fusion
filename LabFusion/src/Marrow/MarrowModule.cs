@@ -18,6 +18,34 @@ public class MarrowModule : Module
 
     protected override void OnModuleRegistered()
     {
+        RegisterMessages();
+
+        MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
+
+        LevelEventHandler.Initialize();
+
+        RigAdditions.Initialize();
+        DefaultRigAdditions.Initialize();
+
+        PalletUseHistoryManager.Initialize();
+
+        if (PlatformHelper.IsAndroid)
+        {
+            CrateSpawnerAndroidPatches.PatchAll();
+        }
+        else
+        {
+            CrateSpawnerPatches.PatchAll();
+        }
+    }
+
+    protected override void OnModuleUnregistered()
+    {
+        
+    }
+
+    private void RegisterMessages()
+    {
         ModuleMessageManager.RegisterHandler<ButtonChargeMessage>();
         ModuleMessageManager.RegisterHandler<EventActuatorMessage>();
 
@@ -42,31 +70,9 @@ public class MarrowModule : Module
 
         ModuleMessageManager.RegisterHandler<PhysicsRigStateMessage>();
         ModuleMessageManager.RegisterHandler<RigGrabMessage>();
+        ModuleMessageManager.RegisterHandler<RigPoseUpdateMessage>();
         ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
 
         ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
-
-        MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
-
-        LevelEventHandler.Initialize();
-
-        RigAdditions.Initialize();
-        DefaultRigAdditions.Initialize();
-
-        PalletUseHistoryManager.Initialize();
-
-        if (PlatformHelper.IsAndroid)
-        {
-            CrateSpawnerAndroidPatches.PatchAll();
-        }
-        else
-        {
-            CrateSpawnerPatches.PatchAll();
-        }
-    }
-
-    protected override void OnModuleUnregistered()
-    {
-        
     }
 }

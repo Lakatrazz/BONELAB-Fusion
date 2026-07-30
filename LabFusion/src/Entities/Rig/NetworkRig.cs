@@ -349,10 +349,13 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         Health = RigRefs.Health.curr_Health;
         MaxHealth = RigRefs.Health.max_Health;
 
-        // TODO: Replace with rig pose separate from player pose
-        var data = PlayerPoseUpdateData.Create(RigPose);
+        var data = new RigPoseUpdateData()
+        {
+            RigReference = new(NetworkEntity),
+            Pose = RigPose,
+        };
 
-         MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, CommonMessageRoutes.UnreliableToOtherClients);
+         MessageRelay.RelayModule<RigPoseUpdateMessage, RigPoseUpdateData>(data, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
     private void OnTickReceivedRig(float deltaTime)
