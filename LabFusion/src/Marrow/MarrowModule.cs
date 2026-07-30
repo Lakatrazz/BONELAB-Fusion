@@ -69,6 +69,7 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
         ModuleMessageManager.RegisterHandler<PhysicsRigStateMessage>();
+        ModuleMessageManager.RegisterHandler<RigAvatarMessage>();
         ModuleMessageManager.RegisterHandler<RigGrabMessage>();
         ModuleMessageManager.RegisterHandler<RigPoseUpdateMessage>();
         ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
