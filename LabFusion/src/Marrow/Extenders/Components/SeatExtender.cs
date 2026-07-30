@@ -3,6 +3,7 @@ using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Marrow.Extensions;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
 
@@ -57,24 +58,27 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
 
     private void OnEntityDataCatchup(Seat seat, NetworkEntity entity, PlayerID player)
     {
-        if (seat.rigManager == null)
+        var rigManager = seat.rigManager;
+
+        if (rigManager == null)
         {
             return;
         }
 
-        if (!NetworkPlayerManager.TryGetPlayer(seat.rigManager, out var seatedPlayer))
+        if (!NetworkRig.Cache.TryGet(rigManager, out var networkRig))
         {
             return;
         }
 
-        var data = new PlayerRepSeatData()
+        // TODO: Move this to be catchup on the rig because clients can sometimes own seats even when other players are in them!
+        var data = new RigSeatData()
         {
-            SeatID = entity.ID,
-            SeatIndex = (byte)GetIndex(seat).Value,
-            IsIngress = true,
+            RigReference = new(networkRig.NetworkEntity),
+            SeatReference = ComponentIndexData.CreateFromEntity(entity.ID, GetIndex(seat).Value),
+            IsSeated = true,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
+        MessageRelay.RelayModule<RigSeatMessage, RigSeatData>(data, new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }
 
     private void OnAfterTeleportToPose()

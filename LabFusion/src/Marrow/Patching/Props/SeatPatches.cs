@@ -3,11 +3,12 @@
 using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 using LabFusion.Entities;
-using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Marrow.Extenders;
+using LabFusion.Scene;
+using LabFusion.Marrow.Rig;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
@@ -16,7 +17,7 @@ using UnityEngine;
 
 using MelonLoader;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(Seat))]
 public static class SeatPatches
@@ -27,14 +28,14 @@ public static class SeatPatches
     [HarmonyPatch(nameof(Seat.OnTriggerStay))]
     public static bool OnTriggerStay(Collider other)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
         var grounder = other.GetComponent<PhysGrounder>();
 
-        if (grounder != null && NetworkPlayerManager.HasExternalPlayer(grounder.physRig.manager))
+        if (grounder != null && !NetworkBeingManager.HasOwnership(grounder.physRig.manager))
         {
             return false;
         }
@@ -52,16 +53,16 @@ public static class SeatPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
-        if (rM.IsLocalPlayer())
+        if (rM.HasOwnership())
         {
-            MelonCoroutines.Start(Internal_SyncSeat(__instance));
+            MelonCoroutines.Start(SendSeatEnter(__instance));
         }
-        else if (NetworkPlayerManager.HasExternalPlayer(rM))
+        else
         {
             return false;
         }
@@ -69,7 +70,7 @@ public static class SeatPatches
         return true;
     }
 
-    private static IEnumerator Internal_SyncSeat(Seat __instance)
+    private static IEnumerator SendSeatEnter(Seat __instance)
     {
         var marrowBody = MarrowBody.Cache.Get(__instance.seatRb.gameObject);
 
@@ -88,34 +89,43 @@ public static class SeatPatches
             });
 
             while (isAwaiting)
+            {
                 yield return null;
+            }
         }
 
         yield return null;
 
         // Send seat request
-        if (!__instance.rigManager.IsLocalPlayer())
+        var rigManager = __instance.rigManager;
+
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
             yield break;
         }
 
-        var entity = SeatExtender.Cache.Get(__instance);
+        var networkRigEntity = networkRig.NetworkEntity;
 
-        if (entity == null)
+        if (!networkRigEntity.IsOwner)
         {
             yield break;
         }
 
-        var extender = entity.GetExtender<SeatExtender>();
+        var seatComponentData = ComponentIndexData.CreateFromComponent<Seat, SeatExtender>(__instance, SeatExtender.Cache);
 
-        var data = new PlayerRepSeatData()
+        if (seatComponentData == null)
         {
-            SeatID = entity.ID,
-            SeatIndex = (byte)extender.GetIndex(__instance).Value,
-            IsIngress = true,
+            yield break;
+        }
+
+        var data = new RigSeatData()
+        {
+            RigReference = new(networkRigEntity),
+            SeatReference = seatComponentData,
+            IsSeated = true,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
+        MessageRelay.RelayModule<RigSeatMessage, RigSeatData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -128,32 +138,39 @@ public static class SeatPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
-        if (!__instance._rig.IsLocalPlayer())
+        var rigManager = __instance.rigManager;
+
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
             return;
         }
 
-        var entity = SeatExtender.Cache.Get(__instance);
+        var networkRigEntity = networkRig.NetworkEntity;
 
-        if (entity == null)
+        if (!networkRigEntity.IsOwner)
         {
             return;
         }
 
-        var extender = entity.GetExtender<SeatExtender>();
+        var seatComponentData = ComponentIndexData.CreateFromComponent<Seat, SeatExtender>(__instance, SeatExtender.Cache);
 
-        var data = new PlayerRepSeatData()
+        if (seatComponentData == null)
         {
-            SeatID = entity.ID,
-            SeatIndex = (byte)extender.GetIndex(__instance).Value,
-            IsIngress = false,
+            return;
+        }
+
+        var data = new RigSeatData()
+        {
+            RigReference = new(networkRigEntity),
+            SeatReference = seatComponentData,
+            IsSeated = false,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, CommonMessageRoutes.ReliableToOtherClients);
+        MessageRelay.RelayModule<RigSeatMessage, RigSeatData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 }

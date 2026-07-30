@@ -72,6 +72,7 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<RigGrabMessage>();
         ModuleMessageManager.RegisterHandler<RigPoseUpdateMessage>();
         ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
+        ModuleMessageManager.RegisterHandler<RigSeatMessage>();
 
         ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
     }

@@ -13,7 +13,6 @@ public static class NativeMessageTag
         Disconnect = 3,
 
         PlayerRepAvatar = 5,
-        PlayerRepSeat = 8,
 
         SceneLoad = 12,
 

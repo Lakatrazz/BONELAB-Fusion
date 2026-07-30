@@ -42,9 +42,14 @@ public class ComponentIndexData : INetSerializable
 
     public bool TryGetComponent<TComponent, TExtender>(out TComponent component) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
     {
+        return TryGetComponentAndEntity<TComponent, TExtender>(out component, out _);
+    }
+
+    public bool TryGetComponentAndEntity<TComponent, TExtender>(out TComponent component, out NetworkEntity entity) where TExtender : EntityComponentArrayExtender<TComponent> where TComponent : Component
+    {
         component = null;
 
-        var entity = Entity.GetEntity();
+        entity = Entity.GetEntity();
 
         if (entity == null)
         {
