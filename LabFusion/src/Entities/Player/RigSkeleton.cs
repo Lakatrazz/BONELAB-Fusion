@@ -1,13 +1,13 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Representation;
-
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
 public class RigSkeleton
 {
+    public const int TrackerCount = 3;
+
     public Transform[] TrackedPoints = null;
 
     public Transform TrackedPlayspace = null;
@@ -23,9 +23,11 @@ public class RigSkeleton
 
     public RigSkeleton(RigManager rigManager)
     {
-        RigAbstractor.FillTransformArray(ref TrackedPoints, rigManager);
+        var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
 
-        TrackedPlayspace = rigManager.GetSmoothTurnTransform();
+        GetTrackers(openControllerRig);
+
+        TrackedPlayspace = openControllerRig.vrRoot;
 
         var physicsRig = rigManager.physicsRig;
 
@@ -37,5 +39,14 @@ public class RigSkeleton
         RemapRig = rigManager.remapHeptaRig;
 
         Health = rigManager.health;
-    } 
+    }
+
+    public void GetTrackers(OpenControllerRig openControllerRig)
+    {
+        TrackedPoints = new Transform[TrackerCount];
+
+        TrackedPoints[0] = openControllerRig.headset;
+        TrackedPoints[1] = openControllerRig.leftController.transform;
+        TrackedPoints[2] = openControllerRig.rightController.transform;
+    }
 }

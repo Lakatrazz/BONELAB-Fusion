@@ -1,20 +1,20 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Network.Serialization;
-using LabFusion.Representation;
+
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
 public class RigPose : INetSerializable
 {
-    public const int Size = SerializedLocalTransform.Size * RigAbstractor.TransformSyncCount +
+    public const int Size = SerializedLocalTransform.Size * RigSkeleton.TrackerCount +
         SerializedSmallQuaternion.Size +
         BodyPose.Size +
         SerializedController.Size * 2 +
         sizeof(float) * 4;
 
-    public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
+    public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigSkeleton.TrackerCount];
 
     public SerializedSmallQuaternion TrackedPlayspace = SerializedSmallQuaternion.Default;
 
@@ -38,7 +38,7 @@ public class RigPose : INetSerializable
     public void ReadSkeleton(RigSkeleton skeleton)
     {
         // Read tracked points
-        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+        for (var i = 0; i < RigSkeleton.TrackerCount; i++)
         {
             TrackedPoints[i] = new SerializedLocalTransform(skeleton.TrackedPoints[i]);
         }
@@ -69,7 +69,7 @@ public class RigPose : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+        for (var i = 0; i < RigSkeleton.TrackerCount; i++)
         {
             var trackedPoint = TrackedPoints[i];
 

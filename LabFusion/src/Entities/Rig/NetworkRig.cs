@@ -8,7 +8,6 @@ using LabFusion.Math;
 using LabFusion.Math.Numerics;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
@@ -306,7 +305,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         rigManager.remapHeptaRig.inWeight = 1f;
 
-        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+        for (var i = 0; i < RigSkeleton.TrackerCount; i++)
         {
             var posePoint = RigPose.TrackedPoints[i];
 
@@ -329,7 +328,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
             return;
         }
 
-        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+        for (var i = 0; i < RigSkeleton.TrackerCount; i++)
         {
             var posePoint = RigPose.TrackedPoints[i];
             SmoothTrackedTransforms[i] = new ManagedTransform(posePoint.position, posePoint.rotation);
@@ -549,7 +548,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         RigSkeleton = new(rigManager);
         RigRefs = new(rigManager);
 
-        SmoothTrackedTransforms = new ManagedTransform[RigAbstractor.TransformSyncCount];
+        SmoothTrackedTransforms = new ManagedTransform[RigSkeleton.TrackerCount];
 
         RigRefs.HookOnDestroy(OnRigDestroyed);
 
