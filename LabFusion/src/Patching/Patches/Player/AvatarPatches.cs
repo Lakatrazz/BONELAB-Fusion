@@ -42,7 +42,7 @@ public static class AvatarPatches
         player = null;
 
         // Make sure this isn't a RealHeptaAvatar avatar! We don't want to scale those values!
-        return rm != null && NetworkPlayerManager.TryGetPlayer(rm, out player) && !avatar.TryCast<RealHeptaAvatar>() && player.AvatarSetter.AvatarStats != null;
+        return rm != null && NetworkPlayerManager.TryGetPlayer(rm, out player) && !avatar.TryCast<RealHeptaAvatar>() && player.NetworkRig.AvatarSetter.AvatarStats != null;
     }
 
     private static void OverrideBodyMeasurements(Avatar __instance)
@@ -51,7 +51,7 @@ public static class AvatarPatches
         {
             if (NetworkInfo.HasServer && ValidateAvatar(__instance, out var rep, out var rm))
             {
-                var newStats = rep.AvatarSetter.AvatarStats;
+                var newStats = rep.NetworkRig.AvatarSetter.AvatarStats;
 
                 // Apply the synced avatar stats
                 newStats.CopyTo(__instance);

@@ -44,6 +44,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public RigGrabber RigGrabber { get; private set; } = null;
 
+    public RigAvatarSetter AvatarSetter { get; private set; } = null;
+
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
     public ManagedTransform[] SmoothTrackedTransforms { get; private set; } = null;
@@ -101,12 +103,17 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     {
         // The only synced body is the pelvis, so its initialized with one
         PoseReceiver.InitializePoses(1);
+
+        // Create the AvatarSetter
+        AvatarSetter = new();
     }
 
     public void ConnectToEntity(NetworkEntity networkEntity)
     {
         NetworkEntity = networkEntity;
         networkEntity.ConnectExtender(this);
+
+        AvatarSetter.SetEntity(networkEntity);
     }
 
     public void DisconnectFromEntity() 
@@ -285,6 +292,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public void MarkDirty()
     {
+        AvatarSetter.SetDirty();
+
         _physicsRigStates.Clear();
     }
 
@@ -365,6 +374,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         OnProcessPhysicsRigState(RigRefs.RigManager.physicsRig);
 
+        OnProcessAvatar();
+
         var remapRig = RigRefs.RigManager.remapHeptaRig;
 
         remapRig._crouchTarget = RigPose.CrouchTarget;
@@ -401,6 +412,11 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         {
             _physicsRigStates.Dequeue().Apply(physicsRig);
         }
+    }
+
+    private void OnProcessAvatar()
+    {
+        AvatarSetter.Resolve(RigRefs);
     }
 
     private void OnTickReceivedPhysics(float deltaTime)

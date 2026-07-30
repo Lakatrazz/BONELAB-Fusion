@@ -3,6 +3,7 @@ using Il2CppSLZ.Marrow.Combat;
 
 using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
 
@@ -74,13 +75,15 @@ public static class PlayerSender
             return;
         }
 
-        var data = new PlayerRepAvatarData()
+        // TODO: Move to NetworkRig
+        var data = new RigAvatarData()
         {
+            RigReference = new(PlayerIDManager.LocalSmallID),
             Stats = stats,
             Barcode = barcode,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAvatar, CommonMessageRoutes.ReliableToOtherClients);
+        MessageRelay.RelayModule<RigAvatarMessage, RigAvatarData>(data, CommonMessageRoutes.ReliableToOtherClients);
     }
 
     public static void SendPlayerVoiceChat(byte[] voiceData)

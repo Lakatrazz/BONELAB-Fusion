@@ -12,8 +12,6 @@ public static class NativeMessageTag
         ConnectionResponse = 2,
         Disconnect = 3,
 
-        PlayerRepAvatar = 5,
-
         SceneLoad = 12,
 
         EntityUnqueueRequest = 13,

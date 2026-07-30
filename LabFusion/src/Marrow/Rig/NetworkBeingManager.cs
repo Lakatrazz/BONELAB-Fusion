@@ -38,6 +38,20 @@ public static class NetworkBeingManager
         return networkRig.NetworkEntity.IsOwner;
     }
 
+    public static bool TryGetNetworkRig(ushort entityID, out NetworkRig networkRig) => TryGetNetworkRig(new NetworkEntityReference(entityID), out networkRig);
+
+    public static bool TryGetNetworkRig(NetworkEntityReference entityReference, out NetworkRig networkRig)
+    {
+        if (!entityReference.TryGetEntity(out var networkEntity))
+        {
+            networkRig = null;
+            return false;
+        }
+
+        networkRig = networkEntity.GetExtender<NetworkRig>();
+        return networkRig != null;
+    }
+
     /// <summary>
     /// Attempts to find a NetworkRig from a RigManager. If the RigManager is null or client side only, the function will return false.
     /// </summary>

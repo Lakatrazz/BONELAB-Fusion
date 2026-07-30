@@ -203,8 +203,8 @@ public class ConnectionRequestMessage : NativeMessageHandler
             }
             else if (NetworkPlayerManager.TryGetPlayer(id.SmallID, out var rep))
             {
-                barcode = rep.AvatarSetter.AvatarBarcode;
-                stats = rep.AvatarSetter.AvatarStats;
+                barcode = rep.NetworkRig.AvatarSetter.AvatarBarcode;
+                stats = rep.NetworkRig.AvatarSetter.AvatarStats;
             }
             else
             {

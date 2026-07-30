@@ -29,14 +29,16 @@ public class RigAvatarSetter
 
     private NetworkEntity _entity = null;
 
-    private readonly RigProgressBar _progressBar = new();
-    public RigProgressBar ProgressBar => _progressBar;
+    public RigProgressBar ProgressBar { get; } = new();
 
-    public RigAvatarSetter(NetworkEntity entity)
+    public RigAvatarSetter()
+    {
+        ProgressBar.Visible = false;
+    }
+
+    public void SetEntity(NetworkEntity entity)
     {
         _entity = entity;
-
-        ProgressBar.Visible = false;
     }
 
     public void SwapAvatar(SerializedAvatarStats stats, string barcode)

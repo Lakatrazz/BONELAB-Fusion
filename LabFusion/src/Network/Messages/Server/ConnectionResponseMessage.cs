@@ -63,7 +63,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
             InternalServerHelpers.OnPlayerJoined(data.PlayerID, data.IsInitialJoin);
 
             var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
-            networkPlayer.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
+            networkPlayer.NetworkRig.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
         }
 
         // Send catchup messages now that the user is registered

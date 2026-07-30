@@ -1,5 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow;
+﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -48,8 +47,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
     public RigIcon Icon { get; private set; } = null;
 
     public RigHeadUI HeadUI { get; private set; } = null;
-
-    public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
     public RigHealthBar HealthBar { get; private set; } = null;
 
@@ -116,14 +113,13 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
             Visible = false,
         };
 
-        AvatarSetter = new(networkEntity);
-        AvatarSetter.OnAvatarChanged += UpdateAvatarSettings;
+        NetworkRig.AvatarSetter.OnAvatarChanged += UpdateAvatarSettings;
 
         NetworkRig.HiddenChanged += OnHiddenChanged;
 
         // Register the default head UI elements so they're automatically spawned in
         HeadUI.RegisterElement(_nametag);
-        HeadUI.RegisterElement(AvatarSetter.ProgressBar);
+        HeadUI.RegisterElement(NetworkRig.AvatarSetter.ProgressBar);
         HeadUI.RegisterElement(Icon);
         HeadUI.RegisterElement(HealthBar);
         HeadUI.RegisterElement(LivesBar);
@@ -202,9 +198,10 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
             return;
         }
 
-        if (!LocalAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
+        // TODO: Move to NetworkRig
+        if (!LocalAvatar.IsMatchingAvatar(barcode, NetworkRig.AvatarSetter.AvatarBarcode))
         {
-            AvatarSetter.SetAvatarDirty();
+            NetworkRig.AvatarSetter.SetAvatarDirty();
         }
     }
 
@@ -229,8 +226,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
 
     public void MarkDirty()
     {
-        AvatarSetter.SetDirty();
-
         _isSettingsDirty = true;
         _isServerDirty = true;
     }
@@ -503,10 +498,6 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
         var rigManager = NetworkRig.RigRefs.RigManager;
 
         HeadUI.UpdateTransform(rigManager);
-
-        // Update the player if its dirty and has an avatar
-        // Resolve avatar changes
-        AvatarSetter.Resolve(rigRefs);
 
         // Update settings
         if (_isSettingsDirty)
