@@ -37,8 +37,10 @@ internal class EOSPlatform : EOSInterface
             yield break;
         }
         
+#if DEBUG
         LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Info);
         LoggingInterface.SetCallback((ref LogMessage message) => FusionLogger.Log($"EOS -> [{message.Category}] [{message.Level.ToString()}] {message.Message}"));
+#endif
         
         InitializeTicker();
         

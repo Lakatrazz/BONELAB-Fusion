@@ -206,7 +206,9 @@ internal class EOSLobby : EOSInterface
             }
             else
             {
+#if DEBUG
                 FusionLogger.Log($"Successfully updated lobby attribute '{key}'");
+#endif
             }
             modification.Release();
         });

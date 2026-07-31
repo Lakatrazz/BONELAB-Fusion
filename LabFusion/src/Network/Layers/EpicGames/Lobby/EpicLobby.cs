@@ -25,7 +25,9 @@ internal class EpicLobby : NetworkLobby
     {
         LobbyDetails?.Release();
         LobbyDetails = null;
+#if DEBUG
         FusionLogger.Log($"Lobby '{LobbyID}' was garbage collected");
+#endif
     }
     
     public override void SetMetadata(string key, string value)
