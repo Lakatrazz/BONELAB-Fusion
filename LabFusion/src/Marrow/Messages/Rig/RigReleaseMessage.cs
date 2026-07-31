@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Entities;
+using LabFusion.Marrow.Rig;
 using LabFusion.Network;
 using LabFusion.Network.Messages;
 using LabFusion.Network.Serialization;
@@ -24,6 +25,7 @@ public class RigReleaseData : INetSerializable
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RigReleaseMessage : ModuleMessageHandler
 {
     protected override bool OnPreRelayMessage(ReceivedMessage received) => CommonMessageValidation.ValidateSenderOwnsEntity(received);
@@ -32,13 +34,16 @@ public class RigReleaseMessage : ModuleMessageHandler
     {
         var data = received.ReadData<RigReleaseData>();
 
-        if (!data.RigReference.TryGetEntity(out var rigEntity))
+        if (!NetworkBeingManager.TryGetNetworkRig(data.RigReference, out var networkRig))
         {
             return;
         }
 
-        var rig = rigEntity.GetExtender<NetworkRig>();
+        if (!networkRig.HasRig)
+        {
+            return;
+        }
 
-        rig.RigGrabber.OnReleaseReceived(data.Handedness);
+        networkRig.RigGrabber.OnReleaseReceived(data.Handedness);
     }
 }

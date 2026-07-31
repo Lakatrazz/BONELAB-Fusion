@@ -1,5 +1,6 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Marrow.Interaction;
+using LabFusion.Marrow.Rig;
 using LabFusion.Network;
 using LabFusion.Network.Messages;
 using LabFusion.Network.Serialization;
@@ -23,6 +24,7 @@ public class RigGrabData : INetSerializable
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RigGrabMessage : ModuleMessageHandler
 {
     protected override bool OnPreRelayMessage(ReceivedMessage received) => CommonMessageValidation.ValidateSenderOwnsEntity(received);
@@ -31,13 +33,16 @@ public class RigGrabMessage : ModuleMessageHandler
     {
         var data = received.ReadData<RigGrabData>();
 
-        if (!data.RigReference.TryGetEntity(out var rigEntity))
+        if (!NetworkBeingManager.TryGetNetworkRig(data.RigReference, out var networkRig))
         {
             return;
         }
 
-        var rig = rigEntity.GetExtender<NetworkRig>();
+        if (!networkRig.HasRig)
+        {
+            return;
+        }
 
-        rig.RigGrabber.OnGrabReceived(data.Grab);
+        networkRig.RigGrabber.OnGrabReceived(data.Grab);
     }
 }
