@@ -3,6 +3,7 @@ using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Player;
+using LabFusion.Marrow.Player;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
@@ -69,7 +70,7 @@ public static class PlayerDamageReceiverPatches
                 // Send the damage over the network
                 PlayerSender.SendPlayerDamage(player.PlayerID, attack, __instance.bodyPart);
 
-                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, player.PlayerID);
+                PlayerInteractManager.RelayPlayerInteraction(new(player.PlayerID), PlayerInteractType.DamagedOtherPlayer);
             }
         }
 

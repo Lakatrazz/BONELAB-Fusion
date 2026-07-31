@@ -17,6 +17,7 @@ using LabFusion.UI.Elements;
 using UnityEngine;
 
 using Il2CppTMPro;
+using LabFusion.Marrow.Player;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -123,7 +124,7 @@ public class Juggernaut : Gamemode
         TeamManager.AssignedToTeam += OnAssignedToTeam;
         TeamManager.RemovedFromTeam += OnRemovedFromTeam;
 
-        MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        PlayerInteractManager.PlayersInteracted += OnPlayersInteracted;
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
 
@@ -139,7 +140,7 @@ public class Juggernaut : Gamemode
         TeamManager.AssignedToTeam -= OnAssignedToTeam;
         TeamManager.RemovedFromTeam -= OnRemovedFromTeam;
 
-        MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        PlayerInteractManager.PlayersInteracted -= OnPlayersInteracted;
         MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
 
@@ -313,7 +314,7 @@ public class Juggernaut : Gamemode
         };
     }
 
-    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
+    private void OnPlayersInteracted(PlayerID playerID, PlayerID otherPlayerID, PlayerInteractType type)
     {
         if (!IsStarted)
         {
@@ -325,24 +326,24 @@ public class Juggernaut : Gamemode
             return;
         }
 
-        if (type != PlayerActionType.DYING_BY_OTHER_PLAYER)
+        if (type != PlayerInteractType.KilledByOtherPlayer)
         {
             return;
         }
 
-        bool selfKill = player == otherPlayer;
+        bool selfKill = playerID == otherPlayerID;
 
-        bool juggernautWasKilled = TeamManager.GetPlayerTeam(player) == JuggernautTeam;
+        bool juggernautWasKilled = TeamManager.GetPlayerTeam(playerID) == JuggernautTeam;
 
-        bool juggernautGotKill = TeamManager.GetPlayerTeam(otherPlayer) == JuggernautTeam;
+        bool juggernautGotKill = TeamManager.GetPlayerTeam(otherPlayerID) == JuggernautTeam;
 
         if (selfKill)
         {
             // Juggernaut killed themselves? Give the title to a random player
             if (juggernautWasKilled && PlayerIDManager.HasOtherPlayers)
             {
-                var otherPlayers = PlayerIDManager.PlayerIDs.Where(id => id.SmallID != player.SmallID);
-                SwapJuggernaut(otherPlayers.GetRandom(), player);
+                var otherPlayers = PlayerIDManager.PlayerIDs.Where(id => id.SmallID != playerID.SmallID);
+                SwapJuggernaut(otherPlayers.GetRandom(), playerID);
             }
 
             return;
@@ -351,16 +352,16 @@ public class Juggernaut : Gamemode
         // Juggernaut was killed?
         if (juggernautWasKilled)
         {
-            SwapJuggernaut(otherPlayer, player);
+            SwapJuggernaut(otherPlayerID, playerID);
         }
 
         // Juggernaut killed the player?
         if (juggernautGotKill)
         {
-            var score = JuggernautScoreKeeper.GetScore(otherPlayer);
+            var score = JuggernautScoreKeeper.GetScore(otherPlayerID);
             var nextScore = score + 1;
 
-            JuggernautScoreKeeper.SetScore(otherPlayer, nextScore);
+            JuggernautScoreKeeper.SetScore(otherPlayerID, nextScore);
 
             if (nextScore >= Defaults.MaxPoints)
             {

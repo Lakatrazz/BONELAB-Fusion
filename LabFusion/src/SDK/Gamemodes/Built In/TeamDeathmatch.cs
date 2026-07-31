@@ -1,7 +1,9 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
+
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
+using LabFusion.Marrow.Player;
 using LabFusion.Math;
 using LabFusion.Menu;
 using LabFusion.Menu.Data;
@@ -12,12 +14,12 @@ using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
-using LabFusion.Senders;
 using LabFusion.UI.Elements;
 using LabFusion.UI.Popups;
 using LabFusion.UI.Resources;
 using LabFusion.UI.Styles;
 using LabFusion.Utilities;
+
 using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes;
@@ -292,7 +294,7 @@ public class TeamDeathmatch : Gamemode
         Instance = this;
 
         MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        PlayerInteractManager.PlayersInteracted += OnPlayersInteracted;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
         // Register team manager
@@ -345,7 +347,7 @@ public class TeamDeathmatch : Gamemode
         _scoreKeeper = null;
 
         MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        PlayerInteractManager.PlayersInteracted -= OnPlayersInteracted;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
         Metadata.OnMetadataChanged -= OnMetadataChanged;
@@ -510,36 +512,30 @@ public class TeamDeathmatch : Gamemode
         return reward;
     }
 
-    /// <summary>
-    /// Method for handling in-game player events, like when players kill other players.
-    /// </summary>
-    /// <param name="player"></param>
-    /// <param name="type"></param>
-    /// <param name="otherPlayer"></param>
-    protected void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
+    protected void OnPlayersInteracted(PlayerID playerID, PlayerID otherPlayerID, PlayerInteractType type)
     {
         if (!IsStarted)
         {
             return;
         }
 
-        if (type != PlayerActionType.DYING_BY_OTHER_PLAYER)
+        if (type != PlayerInteractType.KilledByOtherPlayer)
         {
             return;
         }
 
-        if (otherPlayer == null)
+        if (otherPlayerID == null)
         {
             return;
         }
 
-        if (otherPlayer == player)
+        if (otherPlayerID == playerID)
         {
             return;
         }
 
-        var killerTeam = TeamManager.GetPlayerTeam(otherPlayer);
-        var killedTeam = TeamManager.GetPlayerTeam(player);
+        var killerTeam = TeamManager.GetPlayerTeam(otherPlayerID);
+        var killedTeam = TeamManager.GetPlayerTeam(playerID);
 
         if (killerTeam != killedTeam)
         {
@@ -550,7 +546,7 @@ public class TeamDeathmatch : Gamemode
             }
 
             // If we are the killer, increment our achievement
-            if (otherPlayer.IsMe)
+            if (otherPlayerID.IsMe)
             {
                 AchievementManager.IncrementAchievements<KillerAchievement>();
             }

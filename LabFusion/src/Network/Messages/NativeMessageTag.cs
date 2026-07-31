@@ -32,8 +32,6 @@ public static class NativeMessageTag
         PlayerSettings = 44,
         ServerSettings = 45,
 
-        PlayerRepAction = 50,
-
         SlowMoButton = 58,
 
         PlayerMetadataRequest = 59,

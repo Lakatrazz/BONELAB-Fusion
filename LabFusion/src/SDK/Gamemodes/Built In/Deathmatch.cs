@@ -24,6 +24,7 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes;
 
+using LabFusion.Marrow.Player;
 using System;
 
 public class Deathmatch : Gamemode
@@ -310,8 +311,8 @@ public class Deathmatch : Gamemode
     public override void OnGamemodeRegistered()
     {
         // Add hooks
-        MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         RigActionManager.PlayerRigActed += OnPlayerActed;
+        PlayerInteractManager.PlayersInteracted += OnPlayersInteracted;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
         // Create triggers
@@ -334,8 +335,8 @@ public class Deathmatch : Gamemode
     public override void OnGamemodeUnregistered()
     {
         // Remove hooks
-        MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         RigActionManager.PlayerRigActed -= OnPlayerActed;
+        PlayerInteractManager.PlayersInteracted -= OnPlayersInteracted;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
         Metadata.OnMetadataChanged -= OnMetadataChanged;
@@ -387,7 +388,7 @@ public class Deathmatch : Gamemode
         }
     }
 
-    protected void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
+    private void OnPlayersInteracted(PlayerID playerID, PlayerID otherPlayerID, PlayerInteractType type)
     {
         if (!IsStarted)
         {
@@ -396,23 +397,25 @@ public class Deathmatch : Gamemode
 
         switch (type)
         {
-            case PlayerActionType.DYING_BY_OTHER_PLAYER:
-                if (otherPlayer != null && otherPlayer != player)
+            case PlayerInteractType.KilledByOtherPlayer:
+                if (otherPlayerID == playerID)
                 {
-                    // Increment score for that player
-                    if (NetworkInfo.IsHost)
-                    {
-                        ScoreKeeper.AddScore(otherPlayer);
-                    }
+                    break;
+                }
 
-                    // If we are the killer, increment our achievement
-                    if (otherPlayer.IsMe)
-                    {
-                        AchievementManager.IncrementAchievements<KillerAchievement>();
-                    }
+                // Increment score for that player
+                if (NetworkInfo.IsHost)
+                {
+                    ScoreKeeper.AddScore(otherPlayerID);
+                }
+
+                // If we are the killer, increment our achievement
+                if (otherPlayerID.IsMe)
+                {
+                    AchievementManager.IncrementAchievements<KillerAchievement>();
                 }
                 break;
-        }
+        } 
     }
 
     public override bool CheckReadyConditions()

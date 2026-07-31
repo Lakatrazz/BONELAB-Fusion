@@ -11,6 +11,7 @@ using LabFusion.Preferences;
 using LabFusion.Scene;
 using LabFusion.Marrow.Rig;
 using LabFusion.Entities;
+using LabFusion.Marrow.Player;
 
 using Il2CppSLZ.Marrow;
 
@@ -127,7 +128,7 @@ public static class HeadSFXPatches
 
         if (FusionPlayer.LastAttacker.HasValue)
         {
-            PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+            PlayerInteractManager.RelayPlayerInteraction(new(FusionPlayer.LastAttacker.Value), PlayerInteractType.KilledByOtherPlayer);
         }
     }
 
@@ -145,12 +146,6 @@ public static class HeadSFXPatches
         {
             rigManager.checkpointPosition = point.position;
             rigManager.checkpointFwd = point.forward;
-        }
-
-        // If another player killed us, notify the server about that
-        if (FusionPlayer.LastAttacker.HasValue)
-        {
-            PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
         }
 
         LocalPlayer.ClearConstraints();

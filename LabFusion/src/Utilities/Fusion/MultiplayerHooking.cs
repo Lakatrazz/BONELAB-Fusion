@@ -1,5 +1,4 @@
 ﻿using LabFusion.Player;
-using LabFusion.Senders;
 using LabFusion.Extensions;
 
 namespace LabFusion.Utilities;
@@ -8,7 +7,6 @@ public delegate bool UserAccessEvent(PlayerID playerId, out string reason);
 public delegate void ServerEvent();
 public delegate void UpdateEvent();
 public delegate void PlayerUpdate(PlayerID playerId);
-public delegate void PlayerAction(PlayerID playerId, PlayerActionType type, PlayerID otherPlayer = null);
 
 /// <summary>
 /// Hooks for getting events from the server, players, etc.
@@ -22,7 +20,6 @@ public static class MultiplayerHooking
     // Server hooks
     public static event ServerEvent OnStartedServer, OnJoinedServer, OnDisconnected;
     public static event PlayerUpdate OnPlayerJoined, OnPlayerLeft;
-    public static event PlayerAction OnPlayerAction;
 
     internal static bool CheckShouldAllowConnection(PlayerID playerId, out string reason)
     {
@@ -51,8 +48,6 @@ public static class MultiplayerHooking
     internal static void InvokeOnPlayerJoined(PlayerID id) => OnPlayerJoined.InvokeSafe(id, "executing OnPlayerJoined hook");
 
     internal static void InvokeOnPlayerLeft(PlayerID id) => OnPlayerLeft.InvokeSafe(id, "executing OnPlayerLeft hook");
-
-    internal static void InvokeOnPlayerAction(PlayerID id, PlayerActionType type, PlayerID otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
 
     // Unity hooks
     /// <summary>

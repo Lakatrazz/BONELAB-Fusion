@@ -59,6 +59,8 @@ public class MarrowModule : Module
         ModuleMessageManager.RegisterHandler<InventorySlotDropMessage>();
         ModuleMessageManager.RegisterHandler<InventorySlotInsertMessage>();
 
+        ModuleMessageManager.RegisterHandler<PlayerInteractMessage>();
+
         ModuleMessageManager.RegisterHandler<ConstrainerModeMessage>();
         ModuleMessageManager.RegisterHandler<ConstraintCreateMessage>();
         ModuleMessageManager.RegisterHandler<ConstraintDeleteMessage>();

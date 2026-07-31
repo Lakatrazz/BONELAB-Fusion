@@ -11,24 +11,6 @@ using UnityEngine;
 
 namespace LabFusion.Senders;
 
-public enum PlayerActionType
-{
-    /// <summary>
-    /// Invoked when Player deals damage to Other Player.
-    /// </summary>
-    DEALT_DAMAGE_TO_OTHER_PLAYER,
-
-    /// <summary>
-    /// Invoked when Player plays the dying animation due to Other Player.
-    /// </summary>
-    DYING_BY_OTHER_PLAYER,
-
-    /// <summary>
-    /// Invoked when Player is killed by Other Player.
-    /// </summary>
-    DEATH_BY_OTHER_PLAYER,
-}
-
 public enum NicknameVisibility
 {
     SHOW = 1 << 0,
@@ -133,16 +115,5 @@ public static class PlayerSender
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, CommonMessageRoutes.ReliableToClients);
-    }
-
-    public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
-    {
-        var data = new PlayerRepActionData()
-        {
-            Type = type,
-            OtherPlayer = otherPlayer,
-        };
-
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepAction, CommonMessageRoutes.ReliableToClients);
     }
 }
