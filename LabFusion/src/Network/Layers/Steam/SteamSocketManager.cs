@@ -32,9 +32,10 @@ public class SteamSocketManager : SocketManager
 
         // If we aren't in the connected list yet, this is likely us
         // SteamID is always 0 here
-        if (!ConnectedSteamIDs.ContainsKey(SteamClient.SteamId.ToString()))
+        var platformID = SteamClient.SteamId.ToString();
+        if (!ConnectedSteamIDs.ContainsKey(platformID))
         {
-            ConnectedSteamIDs[SteamClient.SteamId.ToString()] = connection;
+            ConnectedSteamIDs[platformID] = connection;
         }
     }
 

@@ -38,6 +38,9 @@ public static class GlobalBanManager
 
     public static void FetchFile()
     {
+        // Throws an error due to non string platform ids
+        return;
+        
         ListFetcher.FetchFile(FileName, OnFileFetched);
     }
 

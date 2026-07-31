@@ -1,14 +1,17 @@
 ﻿using Epic.OnlineServices;
-using Epic.OnlineServices.Lobby;
 using LabFusion.Data;
 using LabFusion.Player;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 using MelonLoader;
 
-namespace LabFusion.Network.EpicGames;
+namespace LabFusion.Network;
 
+// TODO:
+// Try fixing server trying to handle a few left over messages when kicking somebody from server
+// Redo creds for release, again
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -17,28 +20,22 @@ public class EpicGamesNetworkLayer : NetworkLayer
     public override string Platform => "Epic";
     public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
+    
+    public override INetworkLobby Lobby => Runtime.Lobby.CurrentLobby;
 
-    public override INetworkLobby Lobby => _lobbyManager?.CurrentLobby;
-
-    private IVoiceManager _voiceManager;
+    private IVoiceManager _voiceManager = null;
     public override IVoiceManager VoiceManager => _voiceManager;
-
-    private IMatchmaker _matchmaker;
+    
+    private IMatchmaker _matchmaker = null;
     public override IMatchmaker Matchmaker => _matchmaker;
 
     private bool _isServerActive;
     private bool _isConnectionActive;
     private string _serverCode = string.Empty;
-
-    private EOSManager _eosManager;
-    private EOSAuthManager _authManager;
-    private EOSLobbyManager _lobbyManager;
-    private EOSP2PManager _p2pManager;
-    private EOSConnectionStateManager  _connectionStateManager;
-    private EOSConnectionHandler _connectionHandler;
-    private EOSNotificationManager _notificationManager;
-
-    private ProductUserId LocalUserId => _authManager?.LocalUserId;
+    private bool _joinInProgress = false;
+    
+    internal EOSRuntime Runtime;
+    internal ProductUserId LocalUserId => Runtime.Connect.LocalUserId;
 
     public override bool CheckSupported() => true;
 
@@ -46,41 +43,22 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void LogIn()
     {
-        if (_authManager == null)
-        {
-            _authManager = new EOSAuthManager();
-            _authManager.OnAuthExpiredUnrecoverable += OnAuthExpiredUnrecoverable;
-        }
-        
-        if (_eosManager == null)
-        {
-            _eosManager = new EOSManager(_authManager);
-        }
-
         NetworkLayerNotifications.SendLoggingInNotification();
-
-        MelonCoroutines.Start(_eosManager.InitializeAsync(OnLoginComplete));
-    }
-    
-    private void OnAuthExpiredUnrecoverable()
-    {
-        Disconnect("Authentication expired");
-
-        InvokeLoggedOutEvent();
-    }
-
-    private void OnLoginComplete(bool success)
-    {
-        if (success)
+        
+        Runtime = new EOSRuntime();
+        
+        MelonCoroutines.Start(Runtime.InitializeAsync((success) => 
         {
-            InvokeLoggedInEvent();
-        }
-        else
-        {
-            FusionLogger.Error("Failed to log in to EOS Network Layer.");
-            NetworkLayerNotifications.SendLoginFailedNotification();
-            InvokeLoggedOutEvent();
-        }
+            if (success)
+            {
+                InvokeLoggedInEvent();
+            }
+            else
+            {
+                NetworkLayerNotifications.SendLoginFailedNotification();
+                InvokeLoggedOutEvent();
+            }
+        }));
     }
 
     public override void LogOut()
@@ -89,93 +67,37 @@ public class EpicGamesNetworkLayer : NetworkLayer
     }
 
     public override void OnInitializeLayer()
-    {
-        if (LocalUserId == null)
-        {
-            FusionLogger.Error("Cannot initialize layer: LocalUserId is null");
-            return;
-        }
-
-        // Set player identity
+    { 
         PlayerIDManager.SetPlatformID(LocalUserId.ToString());
+        LocalPlayer.Username = Runtime.Connect.LocalDisplayName;
         
-        MelonCoroutines.Start(_authManager.GetDisplayNameAsync(name =>
-        {
-            if (!string.IsNullOrEmpty(name))
-            {
-                LocalPlayer.Username = name;
-            }
-            else
-            {
-                FusionLogger.Warn("Failed to get display name, using fallback.");
-                LocalPlayer.Username = LocalUserId.ToString();
-            }
-        }));
-
-        // Initialize managers
-        InitializeManagers();
-
-        // Hook events
+        FusionLogger.Log($"EOS initialized with ProductUserId {LocalUserId.ToString()}!");
+        
         HookEvents();
-
-        // Initialize voice
+        
         _voiceManager = new UnityVoiceManager();
         _voiceManager.Enable();
-
-        // Initialize matchmaking
-        _matchmaker = new EOSMatchmaker();
+        
+        _matchmaker = new EpicMatchmaker(Runtime, LocalUserId);
     }
 
     public override void OnDeinitializeLayer()
     {
-        _voiceManager?.Disable();
+        _voiceManager.Disable();
         _voiceManager = null;
 
         _matchmaker = null;
         
-        // Jank
-        ForceDisconnect();
-
-        CleanupManagers();
-
+        Disconnect();
+        
         UnhookEvents();
-
-        _eosManager?.Shutdown();
-        _eosManager = null;
-        _authManager.OnAuthExpiredUnrecoverable -= OnAuthExpiredUnrecoverable;
-        _authManager?.Shutdown();
-        _authManager = null;
+        
+        Runtime.Shutdown();
     }
 
     public override void OnUpdateLayer()
     {
-        if (_isConnectionActive)
-        {
-            EOSMessenger.ReceiveMessages();
-        }
-    }
-
-    private void InitializeManagers()
-    {
-        _lobbyManager = new EOSLobbyManager(LocalUserId);
-        _p2pManager = new EOSP2PManager(LocalUserId, EOSMessenger.SocketId);
-        _connectionStateManager = new EOSConnectionStateManager();
-        _connectionHandler = new EOSConnectionHandler(_p2pManager, _connectionStateManager, OnDisconnectedFromHost);
-        _notificationManager = new EOSNotificationManager(LocalUserId, EOSMessenger.SocketId, _connectionHandler);
-
-        _p2pManager.Configure();
-    }
-
-    private void CleanupManagers()
-    {
-        _notificationManager?.UnregisterAllNotifications();
-        _notificationManager = null;
-        _connectionStateManager = null;
-        _connectionHandler = null;
-        _p2pManager = null;
-        _lobbyManager = null;
-
-        EOSMessenger.Reset();
+        Runtime.P2P.Receiver.Receive();
     }
 
     // This method doesn't actually get used anywhere in fusion. However, the steam layer uses it for setting the local username.
@@ -188,108 +110,93 @@ public class EpicGamesNetworkLayer : NetworkLayer
     // EOS doesn't have a friends system when using device Ids.
     public override bool IsFriend(string userId)
     {
-        return  userId != null && userId == LocalUserId.ToString();
+        return userId != null && userId == LocalUserId.ToString();
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
     {
         if (IsHost)
-            EOSMessenger.BroadcastToClients(channel, message);
+        {
+            foreach (var peer in Runtime.P2P.ConnectedPeers)
+            {
+                Runtime.P2P.Sender.Send(peer, message, channel, false);
+            }
+        }
         else
-            EOSMessenger.BroadcastToServer(channel, message);
+        {
+            Runtime.P2P.Sender.Send(Runtime.Lobby.CurrentLobby.Owner, message, channel, true);
+        }
     }
 
     public override void SendToServer(NetworkChannel channel, NetMessage message)
     {
-        EOSMessenger.BroadcastToServer(channel, message);
+        Runtime.P2P.Sender.Send(Runtime.Lobby.CurrentLobby.Owner, message, channel, true);
     }
 
     public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
-        var playerID = PlayerIDManager.GetPlayerID(userId);
-        if (playerID != null)
+        var id = PlayerIDManager.GetPlayerID(userId);
+        if (id != null)
         {
-            SendFromServer(playerID.PlatformID, channel, message);
+            SendFromServer(id.PlatformID, channel, message);
         }
     }
 
     public override void SendFromServer(string userId, NetworkChannel channel, NetMessage message)
     {
-        EOSMessenger.SendFromServer(userId, channel, message);
+        // Make sure this is actually the server
+        if (!IsHost)
+        {
+            return;
+        }
+        
+        Runtime.P2P.Sender.Send(ProductUserId.FromString(userId), message, channel, false);
     }
 
     public override void StartServer()
     {
-        if (!_connectionStateManager.CanStartServer())
-            return;
-
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connecting);
+        Runtime.P2P.RegisterHostNotifications();
         
-        _lobbyManager.CreateLobby(OnLobbyCreated);
-    }
-
-    private void OnLobbyCreated(EpicLobby lobby)
-    {
-        if (lobby == null)
-        {
-            FusionLogger.Error("Failed to create lobby");
-            _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
-            return;
-        }
+        Runtime.Lobby.CreateLobby();
         
-        _notificationManager.RegisterHostNotifications();
-
         _isServerActive = true;
         _isConnectionActive = true;
         
-        EOSMessenger.AddConnectedClient(LocalUserId);
-
-        InternalServerHelpers.OnStartServer();
+        Runtime.P2P.AddConnectedPeer(LocalUserId);
         
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connected);
+        InternalServerHelpers.OnStartServer();
 
         RefreshServerCode();
     }
-
-    public void JoinServer(LobbyDetails lobbyDetails)
+    
+    internal void JoinServer(EpicLobby epicLobby)
     {
-        if (lobbyDetails == null)
+        if (_joinInProgress)
         {
-            FusionLogger.Error("Cannot join server: lobbyDetails is null");
+            FusionLogger.Warn("Join lobby already in progress");
             return;
         }
+        
+        _joinInProgress = true;
         
         if (_isConnectionActive || _isServerActive)
             Disconnect();
         
-        if (!_connectionStateManager.CanJoinServer())
-            return;
+        Runtime.P2P.RegisterClientNotifications();
         
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Connecting);
+        Runtime.P2P.OnConnected += OnConnected;
         
-        _lobbyManager.JoinLobby(lobbyDetails, OnLobbyJoined);
-    }
-
-    private void OnLobbyJoined(EpicLobby lobby)
-    {
-        if (lobby == null)
-        {
-            FusionLogger.Error("Failed to join lobby");
-            _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
-            return;
-        }
+        Runtime.Lobby.JoinLobby(epicLobby);
+        Runtime.P2P.Connect(epicLobby.Owner);
         
-        _notificationManager.RegisterClientNotifications();
-
         _isServerActive = false;
         _isConnectionActive = true;
 
-        // Send a dummy packet to establish the P2P connection
-        var hostId = _lobbyManager.GetLobbyOwner();
-        if (hostId != null)
+        void OnConnected(ProductUserId remoteUserId)
         {
-            var message = NetMessage.Create(0, Array.Empty<byte>(), CommonMessageRoutes.None);
-            EOSMessenger.SendPacket(hostId, message, NetworkChannel.Reliable, isServerHandled: false);
+            Runtime.P2P.OnConnected -= OnConnected;
+            _joinInProgress = false;
+            ConnectionSender.SendConnectionRequest();
         }
     }
 
@@ -298,80 +205,27 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (!_isServerActive && !_isConnectionActive)
             return;
         
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnecting);
-
-        if (IsHost)
-        {
-            _lobbyManager?.DestroyLobby(() => OnDisconnectComplete(reason));
-        }
-        else
-        {
-            _lobbyManager?.LeaveLobby(() => OnDisconnectComplete(reason));
-        }
-    }
-
-    // Disconnects without waiting for EOS to tell us that we fully disconnected.
-    // Mainly used on logout because the EOSSDK gets shutdown and is never able to run OnDisconnectComplete.
-    private void ForceDisconnect(string reason = "")
-    {
-        if (!_isServerActive && !_isConnectionActive)
-            return;
+        Runtime.P2P.UnregisterAllNotifications();
+        Runtime.P2P.OnConnected = null;
+        _joinInProgress = false;
         
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnecting);
+        Runtime.Lobby.LeaveLobby();
+        Runtime.P2P.Disconnect();
         
-        if (IsHost)
-        {
-            _lobbyManager?.DestroyLobby(null);
-        }
-        else
-        {
-            _lobbyManager?.LeaveLobby(null);
-        }
-        
-        OnDisconnectComplete(reason);
-    }
-
-    private void OnDisconnectedFromHost()
-    {
-        Disconnect("Lobby closed");
-    }
-
-    private void OnDisconnectComplete(string reason)
-    {
-        _notificationManager?.UnregisterAllNotifications();
-        _p2pManager?.CloseAllConnections();
-
         _isServerActive = false;
         _isConnectionActive = false;
-        _serverCode = string.Empty;
-        
-        EOSMessenger.ClearConnectedClients();
 
         InternalServerHelpers.OnDisconnect(reason);
-        
-        _connectionStateManager.SetConnectionState(EOSConnectionStateManager.ConnectionState.Disconnected);
-
-#if DEBUG
-        FusionLogger.Log($"Disconnected: {(string.IsNullOrEmpty(reason) ? "No reason" : reason)}");
-#endif
     }
 
     public override void DisconnectUser(string platformID)
     {
         if (!_isServerActive)
-            return;
-
-        _lobbyManager?.KickMember(platformID, success =>
         {
-            if (!success)
-                return;
-
-            var targetId = ProductUserId.FromString(platformID);
-            if (targetId != null)
-            {
-                _p2pManager?.CloseConnection(targetId);
-            }
-        });
+            return;
+        }
+        
+        Runtime.P2P.DisconnectUser(ProductUserId.FromString(platformID));
     }
 
     public override string GetServerCode() => _serverCode;
@@ -382,30 +236,33 @@ public class EpicGamesNetworkLayer : NetworkLayer
         LobbyInfoManager.PushLobbyUpdate();
     }
 
-    public override string GetServerID() => _lobbyManager?.CurrentLobby?.LobbyId ?? string.Empty;
+    public override string GetServerID()
+    {
+        return Runtime.Lobby.CurrentLobby?.LobbyID?.ToString() ?? string.Empty;
+    }
 
     public override void JoinServerByCode(string code)
     {
         if (Matchmaker == null)
+        {
             return;
+        }
 
 #if DEBUG
-        FusionLogger.Log($"Searching for servers with code {code}.. .");
+        FusionLogger.Log($"Searching for servers with code {code}...");
 #endif
 
-        Matchmaker.RequestLobbiesByCode(code, info =>
+        Matchmaker.RequestLobbiesByCode(code, (info) =>
         {
             if (info.Lobbies.Length <= 0)
             {
-                FusionLogger.Log("No lobbies found with the given code.");
                 return;
             }
 
-            var epicLobby = info.Lobbies[0].Lobby as EpicLobby;
-            if (epicLobby == null)
-                return;
-            
-            JoinServer(epicLobby.LobbyDetails);
+            if (info.Lobbies[0].Lobby is EpicLobby epicLobby)
+            {
+                JoinServer(epicLobby);
+            }
         });
     }
 
@@ -427,27 +284,28 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     private void OnPlayerJoin(PlayerID id)
     {
-        if (VoiceManager != null && !id.IsMe)
+        if (_voiceManager != null && !id.IsMe)
         {
-            VoiceManager.GetSpeaker(id);
+            _voiceManager.GetSpeaker(id);
         }
     }
 
     private void OnPlayerLeave(PlayerID id)
     {
-        VoiceManager?.RemoveSpeaker(id);
+        _voiceManager?.RemoveSpeaker(id);
     }
 
     private void OnDisconnect()
     {
-        VoiceManager?.ClearManager();
+        _voiceManager?.ClearManager();
     }
 
     private void OnUpdateLobby()
     {
-        if (Lobby == null || _lobbyManager.GetLobbyOwner() != LocalUserId)
+        var lobby = Runtime.Lobby.CurrentLobby;
+        if (lobby == null || lobby.Owner != LocalUserId)
             return;
         
-        LobbyMetadataSerializer.WriteInfo(Lobby);
+        LobbyMetadataSerializer.WriteInfo(lobby);
     }
 }

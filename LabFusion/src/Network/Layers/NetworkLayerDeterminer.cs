@@ -1,5 +1,4 @@
-﻿using LabFusion.Network.EpicGames;
-using LabFusion.Preferences.Client;
+﻿using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
