@@ -32,7 +32,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     private bool _isServerActive;
     private bool _isConnectionActive;
     private string _serverCode = string.Empty;
-    private bool _joinInProgress = false;
+    private bool _joinInProgress;
     
     internal EOSRuntime Runtime;
     internal ProductUserId LocalUserId => Runtime.Connect.LocalUserId;
@@ -68,6 +68,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void OnInitializeLayer()
     { 
+        // Get EOS information
         PlayerIDManager.SetPlatformID(LocalUserId.ToString());
         LocalPlayer.Username = Runtime.Connect.LocalDisplayName;
         
@@ -75,6 +76,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
         
         HookEvents();
         
+        // Create managers
         _voiceManager = new UnityVoiceManager();
         _voiceManager.Enable();
         
@@ -183,7 +185,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
             Disconnect();
         
         Runtime.P2P.RegisterClientNotifications();
-        
         Runtime.P2P.OnConnected += OnConnected;
         
         Runtime.Lobby.JoinLobby(epicLobby);
@@ -205,9 +206,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (!_isServerActive && !_isConnectionActive)
             return;
         
+        _joinInProgress = false;
+        
         Runtime.P2P.UnregisterAllNotifications();
         Runtime.P2P.OnConnected = null;
-        _joinInProgress = false;
         
         Runtime.Lobby.LeaveLobby();
         Runtime.P2P.Disconnect();

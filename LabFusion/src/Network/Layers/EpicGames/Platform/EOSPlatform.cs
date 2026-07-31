@@ -123,7 +123,9 @@ internal class EOSPlatform : EOSInterface
                 yield return null;
             }
             
-            FusionLogger.Log("EOS Platform ticker stopped.");
+#if DEBUG
+            FusionLogger.Log("EOS Platform ticker stopped");
+#endif
             
             yield return null;
         }
