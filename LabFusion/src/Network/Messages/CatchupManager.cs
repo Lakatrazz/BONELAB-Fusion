@@ -12,12 +12,12 @@ public static class CatchupManager
     /// <summary>
     /// Callback invoked when a new player joins the server and needs to be caught up on past server messages.
     /// </summary>
-    public static event Action<PlayerID> OnPlayerServerCatchup;
+    public static event Action<PlayerID> PlayerServerCatchingUp;
 
     /// <summary>
     /// Invoked on the entity owner's end when a Player finishes creating a NetworkEntity and needs its data to be caught up.
     /// </summary>
-    public static event NetworkEntityPlayerDelegate OnEntityDataCatchup;
+    public static event NetworkEntityPlayerDelegate EntityDataCatchingUp;
 
     public static void RequestEntityDataCatchup(NetworkEntityReference entityReference)
     {
@@ -41,7 +41,7 @@ public static class CatchupManager
         MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, new MessageRoute(ownerID.SmallID, NetworkChannel.Reliable));
     }
 
-    internal static void InvokePlayerServerCatchup(PlayerID playerID) => OnPlayerServerCatchup.InvokeSafe(playerID, "executing OnPlayerCatchup hook");
+    internal static void InvokePlayerServerCatchup(PlayerID playerID) => PlayerServerCatchingUp.InvokeSafe(playerID, "executing OnPlayerCatchup hook");
 
     internal static void InvokeEntityDataCatchup(PlayerID playerID, NetworkEntityReference entityReference)
     {
@@ -52,6 +52,6 @@ public static class CatchupManager
 
         entity.InvokeDataCatchup(playerID);
 
-        OnEntityDataCatchup?.InvokeSafe(playerID, entity, "executing CatchupManager.OnEntityDataCatchup");
+        EntityDataCatchingUp?.InvokeSafe(playerID, entity, "executing CatchupManager.OnEntityDataCatchup");
     }
 }

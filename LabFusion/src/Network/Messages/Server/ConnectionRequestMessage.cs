@@ -13,13 +13,12 @@ namespace LabFusion.Network;
 
 public class ConnectionRequestData : INetSerializable
 {
-    public ulong BackupPlatformID;
     public Version Version;
     public string AvatarBarcode;
     public SerializedAvatarStats AvatarStats;
     public Dictionary<string, string> InitialMetadata;
 
-    public int? GetSize() => sizeof(ulong) + Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize();
+    public int? GetSize() => Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize();
 
     public bool IsValid { get; private set; } = true;
 
@@ -27,7 +26,6 @@ public class ConnectionRequestData : INetSerializable
     {
         try
         {
-            serializer.SerializeValue(ref BackupPlatformID);
             serializer.SerializeValue(ref Version);
             serializer.SerializeValue(ref AvatarBarcode);
             serializer.SerializeValue(ref AvatarStats);
@@ -41,13 +39,12 @@ public class ConnectionRequestData : INetSerializable
         }
     }
 
-    public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
+    public static ConnectionRequestData Create(Version version, string avatarBarcode, SerializedAvatarStats stats)
     {
         LocalPlayer.InvokeApplyInitialMetadata();
 
         return new ConnectionRequestData()
         {
-            BackupPlatformID = longId,
             Version = version,
             AvatarBarcode = avatarBarcode,
             AvatarStats = stats,
@@ -70,7 +67,13 @@ public class ConnectionRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionRequestData>();
 
-        ulong platformID = received.PlatformID ?? data.BackupPlatformID;
+        if (!received.PlatformID.HasValue)
+        {
+            FusionLogger.Error("A client attempted to connect, but ReceivedMessage.PlatformID was not set! Make sure that a unique ID is being passed in for connecting clients!");
+            return;
+        }
+
+        ulong platformID = received.PlatformID.Value;
 
         var newSmallId = PlayerIDManager.GetUniquePlayerID();
 

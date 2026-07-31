@@ -53,7 +53,7 @@ namespace LabFusion.Marrow.Integration
 
             HashTable.AddComponent(hash, this);
 
-            CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
+            CatchupManager.PlayerServerCatchingUp += OnPlayerServerCatchup;
         }
 
         [HideFromIl2Cpp]
@@ -71,7 +71,7 @@ namespace LabFusion.Marrow.Integration
         {
             HashTable.RemoveComponent(this);
 
-            CatchupManager.OnPlayerServerCatchup -= OnPlayerServerCatchup;
+            CatchupManager.PlayerServerCatchingUp -= OnPlayerServerCatchup;
         }
 
         public void InvokeHolder()

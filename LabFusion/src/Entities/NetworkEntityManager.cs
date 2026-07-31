@@ -21,7 +21,7 @@ public static class NetworkEntityManager
 
     internal static void OnInitializeManager()
     {
-        CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
+        CatchupManager.PlayerServerCatchingUp += OnPlayerServerCatchup;
         IDManager.EntityRegistered += OnEntityRegistered;
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
     }

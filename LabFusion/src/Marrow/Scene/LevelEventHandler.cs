@@ -76,7 +76,7 @@ public abstract class LevelEventHandler
     {
         // Hook functions
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoadedCallback;
-        CatchupManager.OnPlayerServerCatchup += OnPlayerCatchupCallback;
+        CatchupManager.PlayerServerCatchingUp += OnPlayerCatchupCallback;
 
         // Register all of our handlers
         LoadHandlers(FusionMod.FusionAssembly);

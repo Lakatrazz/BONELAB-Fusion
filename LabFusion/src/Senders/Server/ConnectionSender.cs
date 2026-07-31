@@ -65,7 +65,7 @@ public static class ConnectionSender
         {
             using var writer = NetWriter.Create();
 
-            var data = ConnectionRequestData.Create(PlayerIDManager.LocalPlatformID, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
+            var data = ConnectionRequestData.Create(FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
             data.Serialize(writer);
 
             using NetMessage message = NetMessage.Create(NativeMessageTag.ConnectionRequest, writer, CommonMessageRoutes.None);
