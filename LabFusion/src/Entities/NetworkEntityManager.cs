@@ -11,14 +11,11 @@ namespace LabFusion.Entities;
 
 public static class NetworkEntityManager
 {
-    private static readonly EntityIDManager<NetworkEntity> _idManager = new();
-    public static EntityIDManager<NetworkEntity> IDManager => _idManager;
+    public static EntityIDManager<NetworkEntity> IDManager { get; } = new();
 
-    private static readonly EntityUpdatableManager _updatableManager = new();
-    public static EntityUpdatableManager UpdatableManager => _updatableManager;
+    public static EntityUpdatableManager UpdatableManager { get; } = new();
 
-    private static readonly EntityValidationList _ownershipTransferValidators = new();
-    public static EntityValidationList OwnershipTransferValidators => _ownershipTransferValidators;
+    public static EntityValidationList OwnershipTransferValidators { get; } = new();
 
     private static readonly Dictionary<ushort, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
 

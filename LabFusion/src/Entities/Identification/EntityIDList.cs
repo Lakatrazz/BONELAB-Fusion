@@ -4,46 +4,39 @@ public delegate void EntityIDEvent<TEntity>(ushort id, TEntity entity);
 
 public class EntityIDList<TEntity>
 {
-    private readonly Dictionary<ushort, TEntity> _idsToEntities = new();
-    private readonly Dictionary<TEntity, ushort> _entitiesToIDs = new();
+    public Dictionary<ushort, TEntity> IDEntityLookup { get; } = new();
+    public Dictionary<TEntity, ushort> EntityIDLookup { get; } = new();
 
-    private readonly HashSet<ushort> _reservedIDs = new();
+    public HashSet<ushort> ReservedIDs { get; } = new();
 
-    public Dictionary<ushort, TEntity> IDEntityLookup => _idsToEntities;
-    public Dictionary<TEntity, ushort> EntityIDLookup => _entitiesToIDs;
+    public event EntityIDEvent<TEntity> EntityAdded, EntityRemoved;
 
-    public HashSet<ushort> ReservedIDs => _reservedIDs;
-
-    public event EntityIDEvent<TEntity> OnEntityAdded, OnEntityRemoved;
-
-    private ushort _lastID = 0;
-
-    public ushort LastID => _lastID;
+    public ushort LastID { get; private set; } = 0;
 
     public void ReserveID(ushort id)
     {
-        if (_reservedIDs.Contains(id))
+        if (ReservedIDs.Contains(id))
         {
             return;
         }
 
-        if (_lastID <= id)
+        if (LastID <= id)
         {
-            _lastID = id;
-            _lastID++;
+            LastID = id;
+            LastID++;
         }
 
-        _reservedIDs.Add(id);
+        ReservedIDs.Add(id);
     }
 
     public void Unreserve(ushort id)
     {
-        _reservedIDs.Remove(id);
+        ReservedIDs.Remove(id);
     }
 
     public bool IsReserved(ushort id)
     {
-        return _reservedIDs.Contains(id);
+        return ReservedIDs.Contains(id);
     }
 
     private bool IsUsedID(ushort id)
@@ -53,14 +46,14 @@ public class EntityIDList<TEntity>
 
     public ushort AllocateNewID()
     {
-        _lastID++;
+        LastID++;
 
         // Check if the id is already being used or reserved
         if (IsUsedID(LastID))
         {
             while (IsUsedID(LastID) && LastID < ushort.MaxValue)
             {
-                _lastID++;
+                LastID++;
             }
         }
 
@@ -69,12 +62,12 @@ public class EntityIDList<TEntity>
 
     public bool HasEntity(ushort id)
     {
-        return _idsToEntities.ContainsKey(id);
+        return IDEntityLookup.ContainsKey(id);
     }
 
     public TEntity GetEntity(ushort id)
     {
-        if (_idsToEntities.TryGetValue(id, out var entity))
+        if (IDEntityLookup.TryGetValue(id, out var entity))
         {
             return entity;
         }
@@ -84,64 +77,64 @@ public class EntityIDList<TEntity>
 
     public void AddEntity(ushort id, TEntity entity)
     {
-        _idsToEntities.Add(id, entity);
-        _entitiesToIDs.Add(entity, id);
+        IDEntityLookup.Add(id, entity);
+        EntityIDLookup.Add(entity, id);
 
-        OnEntityAdded?.Invoke(id, entity);
+        EntityAdded?.Invoke(id, entity);
     }
 
     public void RemoveEntity(ushort id)
     {
-        if (!_idsToEntities.ContainsKey(id))
+        if (!IDEntityLookup.ContainsKey(id))
         {
             return;
         }
 
-        var entity = _idsToEntities[id];
+        var entity = IDEntityLookup[id];
 
         RemoveEntity(id, entity);
     }
 
     public void RemoveEntity(TEntity entity)
     {
-        if (!_entitiesToIDs.ContainsKey(entity))
+        if (!EntityIDLookup.ContainsKey(entity))
         {
             return;
         }
 
-        var id = _entitiesToIDs[entity];
+        var id = EntityIDLookup[entity];
 
         RemoveEntity(id, entity);
     }
 
     private void RemoveEntity(ushort id, TEntity entity)
     {
-        _idsToEntities.Remove(id);
-        _entitiesToIDs.Remove(entity);
+        IDEntityLookup.Remove(id);
+        EntityIDLookup.Remove(entity);
 
-        OnEntityRemoved?.Invoke(id, entity);
+        EntityRemoved?.Invoke(id, entity);
     }
 
     public void ClearID()
     {
         // Get highest unused id
-        _lastID = 0;
+        LastID = 0;
 
         while (IsUsedID(LastID) && LastID < ushort.MaxValue)
         {
-            _lastID++;
+            LastID++;
         }
     }
 
     public void Clear()
     {
-        foreach (var entity in _idsToEntities)
+        foreach (var entity in IDEntityLookup)
         {
-            OnEntityRemoved?.Invoke(entity.Key, entity.Value);
+            EntityRemoved?.Invoke(entity.Key, entity.Value);
         }
 
-        _idsToEntities.Clear();
-        _entitiesToIDs.Clear();
+        IDEntityLookup.Clear();
+        EntityIDLookup.Clear();
 
         ClearID();
     }

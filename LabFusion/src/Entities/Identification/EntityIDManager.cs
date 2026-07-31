@@ -5,13 +5,9 @@ namespace LabFusion.Entities;
 
 public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 {
-    private readonly EntityIDList<TEntity> _registeredEntities = new();
+    public EntityIDList<TEntity> RegisteredEntities { get; } = new();
 
-    private readonly EntityIDList<TEntity> _queuedEntities = new();
-
-    public EntityIDList<TEntity> RegisteredEntities => _registeredEntities;
-
-    public EntityIDList<TEntity> QueuedEntities => _queuedEntities;
+    public EntityIDList<TEntity> QueuedEntities { get; } = new();
 
     public event Action<TEntity> EntityRegistered, EntityUnregistered;
 

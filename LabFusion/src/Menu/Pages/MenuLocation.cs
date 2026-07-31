@@ -7,6 +7,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Representation;
+using LabFusion.RPC;
 using LabFusion.Safety;
 using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;
@@ -831,7 +832,7 @@ public static class MenuLocation
         var cleanupGroup = element.AddElement<GroupElement>("Cleanup");
 
         var despawnAllElement = cleanupGroup.AddElement<FunctionElement>("Despawn All")
-            .Do(() => PooleeUtilities.DespawnAll());
+            .Do(() => { NetworkAssetSpawner.TryDespawnAll(); });
         var playersGroup = element.AddElement<GroupElement>("Players");
 
         FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID, out var selfLevel, out _);

@@ -3,6 +3,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Serialization;
 using LabFusion.Network;
 
@@ -86,5 +87,44 @@ public static class NetworkAssetSpawner
         };
 
         MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, CommonMessageRoutes.ReliableToServer);
+    }
+
+    public static bool TryDespawnAll()
+    {
+        if (!NetworkInfo.IsHost)
+        {
+            return false;
+        }
+
+        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityIDLookup.Keys.ToArray();
+
+        foreach (var entity in entities)
+        {
+            var despawnable = entity.GetExtender<IEntityDespawnableExtender>();
+
+            if (despawnable == null)
+            {
+                continue;
+            }
+
+            if (IsFixture(entity))
+            {
+                continue;
+            }
+
+            Despawn(new DespawnRequestInfo() { EntityID = entity.ID, });
+        }
+
+        return true;
+    }
+
+    private static bool IsFixture(NetworkEntity entity)
+    {
+        if (entity.GetExtender<CircuitSocketExtender>() != null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
