@@ -102,6 +102,7 @@ public static class ModuleMessageManager
                 var payload = new ReceivedMessage()
                 {
                     Route = received.Route,
+                    Sender = received.Sender,
                     Bytes = buffer,
                     IsServerHandled = received.IsServerHandled,
                 };
