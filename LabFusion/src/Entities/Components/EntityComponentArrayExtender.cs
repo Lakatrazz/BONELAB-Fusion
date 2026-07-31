@@ -36,7 +36,7 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
         entity.ConnectExtender(this);
 
-        entity.OnEntityUnregistered += Unregister;
+        entity.EntityUnregistered += Unregister;
 
         ApplyComponents();
     }
@@ -56,7 +56,7 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
             return;
         }
 
-        entity.OnEntityUnregistered -= Unregister;
+        entity.EntityUnregistered -= Unregister;
 
         entity.DisconnectExtender(this);
 

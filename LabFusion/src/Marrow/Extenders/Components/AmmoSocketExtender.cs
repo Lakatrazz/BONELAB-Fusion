@@ -11,12 +11,12 @@ public class AmmoSocketExtender : EntityComponentExtender<AmmoSocket>
 {
     protected override void OnRegister(NetworkEntity entity, AmmoSocket component)
     {
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, AmmoSocket component)
     {
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)

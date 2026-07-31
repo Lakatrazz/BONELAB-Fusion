@@ -54,7 +54,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
 
         crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
 
-        entity.OnEntityDataCatchup += (entity, player) =>
+        entity.EntityDataCatchingUp += (entity, player) =>
         {
             SendCrateSpawnerMessage(crateSpawner, entity.ID, player);
         };

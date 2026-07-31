@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 
@@ -8,27 +7,23 @@ namespace LabFusion.Network;
 public class ConnectionResponseData : INetSerializable
 {
     public PlayerID PlayerID = null;
-    public string AvatarBarcode = null;
-    public SerializedAvatarStats AvatarStats = null;
+
     public bool IsInitialJoin = false;
 
-    public int? GetSize() => PlayerID.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + sizeof(bool);
+    public int? GetSize() => PlayerID.GetSize() + sizeof(bool);
 
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref PlayerID);
-        serializer.SerializeValue(ref AvatarBarcode);
-        serializer.SerializeValue(ref AvatarStats);
+
         serializer.SerializeValue(ref IsInitialJoin);
     }
 
-    public static ConnectionResponseData Create(PlayerID id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
+    public static ConnectionResponseData Create(PlayerID id, bool isInitialJoin)
     {
         return new ConnectionResponseData()
         {
             PlayerID = id,
-            AvatarBarcode = avatarBarcode,
-            AvatarStats = stats,
             IsInitialJoin = isInitialJoin,
         };
     }
@@ -62,8 +57,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
         {
             InternalServerHelpers.OnPlayerJoined(data.PlayerID, data.IsInitialJoin);
 
-            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
-            networkPlayer.NetworkRig.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
+            NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
         }
 
         // Send catchup messages now that the user is registered

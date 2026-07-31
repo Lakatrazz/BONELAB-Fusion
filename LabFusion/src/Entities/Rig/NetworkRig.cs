@@ -4,14 +4,14 @@ using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Extensions;
+using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Rig;
 using LabFusion.Math;
 using LabFusion.Math.Numerics;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
-using LabFusion.Marrow.Messages;
-using LabFusion.Marrow.Rig;
 
 using UnityEngine;
 
@@ -170,16 +170,50 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     {
         IsRegistered = true;
 
-        NetworkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        NetworkEntity.EntityDataCatchingUp += OnEntityDataCatchup;
+        NetworkEntity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
     }
 
     public void OnExtenderUnregistered()
     {
         IsRegistered = false;
 
-        NetworkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        NetworkEntity.EntityOwnershipTransferred -= OnEntityOwnershipTransfer;
 
         UnassignRig();
+    }
+
+    public void OnNewAvatarReady()
+    {
+        if (!NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        RelayAvatar(CommonMessageRoutes.ReliableToOtherClients);
+    }
+
+    public void RelayAvatar(MessageRoute route)
+    {
+        if (!HasRig || !NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        var rigManager = RigRefs.RigManager;
+        var avatar = rigManager.avatar;
+
+        var stats = new SerializedAvatarStats(avatar);
+        var barcode = rigManager.AvatarCrate.Barcode.ID;
+
+        var data = new RigAvatarData()
+        {
+            RigReference = new(NetworkEntity),
+            Stats = stats,
+            Barcode = barcode,
+        };
+
+        MessageRelay.RelayModule<RigAvatarMessage, RigAvatarData>(data, route);
     }
 
     public void OnPoseReceived(RigPose pose)
@@ -685,5 +719,10 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         bool isOwner = entity.IsOwner;
 
         RigGrabber?.OnRigOwnershipTransfer(isOwner);
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
+    {
+        RelayAvatar(new MessageRoute(player.SmallID, NetworkChannel.Reliable));
     }
 }

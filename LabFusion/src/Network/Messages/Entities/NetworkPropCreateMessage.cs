@@ -73,7 +73,7 @@ public class NetworkPropCreateMessage : NativeMessageHandler
         networkEntity.SetOwner(ownerID);
 
         // Insert creation catchup hook for future users
-        networkEntity.OnEntityCreationCatchup += (entity, player) =>
+        networkEntity.EntityCreationCatchingUp += (entity, player) =>
         {
             PropSender.SendCatchupCreation(networkProp, player);
         };

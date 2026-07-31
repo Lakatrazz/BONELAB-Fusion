@@ -11,6 +11,7 @@ using UnityEngine;
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 using Il2CppSLZ.Marrow;
+using LabFusion.Marrow.Rig;
 
 namespace LabFusion.Patching;
 
@@ -73,7 +74,7 @@ public static class ArtRigPatches
     {
         try
         {
-            DelayUtilities.InvokeDelayed(() => { Internal_WaitForBarcode(inRig.manager, avatar); }, 2);
+            DelayUtilities.InvokeDelayed(() => { WaitForBarcode(inRig.manager, avatar); }, 2);
         }
         catch (Exception e)
         {
@@ -81,30 +82,35 @@ public static class ArtRigPatches
         }
     }
 
-    private static void Internal_WaitForBarcode(RigManager __instance, Avatar newAvatar)
+    private static void WaitForBarcode(RigManager rigManager, Avatar newAvatar)
     {
         // First make sure our player hasn't been destroyed (ex. loading new scene)
-        if (__instance == null)
+        if (rigManager == null)
         {
             return;
         }
 
         // Next check the avatar hasn't changed
-        if (__instance._avatar != newAvatar)
+        if (rigManager._avatar != newAvatar)
         {
             return;
         }
 
-        // Is this our local player? If so, sync the avatar change
-        if (__instance.IsLocalPlayer())
+        if (NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
-            LocalAvatar.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
+            networkRig.OnNewAvatarReady();
+        }
+
+        // Is this our local player? If so, sync the avatar change
+        if (rigManager.IsLocalPlayer())
+        {
+            LocalAvatar.InvokeAvatarChanged(newAvatar, rigManager.AvatarCrate.Barcode.ID);
         }
 
         // If a NetworkPlayer is available, invoke it for that as well
-        if (NetworkPlayerManager.TryGetPlayer(__instance, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(rigManager, out var networkPlayer))
         {
-            NetworkAvatarManager.InvokeAvatarChanged(networkPlayer, newAvatar, __instance.AvatarCrate.Barcode.ID);
+            NetworkAvatarManager.InvokeAvatarChanged(networkPlayer, newAvatar, rigManager.AvatarCrate.Barcode.ID);
         }
     }
 }

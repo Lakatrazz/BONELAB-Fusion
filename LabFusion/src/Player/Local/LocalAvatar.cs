@@ -83,11 +83,11 @@ public static class LocalAvatar
     /// <summary>
     /// Invoked when the avatar of the Local Player changes.
     /// </summary>
-    public static event PlayerAvatarDelegate? OnAvatarChanged;
+    public static event PlayerAvatarDelegate? AvatarChanged;
 
     internal static void OnInitializeMelon()
     {
-        OnAvatarChanged += OnCheckAvatar;
+        AvatarChanged += OnCheckAvatar;
     }
 
     internal static void InvokeAvatarChanged(Avatar avatar, string barcode)
@@ -96,7 +96,7 @@ public static class LocalAvatar
         AvatarHeight = avatar.height;
         AvatarMass = avatar.massTotal;
 
-        OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
+        AvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
 
         // Update the use time of the avatar's crate
         PalletUseHistoryManager.MarkCrateUsed(AssetWarehouseSearcher.GetCrate<AvatarCrate>(new(barcode)));
@@ -104,13 +104,6 @@ public static class LocalAvatar
 
     private static void OnCheckAvatar(Avatar avatar, string barcode)
     {
-        // Save the stats
-        RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
-        RigData.RigAvatarId = barcode;
-
-        // Send avatar change
-        PlayerSender.SendPlayerAvatar(RigData.RigAvatarStats, barcode);
-
         var crateReference = new AvatarCrateReference(barcode);
 
         var crate = crateReference.Crate;

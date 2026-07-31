@@ -86,7 +86,7 @@ public static class LocalHealth
 
     internal static void OnInitializeMelon()
     {
-        LocalAvatar.OnAvatarChanged += OnAvatarChanged;
+        LocalAvatar.AvatarChanged += OnAvatarChanged;
         LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
         OnRespawn += OnRespawned;
     }

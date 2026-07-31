@@ -18,7 +18,7 @@ public class RPCVariableExtender : EntityComponentArrayExtender<RPCVariable>
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, RPCVariable[] components)
@@ -30,7 +30,7 @@ public class RPCVariableExtender : EntityComponentArrayExtender<RPCVariable>
             Cache.Remove(component);
         }
 
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)

@@ -14,7 +14,7 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
             component.Entity = entity;
         }
 
-        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        entity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
         if (entity.HasOwner)
@@ -30,7 +30,7 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
             component.Entity = null;
         }
 
-        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        entity.EntityOwnershipTransferred -= OnEntityOwnershipTransfer;
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)

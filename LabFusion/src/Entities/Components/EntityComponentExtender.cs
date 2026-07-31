@@ -33,7 +33,7 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
         entity.ConnectExtender(this);
 
-        entity.OnEntityUnregistered += Unregister;
+        entity.EntityUnregistered += Unregister;
 
         OnRegister(NetworkEntity, Component);
     }
@@ -53,7 +53,7 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
             return;
         }
 
-        entity.OnEntityUnregistered -= Unregister;
+        entity.EntityUnregistered -= Unregister;
 
         entity.DisconnectExtender(this);
 

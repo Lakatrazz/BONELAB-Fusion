@@ -15,9 +15,6 @@ public static class RigData
     public static RigRefs Refs { get; private set; } = new RigRefs();
     public static bool HasPlayer => Refs.IsValid;
 
-    public static string RigAvatarId { get; internal set; } = MarrowBarcodes.EmptyBarcode;
-    public static SerializedAvatarStats RigAvatarStats { get; internal set; } = null;
-
     public static Vector3 RigSpawn { get; private set; }
     public static Quaternion RigSpawnRot { get; private set; }
 
@@ -54,17 +51,5 @@ public static class RigData
         {
             LocalAvatar.InvokeAvatarChanged(manager._avatar, manager.AvatarCrate.Barcode.ID);
         }
-    }
-
-    public static string GetAvatarBarcode()
-    {
-        var rm = Refs.RigManager;
-
-        if (rm)
-        {
-            return rm.AvatarCrate.Barcode.ID;
-        }
-
-        return MarrowBarcodes.EmptyBarcode;
     }
 }

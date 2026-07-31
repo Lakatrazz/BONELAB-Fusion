@@ -310,8 +310,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
             return;
         }
 
-        NetworkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
-        NetworkEntity.OnEntityDataCatchup += OnEntityDataCatchup;
+        NetworkEntity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
+        NetworkEntity.EntityDataCatchingUp += OnEntityDataCatchup;
 
         OnReregisterUpdates();
 
@@ -335,8 +335,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
-        NetworkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
-        NetworkEntity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        NetworkEntity.EntityOwnershipTransferred -= OnEntityOwnershipTransfer;
+        NetworkEntity.EntityDataCatchingUp -= OnEntityDataCatchup;
 
         _networkEntity = null;
         _marrowEntity = null;

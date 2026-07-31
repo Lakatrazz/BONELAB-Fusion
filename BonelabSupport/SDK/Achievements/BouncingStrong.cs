@@ -1,5 +1,4 @@
 ﻿using LabFusion.SDK.Achievements;
-using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Player;
 using LabFusion.Marrow.Rig;
@@ -48,7 +47,7 @@ public class BouncingStrong : Achievement
             return;
         }
 
-        if (RigData.RigAvatarId == BonelabAvatarReferences.StrongReference.Barcode.ID)
+        if (LocalAvatar.AvatarBarcode == BonelabAvatarReferences.StrongReference.Barcode.ID)
         {
             IncrementTask();
         }

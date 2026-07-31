@@ -49,7 +49,7 @@ public class NetworkConstraint : IEntityExtender
     {
         IsRegistered = true;
 
-        NetworkEntity.OnEntityCreationCatchup += OnEntityCreationCatchup;
+        NetworkEntity.EntityCreationCatchingUp += OnEntityCreationCatchup;
 
         Cache.Add(Tracker, NetworkEntity);
 
@@ -67,7 +67,7 @@ public class NetworkConstraint : IEntityExtender
     {
         IsRegistered = false;
 
-        NetworkEntity.OnEntityCreationCatchup -= OnEntityCreationCatchup;
+        NetworkEntity.EntityCreationCatchingUp -= OnEntityCreationCatchup;
 
         if (Tracker != null)
         {

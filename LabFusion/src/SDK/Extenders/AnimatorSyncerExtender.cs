@@ -16,7 +16,7 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        entity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
         if (entity.HasOwner)
@@ -32,7 +32,7 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
             Cache.Remove(component);
         }
 
-        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        entity.EntityOwnershipTransferred -= OnEntityOwnershipTransfer;
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)

@@ -22,8 +22,8 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 
         DefaultUpdateJointAnchors = component.updateJointAnchors;
 
-        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
 
         // Update puppet drives if there's already an owner
         if (entity.HasOwner)
@@ -36,8 +36,8 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
     {
         Cache.Remove(component);
 
-        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityOwnershipTransferred -= OnEntityOwnershipTransfer;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
 
         if (component != null)
         {

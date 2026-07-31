@@ -21,7 +21,7 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
 
         RegisterCleaner();
 
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, Magazine component)
@@ -30,7 +30,7 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
 
         UnregisterCleaner();
 
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
     }
 
     private void RegisterCleaner()

@@ -242,7 +242,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
     private static void InsertCatchupHook(NetworkEntity networkEntity, string barcode, SerializedTransform spawnTransform)
     {
-        networkEntity.OnEntityCreationCatchup += (entity, player) =>
+        networkEntity.EntityCreationCatchingUp += (entity, player) =>
         {
             var transform = spawnTransform;
 

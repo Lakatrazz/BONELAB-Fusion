@@ -26,7 +26,7 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
             grip.detachedHandDelegate += _onDetachDelegate;
         }
 
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, Grip[] components)
@@ -42,7 +42,7 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
         _onAttachDelegate = null;
         _onDetachDelegate = null;
 
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
     }
 
     protected void OnAttach(Hand hand)

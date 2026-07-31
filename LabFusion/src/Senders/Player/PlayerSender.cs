@@ -20,24 +20,6 @@ public enum NicknameVisibility
 
 public static class PlayerSender
 {
-    public static void SendPlayerAvatar(SerializedAvatarStats stats, string barcode)
-    {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        // TODO: Move to NetworkRig
-        var data = new RigAvatarData()
-        {
-            RigReference = new(PlayerIDManager.LocalSmallID),
-            Stats = stats,
-            Barcode = barcode,
-        };
-
-        MessageRelay.RelayModule<RigAvatarMessage, RigAvatarData>(data, CommonMessageRoutes.ReliableToOtherClients);
-    }
-
     public static void SendPlayerVoiceChat(byte[] voiceData)
     {
         if (!NetworkInfo.HasServer)

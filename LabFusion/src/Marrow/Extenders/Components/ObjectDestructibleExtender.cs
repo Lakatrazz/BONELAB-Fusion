@@ -19,7 +19,7 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, ObjectDestructible[] components)
@@ -29,7 +29,7 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
             Cache.Remove(component);
         }
 
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
     }
 
     private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)

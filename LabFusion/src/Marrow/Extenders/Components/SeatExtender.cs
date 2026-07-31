@@ -22,7 +22,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityDataCatchup += OnEntityDataCatchup;
+        entity.EntityDataCatchingUp += OnEntityDataCatchup;
 
         MarrowEntityExtender = entity.GetExtender<IMarrowEntityExtender>();
 
@@ -39,7 +39,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             Cache.Remove(component);
         }
 
-        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
+        entity.EntityDataCatchingUp -= OnEntityDataCatchup;
 
         if (MarrowEntityExtender != null)
         {

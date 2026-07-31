@@ -89,22 +89,22 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// <summary>
     /// Invoked when the entity is unregistered.
     /// </summary>
-    public event NetworkEntityDelegate OnEntityUnregistered;
+    public event NetworkEntityDelegate EntityUnregistered;
 
     /// <summary>
     /// Invoked when a Player becomes the entity's new sync owner.
     /// </summary>
-    public NetworkEntityPlayerDelegate OnEntityOwnershipTransfer;
+    public NetworkEntityPlayerDelegate EntityOwnershipTransferred;
 
     /// <summary>
     /// Invoked when a new Player joins the server and the creation of this NetworkEntity needs to be caught up.
     /// </summary>
-    public event NetworkEntityPlayerDelegate OnEntityCreationCatchup;
+    public event NetworkEntityPlayerDelegate EntityCreationCatchingUp;
 
     /// <summary>
     /// Invoked on the entity owner's end when a Player finishes creating this NetworkEntity and needs its data to be caught up.
     /// </summary>
-    public event NetworkEntityPlayerDelegate OnEntityDataCatchup;
+    public event NetworkEntityPlayerDelegate EntityDataCatchingUp;
 
     private NetworkEntityDelegate _registeredCallback = null;
 
@@ -248,9 +248,9 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     {
         bool caughtUp = false;
 
-        if (OnEntityCreationCatchup != null)
+        if (EntityCreationCatchingUp != null)
         {
-            OnEntityCreationCatchup?.InvokeSafe(this, playerID, "executing OnEntityCreationCatchup");
+            EntityCreationCatchingUp?.InvokeSafe(this, playerID, "executing OnEntityCreationCatchup");
             caughtUp = true;
         }
 
@@ -263,9 +263,9 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
         byte smallID = playerID.SmallID;
 
-        if (OnEntityDataCatchup != null)
+        if (EntityDataCatchingUp != null)
         {
-            OnEntityDataCatchup?.InvokeSafe(this, playerID, "executing OnEntityDataCatchup");
+            EntityDataCatchingUp?.InvokeSafe(this, playerID, "executing OnEntityDataCatchup");
             caughtUp = true;
         }
 
@@ -375,14 +375,14 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
         _isDestroyed = true;
 
-        OnEntityUnregistered?.Invoke(this);
+        EntityUnregistered?.Invoke(this);
 
         UnregisterExtenders();
         DisconnectExtenders();
 
-        OnEntityUnregistered = null;
-        OnEntityCreationCatchup = null;
-        OnEntityDataCatchup = null;
+        EntityUnregistered = null;
+        EntityCreationCatchingUp = null;
+        EntityDataCatchingUp = null;
 
         UnlinkEntities();
 
@@ -406,7 +406,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
         _ownerID = ownerID;
 
-        OnEntityOwnershipTransfer?.Invoke(this, ownerID);
+        EntityOwnershipTransferred?.Invoke(this, ownerID);
     }
 
     public void RemoveOwner()
@@ -426,7 +426,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
         _ownerID = null;
 
-        OnEntityOwnershipTransfer?.Invoke(this, null);
+        EntityOwnershipTransferred?.Invoke(this, null);
     }
 
     public void LockOwner()

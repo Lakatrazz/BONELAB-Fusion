@@ -5,7 +5,6 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences.Server;
 using LabFusion.Senders;
-using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
 
@@ -14,11 +13,10 @@ namespace LabFusion.Network;
 public class ConnectionRequestData : INetSerializable
 {
     public Version Version;
-    public string AvatarBarcode;
-    public SerializedAvatarStats AvatarStats;
+
     public Dictionary<string, string> InitialMetadata;
 
-    public int? GetSize() => Version.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + InitialMetadata.GetSize();
+    public int? GetSize() => Version.GetSize() + InitialMetadata.GetSize();
 
     public bool IsValid { get; private set; } = true;
 
@@ -27,8 +25,7 @@ public class ConnectionRequestData : INetSerializable
         try
         {
             serializer.SerializeValue(ref Version);
-            serializer.SerializeValue(ref AvatarBarcode);
-            serializer.SerializeValue(ref AvatarStats);
+
             serializer.SerializeValue(ref InitialMetadata);
         }
         catch (Exception e)
@@ -39,15 +36,13 @@ public class ConnectionRequestData : INetSerializable
         }
     }
 
-    public static ConnectionRequestData Create(Version version, string avatarBarcode, SerializedAvatarStats stats)
+    public static ConnectionRequestData Create(Version version)
     {
         LocalPlayer.InvokeApplyInitialMetadata();
 
         return new ConnectionRequestData()
         {
             Version = version,
-            AvatarBarcode = avatarBarcode,
-            AvatarStats = stats,
             InitialMetadata = LocalPlayer.Metadata.Metadata.LocalDictionary,
         };
     }
@@ -176,16 +171,16 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // All checks have succeeded, let the player into the server
-        OnConnectionAllowed(playerId, platformID, data);
+        OnConnectionAllowed(playerId, platformID);
     }
 
-    private static void OnConnectionAllowed(PlayerID playerID, ulong platformID, ConnectionRequestData data)
+    private static void OnConnectionAllowed(PlayerID playerID, ulong platformID)
     {
         // Reserve the player's smallID so that other players don't steal it
         PlayerIDManager.ReserveSmallID(playerID.SmallID);
 
         // Send the new player to all existing players (and the new player so they know they exist)
-        ConnectionSender.SendPlayerJoin(playerID, data.AvatarBarcode, data.AvatarStats);
+        ConnectionSender.SendPlayerJoin(playerID);
 
         // Now we send all of our other players to the new player
         foreach (var id in PlayerIDManager.PlayerIDs)
@@ -196,25 +191,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
                 continue;
             }
 
-            string barcode;
-            SerializedAvatarStats stats;
-
-            if (id.SmallID == PlayerIDManager.HostSmallID)
-            {
-                barcode = RigData.RigAvatarId;
-                stats = RigData.RigAvatarStats;
-            }
-            else if (NetworkPlayerManager.TryGetPlayer(id.SmallID, out var rep))
-            {
-                barcode = rep.NetworkRig.AvatarSetter.AvatarBarcode;
-                stats = rep.NetworkRig.AvatarSetter.AvatarStats;
-            }
-            else
-            {
-                continue;
-            }
-
-            ConnectionSender.SendPlayerCatchup(platformID, id, barcode, stats);
+            ConnectionSender.SendPlayerCatchup(platformID, id);
         }
 
         // Now, make sure the player loads into the scene
