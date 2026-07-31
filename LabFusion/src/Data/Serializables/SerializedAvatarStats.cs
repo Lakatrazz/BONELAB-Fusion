@@ -16,9 +16,6 @@ public class SerializedAvatarStats : INetSerializable
 
     public int? GetSize() => Size;
 
-    // Root scale
-    public Vector3 localScale;
-
     // Ellipse/offset values
     public float headTop;
     public float chinY;
@@ -112,9 +109,6 @@ public class SerializedAvatarStats : INetSerializable
 
     public SerializedAvatarStats(Avatar avatar)
     {
-        // Save the scale
-        localScale = avatar.transform.localScale;
-
         // Save ellipse/offset values
         headTop = avatar._headTop;
         chinY = avatar._chinY;
@@ -299,8 +293,6 @@ public class SerializedAvatarStats : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref localScale);
-
         serializer.SerializeValue(ref headTop);
         serializer.SerializeValue(ref chinY);
         serializer.SerializeValue(ref underbustY);

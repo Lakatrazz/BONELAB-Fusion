@@ -199,9 +199,13 @@ public static class LocalAvatar
 
         _overridingHeight = true;
 
-        RigData.Refs.SwapAvatarCrate(barcode, null, (_, newAvatar) =>
+        RigData.Refs.RigManager.SwitchAvatarWithCallbacks(new RigManagerExtensions.AvatarSwitchInfo()
         {
-            newAvatar.transform.localScale = newScale;
+            Barcode = barcode,
+            BeforeSwapAvatarCallback = (_, newAvatar) =>
+            {
+                newAvatar.transform.localScale = newScale;
+            }
         });
     }
     

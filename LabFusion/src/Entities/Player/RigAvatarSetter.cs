@@ -11,6 +11,8 @@ using LabFusion.Utilities;
 
 using UnityEngine;
 
+using Avatar = Il2CppSLZ.VRMK.Avatar;
+
 namespace LabFusion.Entities;
 
 public class RigAvatarSetter
@@ -123,7 +125,14 @@ public class RigAvatarSetter
 
         if (_isAvatarDirty)
         {
-            references.SwapAvatarCrate(AvatarBarcode, OnSwapAvatar, OnPrepareAvatar);
+            var rigManager = references.RigManager;
+
+            rigManager.SwitchAvatarWithCallbacks(new RigManagerExtensions.AvatarSwitchInfo()
+            {
+                Barcode = AvatarBarcode,
+                BeforeSwapAvatarCallback = OnBeforeAvatarSwap,
+                CompletedCallback = OnSwapAvatar,
+            });
 
             _isAvatarDirty = false;
         }
@@ -132,11 +141,18 @@ public class RigAvatarSetter
 
     private void OnSwapAvatar(bool success)
     {
-        var rm = _references.RigManager;
+        var rigManager = _references.RigManager;
 
         if (!success)
         {
-            _references.SwapAvatarCrate(MarrowGameReferences.CalibrationAvatarReference.Barcode.ID, OnSwapFallback, OnPrepareAvatar);
+            var calibrationAvatarBarcode = MarrowGameReferences.CalibrationAvatarReference.Barcode.ID;
+
+            rigManager.SwitchAvatarWithCallbacks(new RigManagerExtensions.AvatarSwitchInfo()
+            {
+                Barcode = calibrationAvatarBarcode,
+                BeforeSwapAvatarCallback = OnBeforeAvatarSwap,
+                CompletedCallback = OnSwapFallback,
+            });
         }
         else
         {
@@ -149,24 +165,37 @@ public class RigAvatarSetter
         OnAvatarChanged?.Invoke();
     }
 
-    private void OnPrepareAvatar(string barcode, GameObject avatar)
+    private void OnBeforeAvatarSwap(string barcode, Avatar avatar)
     {
-        // If we have synced avatar stats, set the scale properly
-        if (_stats != null)
+        if (_stats == null)
         {
-            Transform transform = avatar.transform;
-
-            // Polyblank should just scale based on the custom avatar height
-            if (barcode == MarrowGameReferences.CalibrationAvatarReference.Barcode.ID)
-            {
-                float newHeight = _stats.height;
-                transform.localScale = Vector3Extensions.One * (newHeight / MarrowGameReferences.CalibrationAvatarHeight);
-            }
-            // Otherwise, apply the synced scale
-            else
-            {
-                transform.localScale = _stats.localScale;
-            }
+            return;
         }
+
+        var avatarTransform = avatar.transform;
+
+        avatar.PreComputed = false;
+
+        avatar.PrecomputeAvatar();
+        avatar.RefreshBodyMeasurements();
+
+        float baseHeight = avatar.height;
+        var baseScale = avatarTransform.localScale;
+
+        float newHeight = _stats.height;
+
+        if (!Mathf.Approximately(baseHeight, newHeight))
+        {
+            avatar.PreComputed = false;
+
+            var newScale = baseScale * (newHeight / baseHeight);
+
+            avatarTransform.localScale = newScale;
+
+            avatar.PrecomputeAvatar();
+            avatar.RefreshBodyMeasurements();
+        }
+
+        _stats.CopyTo(avatar);
     }
 }

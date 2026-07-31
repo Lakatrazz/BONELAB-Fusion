@@ -20,6 +20,15 @@ using Rig = Il2CppSLZ.Marrow.Rig;
 
 public static class RigManagerExtensions
 {
+    public struct AvatarSwitchInfo
+    {
+        public string Barcode { get; set; }
+
+        public Action<string, Avatar> BeforeSwapAvatarCallback { get; set; }
+
+        public Action<bool> CompletedCallback { get; set; }
+    }
+
     private struct TempBody
     {
         public Rigidbody Rigidbody;
@@ -118,68 +127,84 @@ public static class RigManagerExtensions
         rig.Teleport(displace, resetVelocity);
     }
 
-    public static void SwapAvatarCrate(this RigRefs references, string barcode, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+    public static void SwitchAvatarWithCallbacks(this RigManager rigManager, AvatarSwitchInfo info)
     {
-        AvatarCrateReference crateRef = new(barcode);
-        var crate = crateRef.Crate;
+        var crateReference = new AvatarCrateReference(info.Barcode);
+        var crate = crateReference.Crate;
 
         if (crate == null)
         {
-            callback?.Invoke(false);
+            info.CompletedCallback?.Invoke(false);
+            return;
         }
-        else
+
+        crate.LoadAsset((Il2CppSystem.Action<GameObject>)(asset =>
         {
-            MelonCoroutines.Start(CoWaitAndSwapAvatarRoutine(references, crate, callback, preSwapAvatar));
-        }
+            MelonCoroutines.Start(CoSwitchAvatarWithCallbacks(rigManager, info, crate, asset));
+        }));
     }
 
-    private static IEnumerator CoWaitAndSwapAvatarRoutine(RigRefs references, AvatarCrate crate, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+    private static IEnumerator CoSwitchAvatarWithCallbacks(RigManager rigManager, AvatarSwitchInfo info, AvatarCrate crate, GameObject asset)
     {
-        bool loaded = false;
-        GameObject avatar = null;
-
-        crate.LoadAsset((Il2CppSystem.Action<GameObject>)((go) =>
+        if (rigManager == null)
         {
-            loaded = true;
-            avatar = go;
-        }));
-
-        while (!loaded)
-            yield return null;
-
-        if (!references.IsValid)
+            FailAvatarSwap();
             yield break;
+        }
+
+        if (asset == null)
+        {
+            FailAvatarSwap();
+            yield break;
+        }
+
+        var avatarParent = rigManager.transform;
+
+        var avatarInstance = GameObject.Instantiate(asset, avatarParent);
+        avatarInstance.name = asset.name;
+        avatarInstance.SetActive(true);
+
+        var avatarTransform = avatarInstance.transform;
+        avatarTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+        var avatar = avatarInstance.GetComponent<Avatar>();
 
         if (avatar == null)
         {
-            callback?.Invoke(false);
+            GameObject.Destroy(avatarInstance);
+
+            FailAvatarSwap();
+            yield break;
         }
-        else
+
+        info.BeforeSwapAvatarCallback?.Invoke(info.Barcode, avatar);
+
+        avatarInstance.SetActive(false);
+
+        rigManager.SwapAvatar(avatar);
+
+        while (rigManager != null && rigManager._avatarDirty)
         {
-            var rm = references.RigManager;
-            GameObject instance = GameObject.Instantiate(avatar);
-            instance.SetActive(false);
-            instance.name = avatar.name;
+            yield return null;
+        }
 
-            preSwapAvatar?.Invoke(crate.Barcode.ID, instance);
+        if (rigManager == null)
+        {
+            FailAvatarSwap();
+            yield break;
+        }
 
-            instance.transform.parent = references.RigManager.transform;
-            instance.transform.SetLocalPositionAndRotation(Vector3Extensions.Zero, QuaternionExtensions.identity);
+        var crateBarcode = crate.Barcode;
 
-            var avatarComponent = instance.GetComponentInParent<Avatar>(true);
-            rm.SwapAvatar(avatarComponent);
+        rigManager._avatarCrate = new AvatarCrateReference(crateBarcode);
+        rigManager.onAvatarSwapped?.Invoke();
+        rigManager.onAvatarSwapped2?.Invoke(crateBarcode);
 
-            while (references.IsValid && rm.avatar != avatarComponent)
-                yield return null;
+        info.CompletedCallback?.Invoke(true);
 
-            if (!references.IsValid)
-                yield break;
-
-            rm._avatarCrate = new AvatarCrateReference(crate.Barcode);
-            rm.onAvatarSwapped?.Invoke();
-            rm.onAvatarSwapped2?.Invoke(crate.Barcode);
-            callback?.Invoke(true);
+        void FailAvatarSwap()
+        {
+            info.CompletedCallback?.Invoke(false);
         }
     }
-
 }
