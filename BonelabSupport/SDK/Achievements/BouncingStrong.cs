@@ -2,8 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Player;
-using LabFusion.Senders;
-using LabFusion.Utilities;
+using LabFusion.Marrow.Rig;
 
 namespace MarrowFusion.Bonelab.Achievements;
 
@@ -19,12 +18,12 @@ public class BouncingStrong : Achievement
 
     protected override void OnRegister()
     {
-        MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        RigActionManager.PlayerRigActed += OnPlayerActed;
     }
 
     protected override void OnUnregister()
     {
-        MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        RigActionManager.PlayerRigActed -= OnPlayerActed;
     }
 
     protected override void OnComplete()
@@ -32,22 +31,26 @@ public class BouncingStrong : Achievement
         LocalAudioPlayer.Play2dOneShot(new AudioReference(FusionMonoDiscReferences.FistfightFusionReference), LocalAudioPlayer.MusicSettings);
     }
 
-    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer)
+    private void OnPlayerActed(PlayerID playerID, RigActionType type)
     {
-        // Make sure there's other players
         if (!PlayerIDManager.HasOtherPlayers)
         {
             return;
         }
 
-        // Make sure this is us, and that we jumped
-        if (player.IsMe && type == PlayerActionType.JUMP)
+        if (!playerID.IsMe)
         {
-            // Check current avatar
-            if (RigData.RigAvatarId == BonelabAvatarReferences.StrongReference.Barcode.ID)
-            {
-                IncrementTask();
-            }
+            return;
+        }
+
+        if (type != RigActionType.Jump)
+        {
+            return;
+        }
+
+        if (RigData.RigAvatarId == BonelabAvatarReferences.StrongReference.Barcode.ID)
+        {
+            IncrementTask();
         }
     }
 }

@@ -45,36 +45,6 @@ public class PlayerRepActionMessage : NativeMessageHandler
 
         PlayerID otherPlayer = data.OtherPlayer.HasValue ? PlayerIDManager.GetPlayerID(data.OtherPlayer.Value) : null;
 
-        // If this isn't our rig, call these functions
-        if (!player.NetworkEntity.IsOwner && player.NetworkRig.HasRig)
-        {
-            var rm = player.NetworkRig.RigRefs.RigManager;
-
-            switch (data.Type)
-            {
-                default:
-                case PlayerActionType.UNKNOWN:
-                    break;
-                case PlayerActionType.JUMP:
-                    rm.remapHeptaRig.Jump();
-                    break;
-                case PlayerActionType.DEATH:
-                    rm.physicsRig.headSfx.DeathVocal();
-                    player.NetworkRig.RigRefs.DisableInteraction();
-                    break;
-                case PlayerActionType.DYING:
-                    rm.physicsRig.headSfx.DyingVocal();
-                    break;
-                case PlayerActionType.RECOVERY:
-                    rm.physicsRig.headSfx.RecoveryVocal();
-                    break;
-                case PlayerActionType.RESPAWN:
-                    rm.health.Respawn();
-                    rm.physicsRig.TeleportToPose();
-                    break;
-            }
-        }
-
         // Inform the hooks
         MultiplayerHooking.InvokeOnPlayerAction(player.PlayerID, data.Type, otherPlayer);
     }

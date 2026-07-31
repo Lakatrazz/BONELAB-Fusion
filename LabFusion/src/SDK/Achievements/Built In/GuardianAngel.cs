@@ -1,7 +1,6 @@
 ﻿using LabFusion.Player;
-using LabFusion.Senders;
 using LabFusion.Marrow.Extenders;
-using LabFusion.Utilities;
+using LabFusion.Marrow.Rig;
 
 namespace LabFusion.SDK.Achievements;
 
@@ -15,25 +14,32 @@ public class GuardianAngel : Achievement
 
     protected override void OnRegister()
     {
-        MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        RigActionManager.PlayerRigActed += OnPlayerActed;
     }
 
     protected override void OnUnregister()
     {
-        MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        RigActionManager.PlayerRigActed -= OnPlayerActed;
     }
 
-    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer)
+    private void OnPlayerActed(PlayerID playerID, RigActionType type)
     {
-        // Was the person saved?
-        if (!player.IsMe && type == PlayerActionType.RECOVERY)
+        // Checking if we saved someone else, so the player shouldn't be us
+        if (playerID.IsMe)
         {
-            // Check the most recently killed NPC
-            // If we are the owner, we probably saved them
-            if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner)
-            {
-                IncrementTask();
-            }
+            return;
+        }
+
+        if (type != RigActionType.Recovery)
+        {
+            return;
+        }
+
+        // Check the most recently killed NPC
+        // If we are the owner, we probably saved them
+        if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner)
+        {
+            IncrementTask();
         }
     }
 }

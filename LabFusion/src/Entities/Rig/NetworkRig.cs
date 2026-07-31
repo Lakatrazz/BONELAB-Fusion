@@ -11,6 +11,7 @@ using LabFusion.Player;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Rig;
 
 using UnityEngine;
 
@@ -92,6 +93,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     private bool _forceHide = false;
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;
+
+    private Il2CppSystem.Action _onJumpAction = null;
 
     private Action _onReadyCallback = null;
 
@@ -634,8 +637,10 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
             WorldGripCache.Add(worldGrip, this);
         }
 
+        _onJumpAction = (Action)OnJump;
         _onAvatarSwappedAction = (Action)OnAvatarSwapped;
 
+        rigManager.remapHeptaRig.onPlayerJump += _onJumpAction;
         rigManager.onAvatarSwapped += _onAvatarSwappedAction;
     }
 
@@ -653,14 +658,26 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
             WorldGripCache.Remove(worldGrip);
         }
 
+        rigManager.remapHeptaRig.onPlayerJump -= _onJumpAction;
         rigManager.onAvatarSwapped -= _onAvatarSwappedAction;
 
         _onAvatarSwappedAction = null;
+        _onJumpAction = null;
     }
 
     private void OnAvatarSwapped()
     {
         RegisterDynamicComponents();
+    }
+
+    private void OnJump()
+    {
+        if (!NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        RigActionManager.RelayRigAction(new(NetworkEntity), RigActionType.Jump);
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)

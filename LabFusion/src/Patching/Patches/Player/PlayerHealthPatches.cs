@@ -8,6 +8,9 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Extensions;
 using LabFusion.Player;
 using LabFusion.Preferences;
+using LabFusion.Scene;
+using LabFusion.Marrow.Rig;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
@@ -20,89 +23,129 @@ public static class HeadSFXPatches
     [HarmonyPrefix]
     public static void RecoveryVocal(HeadSFX __instance)
     {
-        // Is this our player?
-        var rm = __instance._physRig.manager;
-
-        if (NetworkInfo.HasServer && rm.IsLocalPlayer())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
-            // Notify the server about the recovery
-            PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
+            return;
         }
+
+        var rigManager = __instance._physRig.manager;
+
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
+        {
+            return;
+        }
+
+        var networkEntity = networkRig.NetworkEntity;
+
+        if (!networkEntity.IsOwner)
+        {
+            return;
+        }
+
+        RigActionManager.RelayRigAction(new(networkEntity), RigActionType.Recovery);
     }
 
     [HarmonyPatch(nameof(HeadSFX.DyingVocal))]
     [HarmonyPrefix]
     public static void DyingVocal(HeadSFX __instance)
     {
-        // If there's no server, ignore
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
-        var rm = __instance._physRig.manager;
+        var rigManager = __instance._physRig.manager;
 
-        // Make sure this is the local player
-        if (!rm.IsLocalPlayer())
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
             return;
         }
 
-        // If ragdoll on death is enabled, ragdoll the player
-        if (LocalPlayer.RagdollOnDeath)
+        var networkEntity = networkRig.NetworkEntity;
+
+        if (!networkEntity.IsOwner)
         {
-            LocalRagdoll.ToggleRagdoll(true);
+            return;
         }
 
-        // Notify the server about the death beginning
-        if (FusionPlayer.LastAttacker.HasValue)
-        {
-            PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
-        }
+        RigActionManager.RelayRigAction(new(networkEntity), RigActionType.Dying);
 
-        PlayerSender.SendPlayerAction(PlayerActionType.DYING);
+        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+        // If there's a NetworkPlayer, and we own it, then it can only be the local player
+        if (networkPlayer != null)
+        {
+            OnLocalPlayerDying(rigManager);
+        }
     }
 
     [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
     [HarmonyPrefix]
     public static void DeathVocal(HeadSFX __instance)
     {
-        // If there's no server, ignore
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
-        var rm = __instance._physRig.manager;
+        var rigManager = __instance._physRig.manager;
 
-        // Make sure this is the local player
-        if (!rm.IsLocalPlayer())
+        if (rigManager.health.alive)
         {
             return;
         }
 
-        // Did they actually die?
-        if (rm.health.alive)
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig)) 
         {
             return;
         }
 
+        var networkEntity = networkRig.NetworkEntity;
+
+        if (!networkEntity.IsOwner)
+        {
+            return;
+        }
+
+        RigActionManager.RelayRigAction(new(networkEntity), RigActionType.Death);
+
+        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+        // If there's a NetworkPlayer, and we own it, then it can only be the local player
+        if (networkPlayer != null)
+        {
+            OnLocalPlayerDeath(rigManager);
+        }
+    }
+
+    private static void OnLocalPlayerDying(RigManager rigManager)
+    {
+        if (LocalPlayer.RagdollOnDeath)
+        {
+            LocalRagdoll.ToggleRagdoll(true);
+        }
+
+        if (FusionPlayer.LastAttacker.HasValue)
+        {
+            PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+        }
+    }
+
+    private static void OnLocalPlayerDeath(RigManager rigManager)
+    {
         // If in a gamemode with auto holstering, then do it
         if (GamemodeManager.IsGamemodeStarted && GamemodeManager.ActiveGamemode.AutoHolsterOnDeath)
         {
-            rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.Refs);
-            rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.Refs);
+            rigManager.physicsRig.leftHand.TryAutoHolsterGrip(RigData.Refs);
+            rigManager.physicsRig.rightHand.TryAutoHolsterGrip(RigData.Refs);
         }
 
         // Update the spawn point
         if (FusionPlayer.TryGetSpawnPoint(out var point))
         {
-            rm.checkpointPosition = point.position;
-            rm.checkpointFwd = point.forward;
+            rigManager.checkpointPosition = point.position;
+            rigManager.checkpointFwd = point.forward;
         }
-
-        // Notify the server about the death
-        PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
 
         // If another player killed us, notify the server about that
         if (FusionPlayer.LastAttacker.HasValue)
@@ -121,20 +164,43 @@ public static class HealthPatches
     [HarmonyPatch(nameof(Health.Respawn))]
     public static void Respawn(Health __instance)
     {
-        if (!__instance._rigManager.IsLocalPlayer())
+        var rigManager = __instance._rigManager;
+
+        if (rigManager.IsLocalPlayer())
+        {
+            LocalHealth.InvokeRespawn();
+        }
+
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
-        LocalHealth.InvokeRespawn();
-
-        if (!NetworkInfo.HasServer)
+        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
             return;
         }
 
-        PlayerSender.SendPlayerAction(PlayerActionType.RESPAWN);
+        var networkEntity = networkRig.NetworkEntity;
 
+        if (!networkEntity.IsOwner)
+        {
+            return;
+        }
+
+        RigActionManager.RelayRigAction(new(networkEntity), RigActionType.Respawn);
+
+        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+        // If there's a NetworkPlayer, and we own it, then it can only be the local player
+        if (networkPlayer != null)
+        {
+            OnLocalPlayerRespawn();
+        }
+    }
+
+    private static void OnLocalPlayerRespawn()
+    {
         LocalPlayer.ClearConstraints();
 
         // Unragdoll after respawning

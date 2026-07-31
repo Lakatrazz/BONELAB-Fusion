@@ -14,26 +14,6 @@ namespace LabFusion.Senders;
 public enum PlayerActionType
 {
     /// <summary>
-    /// No event.
-    /// </summary>
-    UNKNOWN,
-
-    /// <summary>
-    /// Invoked when Player jumps.
-    /// </summary>
-    JUMP,
-
-    /// <summary>
-    /// Invoked when Player dies.
-    /// </summary>
-    DEATH,
-
-    /// <summary>
-    /// Invoked when Player plays the dying animation.
-    /// </summary>
-    DYING,
-
-    /// <summary>
     /// Invoked when Player deals damage to Other Player.
     /// </summary>
     DEALT_DAMAGE_TO_OTHER_PLAYER,
@@ -44,19 +24,9 @@ public enum PlayerActionType
     DYING_BY_OTHER_PLAYER,
 
     /// <summary>
-    /// Invoked when Player saves themselves before the dying animation ends.
-    /// </summary>
-    RECOVERY,
-
-    /// <summary>
     /// Invoked when Player is killed by Other Player.
     /// </summary>
     DEATH_BY_OTHER_PLAYER,
-
-    /// <summary>
-    /// Invoked when Player respawns.
-    /// </summary>
-    RESPAWN,
 }
 
 public enum NicknameVisibility

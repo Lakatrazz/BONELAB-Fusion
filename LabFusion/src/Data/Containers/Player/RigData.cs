@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
 using LabFusion.Utilities;
-using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Extensions;
@@ -22,14 +20,6 @@ public static class RigData
 
     public static Vector3 RigSpawn { get; private set; }
     public static Quaternion RigSpawnRot { get; private set; }
-
-    private static void OnJump()
-    {
-        if (NetworkInfo.HasServer)
-        {
-            PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
-        }
-    }
 
     public static void OnCacheRigInfo()
     {
@@ -55,7 +45,6 @@ public static class RigData
 
         // Store the references
         Refs = new RigRefs(manager);
-        Refs.RigManager.remapHeptaRig.onPlayerJump += (Il2CppSystem.Action)OnJump;
 
         // Notify hooks
         LocalPlayer.OnLocalRigCreated?.InvokeSafe(manager, "executing OnLocalRigCreated hook");

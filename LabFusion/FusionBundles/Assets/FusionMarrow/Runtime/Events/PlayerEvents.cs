@@ -12,7 +12,7 @@ using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.Scene;
-using LabFusion.Senders;
+using LabFusion.Marrow.Rig;
 #else
 using UltEvents;
 #endif
@@ -45,7 +45,7 @@ namespace LabFusion.Marrow.Integration
 
             MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
 
-            MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+            RigActionManager.PlayerRigActed += OnPlayerActed;
         }
 
         private void OnDestroy()
@@ -55,6 +55,8 @@ namespace LabFusion.Marrow.Integration
             NetworkSceneManager.OnAllPlayersLoaded -= OnAllPlayersLoaded;
 
             MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
+
+            RigActionManager.PlayerRigActed -= OnPlayerActed;
         }
 
         [HideFromIl2Cpp]
@@ -100,7 +102,7 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        private void OnPlayerAction(PlayerID playerID, PlayerActionType type, PlayerID otherPlayer = null)
+        private void OnPlayerActed(PlayerID playerID, RigActionType type)
         {
             if (!NetworkSceneManager.InCurrentLevel(playerID))
             {
@@ -109,7 +111,7 @@ namespace LabFusion.Marrow.Integration
 
             switch (type)
             {
-                case PlayerActionType.DEATH:
+                case RigActionType.Death:
                     _latestPlayerID = playerID.SmallID;
 
                     onPlayerDeathHolder.Get()?.Invoke();

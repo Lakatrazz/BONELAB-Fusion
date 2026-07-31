@@ -19,10 +19,10 @@ using LabFusion.Extensions;
 using LabFusion.UI.Popups;
 using LabFusion.SDK.Points;
 using LabFusion.Marrow.Pool;
-using LabFusion.Senders;
 using LabFusion.UI.Elements;
 using LabFusion.UI.Styles;
 using LabFusion.UI.Resources;
+using LabFusion.Marrow.Rig;
 
 using UnityEngine;
 
@@ -522,7 +522,10 @@ public class SmashBones : Gamemode
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
 
-        MultiplayerHooking.InvokeOnPlayerAction(playerID, PlayerActionType.DEATH);
+        if (NetworkBeingManager.TryGetNetworkRig(new NetworkEntityReference(playerID.SmallID), out var networkRig))
+        {
+            RigActionManager.OnRigAction(networkRig, RigActionType.Death);
+        }
     }
 
     private void OnLivesChanged(PlayerID playerID, int lives)

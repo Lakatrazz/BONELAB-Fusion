@@ -18,6 +18,7 @@ using LabFusion.Menu.Data;
 using LabFusion.SDK.Metadata;
 using LabFusion.UI.Styles;
 using LabFusion.UI.Resources;
+using LabFusion.Marrow.Rig;
 
 using UnityEngine;
 
@@ -310,6 +311,7 @@ public class Deathmatch : Gamemode
     {
         // Add hooks
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        RigActionManager.PlayerRigActed += OnPlayerActed;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
         // Create triggers
@@ -333,6 +335,7 @@ public class Deathmatch : Gamemode
     {
         // Remove hooks
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        RigActionManager.PlayerRigActed -= OnPlayerActed;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
         Metadata.OnMetadataChanged -= OnMetadataChanged;
@@ -364,6 +367,26 @@ public class Deathmatch : Gamemode
         return false;
     }
 
+    private void OnPlayerActed(PlayerID playerID, RigActionType type)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        switch (type)
+        {
+            case RigActionType.Death:
+                // If we died, we can't get the Rampage achievement
+                if (playerID.IsMe)
+                {
+                    _deathCount++;
+                    UpdateDeathLabel();
+                }
+                break;
+        }
+    }
+
     protected void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
     {
         if (!IsStarted)
@@ -373,14 +396,6 @@ public class Deathmatch : Gamemode
 
         switch (type)
         {
-            case PlayerActionType.DEATH:
-                // If we died, we can't get the Rampage achievement
-                if (player.IsMe)
-                {
-                    _deathCount++;
-                    UpdateDeathLabel();
-                }
-                break;
             case PlayerActionType.DYING_BY_OTHER_PLAYER:
                 if (otherPlayer != null && otherPlayer != player)
                 {
