@@ -41,13 +41,9 @@ public static class NativeMessageTag
 
         LevelRequest = 62,
 
-        PlayerRepDamage = 64,
-
         PlayerVoiceChat = 67,
 
         PermissionCommandRequest = 68,
-
-        PlayerRepTeleport = 69,
 
         ModInfoRequest = 77,
         ModInfoResponse = 78,

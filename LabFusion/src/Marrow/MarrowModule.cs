@@ -70,10 +70,12 @@ public class MarrowModule : Module
 
         ModuleMessageManager.RegisterHandler<PhysicsRigStateMessage>();
         ModuleMessageManager.RegisterHandler<RigAvatarMessage>();
+        ModuleMessageManager.RegisterHandler<RigDamageMessage>();
         ModuleMessageManager.RegisterHandler<RigGrabMessage>();
         ModuleMessageManager.RegisterHandler<RigPoseUpdateMessage>();
         ModuleMessageManager.RegisterHandler<RigReleaseMessage>();
         ModuleMessageManager.RegisterHandler<RigSeatMessage>();
+        ModuleMessageManager.RegisterHandler<RigTeleportMessage>();
 
         ModuleMessageManager.RegisterHandler<CrateSpawnerMessage>();
     }

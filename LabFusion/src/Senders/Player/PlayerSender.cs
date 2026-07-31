@@ -108,12 +108,13 @@ public static class PlayerSender
             return;
         }
 
-        var data = new PlayerRepTeleportData()
+        var data = new RigTeleportData()
         {
+            RigReference = new(target),
             Position = position,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepTeleport, new MessageRoute(target, NetworkChannel.Reliable));
+        MessageRelay.RelayModule<RigTeleportMessage, RigTeleportData>(data, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerDamage(byte target, Attack attack)
@@ -123,13 +124,15 @@ public static class PlayerSender
 
     public static void SendPlayerDamage(byte target, Attack attack, PlayerDamageReceiver.BodyPart part)
     {
-        var data = new PlayerRepDamageData()
+        // TODO: Make work for all owned rigs
+        var data = new RigDamageData()
         {
+            RigReference = new(target),
             Attack = new(attack),
             Part = part
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepDamage, new MessageRoute(target, NetworkChannel.Reliable));
+        MessageRelay.RelayModule<RigDamageMessage, RigDamageData>(data, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
     public static void SendPlayerMetadataRequest(byte smallID, string key, string value)
