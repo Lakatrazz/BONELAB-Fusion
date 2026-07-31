@@ -62,9 +62,11 @@ public class SpawnResponseMessage : NativeMessageHandler
         NetworkEntity newNetworkEntity = null;
         NetworkPropGhost propGhost = null;
 
-        if (!SpawnableBlacklist.IsClientSide(data.SpawnData.Barcode))
+        if (!SpawnableBlacklist.IsClientSide(spawnData.Barcode))
         {
             newNetworkEntity = CreateGhostNetworkEntity(owner, entityID, spawnData.SpawnSource, out propGhost);
+
+            InsertCatchupHook(newNetworkEntity, spawnData.Barcode, spawnData.SerializedTransform);
         }
 
         // Check for spawnable blacklist
@@ -235,12 +237,23 @@ public class SpawnResponseMessage : NativeMessageHandler
         // Create the network prop
         var newProp = new NetworkProp(networkEntity, marrowEntity);
 
-        // Insert the catchup hook for future users
+        CatchupManager.RequestEntityDataCatchup(new(networkEntity));
+    }
+
+    private static void InsertCatchupHook(NetworkEntity networkEntity, string barcode, SerializedTransform spawnTransform)
+    {
         networkEntity.OnEntityCreationCatchup += (entity, player) =>
         {
-            SpawnSender.SendCatchupSpawn(networkEntity.OwnerID, barcode, networkEntity.ID, new SerializedTransform(gameObject.transform), player, networkEntity.Source);
-        };
+            var transform = spawnTransform;
 
-        CatchupManager.RequestEntityDataCatchup(new(networkEntity));
+            var prop = entity.GetExtender<NetworkProp>();
+
+            if (prop != null)
+            {
+                transform = new SerializedTransform(prop.MarrowEntity.transform);
+            }
+
+            SpawnSender.SendCatchupSpawn(networkEntity.OwnerID, barcode, networkEntity.ID, transform, player, networkEntity.Source);
+        };
     }
 }
