@@ -99,13 +99,7 @@ public static class ModuleMessageManager
             {
                 var buffer = GetBuffer(bytes);
 
-                var payload = new ReceivedMessage()
-                {
-                    Route = received.Route,
-                    Sender = received.Sender,
-                    Bytes = buffer,
-                    IsServerHandled = received.IsServerHandled,
-                };
+                var payload = received.WithBuffer(buffer);
 
                 return handler.ProcessPreRelayMessage(payload);
             }
@@ -132,13 +126,7 @@ public static class ModuleMessageManager
             {
                 var buffer = GetBuffer(bytes);
 
-                var payload = new ReceivedMessage()
-                {
-                    Route = received.Route,
-                    Sender = received.Sender,
-                    Bytes = buffer,
-                    IsServerHandled = received.IsServerHandled,
-                };
+                var payload = received.WithBuffer(buffer);
 
                 handler.StartHandlingMessage(payload);
             }

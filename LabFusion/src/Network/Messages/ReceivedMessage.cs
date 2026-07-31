@@ -46,4 +46,21 @@ public struct ReceivedMessage
 
         return data;
     }
+
+    /// <summary>
+    /// Returns a copy of the received message with a different byte buffer.
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns></returns>
+    public ReceivedMessage WithBuffer(byte[] buffer)
+    {
+        return new ReceivedMessage()
+        {
+            Route = Route,
+            Sender = Sender,
+            PlatformID = PlatformID,
+            Bytes = buffer,
+            IsServerHandled = IsServerHandled,
+        };
+    }
 }
