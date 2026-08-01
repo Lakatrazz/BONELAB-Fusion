@@ -1,6 +1,7 @@
 name: Feature Request
 description: Request a new feature for the mod
-title: '[Enhancement]: '
+title: "[Enhancement]: "
+labels: ["enhancement"]
 body:
   - type: textarea
     id: description
