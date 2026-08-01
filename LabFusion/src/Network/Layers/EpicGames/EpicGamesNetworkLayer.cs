@@ -12,8 +12,7 @@ namespace LabFusion.Network;
 // TODO:
 // Try fixing server trying to handle a few left over messages when kicking somebody from server
 // Fix stuttery voice
-// Handle when joining a lobby fails
-// Remove lobby stuff. Only use lobby for matchmaking   
+// EOS on its own thread (?)
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -162,10 +161,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void StartServer()
     {
-        Runtime.P2P.RegisterHostNotifications();
-        
-        Runtime.Lobby.CreateLobby(OnFailed);
-        Runtime.P2P.AddConnectedPeer(LocalUserId);
+        Runtime.Lobby.CreateLobby();
+        Runtime.P2P.ConnectSelf();
         
         _isServerActive = true;
         _isConnectionActive = true;
@@ -173,11 +170,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
         InternalServerHelpers.OnStartServer();
 
         RefreshServerCode();
-
-        void OnFailed()
-        {
-            Disconnect();
-        }
     }
     
     internal void JoinServer(EpicLobby epicLobby)
@@ -193,25 +185,16 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (_isConnectionActive || _isServerActive)
             Disconnect();
         
-        Runtime.P2P.RegisterClientNotifications();
-        Runtime.P2P.OnConnected += OnConnected;
-        
-        Runtime.Lobby.JoinLobby(epicLobby, OnFailed);
-        Runtime.P2P.Connect(epicLobby.Owner);
+        Runtime.Lobby.CurrentLobby = epicLobby;
+        Runtime.P2P.Connect(epicLobby.Owner, Connected);
         
         _isServerActive = false;
         _isConnectionActive = true;
 
-        void OnConnected(ProductUserId remoteUserId)
+        void Connected()
         {
-            Runtime.P2P.OnConnected = null;
             _joinInProgress = false;
             ConnectionSender.SendConnectionRequest();
-        }
-
-        void OnFailed()
-        {
-            Disconnect();
         }
     }
 
@@ -222,10 +205,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
         
         _joinInProgress = false;
         
-        Runtime.P2P.UnregisterAllNotifications();
-        Runtime.P2P.OnConnected = null;
-        
-        Runtime.Lobby.LeaveLobby();
+        if (_isServerActive)
+        {
+            Runtime.Lobby.DestroyLobby();
+        }
         Runtime.P2P.Disconnect();
         
         _isServerActive = false;

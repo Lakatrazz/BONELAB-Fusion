@@ -54,7 +54,7 @@ internal class EOSP2PReceiver
                 SocketId socketId = P2P.SocketId;
 
                 var result = P2P.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref socketId, out byte channel, new ArraySegment<byte>(buffer, 0, (int)packetSize), out uint bytesWritten);
-                if (result == Result.Success && bytesWritten > 0 && peerId != null && P2P.IsPeerConnected(peerId))
+                if (result == Result.Success && bytesWritten > 0 && peerId != null)
                 {
                     ProcessPacket(buffer, (int)bytesWritten, peerId, channel == ServerChannel);
                     buffer = null;

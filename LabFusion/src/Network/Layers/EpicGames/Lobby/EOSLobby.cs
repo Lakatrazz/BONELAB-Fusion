@@ -10,10 +10,6 @@ internal class EOSLobby : EOSInterface
     internal LobbyInterface LobbyInterface;
     internal ProductUserId LocalUserId;
     internal EpicLobby CurrentLobby;
-
-    private bool joinInProgress;
-    private const float joinTimeout = 30f;
-    private CancellationTokenSource joinTimeoutCts;
     
     internal EOSLobby(EOSRuntime eosRuntime, LobbyInterface lobbyInterface, ProductUserId localUserId)
     {
@@ -22,7 +18,7 @@ internal class EOSLobby : EOSInterface
         LocalUserId = localUserId;
     }
 
-    internal void CreateLobby(Action onFailed)
+    internal void CreateLobby()
     {
         var createLobbyOptions = new CreateLobbyOptions
         {
@@ -40,10 +36,17 @@ internal class EOSLobby : EOSInterface
         
         LobbyInterface.CreateLobby(ref createLobbyOptions, null, (ref CreateLobbyCallbackInfo info) =>
         {
+            if (info.ResultCode == Result.TimedOut)
+            {
+                FusionLogger.Warn("Lobby creation timed out, retrying...");
+                CreateLobby();
+                return;
+            }
+            
             if (info.ResultCode != Result.Success)
             {
                 FusionLogger.Error($"Failed to create EOS lobby: {info.ResultCode}");
-                onFailed?.Invoke();
+                NetworkHelper.Disconnect();
                 return;
             }
             
@@ -57,7 +60,7 @@ internal class EOSLobby : EOSInterface
             if (result != Result.Success || lobbyDetails == null)
             {
                 FusionLogger.Error($"Failed to copy lobby details handle: {result}");
-                onFailed?.Invoke();
+                NetworkHelper.Disconnect();
                 return;
             }
             
@@ -68,137 +71,35 @@ internal class EOSLobby : EOSInterface
         });
     }
 
-    internal void JoinLobby(EpicLobby epicLobby, Action onFailed)
+    internal void DestroyLobby()
     {
-        // Idiot proof the join button
-        if (joinInProgress)
-        {
-            FusionLogger.Warn("Join lobby already in progress");
-            return;
-        }
-
-        var joinLobbyOptions = new JoinLobbyOptions
-        {
-            CrossplayOptOut = false,
-            LobbyDetailsHandle = epicLobby.LobbyDetails,
-            LocalUserId = LocalUserId,
-            PresenceEnabled = false,
-        };
-
-        joinTimeoutCts = new CancellationTokenSource();
-        var token = joinTimeoutCts.Token;
-
-        LobbyInterface.JoinLobby(ref joinLobbyOptions, null, (ref JoinLobbyCallbackInfo info) =>
-        {
-            if (token.IsCancellationRequested)
-                return;
-
-            CancelJoinTimeout();
-
-            if (info.ResultCode != Result.Success)
-            {
-                FusionLogger.Error($"Failed to join EOS lobby: {info.ResultCode}");
-                NetworkHelper.Disconnect();
-                CurrentLobby = null;
-                onFailed?.Invoke();
-            }
-
-            joinInProgress = false;
-        });
-
-        CurrentLobby = epicLobby;
-        joinInProgress = true;
-
-        StartJoinTimeout(token, onFailed);
-    }
-
-    private async void StartJoinTimeout(CancellationToken token, Action onFailed)
-    {
-        try
-        {
-            await Task.Delay(TimeSpan.FromSeconds(joinTimeout), token);
-        }
-        catch (TaskCanceledException)
-        {
-            return;
-        }
-
-        if (token.IsCancellationRequested || !joinInProgress)
-            return;
-
-        FusionLogger.Error($"Join lobby timed out after {joinTimeout} seconds");
-
-        joinInProgress = false;
-        CurrentLobby = null;
-        NetworkHelper.Disconnect();
-        onFailed?.Invoke();
-    }
-
-    private void CancelJoinTimeout()
-    {
-        joinTimeoutCts?.Cancel();
-        joinTimeoutCts?.Dispose();
-        joinTimeoutCts = null;
-    }
-
-    internal void LeaveLobby()
-    {
-        if (joinInProgress)
-        {
-            FusionLogger.Warn("Cannot leave lobby while join is in progress");
-            return;
-        }
-
         if (CurrentLobby == null)
         {
             FusionLogger.Warn("No current lobby to leave");
             return;
         }
+        
+        if (CurrentLobby.Owner != LocalUserId)
+        {
+            FusionLogger.Warn("Cannot destroy lobby, not the owner");
+            return;
+        }
 
-        if (CurrentLobby.Owner == LocalUserId)
+        var destroyLobbyOptions = new DestroyLobbyOptions
         {
-            Destroy();
-        }
-        else
+            LocalUserId = LocalUserId,
+            LobbyId = CurrentLobby.LobbyID
+        };
+            
+        LobbyInterface.DestroyLobby(ref destroyLobbyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
         {
-            Leave();
-        }
+            if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound)
+            {
+                FusionLogger.Error($"Failed to destroy lobby: {info.ResultCode}");
+            }
+        });
         
         CurrentLobby = null;
-
-        void Destroy()
-        {
-            var destroyLobbyOptions = new DestroyLobbyOptions
-            {
-                LocalUserId = LocalUserId,
-                LobbyId = CurrentLobby.LobbyID
-            };
-            
-            LobbyInterface.DestroyLobby(ref destroyLobbyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
-            {
-                if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound)
-                {
-                    FusionLogger.Error($"Failed to destroy lobby: {info.ResultCode}");
-                }
-            });
-        }
-        
-        void Leave()
-        {
-            var leaveLobbyOptions = new LeaveLobbyOptions
-            {
-                LocalUserId = LocalUserId,
-                LobbyId = CurrentLobby.LobbyID
-            };
-            
-            LobbyInterface.LeaveLobby(ref leaveLobbyOptions, null, (ref LeaveLobbyCallbackInfo info) =>
-            {
-                if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound)
-                {
-                    FusionLogger.Error($"Failed to leave lobby: {info.ResultCode}");
-                }
-            });
-        }
     }
 
     // Why this doesnt just fucking use LobbyDetails is beyond me

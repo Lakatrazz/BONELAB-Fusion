@@ -3,7 +3,6 @@ using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
 using LabFusion.Player;
 using LabFusion.Senders;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -13,13 +12,11 @@ internal class EOSP2P : EOSInterface
     internal P2PInterface P2PInterface;
     internal ProductUserId LocalUserId;
     internal SocketId SocketId { get; } = new() { SocketName = "Fusion" };
-    internal Action<ProductUserId> OnConnected;
 
     internal EOSBufferPool BufferPool;
     internal EOSP2PSender Sender;
     internal EOSP2PReceiver Receiver;
     internal HashSet<ProductUserId> ConnectedPeers = new HashSet<ProductUserId>(64);
-    internal HashSet<ProductUserId> PendingPeers = new HashSet<ProductUserId>(64);
     
     internal ulong ConnectionRequestedId = Common.INVALID_NOTIFICATIONID;
     internal ulong ConnectionEstablishedId = Common.INVALID_NOTIFICATIONID;
@@ -48,185 +45,120 @@ internal class EOSP2P : EOSInterface
         yield return null;
     }
 
-    internal void Connect(ProductUserId remoteUserId)
+    internal void Connect(ProductUserId remoteUserId, Action onConnected)
     {
-        if (IsPeerConnected(remoteUserId))
+        RemoveAllPeerNotifications();
+        
+        var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
         {
-            FusionLogger.Log($"Already connected to {remoteUserId}");
-            return;
-        }
-
-        if (!AddPendingPeer(remoteUserId))
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionEstablishedId = P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, (ref OnPeerConnectionEstablishedInfo info) =>
         {
-            FusionLogger.Log($"Connection attempt already in progress for {remoteUserId}");
-            return;
-        }
-
+            onConnected?.Invoke();
+        });
+        
+        var closedOptions = new AddNotifyPeerConnectionClosedOptions
+        {
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, (ref OnRemoteConnectionClosedInfo info) =>
+        {
+            NetworkHelper.Disconnect();
+        });
+        
         // EOS is weird
         // Send a dummy packet to establish a connection
         Sender.Send(remoteUserId, new byte[] { 0 }, NetworkChannel.Reliable, false);
     }
 
-    internal void ConnectUser(ProductUserId remoteUserId)
+    // For the host to register connection notifications and add themselves to ConnectedPeers
+    internal void ConnectSelf()
     {
-        if (IsPeerConnected(remoteUserId))
-        {
-            FusionLogger.Log($"Already connected to {remoteUserId}");
-            return;
-        }
-
-        if (!AddPendingPeer(remoteUserId))
-        {
-            FusionLogger.Log($"Connection attempt already in progress for {remoteUserId}");
-            return;
-        }
+        RemoveAllPeerNotifications();
         
-        var options = new AcceptConnectionOptions { LocalUserId = LocalUserId, RemoteUserId = remoteUserId, SocketId = SocketId };
-        P2PInterface.AcceptConnection(ref options);
+        var requestOptions = new AddNotifyPeerConnectionRequestOptions()
+        {
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionRequestedId = P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo  info) =>
+        {
+            var options = new AcceptConnectionOptions { LocalUserId = LocalUserId, RemoteUserId = info.RemoteUserId, SocketId = SocketId };
+            P2PInterface.AcceptConnection(ref options);
+        });
+        
+        var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
+        {
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionEstablishedId = P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, (ref OnPeerConnectionEstablishedInfo info) =>
+        {
+            ConnectedPeers.Add(info.RemoteUserId);
+        });
+        
+        var closedOptions = new AddNotifyPeerConnectionClosedOptions
+        {
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, (ref OnRemoteConnectionClosedInfo info) =>
+        {
+            ConnectedPeers.Remove(info.RemoteUserId);
+            
+            var remoteUserId = info.RemoteUserId.ToString();
+            if (PlayerIDManager.HasPlayerID(remoteUserId))
+            {
+                InternalServerHelpers.OnPlayerLeft(remoteUserId);
+                ConnectionSender.SendDisconnect(remoteUserId);
+            }
+        });
+        
+        ConnectedPeers.Add(LocalUserId);
     }
 
+    // Can be called as host or client. Kills all p2p connections
     internal void Disconnect()
     {
-        ClearConnectedPeers();
+        RemoveAllPeerNotifications();
         var closeConnectionsOptions = new CloseConnectionsOptions { LocalUserId = LocalUserId, SocketId = SocketId };
         P2PInterface.CloseConnections(ref closeConnectionsOptions);
+        ConnectedPeers.Clear();
     }
     
+    // Can only be run as host. Kills the connection to a specific user.
     internal void DisconnectUser(ProductUserId remoteUserId)
     {
         var closeConnectionOptions = new CloseConnectionOptions { LocalUserId = LocalUserId, RemoteUserId = remoteUserId, SocketId = SocketId };
         P2PInterface.CloseConnection(ref closeConnectionOptions);
     }
-    
-    internal bool AddConnectedPeer(ProductUserId remoteUserId) => ConnectedPeers.Add(remoteUserId);
-    
-    internal bool RemoveConnectedPeer(ProductUserId remoteUserId) => ConnectedPeers.Remove(remoteUserId);
-    
-    internal bool AddPendingPeer(ProductUserId remoteUserId) => PendingPeers.Add(remoteUserId);
-    
-    internal bool RemovePendingPeer(ProductUserId remoteUserId) => PendingPeers.Remove(remoteUserId);
-    
-    internal void ClearConnectedPeers()
-    {
-        ConnectedPeers.Clear();
-        PendingPeers.Clear();
-    }
-    
-    internal bool IsPeerConnected(ProductUserId remoteUserId) => ConnectedPeers.Contains(remoteUserId);
-    
-    internal void OnConnectionRequestedAsHost(ref OnIncomingConnectionRequestInfo info)
-    {
-        ConnectUser(info.RemoteUserId);
-    }
-    
-    internal void OnConnectionEstablishedAsClient(ref OnPeerConnectionEstablishedInfo info)
-    {
-        RemovePendingPeer(info.RemoteUserId);
-        AddConnectedPeer(info.RemoteUserId);
-        OnConnected?.Invoke(info.RemoteUserId);
-    }
-    
-    internal void OnConnectionEstablishedAsHost(ref OnPeerConnectionEstablishedInfo info)
-    {
-        RemovePendingPeer(info.RemoteUserId);
-        AddConnectedPeer(info.RemoteUserId);
-        OnConnected?.Invoke(info.RemoteUserId);
-    }
-    
-    internal void OnConnectionClosedAsClient(ref OnRemoteConnectionClosedInfo info)
-    {
-        RemovePendingPeer(info.RemoteUserId);
-        RemoveConnectedPeer(info.RemoteUserId);
-        NetworkHelper.Disconnect();
-    }
-    
-    internal void OnConnectionClosedAsHost(ref OnRemoteConnectionClosedInfo info)
-    {
-        RemovePendingPeer(info.RemoteUserId);
-        RemoveConnectedPeer(info.RemoteUserId);
-        DisconnectUser(info.RemoteUserId);
 
-        var remoteId = info.RemoteUserId.ToString();
-        if (PlayerIDManager.HasPlayerID(remoteId))
+    internal void RemoveAllPeerNotifications()
+    {
+        if (ConnectionRequestedId != Common.INVALID_NOTIFICATIONID)
         {
-            InternalServerHelpers.OnPlayerLeft(remoteId);
-            ConnectionSender.SendDisconnect(remoteId);
+            P2PInterface.RemoveNotifyPeerConnectionRequest(ConnectionRequestedId);
+            ConnectionRequestedId = Common.INVALID_NOTIFICATIONID;
         }
-    }
-    
-    internal void RegisterHostNotifications()
-    {
-        UnregisterAllNotifications();
         
-        var requestOptions = new AddNotifyPeerConnectionRequestOptions
+        if (ConnectionEstablishedId != Common.INVALID_NOTIFICATIONID)
         {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
-        };
-
-        ConnectionRequestedId = P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, OnConnectionRequestedAsHost);
-        
-        var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
-        {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
-        };
-
-        ConnectionEstablishedId = P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, OnConnectionEstablishedAsHost);
-        
-        var closedOptions = new AddNotifyPeerConnectionClosedOptions
-        {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
-        };
-
-        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, OnConnectionClosedAsHost);
-    }
-    
-    internal void RegisterClientNotifications()
-    {
-        UnregisterAllNotifications();
-        
-        var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
-        {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
-        };
-
-        ConnectionEstablishedId = P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, OnConnectionEstablishedAsClient);
-        
-        var closedOptions = new AddNotifyPeerConnectionClosedOptions
-        {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
-        };
-
-        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, OnConnectionClosedAsClient);
-    }
-    
-    internal void UnregisterAllNotifications()
-    {
-        UnregisterNotification(ref ConnectionRequestedId, P2PInterface.RemoveNotifyPeerConnectionRequest);
-        UnregisterNotification(ref ConnectionEstablishedId, P2PInterface.RemoveNotifyPeerConnectionEstablished);
-        UnregisterNotification(ref ConnectionClosedId, P2PInterface.RemoveNotifyPeerConnectionClosed);
-    }
-
-    private void UnregisterNotification(ref ulong notificationId, Action<ulong> removeAction)
-    {
-        if (notificationId == Common.INVALID_NOTIFICATIONID)
-            return;
-
-        try
-        {
-            removeAction(notificationId);
+            P2PInterface.RemoveNotifyPeerConnectionEstablished(ConnectionEstablishedId);
+            ConnectionEstablishedId = Common.INVALID_NOTIFICATIONID;
         }
-        catch (Exception ex)
+        
+        if (ConnectionClosedId != Common.INVALID_NOTIFICATIONID)
         {
-            FusionLogger.LogException("removing P2P notification", ex);
-        }
-        finally
-        {
-            notificationId = Common.INVALID_NOTIFICATIONID;
+            P2PInterface.RemoveNotifyPeerConnectionClosed(ConnectionClosedId);
+            ConnectionClosedId = Common.INVALID_NOTIFICATIONID;
         }
     }
 }
