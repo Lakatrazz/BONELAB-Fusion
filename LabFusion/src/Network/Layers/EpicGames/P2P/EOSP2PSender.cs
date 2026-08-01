@@ -125,7 +125,7 @@ internal class EOSP2PSender
     {
         return channel switch
         {
-            NetworkChannel.Reliable => PacketReliability.ReliableOrdered,
+            NetworkChannel.Reliable => PacketReliability.ReliableUnordered,
             _ => PacketReliability.UnreliableUnordered,
         };
     }

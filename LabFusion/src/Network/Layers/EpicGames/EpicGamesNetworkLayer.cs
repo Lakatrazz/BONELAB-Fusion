@@ -11,7 +11,8 @@ namespace LabFusion.Network;
 
 // TODO:
 // Try fixing server trying to handle a few left over messages when kicking somebody from server
-// Redo creds for release, again
+// Fix stuttery voice
+// Handle when joining a lobby fails
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -99,7 +100,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override void OnUpdateLayer()
     {
-        Runtime.P2P.Receiver.Receive();
+        if (_isConnectionActive)
+        {
+            Runtime.P2P.Receiver.Receive();
+        }
     }
 
     // This method doesn't actually get used anywhere in fusion. However, the steam layer uses it for setting the local username.
@@ -195,7 +199,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
         void OnConnected(ProductUserId remoteUserId)
         {
-            Runtime.P2P.OnConnected -= OnConnected;
+            Runtime.P2P.OnConnected = null;
             _joinInProgress = false;
             ConnectionSender.SendConnectionRequest();
         }

@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
 using LabFusion.Utilities;
@@ -11,8 +10,7 @@ internal class EOSP2PReceiver
     private const byte ServerChannel = 2;
     private const byte ClientChannel = 1;
 
-    private const int MaxMessagesPerFrame = 128;
-    private const long ReceiveBudgetMs = 3;
+    private const int MaxMessagesPerFrame = 4096;
 
     internal EOSP2P P2P;
     private readonly FragmentAssembler _assembler = new();
@@ -38,33 +36,34 @@ internal class EOSP2PReceiver
             RequestedChannel = null
         };
 
-        long startedTicks = Stopwatch.GetTimestamp();
-        long budgetTicks = Stopwatch.Frequency * ReceiveBudgetMs / 1000;
-
         for (int i = 0; i < MaxMessagesPerFrame; i++)
         {
             if (P2P.P2PInterface.GetNextReceivedPacketSize(ref getPacketSizeOptions, out uint packetSize) != Result.Success || packetSize == 0)
+            {
                 break;
-
-            var buffer = ArrayPool<byte>.Shared.Rent((int)packetSize);
-            receiveOptions.MaxDataSizeBytes = packetSize;
-
-            ProductUserId peerId = null;
-            SocketId socketId = P2P.SocketId;
-
-            var result = P2P.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref socketId, out byte channel, new ArraySegment<byte>(buffer, 0, (int)packetSize), out uint bytesWritten);
-
-            if (result == Result.Success && bytesWritten > 0 && peerId != null && P2P.IsPeerConnected(peerId))
-            {
-                ProcessPacket(buffer, (int)bytesWritten, peerId, channel == ServerChannel);
-            }
-            else
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
             }
 
-            if (Stopwatch.GetTimestamp() - startedTicks >= budgetTicks)
-                break;
+            byte[] buffer = ArrayPool<byte>.Shared.Rent((int)packetSize);
+
+            try
+            {
+                receiveOptions.MaxDataSizeBytes = packetSize;
+
+                ProductUserId peerId = null;
+                SocketId socketId = P2P.SocketId;
+
+                var result = P2P.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref socketId, out byte channel, new ArraySegment<byte>(buffer, 0, (int)packetSize), out uint bytesWritten);
+                if (result == Result.Success && bytesWritten > 0 && peerId != null && P2P.IsPeerConnected(peerId))
+                {
+                    ProcessPacket(buffer, (int)bytesWritten, peerId, channel == ServerChannel);
+                    buffer = null;
+                }
+            }
+            finally
+            {
+                if (buffer != null)
+                    ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
     }
 
