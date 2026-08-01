@@ -10,14 +10,15 @@ internal class EOSP2PReceiver
     private const byte ServerChannel = 2;
     private const byte ClientChannel = 1;
 
-    private const int MaxMessagesPerFrame = 4096;
+    private const int MaxMessagesPerFrame = 512;
 
     internal EOSP2P P2P;
-    private readonly FragmentAssembler _assembler = new();
+    private readonly FragmentAssembler _assembler;
 
     internal EOSP2PReceiver(EOSP2P p2p)
     {
         P2P = p2p;
+        _assembler = new FragmentAssembler(P2P.BufferPool);
     }
 
     internal void Receive()
@@ -42,8 +43,8 @@ internal class EOSP2PReceiver
             {
                 break;
             }
-
-            byte[] buffer = ArrayPool<byte>.Shared.Rent((int)packetSize);
+            
+            byte[] buffer = P2P.BufferPool.Rent((int)packetSize);
 
             try
             {
@@ -62,7 +63,7 @@ internal class EOSP2PReceiver
             finally
             {
                 if (buffer != null)
-                    ArrayPool<byte>.Shared.Return(buffer);
+                    P2P.BufferPool.Return(buffer);
             }
         }
     }
@@ -87,7 +88,7 @@ internal class EOSP2PReceiver
                     }
                     finally
                     {
-                        ArrayPool<byte>.Shared.Return(completedBuffer);
+                        P2P.BufferPool.Return(completedBuffer);
                     }
                 }
             }
@@ -106,7 +107,7 @@ internal class EOSP2PReceiver
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(rawBuffer);
+            P2P.BufferPool.Return(rawBuffer);
         }
     }
 }

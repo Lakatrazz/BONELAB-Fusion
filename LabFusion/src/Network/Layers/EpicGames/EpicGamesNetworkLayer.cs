@@ -13,6 +13,7 @@ namespace LabFusion.Network;
 // Try fixing server trying to handle a few left over messages when kicking somebody from server
 // Fix stuttery voice
 // Handle when joining a lobby fails
+// Remove lobby stuff. Only use lobby for matchmaking   
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -163,16 +164,20 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         Runtime.P2P.RegisterHostNotifications();
         
-        Runtime.Lobby.CreateLobby();
+        Runtime.Lobby.CreateLobby(OnFailed);
+        Runtime.P2P.AddConnectedPeer(LocalUserId);
         
         _isServerActive = true;
         _isConnectionActive = true;
         
-        Runtime.P2P.AddConnectedPeer(LocalUserId);
-        
         InternalServerHelpers.OnStartServer();
 
         RefreshServerCode();
+
+        void OnFailed()
+        {
+            Disconnect();
+        }
     }
     
     internal void JoinServer(EpicLobby epicLobby)
@@ -191,7 +196,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
         Runtime.P2P.RegisterClientNotifications();
         Runtime.P2P.OnConnected += OnConnected;
         
-        Runtime.Lobby.JoinLobby(epicLobby);
+        Runtime.Lobby.JoinLobby(epicLobby, OnFailed);
         Runtime.P2P.Connect(epicLobby.Owner);
         
         _isServerActive = false;
@@ -202,6 +207,11 @@ public class EpicGamesNetworkLayer : NetworkLayer
             Runtime.P2P.OnConnected = null;
             _joinInProgress = false;
             ConnectionSender.SendConnectionRequest();
+        }
+
+        void OnFailed()
+        {
+            Disconnect();
         }
     }
 

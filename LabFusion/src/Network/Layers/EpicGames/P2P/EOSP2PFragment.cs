@@ -60,6 +60,13 @@ internal class FragmentAssembler
     private const long ExpiryDurationTicks = 10 * 10_000_000L;
     private const long CleanupIntervalTicks = 15 * 10_000_000L;
 
+    private EOSBufferPool _bufferPool;
+    
+    internal FragmentAssembler(EOSBufferPool bufferPool)
+    {
+        _bufferPool = bufferPool;
+    }
+
     internal bool TryAssemble(string senderId, ReadOnlySpan<byte> packetData, out byte[] completedBuffer, out int completedSize)
     {
         completedBuffer = null;
@@ -83,7 +90,7 @@ internal class FragmentAssembler
             {
                 assembly = new ActiveAssembly
                 {
-                    Buffer = ArrayPool<byte>.Shared.Rent(totalLength),
+                    Buffer = _bufferPool.Rent(totalLength),
                     TotalLength = totalLength,
                     TotalFragments = total,
                     ReceivedCount = 0,
@@ -99,7 +106,7 @@ internal class FragmentAssembler
             
             if (writeOffset < 0 || writeOffset + payloadLength > assembly.TotalLength)
             {
-                ArrayPool<byte>.Shared.Return(assembly.Buffer);
+                _bufferPool.Return(assembly.Buffer);
                 _assemblies.Remove(key);
                 return false;
             }
@@ -145,7 +152,7 @@ internal class FragmentAssembler
             {
                 if (_assemblies.TryGetValue(key, out var assembly))
                 {
-                    ArrayPool<byte>.Shared.Return(assembly.Buffer);
+                    _bufferPool.Return(assembly.Buffer);
                     _assemblies.Remove(key);
                 }
             }

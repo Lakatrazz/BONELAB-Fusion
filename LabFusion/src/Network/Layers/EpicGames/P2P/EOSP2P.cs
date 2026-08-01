@@ -15,6 +15,7 @@ internal class EOSP2P : EOSInterface
     internal SocketId SocketId { get; } = new() { SocketName = "Fusion" };
     internal Action<ProductUserId> OnConnected;
 
+    internal EOSBufferPool BufferPool;
     internal EOSP2PSender Sender;
     internal EOSP2PReceiver Receiver;
     internal HashSet<ProductUserId> ConnectedPeers = new HashSet<ProductUserId>(64);
@@ -30,6 +31,7 @@ internal class EOSP2P : EOSInterface
         P2PInterface = p2pInterface;
         LocalUserId = localUserId;
         
+        BufferPool = new EOSBufferPool();
         Sender = new EOSP2PSender(this);
         Receiver = new EOSP2PReceiver(this);
     }

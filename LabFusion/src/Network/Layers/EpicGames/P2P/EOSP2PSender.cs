@@ -41,7 +41,7 @@ internal class EOSP2PSender
     private Result SendSingle(ProductUserId remoteUserId, byte[] payload, PacketReliability reliability, byte targetChannel)
     {
         int packetSize = payload.Length + FragmentHeader.KindPrefixSize;
-        byte[] packetBuffer = ArrayPool<byte>.Shared.Rent(packetSize);
+        byte[] packetBuffer = P2P.BufferPool.Rent(packetSize);
 
         try
         {
@@ -64,7 +64,7 @@ internal class EOSP2PSender
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(packetBuffer);
+            P2P.BufferPool.Return(packetBuffer);
         }
     }
 
@@ -97,7 +97,7 @@ internal class EOSP2PSender
             int fragmentLength = System.Math.Min(MaxDataPerFragment, payload.Length - offset);
             int packetSize = FragmentHeader.HeaderSize + fragmentLength;
 
-            byte[] packetBuffer = ArrayPool<byte>.Shared.Rent(packetSize);
+            byte[] packetBuffer = P2P.BufferPool.Rent(packetSize);
             try
             {
                 FragmentHeader.Write(packetBuffer.AsSpan(), fragmentId, (ushort)i, (ushort)totalFragments, payload.Length);
@@ -114,7 +114,7 @@ internal class EOSP2PSender
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(packetBuffer);
+                P2P.BufferPool.Return(packetBuffer);
             }
         }
 

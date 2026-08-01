@@ -11,7 +11,9 @@ internal class EOSLobby : EOSInterface
     internal ProductUserId LocalUserId;
     internal EpicLobby CurrentLobby;
 
-    private bool joinInProgress = false;
+    private bool joinInProgress;
+    private const float joinTimeout = 30f;
+    private CancellationTokenSource joinTimeoutCts;
     
     internal EOSLobby(EOSRuntime eosRuntime, LobbyInterface lobbyInterface, ProductUserId localUserId)
     {
@@ -20,7 +22,7 @@ internal class EOSLobby : EOSInterface
         LocalUserId = localUserId;
     }
 
-    internal void CreateLobby()
+    internal void CreateLobby(Action onFailed)
     {
         var createLobbyOptions = new CreateLobbyOptions
         {
@@ -41,6 +43,7 @@ internal class EOSLobby : EOSInterface
             if (info.ResultCode != Result.Success)
             {
                 FusionLogger.Error($"Failed to create EOS lobby: {info.ResultCode}");
+                onFailed?.Invoke();
                 return;
             }
             
@@ -54,6 +57,7 @@ internal class EOSLobby : EOSInterface
             if (result != Result.Success || lobbyDetails == null)
             {
                 FusionLogger.Error($"Failed to copy lobby details handle: {result}");
+                onFailed?.Invoke();
                 return;
             }
             
@@ -64,7 +68,7 @@ internal class EOSLobby : EOSInterface
         });
     }
 
-    internal void JoinLobby(EpicLobby epicLobby)
+    internal void JoinLobby(EpicLobby epicLobby, Action onFailed)
     {
         // Idiot proof the join button
         if (joinInProgress)
@@ -72,7 +76,7 @@ internal class EOSLobby : EOSInterface
             FusionLogger.Warn("Join lobby already in progress");
             return;
         }
-        
+
         var joinLobbyOptions = new JoinLobbyOptions
         {
             CrossplayOptOut = false,
@@ -80,21 +84,61 @@ internal class EOSLobby : EOSInterface
             LocalUserId = LocalUserId,
             PresenceEnabled = false,
         };
-        
+
+        joinTimeoutCts = new CancellationTokenSource();
+        var token = joinTimeoutCts.Token;
+
         LobbyInterface.JoinLobby(ref joinLobbyOptions, null, (ref JoinLobbyCallbackInfo info) =>
         {
+            if (token.IsCancellationRequested)
+                return;
+
+            CancelJoinTimeout();
+
             if (info.ResultCode != Result.Success)
             {
                 FusionLogger.Error($"Failed to join EOS lobby: {info.ResultCode}");
                 NetworkHelper.Disconnect();
                 CurrentLobby = null;
+                onFailed?.Invoke();
             }
 
             joinInProgress = false;
         });
-        
+
         CurrentLobby = epicLobby;
         joinInProgress = true;
+
+        StartJoinTimeout(token, onFailed);
+    }
+
+    private async void StartJoinTimeout(CancellationToken token, Action onFailed)
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(joinTimeout), token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        if (token.IsCancellationRequested || !joinInProgress)
+            return;
+
+        FusionLogger.Error($"Join lobby timed out after {joinTimeout} seconds");
+
+        joinInProgress = false;
+        CurrentLobby = null;
+        NetworkHelper.Disconnect();
+        onFailed?.Invoke();
+    }
+
+    private void CancelJoinTimeout()
+    {
+        joinTimeoutCts?.Cancel();
+        joinTimeoutCts?.Dispose();
+        joinTimeoutCts = null;
     }
 
     internal void LeaveLobby()
@@ -132,7 +176,7 @@ internal class EOSLobby : EOSInterface
             
             LobbyInterface.DestroyLobby(ref destroyLobbyOptions, null, (ref DestroyLobbyCallbackInfo info) =>
             {
-                if (info.ResultCode != Result.Success)
+                if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound)
                 {
                     FusionLogger.Error($"Failed to destroy lobby: {info.ResultCode}");
                 }
