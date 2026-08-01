@@ -1,6 +1,7 @@
 name: Bug Report
 description: Report a bug or problem with the mod
-title: '[Bug]: '
+title: "[Bug]: "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:

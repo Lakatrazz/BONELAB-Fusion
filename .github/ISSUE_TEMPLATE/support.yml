@@ -1,6 +1,7 @@
 name: Support
 description: Request support for an issue
-title: '[Support]: '
+title: "[Support]: "
+labels: ["support"]
 body:
   - type: markdown
     attributes:
