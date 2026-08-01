@@ -1,0 +1,68 @@
+name: Support
+description: Request support for an issue
+title: '[Support]: '
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Note: This repository is for the regular version of Fusion! The Epic
+        Online Services networking layer has not been merged yet. If you are
+        encountering issues with that version, please refer to [the Epic Online
+        Services version's
+        repository](https://github.com/Checkerb0ard/BONELAB-Fusion/tree/epic-games)
+        until it is merged.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: The platform you are encountering the issue on
+      options:
+        - PCVR
+        - Standalone Quest
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue you are experiencing
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Logs
+      description: Upload any log files from the mod, if possible
+  - type: markdown
+    attributes:
+      value: >-
+        If you do not know where you find your log file, follow the instructions
+        below:
+
+
+        ## Windows
+
+        1. In a file explorer, go to your game's root folder. It's the folder
+        that contains your Mods folder.
+
+        2. Open the MelonLoader folder.
+
+        3. Find the file called Latest or Latest.log.
+
+
+        ## Quest
+
+        1. In a file explorer, open the root of your Quest storage (where
+        Android, Alarms, Download, etc are located).
+
+        2. Open the MelonLoader folder, then com.StressLevelZero.BONELAB, then
+        the MelonLoader folder inside of it.
+
+        3. Find the file called Latest or Latest.log.
+  - type: textarea
+    id: upload
+    attributes:
+      label: Upload
+      description: >-
+        Upload any additional screenshots or videos to further demonstrate your
+        issue, if needed
