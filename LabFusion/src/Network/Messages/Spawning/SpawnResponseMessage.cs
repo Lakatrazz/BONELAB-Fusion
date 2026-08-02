@@ -253,7 +253,9 @@ public class SpawnResponseMessage : NativeMessageHandler
                 transform = new SerializedTransform(prop.MarrowEntity.transform);
             }
 
-            SpawnSender.SendCatchupSpawn(networkEntity.OwnerID, barcode, networkEntity.ID, transform, player, networkEntity.Source);
+            var owner = networkEntity.OwnerID ?? PlayerIDManager.LocalID;
+
+            SpawnSender.SendCatchupSpawn(owner.SmallID, barcode, networkEntity.ID, transform, player.SmallID, networkEntity.Source);
         };
     }
 }
