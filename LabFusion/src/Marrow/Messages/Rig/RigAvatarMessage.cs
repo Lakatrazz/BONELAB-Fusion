@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Rig;
+using LabFusion.Marrow.Data;
 using LabFusion.Network.Messages;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;

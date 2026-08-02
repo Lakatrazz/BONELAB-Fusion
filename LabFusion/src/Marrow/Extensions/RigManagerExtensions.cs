@@ -3,9 +3,6 @@ using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Entities;
-using LabFusion.Extensions;
-
 using MelonLoader;
 
 using System.Collections;

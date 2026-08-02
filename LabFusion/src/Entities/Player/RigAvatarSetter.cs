@@ -2,7 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.Downloading;
-using LabFusion.Extensions;
+using LabFusion.Marrow.Data;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Extensions;
 using LabFusion.Preferences.Client;
@@ -182,7 +182,7 @@ public class RigAvatarSetter
         float baseHeight = avatar.height;
         var baseScale = avatarTransform.localScale;
 
-        float newHeight = _stats.height;
+        float newHeight = _stats.Height;
 
         if (!Mathf.Approximately(baseHeight, newHeight))
         {
