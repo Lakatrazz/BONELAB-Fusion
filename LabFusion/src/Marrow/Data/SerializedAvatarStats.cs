@@ -54,29 +54,21 @@ public class SerializedAvatarStats : INetSerializable
 
         if (!Mathf.Approximately(armLengthMultiplier, 1f))
         {
-            avatar._armLength *= armLengthMultiplier;
-            avatar._armUpperLength *= armLengthMultiplier;
-            avatar._armLowerLength *= armLengthMultiplier;
+            MultiplyArmLength(avatar, armLengthMultiplier);
         }
 
         float legLengthMultiplier = LegLength / GetLegLength(avatar);
 
         if (!Mathf.Approximately(legLengthMultiplier, 1f)) 
         {
-            avatar._legUpperLength *= legLengthMultiplier;
-            avatar._legLowerLength *= legLengthMultiplier;
+            MultiplyLegLength(avatar, legLengthMultiplier);
         }
 
         float massMultiplier = MassCumulative / GetMassCumulative(avatar);
 
         if (!Mathf.Approximately(massMultiplier, 1f))
         {
-            avatar._massArm *= massMultiplier;
-            avatar._massChest *= massMultiplier;
-            avatar._massHead *= massMultiplier;
-            avatar._massLeg *= massMultiplier;
-            avatar._massPelvis *= massMultiplier;
-            avatar._massTotal *= massMultiplier;
+            MultiplyMass(avatar, massMultiplier);
         }
 
         avatar._agility = Agility;
@@ -144,6 +136,32 @@ public class SerializedAvatarStats : INetSerializable
         serializer.SerializeValue(ref StrengthUpper);
         serializer.SerializeValue(ref StrengthLower);
         serializer.SerializeValue(ref Vitality);
+    }
+
+    private static void MultiplyArmLength(Avatar avatar, float multiplier)
+    {
+        avatar._armLength *= multiplier;
+
+        avatar._armUpperLength *= multiplier;
+        avatar._armLowerLength *= multiplier;
+
+        avatar._shoulderToPalmPercent *= multiplier;
+    }
+
+    private static void MultiplyLegLength(Avatar avatar, float multiplier)
+    {
+        avatar._legUpperLength *= multiplier;
+        avatar._legLowerLength *= multiplier;
+    }
+
+    private static void MultiplyMass(Avatar avatar, float multiplier)
+    {
+        avatar._massArm *= multiplier;
+        avatar._massChest *= multiplier;
+        avatar._massHead *= multiplier;
+        avatar._massLeg *= multiplier;
+        avatar._massPelvis *= multiplier;
+        avatar._massTotal *= multiplier;
     }
 
     private static float GetHeight(Avatar avatar) => avatar.height;
