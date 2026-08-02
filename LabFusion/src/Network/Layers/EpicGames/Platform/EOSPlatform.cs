@@ -12,9 +12,9 @@ internal class EOSPlatform : EOSInterface
     private const string ProductVersion = "0.0.1";
     private const string ProductId = "29e074d5b4724f3bb01f26b7e33d2582";
     private const string ClientId = "xyza78915hKqxe2TNTavpq2sxBDvJ9AH";
-    private const string ClientSecret  = "4HJqOC7+zzdzWw8AsA4yvLe0Ea9CBco8PS+yzW/rhBE";
+    private const string ClientSecret  = "SWDxYlWWsEgvmD0o3qAm2RMZoSZzOfYo5yvX/uikH94";
     private const string SandboxId = "26f32d66d87f4dfeb4a7449b776a41f1";
-    private const string DeploymentId = "951363bef61a4b7cbd04902e570f80f1";
+    private const string DeploymentId = "f3fdf691aa6c4004abdb1e19665c1429";
     private const PlatformFlags Flags = PlatformFlags.DisableOverlay | PlatformFlags.DisableSocialOverlay;
     private const float TickInterval = 1f / 20f;
 

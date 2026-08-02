@@ -32,7 +32,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
     private bool _isServerActive;
     private bool _isConnectionActive;
     private string _serverCode = string.Empty;
-    private bool _joinInProgress;
     
     internal EOSRuntime Runtime;
     internal ProductUserId LocalUserId => Runtime.Connect.LocalUserId;
@@ -174,18 +173,8 @@ public class EpicGamesNetworkLayer : NetworkLayer
     
     internal void JoinServer(EpicLobby epicLobby)
     {
-        if (_joinInProgress)
-        {
-            FusionLogger.Warn("Join lobby already in progress");
-            return;
-        }
-        
-        _joinInProgress = true;
-        
         if (_isConnectionActive || _isServerActive)
             Disconnect();
-        
-        _joinInProgress = false;
         
         Runtime.Lobby.CurrentLobby = epicLobby;
         Runtime.P2P.AddClientPeerNotifications();
@@ -201,8 +190,6 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         if (!_isServerActive && !_isConnectionActive)
             return;
-        
-        _joinInProgress = false;
         
         if (_isServerActive)
         {
