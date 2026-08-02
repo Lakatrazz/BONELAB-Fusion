@@ -146,6 +146,12 @@ public static class RigManagerExtensions
 
     private static IEnumerator CoSwitchAvatarWithCallbacks(RigManager rigManager, AvatarSwitchInfo info, AvatarCrate crate, GameObject asset)
     {
+        // If the RigManager is currently changing avatars, wait for it to finish
+        while (rigManager != null && rigManager._avatarDirty)
+        {
+            yield return null;
+        }
+
         if (rigManager == null)
         {
             FailAvatarSwap();
