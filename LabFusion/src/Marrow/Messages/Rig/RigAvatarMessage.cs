@@ -7,6 +7,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.Safety;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
+using LabFusion.Senders;
 
 namespace LabFusion.Marrow.Messages;
 
@@ -30,7 +31,29 @@ public class RigAvatarData : INetSerializable
 
 public class RigAvatarMessage : ModuleMessageHandler
 {
-    protected override bool OnPreRelayMessage(ReceivedMessage received) => CommonMessageValidation.ValidateSenderOwnsEntity(received);
+    protected override bool OnPreRelayMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<RigAvatarData>();
+
+        var sender = received.Sender.Value;
+
+        if (!CommonMessageValidation.ValidateSenderOwnsEntity(data.RigReference, sender))
+        {
+            return false;
+        }
+
+        var platformID = received.PlatformID.Value;
+
+        // Invalid avatar stats indicates the user is trying to crash the game, whether intentionally or not
+        // Prevent the stats from being relayed and disconnect them
+        if (!data.Stats.IsValid())
+        {
+            ConnectionSender.SendDisconnect(platformID, "Invalid Avatar");
+            return false;
+        }
+
+        return true;
+    }
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

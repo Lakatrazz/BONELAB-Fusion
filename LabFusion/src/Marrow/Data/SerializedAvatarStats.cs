@@ -1,4 +1,5 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Marrow.Rig;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
@@ -85,6 +86,51 @@ public class SerializedAvatarStats : INetSerializable
         avatar._vitality = Vitality;
     }
 
+    public bool IsValid()
+    {
+        if (!ValidateStat(Height, AvatarStatLimits.MinHeight, AvatarStatLimits.MaxHeight))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(ArmLength, AvatarStatLimits.MinArmLength, AvatarStatLimits.MaxArmLength))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(LegLength, AvatarStatLimits.MinLegLength, AvatarStatLimits.MaxLegLength))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(MassCumulative, AvatarStatLimits.MinMass, AvatarStatLimits.MaxMass))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(Agility, AvatarStatLimits.MinAgility, AvatarStatLimits.MaxAgility))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(Speed, AvatarStatLimits.MinSpeed, AvatarStatLimits.MaxSpeed))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(StrengthUpper, AvatarStatLimits.MinStrengthUpper, AvatarStatLimits.MaxStrengthLower))
+        {
+            return false;
+        }
+
+        if (!ValidateStat(StrengthLower, AvatarStatLimits.MinStrengthLower, AvatarStatLimits.MaxStrengthLower))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref Height);
@@ -117,4 +163,24 @@ public class SerializedAvatarStats : INetSerializable
     private static float GetStrengthLower(Avatar avatar) => avatar.strengthLower;
 
     private static float GetVitality(Avatar avatar) => avatar.vitality;
+
+    private static bool ValidateStat(float value, float min, float max)
+    {
+        if (float.IsNaN(value))
+        {
+            return false;
+        }
+
+        if (value < min)
+        {
+            return false;
+        }
+
+        if (value > max)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
