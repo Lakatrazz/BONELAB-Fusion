@@ -6,6 +6,7 @@ using LabFusion.Extensions;
 using LabFusion.Marrow.Extensions;
 using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Rig;
+using LabFusion.Marrow.Data;
 using LabFusion.Math;
 using LabFusion.Math.Numerics;
 using LabFusion.Network;
