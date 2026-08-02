@@ -19,11 +19,11 @@ public static class DefaultRigAdditions
 {
     internal static void Initialize()
     {
-        RigAdditions.OnApplyRigAdditions += OnApplyRigAdditions;
-        RigAdditions.OnRemoveRigAdditions += OnRemoveRigAdditions;
+        RigAdditions.ApplyingRigAdditions += OnApplyRigAdditions;
+        RigAdditions.RemovingRigAdditions += OnRemoveRigAdditions;
 
-        RigAdditions.OnApplyLocalRigAdditions += OnApplyLocalRigAdditions;
-        RigAdditions.OnRemoveLocalRigAdditions += OnRemoveLocalRigAdditions;
+        RigAdditions.ApplyingLocalRigAdditions += OnApplyLocalRigAdditions;
+        RigAdditions.RemovingLocalRigAdditions += OnRemoveLocalRigAdditions;
 
         NetworkAvatarManager.OnNetworkPlayerAvatarChanged += OnNetworkPlayerAvatarChanged;
     }

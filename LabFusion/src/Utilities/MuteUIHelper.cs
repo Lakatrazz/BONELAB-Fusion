@@ -35,8 +35,8 @@ public static class MuteUIHelper
         RenderPipelineManager.beginCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
 
-        RigAdditions.OnApplyLocalRigAdditions += OnCreateMuteUI;
-        RigAdditions.OnRemoveLocalRigAdditions += OnDestroyMuteUI;
+        RigAdditions.ApplyingLocalRigAdditions += OnCreateMuteUI;
+        RigAdditions.RemovingLocalRigAdditions += OnDestroyMuteUI;
     }
 
     public static void OnDeinitializeMelon()
@@ -47,8 +47,8 @@ public static class MuteUIHelper
         RenderPipelineManager.beginCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
 
-        RigAdditions.OnApplyLocalRigAdditions -= OnCreateMuteUI;
-        RigAdditions.OnRemoveLocalRigAdditions -= OnDestroyMuteUI;
+        RigAdditions.ApplyingLocalRigAdditions -= OnCreateMuteUI;
+        RigAdditions.RemovingLocalRigAdditions -= OnDestroyMuteUI;
     }
 
     private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)

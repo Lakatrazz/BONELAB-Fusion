@@ -15,39 +15,59 @@ public static class RigAdditions
     /// <summary>
     /// Invoked when modifications for any rig are to be made.
     /// </summary>
-    public static event Action<RigManager> OnApplyRigAdditions;
+    public static event Action<RigManager> ApplyingRigAdditions;
 
     /// <summary>
     /// Invoked when modifications for any rig are to be removed.
     /// </summary>
-    public static event Action<RigManager> OnRemoveRigAdditions;
+    public static event Action<RigManager> RemovingRigAdditions;
 
     /// <summary>
     /// Invoked when modifications for specifically the local player are to be made.
     /// </summary>
-    public static event Action<RigManager> OnApplyLocalRigAdditions;
+    public static event Action<RigManager> ApplyingLocalRigAdditions;
 
     /// <summary>
     /// Invoked when modifications for specifically the local player are to be removed.
     /// </summary>
-    public static event Action<RigManager> OnRemoveLocalRigAdditions;
+    public static event Action<RigManager> RemovingLocalRigAdditions;
 
     /// <summary>
     /// Invoked when modifications for specifically net players are to be made.
     /// </summary>
-    public static event Action<RigManager> OnApplyNetRigAdditions;
+    public static event Action<RigManager> ApplyingNetRigAdditions;
 
     /// <summary>
     /// Invoked when modifications for specifically net players are to be removed.
     /// </summary>
-    public static event Action<RigManager> OnRemoveNetRigAdditions;
+    public static event Action<RigManager> RemovingNetRigAdditions;
 
     internal static void Initialize()
     {
-        MultiplayerHooking.OnJoinedServer += () => { ApplyLocalRigAdditions(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnStartedServer += () => { ApplyLocalRigAdditions(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnDisconnected += () => { RemoveLocalRigAdditions(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnJoinedServer += ApplyAdditions;
+        MultiplayerHooking.OnStartedServer += ApplyAdditions;
+        MultiplayerHooking.OnDisconnected += RemoveAdditions;
         LocalPlayer.OnLocalRigCreated += OnLocalRigCreated;
+
+        void ApplyAdditions()
+        {
+            if (!RigData.HasPlayer)
+            {
+                return;
+            }
+
+            ApplyLocalRigAdditions(RigData.Refs.RigManager);
+        }
+
+        void RemoveAdditions()
+        {
+            if (!RigData.HasPlayer)
+            {
+                return;
+            }
+
+            RemoveLocalRigAdditions(RigData.Refs.RigManager);
+        }
     }
 
     private static void OnLocalRigCreated(RigManager rigManager)
@@ -62,39 +82,39 @@ public static class RigAdditions
 
     public static void ApplyRigAdditions(RigManager rigManager)
     {
-        OnApplyRigAdditions?.Invoke(rigManager);
+        ApplyingRigAdditions?.Invoke(rigManager);
     }
 
     public static void RemoveRigAdditions(RigManager rigManager)
     {
-        OnRemoveRigAdditions?.Invoke(rigManager);
+        RemovingRigAdditions?.Invoke(rigManager);
     }
 
     public static void ApplyLocalRigAdditions(RigManager rigManager)
     {
         ApplyRigAdditions(rigManager);
 
-        OnApplyLocalRigAdditions?.Invoke(rigManager);
+        ApplyingLocalRigAdditions?.Invoke(rigManager);
     }
 
     public static void RemoveLocalRigAdditions(RigManager rigManager)
     {
         RemoveRigAdditions(rigManager);
 
-        OnRemoveLocalRigAdditions?.Invoke(rigManager);
+        RemovingLocalRigAdditions?.Invoke(rigManager);
     }
 
     public static void ApplyNetRigAdditions(RigManager rigManager)
     {
         ApplyRigAdditions(rigManager);
 
-        OnApplyNetRigAdditions?.Invoke(rigManager);
+        ApplyingNetRigAdditions?.Invoke(rigManager);
     }
 
     public static void RemoveNetRigAdditions(RigManager rigManager)
     {
         RemoveRigAdditions(rigManager);
 
-        OnRemoveNetRigAdditions?.Invoke(rigManager);
+        RemovingNetRigAdditions?.Invoke(rigManager);
     }
 }
