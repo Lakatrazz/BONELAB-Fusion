@@ -138,6 +138,15 @@ public class RigAvatarSetter
         }
     }
 
+    public void OnRefreshBodyMeasurements(Avatar avatar)
+    {
+        if (_stats == null)
+        {
+            return;
+        }
+
+        _stats.CopyTo(avatar);
+    }
 
     private void OnSwapAvatar(bool success)
     {
@@ -191,11 +200,6 @@ public class RigAvatarSetter
             var newScale = baseScale * (newHeight / baseHeight);
 
             avatarTransform.localScale = newScale;
-
-            avatar.PrecomputeAvatar();
-            avatar.RefreshBodyMeasurements();
         }
-
-        _stats.CopyTo(avatar);
     }
 }
