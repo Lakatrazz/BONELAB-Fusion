@@ -11,7 +11,6 @@ internal class EpicMatchmaker : IMatchmaker
 {
     private const int DefaultMaxResults = 200;
     private const int CodeSearchMaxResults = 1;
-    private const int SearchTimeoutSeconds = 30;
     
     internal EOSRuntime Runtime;
     internal ProductUserId LocalUserId;
@@ -95,8 +94,7 @@ internal class EpicMatchmaker : IMatchmaker
             searchComplete = true;
         });
         
-        var timeoutAt = DateTime.UtcNow.AddSeconds(SearchTimeoutSeconds);
-        while (!searchComplete && DateTime.UtcNow < timeoutAt)
+        while (!searchComplete)
             yield return null;
         
         if (!searchComplete)
