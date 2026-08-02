@@ -10,9 +10,8 @@ using MelonLoader;
 namespace LabFusion.Network;
 
 // TODO:
-// Try fixing server trying to handle a few left over messages when kicking somebody from server
-// Fix stuttery voice
-// EOS on its own thread (?)
+// Try fixing server trying to handle a few left over messages when kicking somebody from server (?)
+// Fix stuttery voice (test)
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     private const int ServerCodeLength = 8;
@@ -142,6 +141,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
     {
         var id = PlayerIDManager.GetPlayerID(userId);
+        
         if (id != null)
         {
             SendFromServer(id.PlatformID, channel, message);
@@ -162,7 +162,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     public override void StartServer()
     {
         Runtime.Lobby.CreateLobby();
-        Runtime.P2P.ConnectSelf();
+        Runtime.P2P.AddHostPeerNotifications();
         
         _isServerActive = true;
         _isConnectionActive = true;
@@ -185,17 +185,16 @@ public class EpicGamesNetworkLayer : NetworkLayer
         if (_isConnectionActive || _isServerActive)
             Disconnect();
         
+        _joinInProgress = false;
+        
         Runtime.Lobby.CurrentLobby = epicLobby;
-        Runtime.P2P.Connect(epicLobby.Owner, Connected);
+        Runtime.P2P.AddClientPeerNotifications();
         
         _isServerActive = false;
         _isConnectionActive = true;
-
-        void Connected()
-        {
-            _joinInProgress = false;
-            ConnectionSender.SendConnectionRequest();
-        }
+        
+        // EOS connects when you try to send a packet
+        ConnectionSender.SendConnectionRequest();
     }
 
     public override void Disconnect(string reason = "")

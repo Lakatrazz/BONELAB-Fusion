@@ -44,7 +44,10 @@ internal class EpicMatchmaker : IMatchmaker
 
     private IEnumerator FindLobbies(int maxResults, string code, MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        var createLobbySearchOptions = new CreateLobbySearchOptions { MaxResults = (uint)maxResults };
+        var createLobbySearchOptions = new CreateLobbySearchOptions
+        {
+            MaxResults = (uint)maxResults
+        };
         
         var result = Runtime.Lobby.LobbyInterface.CreateLobbySearch(ref createLobbySearchOptions, out var searchHandle);
         if (result != Result.Success || searchHandle == null)
@@ -79,7 +82,10 @@ internal class EpicMatchmaker : IMatchmaker
             SetParameter(ref searchHandle, LobbyKeys.LobbyCodeKey, code.ToUpper(), ComparisonOp.Equal);
         }
         
-        var lobbySearchFindOptions = new LobbySearchFindOptions { LocalUserId = LocalUserId };
+        var lobbySearchFindOptions = new LobbySearchFindOptions
+        {
+            LocalUserId = LocalUserId
+        };
         
         Result searchResult = Result.Success;
         bool searchComplete = false;
@@ -120,7 +126,10 @@ internal class EpicMatchmaker : IMatchmaker
 
         for (uint i = 0; i < lobbyCount; i++)
         {
-            var copyOptions = new LobbySearchCopySearchResultByIndexOptions { LobbyIndex = i };
+            var copyOptions = new LobbySearchCopySearchResultByIndexOptions
+            {
+                LobbyIndex = i
+            };
 
             if (searchHandle.CopySearchResultByIndex(ref copyOptions, out var lobbyDetails) != Result.Success || lobbyDetails == null)
                 continue;

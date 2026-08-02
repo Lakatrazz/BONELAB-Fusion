@@ -9,5 +9,6 @@ internal abstract class EOSInterface
         onComplete?.Invoke(true);
         yield return null;
     }
+    
     internal virtual void Shutdown() { }
 }

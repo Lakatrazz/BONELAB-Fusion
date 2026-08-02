@@ -55,7 +55,7 @@ internal class EOSP2PSender
                 SocketId = P2P.SocketId,
                 Channel = targetChannel,
                 Data = new ArraySegment<byte>(packetBuffer, 0, packetSize),
-                AllowDelayedDelivery = false,
+                AllowDelayedDelivery = true,
                 Reliability = reliability,
                 DisableAutoAcceptConnection = false
             };
@@ -86,7 +86,7 @@ internal class EOSP2PSender
             RemoteUserId = remoteUserId,
             SocketId = P2P.SocketId,
             Channel = targetChannel,
-            AllowDelayedDelivery = false,
+            AllowDelayedDelivery = true,
             Reliability = reliability,
             DisableAutoAcceptConnection = false
         };

@@ -36,7 +36,6 @@ internal class EpicLobby : NetworkLobby
 
         // EOS can get picky about how often attributes update
         // So just cache existing attributes and bail out if we are trying to write something with the same value
-        // Nicknames might be wise to remove from lobby metadata as the animated nametags mod can clog this up
         if (Metadata.TryGetValue(key, out var existingValue) && existingValue == value)
             return;
 

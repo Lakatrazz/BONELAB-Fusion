@@ -35,9 +35,16 @@ internal class EOSP2P : EOSInterface
     
     internal override IEnumerator InitializeAsync(Action<bool> onComplete)
     {
-        var setPortRangeOptions = new SetPortRangeOptions { Port = 7777, MaxAdditionalPortsToTry = 99 };
+        var setPortRangeOptions = new SetPortRangeOptions
+        {
+            Port = 7777, 
+            MaxAdditionalPortsToTry = 99
+        };
         P2PInterface.SetPortRange(ref setPortRangeOptions);
-        var setRelayControlOptions = new SetRelayControlOptions { RelayControl = RelayControl.ForceRelays };
+        var setRelayControlOptions = new SetRelayControlOptions
+        {
+            RelayControl = RelayControl.ForceRelays
+        };
         P2PInterface.SetRelayControl(ref setRelayControlOptions);
 
         onComplete?.Invoke(true);
@@ -45,39 +52,34 @@ internal class EOSP2P : EOSInterface
         yield return null;
     }
 
-    internal void Connect(ProductUserId remoteUserId, Action onConnected)
+    // Can be called as host or client. Kills all p2p connections
+    internal void Disconnect()
     {
         RemoveAllPeerNotifications();
-        
-        var establishedOptions = new AddNotifyPeerConnectionEstablishedOptions
+        var closeConnectionsOptions = new CloseConnectionsOptions
         {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
+            LocalUserId = LocalUserId, 
+            SocketId = SocketId
         };
         
-        ConnectionEstablishedId = P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, (ref OnPeerConnectionEstablishedInfo info) =>
+        P2PInterface.CloseConnections(ref closeConnectionsOptions);
+        ConnectedPeers.Clear();
+    }
+    
+    // Can only be run as host. Kills the connection to a specific user.
+    internal void DisconnectUser(ProductUserId remoteUserId)
+    {
+        var closeConnectionOptions = new CloseConnectionOptions
         {
-            onConnected?.Invoke();
-        });
-        
-        var closedOptions = new AddNotifyPeerConnectionClosedOptions
-        {
-            SocketId = SocketId,
-            LocalUserId = LocalUserId
+            LocalUserId = LocalUserId, 
+            RemoteUserId = remoteUserId, 
+            SocketId = SocketId
         };
         
-        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, (ref OnRemoteConnectionClosedInfo info) =>
-        {
-            NetworkHelper.Disconnect();
-        });
-        
-        // EOS is weird
-        // Send a dummy packet to establish a connection
-        Sender.Send(remoteUserId, new byte[] { 0 }, NetworkChannel.Reliable, false);
+        P2PInterface.CloseConnection(ref closeConnectionOptions);
     }
 
-    // For the host to register connection notifications and add themselves to ConnectedPeers
-    internal void ConnectSelf()
+    internal void AddHostPeerNotifications()
     {
         RemoveAllPeerNotifications();
         
@@ -89,7 +91,13 @@ internal class EOSP2P : EOSInterface
         
         ConnectionRequestedId = P2PInterface.AddNotifyPeerConnectionRequest(ref requestOptions, null, (ref OnIncomingConnectionRequestInfo  info) =>
         {
-            var options = new AcceptConnectionOptions { LocalUserId = LocalUserId, RemoteUserId = info.RemoteUserId, SocketId = SocketId };
+            var options = new AcceptConnectionOptions
+            {
+                LocalUserId = LocalUserId, 
+                RemoteUserId = info.RemoteUserId, 
+                SocketId = SocketId
+            };
+            
             P2PInterface.AcceptConnection(ref options);
         });
         
@@ -125,23 +133,23 @@ internal class EOSP2P : EOSInterface
         ConnectedPeers.Add(LocalUserId);
     }
 
-    // Can be called as host or client. Kills all p2p connections
-    internal void Disconnect()
+    internal void AddClientPeerNotifications()
     {
         RemoveAllPeerNotifications();
-        var closeConnectionsOptions = new CloseConnectionsOptions { LocalUserId = LocalUserId, SocketId = SocketId };
-        P2PInterface.CloseConnections(ref closeConnectionsOptions);
-        ConnectedPeers.Clear();
-    }
-    
-    // Can only be run as host. Kills the connection to a specific user.
-    internal void DisconnectUser(ProductUserId remoteUserId)
-    {
-        var closeConnectionOptions = new CloseConnectionOptions { LocalUserId = LocalUserId, RemoteUserId = remoteUserId, SocketId = SocketId };
-        P2PInterface.CloseConnection(ref closeConnectionOptions);
+        
+        var closedOptions = new AddNotifyPeerConnectionClosedOptions
+        {
+            SocketId = SocketId,
+            LocalUserId = LocalUserId
+        };
+        
+        ConnectionClosedId = P2PInterface.AddNotifyPeerConnectionClosed(ref closedOptions, null, (ref OnRemoteConnectionClosedInfo _) =>
+        {
+            NetworkHelper.Disconnect();
+        });
     }
 
-    internal void RemoveAllPeerNotifications()
+    private void RemoveAllPeerNotifications()
     {
         if (ConnectionRequestedId != Common.INVALID_NOTIFICATIONID)
         {
