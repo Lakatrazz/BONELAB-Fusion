@@ -1,8 +1,8 @@
 ﻿using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Marrow.Warehouse;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Senders;
 
@@ -10,7 +10,7 @@ public static class LoadSender
 {
     public static void SendLevelRequest(LevelCrate crate)
     {
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             return;
         }
@@ -26,7 +26,7 @@ public static class LoadSender
 
     public static void SendLevelLoad(string barcode, string loadBarcode, ClientPlatformID userId)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -42,7 +42,7 @@ public static class LoadSender
         writer.SerializeValue(ref data);
 
         using var message = NetMessage.Create(NativeMessageTag.SceneLoad, writer, CommonMessageRoutes.None);
-        MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+        ServerManager.SendToClient(message, NetworkChannel.Reliable, userId);
     }
 
     public static void SendLoadingState(bool isLoading)
@@ -52,7 +52,7 @@ public static class LoadSender
 
     public static void SendLevelLoad(string barcode, string loadBarcode)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

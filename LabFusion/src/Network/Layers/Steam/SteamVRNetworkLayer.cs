@@ -1,4 +1,5 @@
-﻿namespace LabFusion.Network;
+﻿
+namespace LabFusion.Network;
 
 public class SteamVRNetworkLayer : SteamNetworkLayer
 {

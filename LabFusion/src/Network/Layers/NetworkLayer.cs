@@ -64,11 +64,6 @@ public abstract class NetworkLayer
     public virtual bool IsClient => false;
 
     /// <summary>
-    /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
-    /// </summary>
-    public virtual bool ServerCanSendToHost => true;
-
-    /// <summary>
     /// Returns the active lobby.
     /// </summary>
     public virtual INetworkLobby Lobby => null;
@@ -137,68 +132,27 @@ public abstract class NetworkLayer
     public virtual bool IsFriend(ClientPlatformID platformID) => false;
 
     /// <summary>
-    /// Sends the message to the specified user if this is a server.
+    /// If a server is running, send a message from the server to a specific client.
     /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message) { }
+    /// <param name="channel"></param>
+    /// <param name="clientPlatformID"></param>
+    public abstract void ServerSendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID clientPlatformID);
 
     /// <summary>
-    /// Sends the message to the specified user if this is a server.
+    /// If a server is running, send a message from the server to multiple clients.
     /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message) { }
+    /// <param name="channel"></param>
+    /// <param name="clientPlatformIDs"></param>
+    public abstract void ServerSendToClients(NetMessage message, NetworkChannel channel, Span<ClientPlatformID> clientPlatformIDs);
 
     /// <summary>
-    /// Sends the message to the dedicated server.
+    /// If a client is connected to a server, send a message from the client to the server.
     /// </summary>
-    /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendToServer(NetworkChannel channel, NetMessage message) { }
-
-    /// <summary>
-    /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
-    /// </summary>
     /// <param name="channel"></param>
-    /// <param name="message"></param>
-    public virtual void BroadcastMessage(NetworkChannel channel, NetMessage message) { }
-
-    /// <summary>
-    /// If this is a server, sends this message back to all users except for the provided id.
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="channel"></param>
-    /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ClientSmallID userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
-    {
-        foreach (var id in PlayerIDManager.PlayerIDs)
-        {
-            if (id.SmallID != userId && (id.SmallID != PlayerIDManager.HostSmallID || !ignoreHost))
-            {
-                SendFromServer(id.SmallID, channel, message);
-            }
-        }
-    }
-
-    /// <summary>
-    /// If this is a server, sends this message back to all users except for the provided id.
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="channel"></param>
-    /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ClientPlatformID platformID, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
-    {
-        foreach (var id in PlayerIDManager.PlayerIDs)
-        {
-            if (id.PlatformID != platformID && (id.SmallID != PlayerIDManager.HostSmallID || !ignoreHost))
-            {
-                SendFromServer(id.SmallID, channel, message);
-            }
-        }
-    }
+    public abstract void ClientSendToServer(NetMessage message, NetworkChannel channel);
 
     public abstract void OnInitializeLayer();
 

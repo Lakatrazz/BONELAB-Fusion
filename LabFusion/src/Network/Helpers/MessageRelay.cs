@@ -41,49 +41,49 @@ public static class MessageRelay
         {
             case RelayType.None:
             case RelayType.ToServer:
-                MessageSender.SendToServer(channel, message);
+                ClientManager.SendToServer(message, channel);
                 break;
             case RelayType.ToClients:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
-                    MessageSender.BroadcastMessage(channel, message);
+                    ServerManager.SendToClients(message, channel);
                 }
                 else
                 {
-                    MessageSender.SendToServer(channel, message);
+                    ClientManager.SendToServer(message, channel);
                 }
                 break;
             case RelayType.ToOtherClients:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
-                    MessageSender.BroadcastMessageExcept(sender.Value, channel, message, false);
+                    ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(route.Target.Value).PlatformID);
                 }
                 else
                 {
-                    MessageSender.SendToServer(channel, message);
+                    ClientManager.SendToServer(message, channel);
                 }
                 break;
             case RelayType.ToTarget:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
-                    MessageSender.SendFromServer(route.Target.Value, channel, message);
+                    ServerManager.SendToClient(message, channel, PlayerIDManager.GetPlayerID(route.Target.Value).PlatformID);
                 }
                 else
                 {
-                    MessageSender.SendToServer(channel, message);
+                    ClientManager.SendToServer(message, channel);
                 }
                 break;
             case RelayType.ToTargets:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
                     foreach (var target in route.Targets)
                     {
-                        MessageSender.SendFromServer(target, channel, message);
+                        ServerManager.SendToClient(message, channel, PlayerIDManager.GetPlayerID(target).PlatformID);
                     }
                 }
                 else
                 {
-                    MessageSender.SendToServer(channel, message);
+                    ClientManager.SendToServer(message, channel);
                 }
                 break;
         }

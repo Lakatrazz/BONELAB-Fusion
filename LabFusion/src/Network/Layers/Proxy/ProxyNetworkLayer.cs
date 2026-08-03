@@ -356,48 +356,6 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             return false;
     }
 
-    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
-    {
-        if (IsHost)
-        {
-            ProxySocketHandler.BroadcastToClients(channel, message);
-        }
-        else
-        {
-            ProxySocketHandler.BroadcastToServer(channel, message);
-        }
-    }
-
-    public override void SendToServer(NetworkChannel channel, NetMessage message)
-    {
-        ProxySocketHandler.BroadcastToServer(channel, message);
-    }
-
-    public override void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message)
-    {
-        var id = PlayerIDManager.GetPlayerID(userId);
-
-        if (id != null)
-        {
-            SendFromServer(id.PlatformID, channel, message);
-        }
-    }
-
-    public override void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message)
-    {
-        if (!IsHost)
-        {
-            return;
-        }
-
-        MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
-        NetDataWriter writer = NewWriter(type);
-        writer.Put(platformID.Value);
-        byte[] data = message.ToByteArray();
-        writer.PutBytesWithLength(data);
-        SendToProxyServer(writer);
-    }
-
     public override void StartServer()
     {
         SendToProxyServer(MessageTypes.StartServer);

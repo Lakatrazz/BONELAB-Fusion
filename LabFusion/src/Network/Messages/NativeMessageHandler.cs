@@ -183,8 +183,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 {
                     using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.BroadcastMessage(channel, message);
-
+                    ServerManager.SendToClients(message, channel);
                     return;
                 }
                 break;
@@ -193,8 +192,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 {
                     using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.BroadcastMessageExcept(received.Sender.Value, channel, message, false);
-
+                    ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(received.Sender.Value).PlatformID);
                     return;
                 }
                 break;
@@ -203,8 +201,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 {
                     using var message = NetMessage.Create(Tag, received);
 
-                    MessageSender.SendFromServer(route.Target.Value, channel, message);
-
+                    ServerManager.SendToClient(message, channel, PlayerIDManager.GetPlayerID(route.Target.Value).PlatformID);
                     return;
                 }
                 break;
@@ -215,9 +212,8 @@ public abstract class NativeMessageHandler : MessageHandler
 
                     foreach (var target in route.Targets)
                     {
-                        MessageSender.SendFromServer(target, channel, message);
+                        ServerManager.SendToClient(message, channel, PlayerIDManager.GetPlayerID(target).PlatformID);
                     }
-
                     return;
                 }
                 break;

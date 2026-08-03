@@ -7,6 +7,7 @@ using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
+using LabFusion.Network.Messages;
 
 namespace LabFusion.Network;
 
@@ -198,15 +199,9 @@ public class ConnectionRequestMessage : NativeMessageHandler
         LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, platformID);
 
         // Send the dynamics list
-        var assignData = DynamicsAssignData.Create();
+        using var message = MessageCreator.CreateNative(DynamicsAssignData.Create(), NativeMessageTag.DynamicsAssignment, CommonMessageRoutes.None);
 
-        using (var writer = NetWriter.Create(assignData.GetSize()))
-        {
-            assignData.Serialize(writer);
-
-            using var message = NetMessage.Create(NativeMessageTag.DynamicsAssignment, writer, CommonMessageRoutes.None);
-            MessageSender.SendFromServer(platformID, NetworkChannel.Reliable, message);
-        }
+        ServerManager.SendToClient(message, NetworkChannel.Reliable, platformID);
 
         // Send the active server settings
         LobbyInfoManager.SendLobbyInfo(platformID);

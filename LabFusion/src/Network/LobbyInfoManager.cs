@@ -50,14 +50,14 @@ public static class LobbyInfoManager
         }
 
         // If there is no server, empty the lobby info
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             LobbyInfo = LobbyInfo.Empty;
             return;
         }
 
         // We are a client, so we shouldn't override the saved info
-        if (NetworkInfo.IsClient)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -68,16 +68,12 @@ public static class LobbyInfoManager
 
         LobbyInfo = info;
 
-        // If a server is active, send the info
-        if (NetworkInfo.IsHost)
-        {
-            SendLobbyInfo();
-        }
+        SendLobbyInfo();
     }
 
     private static void SendLobbyInfo()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -89,7 +85,7 @@ public static class LobbyInfoManager
 
     internal static void SendLobbyInfo(ClientPlatformID platformID)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -99,6 +95,7 @@ public static class LobbyInfoManager
         writer.SerializeValue(ref data);
 
         using var message = NetMessage.Create(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
-        MessageSender.SendFromServer(platformID, NetworkChannel.Reliable, message);
+
+        ServerManager.SendToClient(message, NetworkChannel.Reliable, platformID);
     }
 }

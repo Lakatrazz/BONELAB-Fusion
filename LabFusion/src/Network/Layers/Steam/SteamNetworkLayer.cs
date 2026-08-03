@@ -208,34 +208,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         return platformID == PlayerIDManager.LocalPlatformID || new Friend((ulong)platformID).IsFriend;
     }
 
-    public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
-    {
-        if (IsHost)
-        {
-            SteamSocketHandler.BroadcastToClients(SteamSocket, channel, message);
-        }
-        else
-        {
-            SteamSocketHandler.BroadcastToServer(channel, message);
-        }
-    }
-
-    public override void SendToServer(NetworkChannel channel, NetMessage message)
-    {
-        SteamSocketHandler.BroadcastToServer(channel, message);
-    }
-
-    public override void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message)
-    {
-        var id = PlayerIDManager.GetPlayerID(userId);
-
-        if (id != null)
-        {
-            SendFromServer(id.PlatformID, channel, message);
-        }
-    }
-
-    public override void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message)
+    public override void ServerSendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID clientPlatformID)
     {
         // Make sure this is actually the server
         if (!IsHost)
@@ -243,11 +216,23 @@ public abstract class SteamNetworkLayer : NetworkLayer
             return;
         }
 
-        // Get the connection from the userid dictionary
-        if (SteamSocket.ConnectedSteamIDs.TryGetValue((ulong)platformID, out var connection))
+        SteamSocket.SendToClient(clientPlatformID, channel, message);
+    }
+
+    public override void ServerSendToClients(NetMessage message, NetworkChannel channel, Span<ClientPlatformID> clientPlatformIDs)
+    {
+        // Make sure this is actually the server
+        if (!IsHost)
         {
-            SteamSocket.SendToClient(connection, channel, message);
+            return;
         }
+
+        SteamSocket.SendToClients(clientPlatformIDs, channel, message);
+    }
+
+    public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
+    {
+        SteamSocketHandler.BroadcastToServer(channel, message);
     }
 
     public override void StartServer()

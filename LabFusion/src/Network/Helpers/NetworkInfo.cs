@@ -42,11 +42,6 @@ public static class NetworkInfo
     public static bool IsClient => HasLayer && Layer.IsClient && !Layer.IsHost;
 
     /// <summary>
-    /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
-    /// </summary>
-    public static bool ServerCanSendToHost => HasLayer && Layer.ServerCanSendToHost;
-
-    /// <summary>
     /// The amount of bytes received this frame.
     /// </summary>
     public static int BytesDown { get; internal set; }

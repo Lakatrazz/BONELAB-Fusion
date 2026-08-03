@@ -17,18 +17,23 @@ public static class SteamSocketHandler
         return sendType;
     }
 
-    public static void SendToClient(this SteamSocketManager socketManager, Connection connection, NetworkChannel channel, NetMessage message)
+    public static void SendToClient(this SteamSocketManager socketManager, ClientPlatformID client, NetworkChannel channel, NetMessage message)
     {
         SendType sendType = ConvertToSendType(channel);
         int sizeOfMessage = message.Length;
 
         unsafe
         {
+            if (!socketManager.ConnectedSteamIDs.TryGetValue((ulong)client, out var connection))
+            {
+                return;
+            }
+
             connection.SendMessage((IntPtr)message.Buffer, sizeOfMessage, sendType);
         }
     }
 
-    public static void BroadcastToClients(this SteamSocketManager socketManager, NetworkChannel channel, NetMessage message)
+    public static void SendToClients(this SteamSocketManager socketManager, Span<ClientPlatformID> clients, NetworkChannel channel, NetMessage message)
     {
         SendType sendType = ConvertToSendType(channel);
 
@@ -39,8 +44,13 @@ public static class SteamSocketHandler
         {
             IntPtr messagePtr = (IntPtr)message.Buffer;
 
-            foreach (var connection in socketManager.Connected)
+            foreach (var client in clients)
             {
+                if (!socketManager.ConnectedSteamIDs.TryGetValue((ulong)client, out var connection))
+                {
+                    continue;
+                }
+
                 connection.SendMessage(messagePtr, sizeOfMessage, sendType);
             }
         }
