@@ -30,16 +30,11 @@ public class SteamLobby : NetworkLobby
         return _lobby.GetData(key);
     }
 
-    public override Action CreateJoinDelegate(ClientPlatformID lobbyId)
+    public override Action CreateJoinDelegate(ServerID lobbyId)
     {
-        if (NetworkLayerManager.Layer is SteamNetworkLayer steamLayer)
+        return () =>
         {
-            return () =>
-            {
-                steamLayer.JoinServer((ulong)lobbyId);
-            };
-        }
-
-        return null;
+            NetworkLayerManager.Layer?.ConnectToServer(lobbyId);
+        };
     }
 }

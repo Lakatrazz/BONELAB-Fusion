@@ -14,7 +14,12 @@ public static class ServerManager
     /// <para>This will not return true if this instance is only a client that has joined the server.
     /// To check if a server exists at all, see <see cref="NetworkManager.HasServer"/>.</para>
     /// </summary>
-    public static bool IsServerRunning => ServerManager.IsServerRunning;
+    public static bool IsServerRunning => NetworkLayerManager.Layer?.IsServerRunning ?? false;
+
+    /// <summary>
+    /// If a server is running on this instance, this will return the ID used for the server.
+    /// </summary>
+    public static ServerID RunningServerID => NetworkLayerManager.Layer?.RunningServerID ?? ServerID.Empty;
 
     /// <summary>
     /// Sends a message from the server to a specific client.

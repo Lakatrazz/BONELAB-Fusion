@@ -17,9 +17,8 @@ public class LobbyInfo
     public static readonly LobbyInfo Empty = new();
 
     // Info
-    // TODO: Separate from client ID
     [JsonPropertyName("lobbyID")]
-    public ClientPlatformID LobbyID { get; set; } = ClientPlatformID.Empty;
+    public ServerID LobbyID { get; set; } = ServerID.Empty;
 
     [JsonPropertyName("lobbyCode")]
     public string LobbyCode { get; set; } = null;
@@ -121,7 +120,7 @@ public class LobbyInfo
     public void WriteLobby()
     {
         // Info
-        LobbyID = PlayerIDManager.LocalPlatformID;
+        LobbyID = ServerManager.RunningServerID;
         LobbyCode = NetworkHelper.GetServerCode();
         LobbyName = SavedServerSettings.ServerName.Value;
         LobbyDescription = SavedServerSettings.ServerDescription.Value;

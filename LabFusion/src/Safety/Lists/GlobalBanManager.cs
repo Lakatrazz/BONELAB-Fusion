@@ -118,7 +118,7 @@ public static class GlobalBanManager
         }
 
         // Check if the host is banned
-        var lobbyPlatformInfo = new PlatformInfo(lobby.LobbyID);
+        var lobbyPlatformInfo = new PlatformInfo(new ClientPlatformID(lobby.LobbyID.ToString()));
 
         if (IsBanned(lobbyPlatformInfo))
         {

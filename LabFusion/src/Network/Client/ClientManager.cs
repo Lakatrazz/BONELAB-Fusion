@@ -27,6 +27,11 @@ public static class ClientManager
     public static bool IsClientOnly => IsClientConnected && !IsClientHost;
 
     /// <summary>
+    /// If the client is connected to a server, this will return the ID of the server the client is connected to.
+    /// </summary>
+    public static ServerID ConnectedServerID => NetworkLayerManager.Layer?.ConnectedServerID ?? ServerID.Empty;
+
+    /// <summary>
     /// Sends a message from the client to the connected server.
     /// </summary>
     /// <param name="message"></param>

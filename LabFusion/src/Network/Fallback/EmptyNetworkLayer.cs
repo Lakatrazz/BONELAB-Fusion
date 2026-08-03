@@ -15,6 +15,10 @@ public class EmptyNetworkLayer : NetworkLayer
 
     public override bool IsClientConnected => false;
 
+    public override ServerID RunningServerID => throw new NotImplementedException();
+
+    public override ServerID ConnectedServerID => throw new NotImplementedException();
+
     public override void Disconnect(string reason = "") { }
 
     public override void DisconnectUser(ClientPlatformID platformID) { }
@@ -70,6 +74,26 @@ public class EmptyNetworkLayer : NetworkLayer
     }
 
     public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void StopServer()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ServerDisconnectClient(ClientPlatformID client)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ConnectToServer(ServerID server)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ClientDisconnectFromServer()
     {
         throw new NotImplementedException();
     }

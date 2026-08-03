@@ -23,7 +23,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override bool IsServerRunning => ServerSteamSocket != null;
 
+    public override ServerID RunningServerID => _runningServerID;
+
     public override bool IsClientConnected => ClientSteamConnection != null;
+
+    public override ServerID ConnectedServerID => _connectedServerID;
 
     private INetworkLobby _currentLobby;
     public override INetworkLobby Lobby => _currentLobby;
@@ -52,6 +56,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
     // A local reference to a lobby
     // This isn't actually used for joining servers, just for matchmaking
     protected Lobby _localLobby;
+
+    private ServerID _runningServerID = ServerID.Empty;
+    private ServerID _connectedServerID = ServerID.Empty;
 
     public override bool CheckSupported()
     {
@@ -242,29 +249,77 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void StartServer()
     {
-        ServerSteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+        ServerSteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>();
+        _runningServerID = new ServerID(ClientSteamID);
 
-        // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
-        // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
-        ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(ClientSteamID);
-
-        // Call server setup
         InternalServerHelpers.OnStartServer();
-
+        
         RefreshServerCode();
     }
 
-    public void JoinServer(SteamId serverId)
+    public override void StopServer()
     {
-        // Leave existing server
-        if (IsClientConnected || IsServerRunning)
+        if (!IsServerRunning)
         {
-            Disconnect();
+            return;
         }
 
-        ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+        try
+        {
+            ServerSteamSocket?.Close();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("stopping server", e);
+        }
+
+        ServerSteamSocket = null;
+        _runningServerID = ServerID.Empty;
+    }
+
+    public override void ServerDisconnectClient(ClientPlatformID client)
+    {
+        if (!IsServerRunning)
+        {
+            return;
+        }
+
+        ServerSteamSocket.DisconnectUser((ulong)client);
+    }
+
+    public override void ConnectToServer(ServerID server)
+    {
+        if (IsClientConnected)
+        {
+            ClientDisconnectFromServer();
+        }
+
+        SteamId serverSteamID = (ulong)server;
+
+        ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverSteamID);
+        _connectedServerID = server;
 
         ConnectionSender.SendConnectionRequest();
+    }
+
+    public override void ClientDisconnectFromServer()
+    {
+        if (!IsClientConnected)
+        {
+            return;
+        }
+
+        try
+        {
+            ClientSteamConnection?.Close();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("disconnecting client from server", e);
+        }
+
+        ClientSteamConnection = null;
+        _connectedServerID = ServerID.Empty;
     }
 
     public override void Disconnect(string reason = "")
@@ -332,7 +387,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
                 return;
             }
 
-            JoinServer((ulong)info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
+            ConnectToServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
         });
     }
 

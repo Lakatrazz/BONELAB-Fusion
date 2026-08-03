@@ -13,7 +13,26 @@ public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
 
     public override bool IsClientConnected => throw new NotImplementedException();
 
+    public override ServerID RunningServerID => throw new NotImplementedException();
+
+    public override ServerID ConnectedServerID => throw new NotImplementedException();
+
+    public override void ClientDisconnectFromServer()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ConnectToServer(ServerID server)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void ServerDisconnectClient(ClientPlatformID client)
     {
         throw new NotImplementedException();
     }
@@ -24,6 +43,11 @@ public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
     }
 
     public override void ServerSendToClients(NetMessage message, NetworkChannel channel, Span<ClientPlatformID> clientPlatformIDs)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void StopServer()
     {
         throw new NotImplementedException();
     }

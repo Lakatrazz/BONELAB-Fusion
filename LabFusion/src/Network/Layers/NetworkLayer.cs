@@ -28,7 +28,7 @@ public abstract class NetworkLayer
     private bool _hasType;
 
     /// <summary>
-    /// The Type of this NetworkLayer.
+    /// The NetworkLayer's cached type.
     /// </summary>
     public Type Type
     {
@@ -39,6 +39,7 @@ public abstract class NetworkLayer
                 _type = GetType();
                 _hasType = true;
             }
+
             return _type;
         }
     }
@@ -60,6 +61,12 @@ public abstract class NetworkLayer
     public abstract bool IsServerRunning { get; }
 
     /// <summary>
+    /// If a server is running, this will return the ID that the server is running on.
+    /// Otherwise, it will return <see cref="ServerID.Empty"/>.
+    /// </summary>
+    public abstract ServerID RunningServerID { get; }
+
+    /// <summary>
     /// Returns true if this NetworkLayer is running a client connected to a server.
     /// </summary>
     public abstract bool IsClientConnected { get; }
@@ -68,6 +75,12 @@ public abstract class NetworkLayer
     /// Returns true if this NetworkLayer is running both a server and a client connected to that server.
     /// </summary>
     public virtual bool IsClientHost => IsClientConnected && IsServerRunning;
+
+    /// <summary>
+    /// If the client is connected to a server, this will return the ID of the server that the client is connected to.
+    /// Otherwise, it will return <see cref="ServerID.Empty"/>.
+    /// </summary>
+    public abstract ServerID ConnectedServerID { get; }
 
     /// <summary>
     /// Returns the active lobby.
@@ -108,9 +121,32 @@ public abstract class NetworkLayer
     }
 
     /// <summary>
-    /// Starts the server.
+    /// Start running a server. 
+    /// This will not automatically connect to the server as a client.
     /// </summary>
     public abstract void StartServer();
+
+    /// <summary>
+    /// If a server is currently running, stop the server.
+    /// </summary>
+    public abstract void StopServer();
+
+    /// <summary>
+    /// If a server is currently running, disconnect a client from the server.
+    /// </summary>
+    /// <param name="client"></param>
+    public abstract void ServerDisconnectClient(ClientPlatformID client);
+
+    /// <summary>
+    /// Connect the client to a server.
+    /// </summary>
+    /// <param name="server"></param>
+    public abstract void ConnectToServer(ServerID server);
+
+    /// <summary>
+    /// If the client is currently connected to a server, disconnect from the server.
+    /// </summary>
+    public abstract void ClientDisconnectFromServer();
 
     /// <summary>
     /// Disconnects the client from the connection and/or server.
@@ -196,8 +232,6 @@ public abstract class NetworkLayer
     public virtual void OnUpdateLayer() { }
 
     public virtual void OnLateUpdateLayer() { }
-
-    public virtual void OnUserJoin(PlayerID id) { }
 
     public virtual string GetServerCode()
     {

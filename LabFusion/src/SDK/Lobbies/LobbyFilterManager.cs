@@ -22,7 +22,7 @@ public static class LobbyFilterManager
 
     public static GenericLobbyFilter FriendsFilter { get; } = new("Friends Only", (l, i) =>
     {
-        return NetworkLayerManager.Layer.IsFriend(i.LobbyInfo.LobbyID);
+        return NetworkLayerManager.Layer.IsFriend(new ClientPlatformID(i.LobbyInfo.LobbyID.ToString()));
     });
 
     public static void LoadBuiltInFilters()

@@ -101,9 +101,6 @@ public static class InternalServerHelpers
         // Send client info
         FusionPreferences.SendClientSettings();
 
-        // Update layer
-        InternalLayerHelpers.OnUserJoin(id);
-
         // Update hooks
         MultiplayerHooking.InvokeOnPlayerJoined(id);
 
