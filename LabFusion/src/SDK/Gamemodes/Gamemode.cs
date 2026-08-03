@@ -221,7 +221,7 @@ public abstract class Gamemode : IWearableUIProvider
     private bool OnTrySetMetadata(string key, string value)
     {
         // We can only change metadata as the server!
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return false;
         }
@@ -233,7 +233,7 @@ public abstract class Gamemode : IWearableUIProvider
     private bool OnTryRemoveMetadata(string key)
     {
         // We can only remove metadata as the server!
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return false;
         }
@@ -435,7 +435,7 @@ public abstract class Gamemode : IWearableUIProvider
 
     private void TickElapsed(float unscaledDeltaTime)
     {
-        if (!NetworkInfo.IsHost || !IsStarted)
+        if (!ServerManager.IsServerRunning || !IsStarted)
         {
             return;
         }
@@ -450,7 +450,7 @@ public abstract class Gamemode : IWearableUIProvider
     {
         ElapsedSeconds = 0f;
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             ElapsedVariable.SetValue(0f);
         }

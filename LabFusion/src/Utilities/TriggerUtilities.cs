@@ -10,7 +10,7 @@ public static class TriggerUtilities
 {
     public static bool IsMatchingRig(TriggerRefProxy proxy, RigManager rig)
     {
-        if (!NetworkInfo.HasServer || !RigData.HasPlayer)
+        if (!NetworkManager.HasServer || !RigData.HasPlayer)
         {
             return true;
         }

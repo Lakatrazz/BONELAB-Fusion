@@ -57,7 +57,7 @@ public class BitMiner : IPointItem
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

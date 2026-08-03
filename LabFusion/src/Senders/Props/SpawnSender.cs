@@ -13,7 +13,7 @@ public static class SpawnSender
     /// <param name="syncable"></param>
     public static void SendCatchupSpawn(ClientSmallID ownerID, string barcode, ushort entityID, SerializedTransform serializedTransform, ClientSmallID playerID, EntitySource source)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

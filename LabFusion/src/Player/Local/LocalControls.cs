@@ -51,7 +51,7 @@ public static class LocalControls
     {
         get
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return true;
             }
@@ -101,7 +101,7 @@ public static class LocalControls
 
     private static void UpdateSlowMo()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

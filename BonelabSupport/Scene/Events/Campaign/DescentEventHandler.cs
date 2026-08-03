@@ -84,7 +84,7 @@ public class DescentEventHandler : GamemodeLevelEventHandler
     {
         var value = new DescentIntroEvent(selectionNumber, type);
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             _introEvents.Add(value);
         }
@@ -96,7 +96,7 @@ public class DescentEventHandler : GamemodeLevelEventHandler
     {
         var value = new DescentNooseEvent(smallId, type);
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             _nooseEvents.Add(value);
         }
@@ -108,7 +108,7 @@ public class DescentEventHandler : GamemodeLevelEventHandler
     {
         var value = new DescentElevatorEvent(type);
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             _elevatorEvents.Add(value);
         }

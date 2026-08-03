@@ -26,9 +26,6 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override string Title => "Proxy";
 
-    public override bool IsHost => _isServerActive;
-    public override bool IsClient => _isConnectionActive;
-
     public SteamId SteamId;
 
     private INetworkLobby _currentLobby;

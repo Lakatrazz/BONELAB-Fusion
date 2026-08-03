@@ -23,7 +23,7 @@ public static class MirrorPatches
     [HarmonyPatch(nameof(Mirror.WriteTransforms))]
     public static void WriteTransforms(Mirror __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -61,7 +61,7 @@ public static class MirrorPatches
             return true;
         }
 
-        if (NetworkInfo.HasServer)
+        if (NetworkManager.HasServer)
             return OnEnterMultiplayer(__instance, triggerRefProxy);
         else
             return OnEnterSingleplayer(__instance, triggerRefProxy);
@@ -186,7 +186,7 @@ public static class MirrorPatches
             return true;
         }
 
-        if (NetworkInfo.HasServer)
+        if (NetworkManager.HasServer)
             return OnExitMultiplayer(__instance, triggerRefProxy);
         else
             return OnExitSingleplayer(__instance, triggerRefProxy);

@@ -14,7 +14,7 @@ namespace LabFusion.MonoBehaviours
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return;
             }

@@ -18,7 +18,7 @@ public static class ButtonControllerPatches
     [HarmonyPatch(nameof(ButtonController.ReadSensor))]
     public static void ReadSensorPrefix(ButtonController __instance, double fixedTime, float lastSensorValue)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

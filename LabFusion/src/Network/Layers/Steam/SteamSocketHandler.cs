@@ -68,7 +68,7 @@ public static class SteamSocketHandler
             unsafe
             {
                 IntPtr messagePtr = (IntPtr)message.Buffer;
-                Connection connection = SteamNetworkLayer.SteamConnection.Connection;
+                Connection connection = SteamNetworkLayer.ClientSteamConnection.Connection;
 
                 Result success = connection.SendMessage(messagePtr, sizeOfMessage, sendType);
                 if (success != Result.OK)

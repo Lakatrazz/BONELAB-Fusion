@@ -53,7 +53,7 @@ public struct LobbyMetadataInfo
         return new LobbyMetadataInfo()
         {
             LobbyInfo = lobbyInfo,
-            HasLobbyOpen = NetworkInfo.IsHost,
+            HasLobbyOpen = ServerManager.IsServerRunning,
             LobbyCode = lobbyInfo.LobbyCode,
             Privacy = lobbyInfo.Privacy,
             Full = lobbyInfo.PlayerCount >= lobbyInfo.MaxPlayers,

@@ -24,7 +24,7 @@ public static class RPCBoolSender
                 return false;
             }
         }
-        else if (rpcBool.RequiresOwnership && !NetworkInfo.IsHost)
+        else if (rpcBool.RequiresOwnership && !ServerManager.IsServerRunning)
         {
             return false;
         }

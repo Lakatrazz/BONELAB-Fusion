@@ -20,7 +20,7 @@ public static class PlayerDamageReceiverPatches
     [HarmonyPrefix]
     public static bool ReceiveAttack(PlayerDamageReceiver __instance, ref Attack attack)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         } 

@@ -22,7 +22,7 @@ public static class PlayerSender
 {
     public static void SendPlayerVoiceChat(byte[] voiceData)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -37,7 +37,7 @@ public static class PlayerSender
 
     public static void SendPlayerTeleport(ClientSmallID target, Vector3 position)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -84,7 +84,7 @@ public static class PlayerSender
     public static void SendPlayerMetadataResponse(ClientSmallID smallID, string key, string value)
     {
         // Make sure this is the server
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             throw new MessageExpectedServerException();
         }

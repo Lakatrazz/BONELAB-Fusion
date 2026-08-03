@@ -51,7 +51,7 @@ public static class KeyReceiverPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

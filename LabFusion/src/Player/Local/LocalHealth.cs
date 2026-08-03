@@ -93,7 +93,7 @@ public static class LocalHealth
 
     private static void OnRespawned()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -131,7 +131,7 @@ public static class LocalHealth
 
     private static void OnOverrideHealth()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

@@ -476,7 +476,7 @@ public class SmashBones : Gamemode
 
     private void OnPlayerDamageEvent(string value)
     {
-        if (!IsStarted || !NetworkInfo.IsHost)
+        if (!IsStarted || !ServerManager.IsServerRunning)
         {
             return;
         }
@@ -499,7 +499,7 @@ public class SmashBones : Gamemode
 
         var playerID = PlayerIDManager.GetPlayerID(deathInfo.PlatformID);
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             var stocks = PlayerStocksKeeper.GetScore(playerID);
 
@@ -545,7 +545,7 @@ public class SmashBones : Gamemode
             OnSelfLivesChanged(lives);
         }
 
-        if (NetworkInfo.IsHost && lives <= 0)
+        if (ServerManager.IsServerRunning && lives <= 0)
         {
             _latestScore++;
             PlayerScoreKeeper.SetScore(playerID, _latestScore);
@@ -657,7 +657,7 @@ public class SmashBones : Gamemode
 
         DeathTrigger.OnKillPlayer += OnKillPlayer;
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             PlayerScoreKeeper.ResetScores();
             _latestScore = 0;
@@ -690,7 +690,7 @@ public class SmashBones : Gamemode
 
     protected override void OnPlayerJoined(PlayerID playerID)
     {
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             PlayerStocksKeeper.SetScore(playerID, 0);
             PlayerScoreKeeper.SetScore(playerID, 0);
@@ -702,7 +702,7 @@ public class SmashBones : Gamemode
 
     protected override void OnPlayerLeft(PlayerID playerID)
     {
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             CheckFreeForAllStocksVictory();
         }
@@ -733,7 +733,7 @@ public class SmashBones : Gamemode
 
         CheckFinalScore();
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             GamemodeDropper.DespawnItems();
         }
@@ -904,7 +904,7 @@ public class SmashBones : Gamemode
             ApplyDoubleJump(rigManager);
         }
 
-        if (NetworkInfo.IsHost && Defaults.DropItems)
+        if (ServerManager.IsServerRunning && Defaults.DropItems)
         {
             UpdateItemDroppers();
         }

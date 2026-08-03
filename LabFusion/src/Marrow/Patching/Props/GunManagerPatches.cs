@@ -15,7 +15,7 @@ public static class GunManagerPatches
     [HarmonyPatch(nameof(GunManager.OnGunGrabbed))]
     public static void OnGunGrabbed(Hand hand, Gun gun)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

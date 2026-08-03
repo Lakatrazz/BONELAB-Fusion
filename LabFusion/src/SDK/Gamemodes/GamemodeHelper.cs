@@ -19,7 +19,7 @@ public static class GamemodeHelper
     /// <param name="gamemode">The Gamemode to select upon starting the server.</param>
     public static void StartGamemodeServer(Gamemode gamemode)
     {
-        if (NetworkInfo.HasServer)
+        if (NetworkManager.HasServer)
         {
             NetworkHelper.Disconnect();
         }

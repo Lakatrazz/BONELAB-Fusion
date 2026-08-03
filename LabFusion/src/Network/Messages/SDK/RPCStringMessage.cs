@@ -25,7 +25,7 @@ public static class RPCStringSender
                 return false;
             }
         }
-        else if (rpcString.RequiresOwnership && !NetworkInfo.IsHost)
+        else if (rpcString.RequiresOwnership && !ServerManager.IsServerRunning)
         {
             return false;
         }

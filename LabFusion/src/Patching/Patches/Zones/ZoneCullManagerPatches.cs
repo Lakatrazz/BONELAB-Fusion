@@ -21,7 +21,7 @@ public static class ZoneCullManagerPatches
 
     public static void Register(int cullerId, MarrowEntity entity)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

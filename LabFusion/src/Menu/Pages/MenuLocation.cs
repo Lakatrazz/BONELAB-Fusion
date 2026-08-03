@@ -109,7 +109,7 @@ public static class MenuLocation
             return;
         }
 
-        if (NetworkInfo.IsClient)
+        if (ClientManager.IsClientOnly)
         {
             ApplyLobbyInfoToLobby(LobbyElement, LobbyInfoManager.LobbyInfo);
         }
@@ -126,7 +126,7 @@ public static class MenuLocation
             return;
         }
 
-        if (NetworkInfo.IsClient)
+        if (ClientManager.IsClientOnly)
         {
             return;
         }
@@ -137,7 +137,7 @@ public static class MenuLocation
 
     private static void ApplyLobbyInfoToLobby(LobbyElement element, LobbyInfo info)
     {
-        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
+        bool ownsSettings = ServerManager.IsServerRunning || !NetworkManager.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -298,7 +298,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsHost);
+        element.CodeGrid.SetActive(ServerManager.IsServerRunning);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -306,7 +306,7 @@ public static class MenuLocation
 
     private static void ApplyServerSettingsToLobby(LobbyElement element)
     {
-        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
+        bool ownsSettings = ServerManager.IsServerRunning || !NetworkManager.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -477,7 +477,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsHost);
+        element.CodeGrid.SetActive(ServerManager.IsServerRunning);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -681,7 +681,7 @@ public static class MenuLocation
             FusionPermissions.TrySetPermission(player.PlatformID, username, (PermissionLevel)v);
         };
 
-        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsHost;
+        permissionsElement.Interactable = !player.IsMe && ServerManager.IsServerRunning;
 
         // Platform ID element
         var platformIDElement = element.PlatformIDElement
@@ -706,8 +706,8 @@ public static class MenuLocation
             return;
         }
 
-        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || NetworkInfo.IsHost;
-        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || NetworkInfo.IsHost;
+        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || ServerManager.IsServerRunning;
+        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || ServerManager.IsServerRunning;
 
         if (!sufficientPerms && !higherPerms)
         {
@@ -784,7 +784,7 @@ public static class MenuLocation
         PopulateAdmin(adminPage);
 
         // Update server status
-        if (NetworkInfo.HasServer)
+        if (NetworkManager.HasServer)
         {
             OnConnect();
         }

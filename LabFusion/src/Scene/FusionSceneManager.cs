@@ -63,7 +63,7 @@ public static partial class FusionSceneManager
                 LocalPlayer.Metadata.LevelBarcode.SetValue(Barcode);
 
                 // Send level load
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
                     LoadSender.SendLevelLoad(Barcode, LoadBarcode);
                 }
@@ -125,7 +125,7 @@ public static partial class FusionSceneManager
     private static void Internal_UpdateTargetScene()
     {
         // Make sure we are a client and have loaded
-        if (!NetworkInfo.IsClient)
+        if (!ClientManager.IsClientOnly)
         {
             return;
         }

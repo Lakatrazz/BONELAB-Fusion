@@ -24,7 +24,7 @@ public static class PropFlashlightPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

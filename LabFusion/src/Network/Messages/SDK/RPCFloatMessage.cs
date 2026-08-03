@@ -24,7 +24,7 @@ public static class RPCFloatSender
                 return false;
             }
         }
-        else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsHost)
+        else if (rpcFloat.RequiresOwnership && !ServerManager.IsServerRunning)
         {
             return false;
         }

@@ -11,6 +11,10 @@ public class EmptyNetworkLayer : NetworkLayer
 
     public override string Platform => "Empty";
 
+    public override bool IsServerRunning => false;
+
+    public override bool IsClientConnected => false;
+
     public override void Disconnect(string reason = "") { }
 
     public override void DisconnectUser(ClientPlatformID platformID) { }

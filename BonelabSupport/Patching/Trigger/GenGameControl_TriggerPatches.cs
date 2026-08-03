@@ -56,7 +56,7 @@ public static class GenGameControl_TriggerPatches
     [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
     public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }
@@ -68,7 +68,7 @@ public static class GenGameControl_TriggerPatches
     [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerExit))]
     public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

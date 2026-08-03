@@ -15,7 +15,7 @@ public static class SubBehaviourHealthPatches
     [HarmonyPrefix]
     public static bool TakeDamage(SubBehaviourHealth __instance, int m, Attack attack)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

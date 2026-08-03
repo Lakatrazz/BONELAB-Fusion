@@ -22,7 +22,7 @@ public static class GunPatches
     public static void OnTriggerGripAttached(Gun __instance, Hand hand)
     {
         // Make sure we're in a server first
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -92,7 +92,7 @@ public static class GunPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

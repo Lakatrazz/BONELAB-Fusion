@@ -22,7 +22,7 @@ public static class LocalPlayer
 
     public static Action<RigManager>? OnLocalRigCreated { get; set; }
 
-    public static bool RagdollOnDeath => NetworkInfo.HasServer;
+    public static bool RagdollOnDeath => NetworkManager.HasServer;
 
     private static string _username = "Player";
     public static string Username
@@ -98,7 +98,7 @@ public static class LocalPlayer
     /// <returns></returns>
     public static NetworkPlayer? GetNetworkPlayer()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return null;
         }

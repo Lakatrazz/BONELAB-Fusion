@@ -57,7 +57,7 @@ namespace LabFusion.Marrow.Integration
 
         public static bool DropItem()
         {
-            if (!NetworkInfo.IsHost)
+            if (!ServerManager.IsServerRunning)
             {
                 return false;
             }
@@ -91,7 +91,7 @@ namespace LabFusion.Marrow.Integration
 
         public static bool DespawnItems()
         {
-            if (!NetworkInfo.IsHost)
+            if (!ServerManager.IsServerRunning)
             {
                 return false;
             }

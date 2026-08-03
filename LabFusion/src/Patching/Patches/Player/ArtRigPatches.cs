@@ -23,7 +23,7 @@ public static class ArtRigPatches
     public static void ArtOutputUpdate(ArtRig __instance, PhysicsRig inRig)
     {
         // Check if we have a player rep to animate the jaw on here
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -44,7 +44,7 @@ public static class ArtRigPatches
     public static void ArtOutputLateUpdate(ArtRig __instance, PhysicsRig inRig)
     {
         // Match the avatar jaw to the simulated jaw
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

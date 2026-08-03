@@ -2,13 +2,12 @@
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
-
-using Steamworks;
-using Steamworks.Data;
-
 using LabFusion.Senders;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+
+using Steamworks;
+using Steamworks.Data;
 
 namespace LabFusion.Network;
 
@@ -22,8 +21,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override string Platform => "Steam";
 
-    public override bool IsHost => _isServerActive;
-    public override bool IsClient => _isConnectionActive;
+    public override bool IsServerRunning => ServerSteamSocket != null;
+
+    public override bool IsClientConnected => ClientSteamConnection != null;
 
     private INetworkLobby _currentLobby;
     public override INetworkLobby Lobby => _currentLobby;
@@ -34,13 +34,20 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private IMatchmaker _matchmaker = null;
     public override IMatchmaker Matchmaker => _matchmaker;
 
-    public SteamId SteamId;
+    /// <summary>
+    /// The steam client's logged in SteamID.
+    /// </summary>
+    public static SteamId ClientSteamID { get; private set; }
 
-    public static SteamSocketManager SteamSocket;
-    public static SteamConnectionManager SteamConnection;
+    /// <summary>
+    /// The server's steam socket manager, if a server is running.
+    /// </summary>
+    public static SteamSocketManager ServerSteamSocket { get; private set; } = null;
 
-    protected bool _isServerActive = false;
-    protected bool _isConnectionActive = false;
+    /// <summary>
+    /// The client's steam connection manager, if a client is connected to a server.
+    /// </summary>
+    public static SteamConnectionManager ClientSteamConnection { get; private set; } = null;
 
     // A local reference to a lobby
     // This isn't actually used for joining servers, just for matchmaking
@@ -65,14 +72,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Get steam information
-        SteamId = SteamClient.SteamId;
+        ClientSteamID = SteamClient.SteamId;
 
-        var platformID = new ClientPlatformID(SteamId.Value);
+        var platformID = new ClientPlatformID(ClientSteamID.Value);
 
         PlayerIDManager.SetPlatformID(platformID);
         LocalPlayer.Username = GetUsername(platformID);
 
-        FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
+        FusionLogger.Log($"Steamworks initialized with SteamID {ClientSteamID} and ApplicationID {ApplicationID}!");
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
 
@@ -188,9 +195,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
         // Receive any needed messages
         try
         {
-            SteamSocket?.Receive(ReceiveBufferSize);
+            ServerSteamSocket?.Receive(ReceiveBufferSize);
 
-            SteamConnection?.Receive(ReceiveBufferSize);
+            ClientSteamConnection?.Receive(ReceiveBufferSize);
         }
         catch (Exception e)
         {
@@ -210,24 +217,22 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void ServerSendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID clientPlatformID)
     {
-        // Make sure this is actually the server
-        if (!IsHost)
+        if (!IsServerRunning)
         {
             return;
         }
 
-        SteamSocket.SendToClient(clientPlatformID, channel, message);
+        ServerSteamSocket.SendToClient(clientPlatformID, channel, message);
     }
 
     public override void ServerSendToClients(NetMessage message, NetworkChannel channel, Span<ClientPlatformID> clientPlatformIDs)
     {
-        // Make sure this is actually the server
-        if (!IsHost)
+        if (!IsServerRunning)
         {
             return;
         }
 
-        SteamSocket.SendToClients(clientPlatformIDs, channel, message);
+        ServerSteamSocket.SendToClients(clientPlatformIDs, channel, message);
     }
 
     public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
@@ -237,13 +242,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void StartServer()
     {
-        SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+        ServerSteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
         // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
         // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
-        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamId);
-        _isServerActive = true;
-        _isConnectionActive = true;
+        ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(ClientSteamID);
 
         // Call server setup
         InternalServerHelpers.OnStartServer();
@@ -254,13 +257,12 @@ public abstract class SteamNetworkLayer : NetworkLayer
     public void JoinServer(SteamId serverId)
     {
         // Leave existing server
-        if (_isConnectionActive || _isServerActive)
+        if (IsClientConnected || IsServerRunning)
+        {
             Disconnect();
+        }
 
-        SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
-
-        _isServerActive = false;
-        _isConnectionActive = true;
+        ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
 
         ConnectionSender.SendConnectionRequest();
     }
@@ -268,22 +270,21 @@ public abstract class SteamNetworkLayer : NetworkLayer
     public override void Disconnect(string reason = "")
     {
         // Make sure we are currently in a server
-        if (!_isServerActive && !_isConnectionActive)
+        if (!IsServerRunning && !IsClientConnected)
+        {
             return;
+        }
 
         try
         {
-            SteamConnection?.Close();
+            ClientSteamConnection?.Close();
 
-            SteamSocket?.Close();
+            ServerSteamSocket?.Close();
         }
         catch
         {
             FusionLogger.Log("Error closing socket server / connection manager");
         }
-
-        _isServerActive = false;
-        _isConnectionActive = false;
 
         InternalServerHelpers.OnDisconnect(reason);
     }
@@ -291,12 +292,12 @@ public abstract class SteamNetworkLayer : NetworkLayer
     public override void DisconnectUser(ClientPlatformID platformID)
     {
         // Make sure we are hosting a server
-        if (!_isServerActive)
+        if (!IsServerRunning)
         {
             return;
         }
 
-        SteamSocket.DisconnectUser((ulong)platformID);
+        ServerSteamSocket.DisconnectUser((ulong)platformID);
     }
 
     public string ServerCode { get; private set; } = null;
@@ -391,7 +392,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 
         // Remove the local lobby
-        if (_localLobby.Id == SteamId)
+        if (_localLobby.Id == ClientSteamID)
         {
             _localLobby.Leave();
         }

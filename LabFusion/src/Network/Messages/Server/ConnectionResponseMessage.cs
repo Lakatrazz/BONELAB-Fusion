@@ -61,7 +61,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
         }
 
         // Send catchup messages now that the user is registered
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             CatchupPlayer(data.PlayerID);
         }

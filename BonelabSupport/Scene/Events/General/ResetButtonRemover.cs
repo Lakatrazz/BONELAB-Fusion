@@ -22,7 +22,7 @@ public sealed class ResetButtonRemover : LevelEventHandler
     protected override void OnLevelLoaded()
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

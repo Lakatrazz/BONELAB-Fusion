@@ -97,7 +97,7 @@ public static class GamemodeRoundManager
 
     private static void OnGamemodeStopped()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

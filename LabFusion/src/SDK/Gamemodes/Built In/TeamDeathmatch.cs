@@ -540,7 +540,7 @@ public class TeamDeathmatch : Gamemode
         if (killerTeam != killedTeam)
         {
             // Increment score for that team
-            if (NetworkInfo.IsHost)
+            if (ServerManager.IsServerRunning)
             {
                 ScoreKeeper.AddScore(killerTeam);
             }
@@ -559,7 +559,7 @@ public class TeamDeathmatch : Gamemode
     /// <param name="id"></param>
     protected void OnPlayerJoin(PlayerID id)
     {
-        if (NetworkInfo.IsHost && IsStarted)
+        if (ServerManager.IsServerRunning && IsStarted)
         {
             TeamManager.AssignToSmallestTeam(id);
         }
@@ -574,7 +574,7 @@ public class TeamDeathmatch : Gamemode
 
         ApplyTeamSettings();
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             ResetTeams();
             SetTeams();
@@ -712,7 +712,7 @@ public class TeamDeathmatch : Gamemode
         MusicPlaylist.Update();
 
         // Make sure this is the host
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

@@ -20,7 +20,7 @@ public static class ObjectCleanupVolumePatches
     [HarmonyPatch(nameof(ObjectCleanupVolume.OnTriggerEnter))]
     public static void OnTriggerEnter(Collider col)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

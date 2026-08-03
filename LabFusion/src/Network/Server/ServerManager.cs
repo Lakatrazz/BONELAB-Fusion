@@ -14,7 +14,7 @@ public static class ServerManager
     /// <para>This will not return true if this instance is only a client that has joined the server.
     /// To check if a server exists at all, see <see cref="NetworkManager.HasServer"/>.</para>
     /// </summary>
-    public static bool IsServerRunning => NetworkInfo.IsHost;
+    public static bool IsServerRunning => ServerManager.IsServerRunning;
 
     /// <summary>
     /// Sends a message from the server to a specific client.

@@ -72,7 +72,7 @@ public static class RigAdditions
 
     private static void OnLocalRigCreated(RigManager rigManager)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

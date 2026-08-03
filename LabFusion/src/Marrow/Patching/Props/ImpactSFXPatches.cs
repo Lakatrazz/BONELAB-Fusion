@@ -15,7 +15,7 @@ public static class ImpactSFXPatches
     [HarmonyPatch(nameof(ImpactSFX.ImpactSound))]
     public static bool ImpactSound(ImpactSFX __instance, Collision c)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

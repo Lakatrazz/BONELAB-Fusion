@@ -43,7 +43,7 @@ public class HomeEventHandler : GamemodeLevelEventHandler
         if (GameController != null)
         {
             // In a server, teleport the player to the top of the lift so they don't spawn underneath it if its synced
-            if (NetworkInfo.HasServer)
+            if (NetworkManager.HasServer)
             {
                 LocalPlayer.TeleportToPosition(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3Extensions.Forward);
             }
@@ -74,7 +74,7 @@ public class HomeEventHandler : GamemodeLevelEventHandler
     private static void OnTaxiSeatRegistered()
     {
         // Give the achievement in a server with more than 1 player
-        if (NetworkInfo.HasServer && PlayerIDManager.HasOtherPlayers)
+        if (NetworkManager.HasServer && PlayerIDManager.HasOtherPlayers)
         {
             // Increment the achievement task
             if (AchievementManager.TryGetAchievement<OneMoreTime>(out var achievement))

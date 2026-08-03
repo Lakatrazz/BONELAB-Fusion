@@ -25,7 +25,7 @@ public static class TimeManagerPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }
@@ -47,7 +47,7 @@ public static class TimeManagerPatches
                 TimeScaleSender.SendSlowMoButton(true);
                 break;
             case TimeScaleMode.HOST_ONLY:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
                     TimeScaleSender.SendSlowMoButton(true);
                 }
@@ -70,7 +70,7 @@ public static class TimeManagerPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }
@@ -83,7 +83,7 @@ public static class TimeManagerPatches
                 TimeScaleSender.SendSlowMoButton(false);
                 break;
             case TimeScaleMode.HOST_ONLY:
-                if (NetworkInfo.IsHost)
+                if (ServerManager.IsServerRunning)
                 {
                     TimeScaleSender.SendSlowMoButton(false);
                 }

@@ -22,7 +22,7 @@ public enum ServerPrivacy
 /// </summary>
 public abstract class NetworkLayer
 {
-    public static event Action<NetworkLayer> OnLoggedInEvent, OnLoggedOutEvent;
+    public static event Action<NetworkLayer> LogInCompleted, LogOutCompleted;
 
     private Type _type;
     private bool _hasType;
@@ -54,14 +54,20 @@ public abstract class NetworkLayer
     public abstract string Platform { get; }
 
     /// <summary>
-    /// Returns true if this layer is hosting a server.
+    /// Returns true if a server is currently running through this NetworkLayer.
+    /// <para>This will not run true if the NetworkLayer is only a client connected to the server and not hosting it.</para>
     /// </summary>
-    public virtual bool IsHost => false;
+    public abstract bool IsServerRunning { get; }
 
     /// <summary>
-    /// Returns true if this layer is a client inside of a server. This also returns true for the host.
+    /// Returns true if this NetworkLayer is running a client connected to a server.
     /// </summary>
-    public virtual bool IsClient => false;
+    public abstract bool IsClientConnected { get; }
+
+    /// <summary>
+    /// Returns true if this NetworkLayer is running both a server and a client connected to that server.
+    /// </summary>
+    public virtual bool IsClientHost => IsClientConnected && IsServerRunning;
 
     /// <summary>
     /// Returns the active lobby.
@@ -154,22 +160,37 @@ public abstract class NetworkLayer
     /// <param name="channel"></param>
     public abstract void ClientSendToServer(NetMessage message, NetworkChannel channel);
 
+    /// <summary>
+    /// Invoked on the layer after it has logged in to any necessary APIs.
+    /// </summary>
     public abstract void OnInitializeLayer();
 
+    /// <summary>
+    /// Invoked on the layer after it has logged out of any necessary APIs.
+    /// <para>This is when you should clean up the layer.</para>
+    /// </summary>
     public abstract void OnDeinitializeLayer();
 
+    /// <summary>
+    /// Attempts to log in to the NetworkLayer.
+    /// <para>When implementing, a successful login should invoke <see cref="InvokeLoggedInEvent"/> afterwards so that the proper callbacks are received.</para>
+    /// </summary>
     public abstract void LogIn();
 
+    /// <summary>
+    /// Attempts to log out of the NetworkLayer.
+    /// <para>When implementing, a successful log out should invoke <see cref="InvokeLoggedOutEvent"/> afterwards so that the proper callbacks are received.</para>
+    /// </summary>
     public abstract void LogOut();
 
     protected void InvokeLoggedInEvent()
     {
-        OnLoggedInEvent?.Invoke(this);
+        LogInCompleted?.Invoke(this);
     }
 
     protected void InvokeLoggedOutEvent()
     {
-        OnLoggedOutEvent?.Invoke(this);
+        LogOutCompleted?.Invoke(this);
     }
 
     public virtual void OnUpdateLayer() { }

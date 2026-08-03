@@ -53,7 +53,7 @@ public static class BoardSpawnerAsyncPatches
     [HarmonyPatch(nameof(BoardGenerator._BoardSpawnerAsync_d__29.MoveNext))]
     public static bool MoveNext(BoardGenerator._BoardSpawnerAsync_d__29 __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

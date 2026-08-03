@@ -126,7 +126,7 @@ namespace LabFusion.Marrow.Integration
 
         public string GetPlayerUsername(int playerID)
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return string.Empty;
             }
@@ -143,7 +143,7 @@ namespace LabFusion.Marrow.Integration
 
         public int GetLocalPlayerID()
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return -1;
             }
@@ -153,7 +153,7 @@ namespace LabFusion.Marrow.Integration
 
         public int GetHostID()
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return -1;
             }

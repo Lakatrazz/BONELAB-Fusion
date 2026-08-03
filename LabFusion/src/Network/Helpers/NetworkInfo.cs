@@ -27,21 +27,6 @@ public static class NetworkInfo
     public static INetworkLobby Lobby => Layer.Lobby;
 
     /// <summary>
-    /// Returns true if the user is currently in a server.
-    /// </summary>
-    public static bool HasServer => HasLayer && (Layer.IsHost || Layer.IsClient);
-
-    /// <summary>
-    /// Returns if the user is hosting the active server.
-    /// </summary>
-    public static bool IsHost => HasLayer && Layer.IsHost;
-
-    /// <summary>
-    /// Returns if the user is a client in the server and is not the host.
-    /// </summary>
-    public static bool IsClient => HasLayer && Layer.IsClient && !Layer.IsHost;
-
-    /// <summary>
     /// The amount of bytes received this frame.
     /// </summary>
     public static int BytesDown { get; internal set; }

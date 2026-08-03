@@ -121,7 +121,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     private bool HasMetadataPermissions()
     {
-        return NetworkInfo.IsHost || IsMe;
+        return ServerManager.IsServerRunning || IsMe;
     }
 
     public bool Equals(PlayerID other)

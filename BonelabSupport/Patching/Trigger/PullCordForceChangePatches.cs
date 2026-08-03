@@ -17,7 +17,7 @@ public static class PullCordForceChangePatches
     [HarmonyPatch(nameof(PullCordForceChange.OnTriggerEnter))]
     public static bool OnTriggerEnter(Collider other)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return true;
         }

@@ -24,7 +24,7 @@ public static class PowerPuncherPatches
     [HarmonyPatch(nameof(PowerPuncher.OnSignificantCollisionEnter))]
     public static void OnSignificantCollisionEnter(PowerPuncher __instance, CollisionCollector.RelevantCollision collision)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

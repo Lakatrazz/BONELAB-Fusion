@@ -13,13 +13,18 @@ public static class ClientManager
     /// <summary>
     /// Returns true if the client is actively connected to a server.
     /// </summary>
-    public static bool IsClientConnected => NetworkInfo.IsClient;
+    public static bool IsClientConnected => NetworkLayerManager.Layer?.IsClientConnected ?? false;
 
     /// <summary>
     /// Returns true if the client is also hosting the server they are connected to.
     /// <para>If true, this means that a listen-server model is currently being used, rather than a separate dedicated server.</para>
     /// </summary>
-    public static bool IsClientHost => IsClientConnected && ServerManager.IsServerRunning;
+    public static bool IsClientHost => NetworkLayerManager.Layer?.IsClientHost ?? false;
+
+    /// <summary>
+    /// Returns true if the client is connected to a server, but is not running the server.
+    /// </summary>
+    public static bool IsClientOnly => IsClientConnected && !IsClientHost;
 
     /// <summary>
     /// Sends a message from the client to the connected server.

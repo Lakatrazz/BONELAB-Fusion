@@ -45,7 +45,7 @@ public static class RPCEventSender
                 return false;
             }
         }
-        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsHost)
+        else if (rpcEvent.requiresOwnership && !ServerManager.IsServerRunning)
         {
             return false;
         }

@@ -14,13 +14,13 @@ public static class FadeVolumePatches
     public static void Awake(FadeVolume __instance)
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
 
         // Make sure we aren't the server
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             return;
         }

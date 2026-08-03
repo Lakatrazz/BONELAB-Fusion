@@ -26,7 +26,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
 
         RegisterCleaner();
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             _poolee = component._poolee;
 

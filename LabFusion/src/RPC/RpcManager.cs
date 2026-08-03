@@ -85,7 +85,7 @@ public static class RpcManager
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return false;
         }

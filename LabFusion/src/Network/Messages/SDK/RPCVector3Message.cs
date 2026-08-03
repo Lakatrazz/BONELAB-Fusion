@@ -27,7 +27,7 @@ public static class RPCVector3Sender
                 return false;
             }
         }
-        else if (rpcVector3.RequiresOwnership && !NetworkInfo.IsHost)
+        else if (rpcVector3.RequiresOwnership && !ServerManager.IsServerRunning)
         {
             return false;
         }

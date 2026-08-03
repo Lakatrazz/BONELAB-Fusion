@@ -16,7 +16,7 @@ public static class FusionPreferences
 
     internal static void SendClientSettings()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

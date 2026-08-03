@@ -30,7 +30,7 @@ public class AroundTheWorld : Achievement
     private void OnMainSceneInitialized()
     {
         // Make sure we have a server and this level hasn't already been visited
-        if (NetworkInfo.HasServer && PlayerIDManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
+        if (NetworkManager.HasServer && PlayerIDManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
         {
             _levels.Add(FusionSceneManager.Barcode);
 

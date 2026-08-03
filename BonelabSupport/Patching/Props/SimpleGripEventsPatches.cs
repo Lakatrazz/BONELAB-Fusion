@@ -124,7 +124,7 @@ public static class SimpleGripEventsPatches
 
     private static bool IsExternalPlayer(SimpleGripEvents __instance, Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return false;
         }
@@ -143,7 +143,7 @@ public static class SimpleGripEventsPatches
         extender = null;
 
         // Make sure there is a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return false;
         }

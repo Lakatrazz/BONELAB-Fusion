@@ -14,7 +14,7 @@ public static class AvatarDicePatches
     [HarmonyPatch(nameof(AvatarDice.OnHandAttached))]
     public static void OnHandAttached(AvatarDice __instance, InteractableHost host, Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

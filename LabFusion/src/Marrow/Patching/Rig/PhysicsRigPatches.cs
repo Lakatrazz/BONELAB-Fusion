@@ -22,7 +22,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.SetAvatar))]
     public static void SetAvatarPostfix(PhysicsRig __instance, Avatar avatar)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

@@ -167,7 +167,7 @@ public static class EquippableManager
 
     private static void SendAllEquippables(MessageRoute route)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -180,7 +180,7 @@ public static class EquippableManager
 
     private static void SendEquippableEquip(string barcode, bool equipped, MessageRoute route)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -203,7 +203,7 @@ public static class EquippableManager
             equippable.OnLocalEquipChanged(true);
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

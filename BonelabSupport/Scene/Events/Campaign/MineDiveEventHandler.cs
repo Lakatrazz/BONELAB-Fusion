@@ -160,7 +160,7 @@ public class MineDiveEventHandler : GamemodeLevelEventHandler
 
         GetCartReferences();
 
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

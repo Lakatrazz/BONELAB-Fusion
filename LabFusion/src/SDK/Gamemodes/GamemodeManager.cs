@@ -102,7 +102,7 @@ public static class GamemodeManager
     private static void OnMainSceneInitialized()
     {
         // Stop the current gamemode
-        if (NetworkInfo.IsHost && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
+        if (ServerManager.IsServerRunning && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
         {
             StopGamemode();
         }
@@ -303,7 +303,7 @@ public static class GamemodeManager
 
     private static float GetInitialStartTime()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return DefaultStartTime;
         }
@@ -317,7 +317,7 @@ public static class GamemodeManager
     /// <param name="gamemode">The Gamemode to select.</param>
     public static void SelectGamemode(Gamemode gamemode)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -335,7 +335,7 @@ public static class GamemodeManager
     /// </summary>
     public static void DeselectGamemode()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -363,7 +363,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StartGamemode()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -391,7 +391,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StopGamemode()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -409,7 +409,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ValidateReadyConditions()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -436,7 +436,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ReadyGamemode()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -454,7 +454,7 @@ public static class GamemodeManager
     /// </summary>
     public static void UnreadyGamemode()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

@@ -21,7 +21,7 @@ public static class PullCordDevicePatches
     public static void Update(PullCordDevice __instance)
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -42,7 +42,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
     public static void EnableBall(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
+        if (NetworkManager.HasServer && __instance.rm.IsLocalPlayer())
         {
             MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { IsEnabled = true, }, CommonMessageRoutes.ReliableToOtherClients);
         }
@@ -52,7 +52,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
     public static void DisableBall(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
+        if (NetworkManager.HasServer && __instance.rm.IsLocalPlayer())
         {
             MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { IsEnabled = false, }, CommonMessageRoutes.ReliableToOtherClients);
         }
@@ -62,7 +62,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
     public static void PlayAvatarParticleEffects(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
+        if (NetworkManager.HasServer && __instance.rm.IsLocalPlayer())
         {
             MessageRelay.RelayModule<BodyLogEffectMessage, EmptyData>(new(), CommonMessageRoutes.UnreliableToOtherClients);
         }
@@ -73,7 +73,7 @@ public static class PullCordDevicePatches
     public static void OnBallGripDetached(PullCordDevice __instance, Hand hand)
     {
         // Prevent player rep body logs from inserting into the body mall
-        if (NetworkInfo.HasServer && __instance.rm != RigData.Refs.RigManager)
+        if (NetworkManager.HasServer && __instance.rm != RigData.Refs.RigManager)
         {
             var apv = __instance.apv;
 

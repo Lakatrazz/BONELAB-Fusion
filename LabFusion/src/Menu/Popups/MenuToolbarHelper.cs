@@ -37,7 +37,7 @@ public static class MenuToolbarHelper
     {
         if (GamemodeButton != null)
         {
-            GamemodeButton.SetActive(NetworkInfo.HasServer);
+            GamemodeButton.SetActive(NetworkManager.HasServer);
         }
     }
 }

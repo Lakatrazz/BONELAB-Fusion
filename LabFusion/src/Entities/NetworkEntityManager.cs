@@ -172,7 +172,7 @@ public static class NetworkEntityManager
 
     public static void RequestUnqueue(ushort queuedID)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

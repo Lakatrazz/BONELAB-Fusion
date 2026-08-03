@@ -17,7 +17,7 @@ public static class HealthPatches
     [HarmonyPatch(nameof(Health.SetAvatar))]
     public static void SetAvatarPostfix(Health __instance, Avatar avatar)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

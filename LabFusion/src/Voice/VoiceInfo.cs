@@ -29,7 +29,7 @@ public static class VoiceInfo
     /// <summary>
     /// Returns if the mute icon is enabled.
     /// </summary>
-    public static bool ShowMuteIndicator => NetworkInfo.HasServer && ClientSettings.VoiceChat.Muted.Value && ClientSettings.VoiceChat.MutedIndicator.Value;
+    public static bool ShowMuteIndicator => NetworkManager.HasServer && ClientSettings.VoiceChat.Muted.Value && ClientSettings.VoiceChat.MutedIndicator.Value;
 
     /// <summary>
     /// Returns the microphone amplitude for this frame.

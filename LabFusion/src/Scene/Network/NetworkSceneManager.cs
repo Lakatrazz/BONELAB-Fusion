@@ -36,12 +36,12 @@ public static class NetworkSceneManager
     /// <summary>
     /// Returns if the Local Player is the host of the active level.
     /// </summary>
-    public static bool IsLevelHost => NetworkInfo.IsHost;
+    public static bool IsLevelHost => ServerManager.IsServerRunning;
 
     /// <summary>
     /// Returns if the active level is networked. It will not be networked if there is no server or if <see cref="Purgatory"/> is enabled.
     /// </summary>
-    public static bool IsLevelNetworked => NetworkInfo.HasServer && !Purgatory;
+    public static bool IsLevelNetworked => NetworkManager.HasServer && !Purgatory;
 
     /// <summary>
     /// Invoked when <see cref="Purgatory"/> changes.

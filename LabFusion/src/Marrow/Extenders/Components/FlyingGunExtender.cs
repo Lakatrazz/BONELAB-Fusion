@@ -23,7 +23,7 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
 
         RegisterCleaner();
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             _poolee = component._host.marrowEntity._poolee;
 

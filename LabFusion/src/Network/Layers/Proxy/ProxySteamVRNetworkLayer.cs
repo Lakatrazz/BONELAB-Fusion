@@ -9,6 +9,10 @@ public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
 
     public override string Platform => "Steam";
 
+    public override bool IsServerRunning => throw new NotImplementedException();
+
+    public override bool IsClientConnected => throw new NotImplementedException();
+
     public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
     {
         throw new NotImplementedException();

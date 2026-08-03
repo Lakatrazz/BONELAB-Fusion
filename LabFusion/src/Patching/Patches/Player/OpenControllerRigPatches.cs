@@ -21,7 +21,7 @@ public static class XRHMDPatches
     [HarmonyPostfix]
     public static void IsUserPresent(ref bool __result)
     {
-        if (NetworkInfo.HasServer)
+        if (NetworkManager.HasServer)
             __result = true;
     }
 }

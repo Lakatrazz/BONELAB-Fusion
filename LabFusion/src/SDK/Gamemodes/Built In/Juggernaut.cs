@@ -151,7 +151,7 @@ public class Juggernaut : Gamemode
 
     public override void OnGamemodeStarted()
     {
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             JuggernautScoreKeeper.ResetScores();
 
@@ -180,7 +180,7 @@ public class Juggernaut : Gamemode
 
         CheckFinalScore();
 
-        if (NetworkInfo.IsHost)
+        if (ServerManager.IsServerRunning)
         {
             ClearTeams();
         }
@@ -321,7 +321,7 @@ public class Juggernaut : Gamemode
             return;
         }
 
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -372,7 +372,7 @@ public class Juggernaut : Gamemode
 
     private void OnPlayerJoin(PlayerID playerId)
     {
-        if (!IsStarted || !NetworkInfo.IsHost)
+        if (!IsStarted || !ServerManager.IsServerRunning)
         {
             return;
         }
@@ -382,7 +382,7 @@ public class Juggernaut : Gamemode
 
     private void OnPlayerLeave(PlayerID playerId)
     {
-        if (!IsStarted || !NetworkInfo.IsHost)
+        if (!IsStarted || !ServerManager.IsServerRunning)
         {
             return;
         }

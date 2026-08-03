@@ -38,8 +38,8 @@ public static class NetworkLayerManager
 
     internal static void OnInitializeMelon()
     {
-        NetworkLayer.OnLoggedInEvent += OnLoggedIn;
-        NetworkLayer.OnLoggedOutEvent += OnLoggedOut;
+        NetworkLayer.LogInCompleted += OnLoggedIn;
+        NetworkLayer.LogOutCompleted += OnLoggedOut;
     }
 
     public static NetworkLayer GetTargetLayer()
@@ -67,6 +67,7 @@ public static class NetworkLayerManager
     private static void OnLoggedIn(NetworkLayer layer)
     {
         var previousLayer = Layer;
+
         if (previousLayer != null && previousLayer != layer)
         {
             Layer = null;

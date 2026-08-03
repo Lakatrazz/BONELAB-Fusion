@@ -168,7 +168,7 @@ public static class LocalAvatar
 
         float maxAvatarHeight = ManagedMathf.Clamp(LobbyInfoManager.LobbyInfo.MaxAvatarHeight, 2f, 30f);
 
-        if (NetworkInfo.HasServer && avatarHeight > maxAvatarHeight)
+        if (NetworkManager.HasServer && avatarHeight > maxAvatarHeight)
         {
             return maxAvatarHeight;
         }

@@ -60,17 +60,17 @@ namespace LabFusion.Marrow.Integration
 
         public bool IsHost()
         {
-            return NetworkInfo.IsHost;
+            return ClientManager.IsClientHost;
         }
 
         public bool HasServer()
         {
-            return NetworkInfo.HasServer;
+            return NetworkManager.HasServer;
         }
 
         public string GetServerName()
         {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkManager.HasServer)
             {
                 return null;
             }

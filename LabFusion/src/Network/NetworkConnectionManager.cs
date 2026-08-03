@@ -18,7 +18,7 @@ public static class NetworkConnectionManager
     /// <param name="duration"></param>
     public static void TimeoutDisconnect(ClientPlatformID platformID, float duration = 1f)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }
@@ -36,7 +36,7 @@ public static class NetworkConnectionManager
     /// <param name="platformID"></param>
     public static void DisconnectUser(ClientPlatformID platformID)
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return;
         }

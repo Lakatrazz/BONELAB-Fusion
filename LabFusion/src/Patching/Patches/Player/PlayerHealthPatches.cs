@@ -217,7 +217,7 @@ public static class PlayerHealthPatches
     [HarmonyPatch(nameof(Player_Health.ApplyKillDamage))]
     public static void ApplyKillDamagePostfix(Player_Health __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
@@ -239,7 +239,7 @@ public static class PlayerHealthPatches
     [HarmonyPatch(nameof(Player_Health.Dying))]
     public static void Dying(Player_Health __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

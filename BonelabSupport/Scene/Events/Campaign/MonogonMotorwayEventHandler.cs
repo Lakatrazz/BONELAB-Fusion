@@ -59,7 +59,7 @@ public class MonogonMotorwayEventHandler : GamemodeLevelEventHandler
     private static void SpawnExtraKarts()
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }

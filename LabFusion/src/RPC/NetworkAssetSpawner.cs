@@ -91,7 +91,7 @@ public static class NetworkAssetSpawner
 
     public static bool TryDespawnAll()
     {
-        if (!NetworkInfo.IsHost)
+        if (!ServerManager.IsServerRunning)
         {
             return false;
         }

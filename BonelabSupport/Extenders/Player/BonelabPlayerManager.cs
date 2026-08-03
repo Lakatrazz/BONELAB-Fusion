@@ -63,7 +63,7 @@ public static class BonelabPlayerManager
 
     private static void OnVitalsChanged()
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkManager.HasServer)
         {
             return;
         }
