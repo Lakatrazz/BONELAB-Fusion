@@ -11,11 +11,9 @@ namespace LabFusion.Marrow.Messages;
 
 public class MagazineClaimData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public int? GetSize() => OwnerID.GetSize() + sizeof(ushort) + sizeof(byte);
 
-    public int? GetSize() => Size;
-
-    public byte OwnerID;
+    public ClientSmallID OwnerID;
     public ushort EntityID;
     public Handedness Handedness;
 

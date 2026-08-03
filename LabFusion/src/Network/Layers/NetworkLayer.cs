@@ -142,7 +142,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(byte userId, NetworkChannel channel, NetMessage message) { }
+    public virtual void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.
@@ -172,11 +172,11 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(ClientSmallID userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
-            if (id.SmallID != userId && (id.SmallID != 0 || !ignoreHost))
+            if (id.SmallID != userId && (id.SmallID != PlayerIDManager.HostSmallID || !ignoreHost))
             {
                 SendFromServer(id.SmallID, channel, message);
             }
@@ -193,7 +193,7 @@ public abstract class NetworkLayer
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
-            if (id.PlatformID != platformID && (id.SmallID != 0 || !ignoreHost))
+            if (id.PlatformID != platformID && (id.SmallID != PlayerIDManager.HostSmallID || !ignoreHost))
             {
                 SendFromServer(id.SmallID, channel, message);
             }

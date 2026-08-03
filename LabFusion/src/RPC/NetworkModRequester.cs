@@ -21,7 +21,7 @@ public static class NetworkModRequester
 
     public struct ModRequestInfo
     {
-        public byte Target;
+        public ClientSmallID Target;
 
         public string Barcode;
 
@@ -30,7 +30,7 @@ public static class NetworkModRequester
 
     public struct ModInstallInfo
     {
-        public byte Target;
+        public ClientSmallID Target;
 
         public string Barcode;
 

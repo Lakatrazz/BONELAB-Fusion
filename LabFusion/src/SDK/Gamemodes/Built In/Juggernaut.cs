@@ -545,7 +545,7 @@ public class Juggernaut : Gamemode
 
     private void OnRemovedFromTeam(PlayerID player, Team team)
     {
-        if (team == JuggernautTeam && NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (team == JuggernautTeam && NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
         {
             networkPlayer.HealthBar.Visible = false;
         }
@@ -611,7 +611,7 @@ public class Juggernaut : Gamemode
             healthBarVisible = true;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
         {
             networkPlayer.HealthBar.Visible = healthBarVisible;
         }

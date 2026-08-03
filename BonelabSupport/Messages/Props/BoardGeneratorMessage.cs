@@ -65,7 +65,7 @@ public class BoardGeneratorData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte OwnerID;
+    public ClientSmallID OwnerID;
     public ushort BoardID;
     public ushort BoardGeneratorID;
 

@@ -1,8 +1,11 @@
-﻿using LabFusion.Utilities;
+﻿using Il2CppInterop.Runtime.Attributes;
 
-using UnityEngine;
+using LabFusion.Network;
+using LabFusion.Utilities;
 
 using MelonLoader;
+
+using UnityEngine;
 
 namespace LabFusion.MonoBehaviours
 {
@@ -11,7 +14,8 @@ namespace LabFusion.MonoBehaviours
     {
         public MirrorIdentifier(IntPtr intPtr) : base(intPtr) { }
 
-        public byte id;
+        [HideFromIl2Cpp]
+        public ClientSmallID ID { get; set; }
 
         public void Awake()
         {

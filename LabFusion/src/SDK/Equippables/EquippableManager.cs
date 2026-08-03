@@ -16,7 +16,7 @@ public static class EquippableManager
 
     public static HashSet<string> LocalEquippedItems { get; } = new();
 
-    public static Dictionary<byte, HashSet<string>> NetEquippedItems { get; } = new();
+    public static Dictionary<ClientSmallID, HashSet<string>> NetEquippedItems { get; } = new();
 
     public static bool IsLocalEquipped(string barcode)
     {

@@ -4,7 +4,7 @@ namespace LabFusion.Senders;
 
 public static class PermissionSender
 {
-    public static void SendPermissionRequest(PermissionCommandType type, byte? otherPlayer = null)
+    public static void SendPermissionRequest(PermissionCommandType type, ClientSmallID? otherPlayer = null)
     {
         var data = new PermissionCommandRequestData()
         {

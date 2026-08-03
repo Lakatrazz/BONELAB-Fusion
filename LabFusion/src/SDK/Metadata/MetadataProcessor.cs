@@ -1,4 +1,5 @@
-﻿using LabFusion.Player;
+﻿using LabFusion.Network;
+using LabFusion.Player;
 
 namespace LabFusion.SDK.Metadata;
 
@@ -14,7 +15,7 @@ public class MetadataProcessor
     /// <param name="key"></param>
     /// <param name="playerID"></param>
     /// <returns></returns>
-    public bool HasAuthorityOverKey(string key, byte? playerID)
+    public bool HasAuthorityOverKey(string key, ClientSmallID? playerID)
     {
         if (!playerID.HasValue)
         {

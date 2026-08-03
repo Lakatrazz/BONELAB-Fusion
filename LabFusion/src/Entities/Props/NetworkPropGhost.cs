@@ -217,7 +217,7 @@ public class NetworkPropGhost : IEntityExtender, IEntityPosableExtender, IEntity
 
     private void RequestRepresentation()
     {
-        byte target = NetworkEntity.HasOwner ? NetworkEntity.OwnerID.SmallID : PlayerIDManager.HostSmallID;
+        ClientSmallID target = NetworkEntity.HasOwner ? NetworkEntity.OwnerID.SmallID : PlayerIDManager.HostSmallID;
 
         MessageRelay.RelayModule<EntityRepresentationRequestMessage, NetworkEntityReference>(new(NetworkEntity), new MessageRoute(target, NetworkChannel.Reliable));
 

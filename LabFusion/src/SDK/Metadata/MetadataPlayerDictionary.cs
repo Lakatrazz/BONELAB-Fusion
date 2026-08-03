@@ -1,6 +1,7 @@
 ﻿using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+using LabFusion.Network;
 
 namespace LabFusion.SDK.Metadata;
 
@@ -24,7 +25,7 @@ public class MetadataPlayerDictionary<TVariable> : MetadataDictionary<byte, TVar
 
     private void OnByteVariableChanged(byte smallID, TVariable variable)
     {
-        var playerID = PlayerIDManager.GetPlayerID(smallID);
+        var playerID = PlayerIDManager.GetPlayerID(new ClientSmallID(smallID));
 
         if (playerID != null)
         {
@@ -39,15 +40,15 @@ public class MetadataPlayerDictionary<TVariable> : MetadataDictionary<byte, TVar
 
     public override string GetKeyWithProperty(byte property)
     {
-        return KeyHelper.GetKeyFromPlayer(Key, property);
+        return KeyHelper.GetKeyFromPlayer(Key, new ClientSmallID(property));
     }
 
     public override byte GetPropertyWithKey(string key)
     {
-        return KeyHelper.GetPlayerFromKey(key);
+        return (byte)KeyHelper.GetPlayerFromKey(key);
     }
 
-    public TVariable GetVariable(PlayerID playerID) => GetVariable(playerID.SmallID);
+    public TVariable GetVariable(PlayerID playerID) => GetVariable((byte)playerID.SmallID);
 
-    public void RemoveVariable(PlayerID playerID) => RemoveVariable(playerID.SmallID);
+    public void RemoveVariable(PlayerID playerID) => RemoveVariable((byte)playerID.SmallID);
 }

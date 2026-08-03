@@ -7,15 +7,13 @@ namespace LabFusion.Network;
 
 public class DespawnResponseData : INetSerializable
 {
-    public const int Size = PlayerReference.Size + NetworkEntityReference.Size + sizeof(bool);
-
     public PlayerReference Despawner;
 
     public NetworkEntityReference Entity;
 
     public bool DespawnEffect;
 
-    public int? GetSize() => Size;
+    public int? GetSize() => Despawner.GetSize() + Entity.GetSize() + sizeof(bool);
 
     public void Serialize(INetSerializer serializer)
     {

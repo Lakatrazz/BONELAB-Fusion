@@ -189,6 +189,51 @@ public static class NetSerializerExtensions
         value.Serialize(serializer);
     }
 
+    public static void SerializeValue<TSerializable>(this INetSerializer serializer, ref TSerializable? value) where TSerializable : struct, INetSerializable
+    {
+        bool hasValue = value.HasValue;
+
+        serializer.SerializeValue(ref hasValue);
+
+        if (!hasValue)
+        {
+            return;
+        }
+
+        if (serializer.IsReader)
+        {
+            value = new();
+        }
+
+        value.Value.Serialize(serializer);
+    }
+
+    public static void SerializeValue<TSerializable>(this INetSerializer serializer, ref ArraySegment<TSerializable> value) where TSerializable : INetSerializable, new()
+    {
+        int count = 0;
+
+        if (!serializer.IsReader)
+        {
+            count = value.Count;
+        }
+
+        serializer.SerializeValue(ref count);
+
+        if (serializer.IsReader)
+        {
+            value = new ArraySegment<TSerializable>(new TSerializable[count]);
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            var serializable = value[i];
+
+            serializer.SerializeValue(ref serializable);
+
+            value[i] = serializable;
+        }
+    }
+
     public static void SerializeValue(this INetSerializer serializer, ref INetSerializable value, Type type)
     {
         if (serializer.IsReader)
@@ -292,5 +337,26 @@ public static class NetSerializerExtensions
                 serializer.SerializeValue(ref writtenString);
             }
         }
+    }
+
+    /// <summary>
+    /// Returns the size, in bytes, of the INetSerializable as a nullable.
+    /// This accounts for extra data written for whether or not it is null.
+    /// </summary>
+    /// <typeparam name="TSerializable"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static int? GetNullableSize<TSerializable>(this TSerializable? value) where TSerializable : struct, INetSerializable
+    {
+        int? size = sizeof(bool);
+
+        if (!value.HasValue)
+        {
+            return size;
+        }
+
+        size += value.Value.GetSize();
+
+        return size;
     }
 }

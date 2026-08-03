@@ -93,7 +93,7 @@ namespace LabFusion.Marrow.Integration
 
                 _canHearSelf = value;
 
-                if (!value && VoiceSource != null && VoiceSource.ID == PlayerIDManager.LocalSmallID)
+                if (!value && VoiceSource != null && VoiceSource.ID == (int)PlayerIDManager.LocalSmallID)
                 {
                     VoiceSource.ID = -1;
                 }
@@ -236,7 +236,7 @@ namespace LabFusion.Marrow.Integration
                 return 1f;
             }
 
-            if (!NetworkPlayerManager.TryGetPlayer((byte)InputID.Value, out var networkPlayer) || !networkPlayer.NetworkRig.HasRig)
+            if (!NetworkPlayerManager.TryGetPlayer(new ClientSmallID(InputID.Value), out var networkPlayer) || !networkPlayer.NetworkRig.HasRig)
             {
                 return 1f;
             }
@@ -311,7 +311,7 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        private void SendInput(bool input, byte playerID)
+        private void SendInput(bool input, ClientSmallID playerID)
         {
             var data = new VoiceProxyInputData()
             {
@@ -362,7 +362,7 @@ namespace LabFusion.Marrow.Integration
             {
                 int inputID = ListeningProxy.InputID ?? -1;
 
-                if (inputID == PlayerIDManager.LocalSmallID && !CanHearSelf)
+                if (inputID == (int)PlayerIDManager.LocalSmallID && !CanHearSelf)
                 {
                     inputID = -1;
                 }

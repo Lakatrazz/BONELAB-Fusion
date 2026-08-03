@@ -74,7 +74,7 @@ public class TeamLogoManager
     {
         foreach (var player in PlayerIDManager.PlayerIDs)
         {
-            if (!NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+            if (!NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
             {
                 continue;
             }

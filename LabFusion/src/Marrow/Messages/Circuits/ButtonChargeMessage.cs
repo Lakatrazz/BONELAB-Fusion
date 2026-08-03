@@ -10,7 +10,7 @@ public class ButtonChargeData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte smallId;
+    public ClientSmallID smallId;
     public ushort entityId;
 
     public bool charged;
@@ -22,7 +22,7 @@ public class ButtonChargeData : INetSerializable
         serializer.SerializeValue(ref charged);
     }
 
-    public static ButtonChargeData Create(byte smallId, ushort entityId, bool charged)
+    public static ButtonChargeData Create(ClientSmallID smallId, ushort entityId, bool charged)
     {
         return new ButtonChargeData()
         {

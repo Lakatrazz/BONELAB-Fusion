@@ -19,7 +19,7 @@ public class InventorySlotDropData : INetSerializable
     public int? GetSize() => Size;
 
     public ushort SlotEntityID;
-    public byte GrabberID;
+    public ClientSmallID GrabberID;
     public byte SlotIndex;
     public Handedness Handedness;
 

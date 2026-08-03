@@ -5,13 +5,14 @@ using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
-using LabFusion.Marrow.Proxies;
-using LabFusion.Menu;
 using LabFusion.Marrow.Patching;
+using LabFusion.Marrow.Proxies;
+using LabFusion.Marrow.Serialization;
+using LabFusion.Menu;
+using LabFusion.Network;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
-using LabFusion.Marrow.Serialization;
 
 namespace LabFusion.Scene;
 
@@ -20,7 +21,7 @@ public static class LevelDownloaderManager
     public struct LevelDownloadInfo
     {
         public SerializedCrateReference LevelReference;
-        public byte LevelHost;
+        public ClientSmallID LevelHost;
 
         public Action OnDownloadSucceeded, OnDownloadFailed, OnDownloadCanceled;
     }

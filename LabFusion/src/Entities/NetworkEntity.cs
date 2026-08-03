@@ -1,6 +1,7 @@
-﻿using LabFusion.Player;
+﻿using LabFusion.Extensions;
+using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Utilities;
-using LabFusion.Extensions;
 
 namespace LabFusion.Entities;
 
@@ -108,8 +109,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private NetworkEntityDelegate _registeredCallback = null;
 
-    private readonly List<byte> _dataCaughtUpPlayers = new();
-    private readonly Dictionary<byte, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
+    private readonly List<ClientSmallID> _dataCaughtUpPlayers = new();
+    private readonly Dictionary<ClientSmallID, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
     private readonly HashSet<IEntityExtender> _extenders = new();
     private bool _isUnregisteringExtenders = false;
@@ -233,7 +234,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     internal void OnPlayerLeft(PlayerID playerID)
     {
-        byte smallID = playerID.SmallID;
+        ClientSmallID smallID = playerID.SmallID;
 
         _dataCaughtUpPlayers.Remove(smallID);
         _dataCatchupCallbacks.Remove(smallID);
@@ -261,7 +262,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     {
         bool caughtUp = false;
 
-        byte smallID = playerID.SmallID;
+        ClientSmallID smallID = playerID.SmallID;
 
         if (EntityDataCatchingUp != null)
         {
@@ -316,7 +317,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         }
         else
         {
-            byte smallID = playerID.SmallID;
+            ClientSmallID smallID = playerID.SmallID;
 
             if (!_dataCatchupCallbacks.ContainsKey(smallID))
             {
@@ -332,7 +333,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// </summary>
     /// <param name="playerID"></param>
     /// <returns></returns>
-    public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID);
+    public bool HasDataCaughtUp(PlayerID playerID) => _dataCaughtUpPlayers.Contains(playerID.SmallID);
 
     /// <summary>
     /// Clears the players that have had data catch up for this NetworkEntity.

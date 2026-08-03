@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
+using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -10,7 +11,7 @@ public static class WearableManager
 {
     public static WearableDisplayer LocalDisplayer { get; } = new();
 
-    public static Dictionary<byte, WearableDisplayer> NetDisplayers { get; } = new();
+    public static Dictionary<ClientSmallID, WearableDisplayer> NetDisplayers { get; } = new();
 
     public static WearableDisplayer GetWearableDisplayer(RigManager rigManager)
     {
@@ -123,7 +124,7 @@ public static class WearableManager
         return displayer;
     }
 
-    private static void ClearNetDisplayer(byte smallID)
+    private static void ClearNetDisplayer(ClientSmallID smallID)
     {
         if (NetDisplayers.TryGetValue(smallID, out var displayer))
         {

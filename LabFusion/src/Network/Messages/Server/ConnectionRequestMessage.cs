@@ -62,13 +62,13 @@ public class ConnectionRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionRequestData>();
 
-        if (!received.PlatformID.HasValue)
+        if (!received.SenderPlatformID.HasValue)
         {
             FusionLogger.Error("A client attempted to connect, but ReceivedMessage.PlatformID was not set! Make sure that a unique ID is being passed in for connecting clients!");
             return;
         }
 
-        ClientPlatformID platformID = received.PlatformID.Value;
+        ClientPlatformID platformID = received.SenderPlatformID.Value;
 
         var newSmallId = PlayerIDManager.GetUniquePlayerID();
 

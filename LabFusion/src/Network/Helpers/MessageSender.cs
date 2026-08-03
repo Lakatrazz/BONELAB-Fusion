@@ -13,7 +13,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
+    public static void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
             return;
@@ -128,7 +128,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(ClientSmallID userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
@@ -208,7 +208,7 @@ public static class MessageSender
 
         if (NetworkInfo.IsHost)
         {
-            BroadcastMessageExcept(0, channel, message);
+            BroadcastMessageExcept(PlayerIDManager.LocalSmallID, channel, message);
         }
         else
         {

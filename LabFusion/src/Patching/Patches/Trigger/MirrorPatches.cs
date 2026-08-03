@@ -83,9 +83,9 @@ public static class MirrorPatches
         var identifier = __instance.GetComponent<MirrorIdentifier>();
         if (identifier != null)
         {
-            playerID = PlayerIDManager.GetPlayerID(identifier.id);
+            playerID = PlayerIDManager.GetPlayerID(identifier.ID);
 
-            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var player))
+            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID.SmallID, out var player))
             {
                 rig = player.NetworkRig.RigRefs.RigManager;
             }
@@ -100,12 +100,12 @@ public static class MirrorPatches
                 return true;
             }
 
-            byte targetId = player.PlayerID.SmallID;
+            ClientSmallID targetId = player.PlayerID.SmallID;
 
             // Add identifiers
             identifier = __instance.gameObject.AddComponent<MirrorIdentifier>();
-            byte localId = PlayerIDManager.LocalSmallID;
-            identifier.id = localId;
+            ClientSmallID localId = PlayerIDManager.LocalSmallID;
+            identifier.ID = localId;
 
             Transform root = new GameObject("Fusion Mirror Root").transform;
             root.gameObject.SetActive(false);
@@ -114,7 +114,7 @@ public static class MirrorPatches
 
             for (byte i = 0; i < 5; i++)
             {
-                if (i == localId)
+                if (i == (byte)localId)
                 {
                     i++;
                 }
@@ -125,7 +125,7 @@ public static class MirrorPatches
                 var clone = GameObject.Instantiate(__instance.gameObject, cloneRoot, true);
                 clone.name = __instance.gameObject.name;
 
-                clone.GetComponent<MirrorIdentifier>().id = i;
+                clone.GetComponent<MirrorIdentifier>().ID = new(i);
 
                 var newMirror = clone.GetComponent<Mirror>();
                 var newReflectTran = GameObject.Instantiate(newMirror._reflectTran.gameObject, cloneRoot, true);
@@ -139,14 +139,14 @@ public static class MirrorPatches
             root.gameObject.SetActive(true);
 
             // Get values
-            if (identifier.id != targetId)
+            if (identifier.ID != targetId)
             {
                 return false;
             }
 
-            playerID = PlayerIDManager.GetPlayerID(identifier.id);
+            playerID = PlayerIDManager.GetPlayerID(identifier.ID);
 
-            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID, out var identifiedPlayer))
+            if (playerID != null && NetworkPlayerManager.TryGetPlayer(playerID.SmallID, out var identifiedPlayer))
             {
                 rig = identifiedPlayer.NetworkRig.RigRefs.RigManager;
             }
@@ -202,9 +202,9 @@ public static class MirrorPatches
         var identifier = __instance.GetComponent<MirrorIdentifier>();
         if (identifier != null)
         {
-            playerId = PlayerIDManager.GetPlayerID(identifier.id);
+            playerId = PlayerIDManager.GetPlayerID(identifier.ID);
 
-            if (playerId != null && NetworkPlayerManager.TryGetPlayer(playerId, out var identifiedPlayer))
+            if (playerId != null && NetworkPlayerManager.TryGetPlayer(playerId.SmallID, out var identifiedPlayer))
             {
                 rig = identifiedPlayer.NetworkRig.RigRefs.RigManager;
             }

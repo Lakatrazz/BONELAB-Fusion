@@ -225,7 +225,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         SteamSocketHandler.BroadcastToServer(channel, message);
     }
 
-    public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message)
     {
         var id = PlayerIDManager.GetPlayerID(userId);
 

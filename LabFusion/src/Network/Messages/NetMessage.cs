@@ -39,18 +39,18 @@ public unsafe class NetMessage : IDisposable
         };
     }
 
-    public static NetMessage Create(byte tag, NetWriter writer, MessageRoute route, byte? sender = null)
+    public static NetMessage Create(byte tag, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
     {
         return Create(tag, writer.Buffer, route, sender);
     }
 
-    public static NetMessage Create(byte tag, ArraySegment<byte> buffer, MessageRoute route, byte? sender = null)
+    public static NetMessage Create(byte tag, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
     {
         var prefix = new MessagePrefix()
         {
             Tag = tag,
             Route = route,
-            Sender = sender,
+            SenderSmallID = sender,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(int));
@@ -75,7 +75,7 @@ public unsafe class NetMessage : IDisposable
         {
             Tag = tag,
             Route = received.Route,
-            Sender = received.Sender,
+            SenderSmallID = received.Sender,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length + sizeof(int));
@@ -94,22 +94,22 @@ public unsafe class NetMessage : IDisposable
         return message;
     }
 
-    public static NetMessage ModuleCreate<TMessage>(NetWriter writer, MessageRoute route, byte? sender = null) where TMessage : ModuleMessageHandler
+    public static NetMessage ModuleCreate<TMessage>(NetWriter writer, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler
     {
         return ModuleCreate(typeof(TMessage), writer, route, sender);
     }
 
-    public static NetMessage ModuleCreate<TMessage>(byte[] buffer, MessageRoute route, byte? sender = null) where TMessage : ModuleMessageHandler
+    public static NetMessage ModuleCreate<TMessage>(byte[] buffer, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler
     {
         return ModuleCreate(typeof(TMessage), buffer, route, sender);
     }
 
-    public static NetMessage ModuleCreate(Type type, NetWriter writer, MessageRoute route, byte? sender = null)
+    public static NetMessage ModuleCreate(Type type, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
     {
         return ModuleCreate(type, writer.Buffer, route, sender);
     }
 
-    public static NetMessage ModuleCreate(Type type, ArraySegment<byte> buffer, MessageRoute route, byte? sender = null)
+    public static NetMessage ModuleCreate(Type type, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
     {
         // Assign the module type
         var tag = ModuleMessageManager.GetHandlerTagByType(type);
@@ -125,7 +125,7 @@ public unsafe class NetMessage : IDisposable
         {
             Tag = NativeMessageTag.Module,
             Route = route,
-            Sender = sender,
+            SenderSmallID = sender,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(long) + sizeof(int));

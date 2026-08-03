@@ -32,7 +32,7 @@ public static class PropSender
 
         var networkEntity = prop.NetworkEntity;
 
-        var data = NetworkPropCreateData.Create(networkEntity.OwnerID, hashData, networkEntity.ID);
+        var data = NetworkPropCreateData.Create(networkEntity.OwnerID.SmallID, hashData, networkEntity.ID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, new MessageRoute(playerId.SmallID, NetworkChannel.Reliable));
     }

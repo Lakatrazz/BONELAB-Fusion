@@ -54,7 +54,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
         float amplitude = 0f;
 
-        var sources = VoiceSourceManager.GetVoicesByID(ID.SmallID);
+        var sources = VoiceSourceManager.GetVoicesByID((int)ID.SmallID);
 
         for (int i = 0; i < sampleCount; i++)
         {

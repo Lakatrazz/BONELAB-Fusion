@@ -7,7 +7,7 @@ public class EntityPlayerData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
-    public byte PlayerID;
+    public ClientSmallID PlayerID;
     public NetworkEntityReference Entity;
 
     public int? GetSize() => Size;

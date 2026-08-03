@@ -38,10 +38,10 @@ public struct DescentElevatorEvent
 
 public struct DescentNooseEvent
 {
-    public byte PlayerId;
+    public ClientSmallID PlayerId;
     public DescentNooseType Type;
 
-    public DescentNooseEvent(byte playerId, DescentNooseType type)
+    public DescentNooseEvent(ClientSmallID playerId, DescentNooseType type)
     {
         this.PlayerId = playerId;
         this.Type = type;
@@ -92,7 +92,7 @@ public class DescentEventHandler : GamemodeLevelEventHandler
         return value;
     }
 
-    public static DescentNooseEvent CreateNooseEvent(byte smallId, DescentNooseType type)
+    public static DescentNooseEvent CreateNooseEvent(ClientSmallID smallId, DescentNooseType type)
     {
         var value = new DescentNooseEvent(smallId, type);
 

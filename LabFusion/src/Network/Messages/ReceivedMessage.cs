@@ -15,12 +15,12 @@ public struct ReceivedMessage
     /// <summary>
     /// The small ID of the message sender. Only valid if the <see cref="MessageRoute.Type"/> is NOT <see cref="RelayType.None"/>.
     /// </summary>
-    public byte? Sender { get; set; }
+    public ClientSmallID? Sender { get; set; }
 
     /// <summary>
     /// The platform ID of the message sender. If no platform ID is set, then this message was sent directly from the server.
     /// </summary>
-    public ClientPlatformID? PlatformID { get; set; }
+    public ClientPlatformID? SenderPlatformID { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.
@@ -34,9 +34,9 @@ public struct ReceivedMessage
 
     /// <summary>
     /// Whether or not this message was sent directly from the server rather than being relayed by a client.
-    /// This is equivalent to checking if <see cref="PlatformID"/> is null.
+    /// This is equivalent to checking if <see cref="SenderPlatformID"/> is null.
     /// </summary>
-    public readonly bool IsServerSent => !PlatformID.HasValue;
+    public readonly bool IsServerSent => !SenderPlatformID.HasValue;
 
     /// <summary>
     /// Reads the serializable that was written into this message.
@@ -64,7 +64,7 @@ public struct ReceivedMessage
         {
             Route = Route,
             Sender = Sender,
-            PlatformID = PlatformID,
+            SenderPlatformID = SenderPlatformID,
             Bytes = buffer,
             IsServerHandled = IsServerHandled,
         };

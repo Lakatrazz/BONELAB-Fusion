@@ -21,7 +21,7 @@ public class EventActuatorData : INetSerializable
 {
     public const int Size = ComponentHashData.Size + sizeof(byte) * 2 + sizeof(float);
 
-    public byte playerId;
+    public ClientSmallID playerId;
 
     public ComponentHashData hashData;
 
@@ -37,7 +37,7 @@ public class EventActuatorData : INetSerializable
         serializer.SerializeValue(ref value);
     }
 
-    public static EventActuatorData Create(byte playerId, ComponentHashData hashData, EventActuatorType type, float value)
+    public static EventActuatorData Create(ClientSmallID playerId, ComponentHashData hashData, EventActuatorType type, float value)
     {
         return new EventActuatorData()
         {

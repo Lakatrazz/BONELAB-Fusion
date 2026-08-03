@@ -18,7 +18,7 @@ public enum PermissionCommandType
 public class PermissionCommandRequestData : INetSerializable
 {
     public PermissionCommandType Type;
-    public byte? OtherPlayer;
+    public ClientSmallID? OtherPlayer;
 
     public void Serialize(INetSerializer serializer)
     {
@@ -86,18 +86,18 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
             case PermissionCommandType.TELEPORT_TO_THEM:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    if (NetworkPlayerManager.TryGetPlayer(otherPlayer, out var otherNetPlayer) && otherNetPlayer.NetworkRig.HasRig)
+                    if (NetworkPlayerManager.TryGetPlayer(otherPlayer.SmallID, out var otherNetPlayer) && otherNetPlayer.NetworkRig.HasRig)
                     {
-                        PlayerSender.SendPlayerTeleport(playerID, otherNetPlayer.NetworkRig.RigRefs.RigManager.physicsRig.feet.transform.position);
+                        PlayerSender.SendPlayerTeleport(playerID.SmallID, otherNetPlayer.NetworkRig.RigRefs.RigManager.physicsRig.feet.transform.position);
                     }
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_ME:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
-                    if (NetworkPlayerManager.TryGetPlayer(playerID, out var player) && player.NetworkRig.HasRig)
+                    if (NetworkPlayerManager.TryGetPlayer(playerID.SmallID, out var player) && player.NetworkRig.HasRig)
                     {
-                        PlayerSender.SendPlayerTeleport(otherPlayer, player.NetworkRig.RigRefs.RigManager.physicsRig.feet.transform.position);
+                        PlayerSender.SendPlayerTeleport(otherPlayer.SmallID, player.NetworkRig.RigRefs.RigManager.physicsRig.feet.transform.position);
                     }
                 }
                 break;

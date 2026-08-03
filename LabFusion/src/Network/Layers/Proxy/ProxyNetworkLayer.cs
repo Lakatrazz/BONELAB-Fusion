@@ -373,7 +373,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         ProxySocketHandler.BroadcastToServer(channel, message);
     }
 
-    public override void SendFromServer(byte userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(ClientSmallID userId, NetworkChannel channel, NetMessage message)
     {
         var id = PlayerIDManager.GetPlayerID(userId);
 

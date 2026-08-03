@@ -1,4 +1,6 @@
-﻿namespace LabFusion.SDK.Metadata;
+﻿using LabFusion.Network;
+
+namespace LabFusion.SDK.Metadata;
 
 public static class KeyHelper
 {
@@ -52,7 +54,7 @@ public static class KeyHelper
     /// <param name="variable"></param>
     /// <param name="smallID"></param>
     /// <returns></returns>
-    public static string GetKeyFromPlayer(string variable, byte smallID)
+    public static string GetKeyFromPlayer(string variable, ClientSmallID smallID)
     {
         return GetKeyWithProperty(variable, smallID.ToString());
     }
@@ -63,11 +65,11 @@ public static class KeyHelper
     /// <param name="key"></param>
     /// <returns></returns>
     /// <exception cref="FormatException"></exception>
-    public static byte GetPlayerFromKey(string key)
+    public static ClientSmallID GetPlayerFromKey(string key)
     {
         var smallIDProperty = GetPropertyFromKey(key);
 
-        if (!byte.TryParse(smallIDProperty, out var smallID))
+        if (!ClientSmallID.TryParse(smallIDProperty, out var smallID))
         {
             throw new FormatException($"Key {key} was not in the correct format. (Property: {smallIDProperty})");
         }

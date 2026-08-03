@@ -11,11 +11,11 @@ public class MessagePrefix : INetSerializable
 
     public MessageRoute Route;
 
-    public byte? Sender = null;
+    public ClientSmallID? SenderSmallID = null;
 
     public int? GetSize()
     {
-        return sizeof(byte) * 3 + Route.GetSize();
+        return sizeof(byte) + Route.GetSize() + SenderSmallID.GetNullableSize();
     }
 
     public void Serialize(INetSerializer serializer)
@@ -25,7 +25,7 @@ public class MessagePrefix : INetSerializable
 
         if (Route.Type != RelayType.None)
         {
-            serializer.SerializeValue(ref Sender);
+            serializer.SerializeValue(ref SenderSmallID);
         }
     }
 }

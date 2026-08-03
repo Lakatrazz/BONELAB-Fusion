@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
@@ -17,7 +18,7 @@ public class TeamManager
 
     public event Action<PlayerID, Team> AssignedToTeam, RemovedFromTeam;
 
-    private readonly Dictionary<byte, MetadataVariable> _playersToTeam = new();
+    private readonly Dictionary<ClientSmallID, MetadataVariable> _playersToTeam = new();
 
     /// <summary>
     /// Registers the TeamManager to a gamemode. This is required for events to be processed properly.
@@ -121,7 +122,7 @@ public class TeamManager
 
     private void OnPlayerLeft(PlayerID playerID)
     {
-        byte smallID = playerID.SmallID;
+        ClientSmallID smallID = playerID.SmallID;
 
         _playersToTeam.Remove(smallID);
 

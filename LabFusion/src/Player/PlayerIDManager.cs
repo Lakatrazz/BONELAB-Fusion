@@ -11,19 +11,19 @@ public static class PlayerIDManager
 
     public static readonly HashSet<PlayerID> PlayerIDs = new();
 
-    public static readonly Dictionary<byte, PlayerID> SmallIDLookup = new();
+    public static readonly Dictionary<ClientSmallID, PlayerID> SmallIDLookup = new();
     public static readonly Dictionary<ClientPlatformID, PlayerID> PlatformIDLookup = new();
 
-    public static readonly HashSet<byte> ReservedSmallIDs = new();
+    public static readonly HashSet<ClientSmallID> ReservedSmallIDs = new();
 
     public static int PlayerCount => PlayerIDs.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
     public static ClientPlatformID LocalPlatformID { get; private set; }
-    public static byte LocalSmallID { get; private set; }
+    public static ClientSmallID LocalSmallID { get; private set; }
     public static PlayerID LocalID { get; private set; }
 
-    public const byte HostSmallID = 0;
+    public static readonly ClientSmallID HostSmallID = new(0);
 
     public static void InsertPlayerID(PlayerID playerID)
     {
@@ -48,28 +48,30 @@ public static class PlayerIDManager
         UnreserveSmallID(playerID.SmallID);
     }
 
-    public static void ReserveSmallID(byte smallID)
+    public static void ReserveSmallID(ClientSmallID smallID)
     {
         ReservedSmallIDs.Add(smallID);
     }
 
-    public static void UnreserveSmallID(byte smallID)
+    public static void UnreserveSmallID(ClientSmallID smallID)
     {
         ReservedSmallIDs.Remove(smallID);
     }
 
-    public static bool IsSmallIDReserved(byte smallID)
+    public static bool IsSmallIDReserved(ClientSmallID smallID)
     {
         return ReservedSmallIDs.Contains(smallID);
     }
 
-    public static byte? GetUniquePlayerID()
+    public static ClientSmallID? GetUniquePlayerID()
     {
         for (byte i = MinPlayerID; i < MaxPlayerID; i++)
         {
-            if (!IsSmallIDReserved(i))
+            var smallID = new ClientSmallID(i);
+
+            if (!IsSmallIDReserved(smallID))
             {
-                return i;
+                return smallID;
             }
         }
 
@@ -81,7 +83,7 @@ public static class PlayerIDManager
         return GetPlayerID(HostSmallID);
     }
 
-    public static PlayerID GetPlayerID(byte smallID)
+    public static PlayerID GetPlayerID(ClientSmallID smallID)
     {
         if (SmallIDLookup.TryGetValue(smallID, out var playerID))
         {
@@ -101,7 +103,7 @@ public static class PlayerIDManager
         return null;
     }
 
-    public static bool HasPlayerID(byte smallID) => SmallIDLookup.ContainsKey(smallID);
+    public static bool HasPlayerID(ClientSmallID smallID) => SmallIDLookup.ContainsKey(smallID);
 
     public static bool HasPlayerID(ClientPlatformID platformID) => PlatformIDLookup.ContainsKey(platformID);
 
@@ -117,7 +119,7 @@ public static class PlayerIDManager
         else
         {
             LocalID = null;
-            LocalSmallID = 0;
+            LocalSmallID = ClientSmallID.Empty;
         }
     }
 

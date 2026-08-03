@@ -11,7 +11,7 @@ public class NetworkPropCreateData : INetSerializable
 {
     public const int Size = sizeof(byte) + ComponentHashData.Size + sizeof(ushort);
 
-    public byte OwnerID;
+    public ClientSmallID OwnerID;
     public ComponentHashData HashData;
     public ushort EntityID;
 
@@ -22,7 +22,7 @@ public class NetworkPropCreateData : INetSerializable
         serializer.SerializeValue(ref EntityID);
     }
 
-    public static NetworkPropCreateData Create(byte ownerID, ComponentHashData hashData, ushort entityID)
+    public static NetworkPropCreateData Create(ClientSmallID ownerID, ComponentHashData hashData, ushort entityID)
     {
         return new NetworkPropCreateData()
         {

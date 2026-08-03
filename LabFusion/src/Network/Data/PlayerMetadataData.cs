@@ -10,7 +10,7 @@ public class PlayerMetadataData : INetSerializable
     public string Key;
     public string Value;
 
-    public int? GetSize() => PlayerReference.Size + Key.GetSize() + Value.GetSize();
+    public int? GetSize() => Player.GetSize() + Key.GetSize() + Value.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {

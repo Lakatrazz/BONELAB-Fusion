@@ -35,7 +35,7 @@ public static class PlayerSender
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerVoiceChat, CommonMessageRoutes.UnreliableToOtherClients);
     }
 
-    public static void SendPlayerTeleport(byte target, Vector3 position)
+    public static void SendPlayerTeleport(ClientSmallID target, Vector3 position)
     {
         if (!NetworkInfo.IsHost)
         {
@@ -44,24 +44,24 @@ public static class PlayerSender
 
         var data = new RigTeleportData()
         {
-            RigReference = new(target),
+            RigReference = new((ushort)target),
             Position = position,
         };
 
         MessageRelay.RelayModule<RigTeleportMessage, RigTeleportData>(data, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
-    public static void SendPlayerDamage(byte target, Attack attack)
+    public static void SendPlayerDamage(ClientSmallID target, Attack attack)
     {
         SendPlayerDamage(target, attack, PlayerDamageReceiver.BodyPart.Chest);
     }
 
-    public static void SendPlayerDamage(byte target, Attack attack, PlayerDamageReceiver.BodyPart part)
+    public static void SendPlayerDamage(ClientSmallID target, Attack attack, PlayerDamageReceiver.BodyPart part)
     {
         // TODO: Make work for all owned rigs
         var data = new RigDamageData()
         {
-            RigReference = new(target),
+            RigReference = new((ushort)target),
             Attack = new(attack),
             Part = part
         };
@@ -69,7 +69,7 @@ public static class PlayerSender
         MessageRelay.RelayModule<RigDamageMessage, RigDamageData>(data, new MessageRoute(target, NetworkChannel.Reliable));
     }
 
-    public static void SendPlayerMetadataRequest(byte smallID, string key, string value)
+    public static void SendPlayerMetadataRequest(ClientSmallID smallID, string key, string value)
     {
         var data = new PlayerMetadataData()
         {
@@ -81,7 +81,7 @@ public static class PlayerSender
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, CommonMessageRoutes.ReliableToServer);
     }
 
-    public static void SendPlayerMetadataResponse(byte smallID, string key, string value)
+    public static void SendPlayerMetadataResponse(ClientSmallID smallID, string key, string value)
     {
         // Make sure this is the server
         if (!NetworkInfo.IsHost)

@@ -23,7 +23,7 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         }
     }
 
-    private static void PropagateOwnership(byte ownerID, NetworkEntity networkEntity)
+    private static void PropagateOwnership(ClientSmallID ownerID, NetworkEntity networkEntity)
     {
         var ownableEntities = EntityGraphTraversal.GetAllOwnableLinkedEntities(networkEntity, out var lockedOwner);
 
@@ -38,7 +38,7 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         }
     }
 
-    private static void SendOwnershipResponse(byte ownerID, ushort entityID)
+    private static void SendOwnershipResponse(ClientSmallID ownerID, ushort entityID)
     {
         var response = new EntityPlayerData()
         {

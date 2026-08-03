@@ -11,7 +11,7 @@ public static class SpawnSender
     /// Sends a catchup sync message for a pool spawned object.
     /// </summary>
     /// <param name="syncable"></param>
-    public static void SendCatchupSpawn(byte ownerID, string barcode, ushort entityID, SerializedTransform serializedTransform, byte playerID, EntitySource source)
+    public static void SendCatchupSpawn(ClientSmallID ownerID, string barcode, ushort entityID, SerializedTransform serializedTransform, ClientSmallID playerID, EntitySource source)
     {
         if (!NetworkInfo.IsHost)
         {

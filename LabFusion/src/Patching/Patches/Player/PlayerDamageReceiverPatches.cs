@@ -46,7 +46,7 @@ public static class PlayerDamageReceiverPatches
                 // Were we hit by another player?
                 if (NetworkPlayerManager.TryGetPlayer(attacker, out var player) && !player.NetworkEntity.IsOwner)
                 {
-                    FusionPlayer.LastAttacker = player.PlayerID;
+                    FusionPlayer.LastAttacker = player.PlayerID.SmallID;
 
                     // Only allow manual damage
                     attack.damage = 0f;
@@ -68,7 +68,7 @@ public static class PlayerDamageReceiverPatches
                 }
 
                 // Send the damage over the network
-                PlayerSender.SendPlayerDamage(player.PlayerID, attack, __instance.bodyPart);
+                PlayerSender.SendPlayerDamage(player.PlayerID.SmallID, attack, __instance.bodyPart);
 
                 PlayerInteractManager.RelayPlayerInteraction(new(player.PlayerID), PlayerInteractType.DamagedOtherPlayer);
             }

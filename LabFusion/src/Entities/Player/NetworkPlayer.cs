@@ -312,7 +312,7 @@ public class NetworkPlayer : IEntityExtender, IEntityUpdatable, IEntityFixedUpda
         if (!isLocalPlayer)
         {
             VoiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
-            VoiceSource.CreateVoiceSource(PlayerID.SmallID);
+            VoiceSource.CreateVoiceSource((int)PlayerID.SmallID);
         }
 
         OnNetworkRigCreated?.InvokeSafe(this, rigManager, "executing OnNetworkRigCreated hook");

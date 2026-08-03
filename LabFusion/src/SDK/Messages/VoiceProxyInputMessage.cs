@@ -8,11 +8,11 @@ namespace LabFusion.SDK.Messages;
 
 public class VoiceProxyInputData : INetSerializable
 {
-    public int? GetSize() => ComponentPathData.Size + sizeof(byte) + sizeof(bool);
+    public int? GetSize() => ComponentPathData.Size + PlayerID.GetSize() + sizeof(bool);
 
     public ComponentPathData ComponentData;
 
-    public byte PlayerID;
+    public ClientSmallID PlayerID;
 
     public bool Input;
 
@@ -40,7 +40,7 @@ public class VoiceProxyInputMessage : ModuleMessageHandler
     {
         if (data.Input)
         {
-            proxy.InputID = data.PlayerID;
+            proxy.InputID = (int)data.PlayerID;
         }
         else
         {

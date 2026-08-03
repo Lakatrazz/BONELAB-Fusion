@@ -42,7 +42,7 @@ public class RigAvatarMessage : ModuleMessageHandler
             return false;
         }
 
-        var platformID = received.PlatformID.Value;
+        var platformID = received.SenderPlatformID.Value;
 
         // Invalid avatar stats indicates the user is trying to crash the game, whether intentionally or not
         // Prevent the stats from being relayed and disconnect them

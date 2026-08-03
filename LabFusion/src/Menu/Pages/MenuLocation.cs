@@ -513,7 +513,7 @@ public static class MenuLocation
             var avatarTitle = player.Metadata.AvatarTitle.GetValue();
             var modId = player.Metadata.AvatarModID.GetValue();
 
-            if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.NetworkRig.HasRig)
+            if (NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer) && networkPlayer.NetworkRig.HasRig)
             {
                 avatarTitle = networkPlayer.NetworkRig.RigRefs.RigManager.AvatarCrate.Crate.Title;
             }
@@ -725,7 +725,7 @@ public static class MenuLocation
                 .WithColor(Color.red)
                 .Do(() =>
                 {
-                    PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player.SmallID);
                 });
         }
 
@@ -738,7 +738,7 @@ public static class MenuLocation
                 .WithColor(Color.red)
                 .Do(() =>
                 {
-                    PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player.SmallID);
                 });
         }
 
@@ -751,14 +751,14 @@ public static class MenuLocation
                 .WithColor(Color.red)
                 .Do(() =>
                 {
-                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player.SmallID);
                 });
 
             moderationGroup.AddElement<FunctionElement>("Teleport To Me")
                 .WithColor(Color.red)
                 .Do(() =>
                 {
-                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, player);
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, player.SmallID);
                 });
         }
     }
@@ -845,8 +845,8 @@ public static class MenuLocation
                 {
                     foreach (var playerId in PlayerIDManager.PlayerIDs)
                     {
-                        if (playerId != PlayerIDManager.LocalSmallID)
-                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId);
+                        if (playerId.SmallID != PlayerIDManager.LocalSmallID)
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId.SmallID);
                     }
                 }
             });

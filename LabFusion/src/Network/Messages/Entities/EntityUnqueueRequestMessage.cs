@@ -8,7 +8,7 @@ public class EntityUnqueueRequestData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
-    public byte userId;
+    public ClientSmallID userId;
     public ushort queuedId;
 
     public void Serialize(INetSerializer serializer)
@@ -17,7 +17,7 @@ public class EntityUnqueueRequestData : INetSerializable
         serializer.SerializeValue(ref queuedId);
     }
 
-    public static EntityUnqueueRequestData Create(byte userId, ushort queuedId)
+    public static EntityUnqueueRequestData Create(ClientSmallID userId, ushort queuedId)
     {
         return new EntityUnqueueRequestData()
         {

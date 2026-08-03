@@ -22,7 +22,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
     public bool IsHost => SmallID == PlayerIDManager.HostSmallID;
 
     public ClientPlatformID PlatformID { get; private set; }
-    public byte SmallID { get; private set; }
+    public ClientSmallID SmallID { get; private set; }
 
     private readonly PlayerMetadata _metadata = new();
 
@@ -56,7 +56,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         _isValid = false;
     }
 
-    public PlayerID(ClientPlatformID platformID, byte smallID, Dictionary<string, string> metadata)
+    public PlayerID(ClientPlatformID platformID, ClientSmallID smallID, Dictionary<string, string> metadata)
     {
         Metadata.CreateMetadata();
 
@@ -148,8 +148,6 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
     {
         return SmallID.GetHashCode();
     }
-
-    public static implicit operator byte(PlayerID id) => id.SmallID;
 
     public static bool IsNullOrInvalid(PlayerID id)
     {

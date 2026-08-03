@@ -26,7 +26,7 @@ public class SpawnResponseData : INetSerializable
 {
     public int? GetSize() => sizeof(byte) + sizeof(ushort) + SpawnData.GetSize();
 
-    public byte OwnerID;
+    public ClientSmallID OwnerID;
 
     public ushort EntityID;
 
@@ -53,7 +53,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         var spawnData = data.SpawnData;
 
-        byte owner = data.OwnerID;
+        ClientSmallID owner = data.OwnerID;
         string barcode = spawnData.Barcode;
         ushort entityID = data.EntityID;
         var trackerID = spawnData.TrackerID;
@@ -203,7 +203,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         }
     }
 
-    private static NetworkEntity CreateGhostNetworkEntity(byte ownerID, ushort entityID, EntitySource source, out NetworkPropGhost propGhost)
+    private static NetworkEntity CreateGhostNetworkEntity(ClientSmallID ownerID, ushort entityID, EntitySource source, out NetworkPropGhost propGhost)
     {
         // Create the NetworkEntity and assign its owner
         var playerID = PlayerIDManager.GetPlayerID(ownerID);

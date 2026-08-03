@@ -14,7 +14,7 @@ namespace LabFusion.Utilities;
 
 public static class FusionPlayer
 {
-    public static byte? LastAttacker { get; internal set; }
+    public static ClientSmallID? LastAttacker { get; internal set; }
     public static readonly List<Transform> SpawnPoints = new();
 
     private static bool _brokeBounds = false;

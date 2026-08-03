@@ -113,7 +113,7 @@ public abstract class MessageHandler
 
         void DisconnectSenderAndThrowException()
         {
-            var platformID = received.PlatformID;
+            var platformID = received.SenderPlatformID;
 
             if (platformID.HasValue)
             {

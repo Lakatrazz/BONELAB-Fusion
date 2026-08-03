@@ -4,6 +4,7 @@ using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Data;
+using LabFusion.Network;
 
 namespace LabFusion.Entities;
 
@@ -31,7 +32,7 @@ public static class NetworkPlayerManager
         return !player.NetworkEntity.IsOwner;
     }
 
-    public static bool HasExternalPlayer(byte playerID)
+    public static bool HasExternalPlayer(ClientSmallID playerID)
     {
         if (!TryGetPlayer(playerID, out var player))
         {
@@ -51,11 +52,11 @@ public static class NetworkPlayerManager
         return NetworkEntityManager.IDManager.RegisteredEntities.HasEntity(playerID);
     }
 
-    public static bool TryGetPlayer(byte playerID, out NetworkPlayer player)
+    public static bool TryGetPlayer(ClientSmallID playerID, out NetworkPlayer player)
     {
         player = null;
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(playerID);
+        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity((ushort)playerID);
 
         if (entity == null)
         {
@@ -101,7 +102,7 @@ public static class NetworkPlayerManager
         NetworkEntity networkEntity = new();
         NetworkPlayer networkPlayer = NetworkPlayer.CreatePlayer(networkEntity, playerID);
 
-        NetworkEntityManager.IDManager.RegisterEntity(playerID.SmallID, networkEntity);
+        NetworkEntityManager.IDManager.RegisterEntity((ushort)playerID.SmallID, networkEntity);
 
         return networkPlayer;
     }

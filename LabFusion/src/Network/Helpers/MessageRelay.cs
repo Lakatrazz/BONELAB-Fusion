@@ -12,7 +12,7 @@ public static class MessageRelay
 
         data.Serialize(writer);
 
-        byte? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
+        ClientSmallID? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
         using var message = NetMessage.Create(tag, writer, route, sender);
 
@@ -25,14 +25,14 @@ public static class MessageRelay
 
         data.Serialize(writer);
 
-        byte? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
+        ClientSmallID? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
         using var message = NetMessage.ModuleCreate<TMessage>(writer, route, sender);
 
         Relay(message, route, sender);
     }
 
-    private static void Relay(NetMessage message, MessageRoute route, byte? sender = null)
+    private static void Relay(NetMessage message, MessageRoute route, ClientSmallID? sender = null)
     {
         var type = route.Type;
         var channel = route.Channel;

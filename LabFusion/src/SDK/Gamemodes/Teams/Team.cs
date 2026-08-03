@@ -1,4 +1,5 @@
-﻿using LabFusion.Player;
+﻿using LabFusion.Network;
+using LabFusion.Player;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -18,12 +19,11 @@ public class Team
         TeamName = teamName;
     }
 
-    private readonly HashSet<byte> _players = new();
-    public HashSet<byte> Players => _players;
+    public HashSet<ClientSmallID> Players { get; } = new();
 
-    public int PlayerCount => _players.Count;
+    public int PlayerCount => Players.Count;
 
-    public bool HasPlayer(byte smallID)
+    public bool HasPlayer(ClientSmallID smallID)
     {
         return Players.Contains(smallID);
     }
@@ -33,23 +33,23 @@ public class Team
         return HasPlayer(playerID.SmallID);
     }
 
-    public void ForceAddPlayer(byte smallID)
+    public void ForceAddPlayer(ClientSmallID smallID)
     {
-        _players.Add(smallID);
+        Players.Add(smallID);
     }
 
     public void ForceAddPlayer(PlayerID playerID)
     {
-        _players.Add(playerID.SmallID);
+        Players.Add(playerID.SmallID);
     }
 
-    public void ForceRemovePlayer(byte smallID)
+    public void ForceRemovePlayer(ClientSmallID smallID)
     {
-        _players.Remove(smallID);
+        Players.Remove(smallID);
     }
 
     public void ForceRemovePlayer(PlayerID playerID)
     {
-        _players.Remove(playerID.SmallID);
+        Players.Remove(playerID.SmallID);
     }
 }

@@ -2,6 +2,7 @@
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+using LabFusion.Network;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -25,7 +26,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 
     private void OnByteScoreChanged(byte smallID, int score)
     {
-        var playerID = PlayerIDManager.GetPlayerID(smallID);
+        var playerID = PlayerIDManager.GetPlayerID(new ClientSmallID(smallID));
 
         if (playerID != null)
         {
@@ -35,17 +36,17 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
 
     private void OnPlayerLeft(PlayerID playerID)
     {
-        RemoveScoreMetadata(playerID.SmallID);
+        RemoveScoreMetadata((byte)playerID.SmallID);
     }
 
     public override string GetKeyWithProperty(byte property)
     {
-        return KeyHelper.GetKeyFromPlayer(Key, property);
+        return KeyHelper.GetKeyFromPlayer(Key, new ClientSmallID(property));
     }
 
     public override byte GetPropertyWithKey(string key)
     {
-        return KeyHelper.GetPlayerFromKey(key);
+        return (byte)KeyHelper.GetPlayerFromKey(key);
     }
 
     /// <summary>
@@ -55,7 +56,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
     public IReadOnlyList<PlayerID> GetPlacedPlayers()
     {
         List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
-        leaders = leaders.OrderBy(playerID => GetScore(playerID.SmallID)).ToList();
+        leaders = leaders.OrderBy(playerID => GetScore((byte)playerID.SmallID)).ToList();
         leaders.Reverse();
 
         return leaders;
@@ -68,7 +69,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
     public IReadOnlyList<PlayerID> GetOrderedPlayers()
     {
         List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
-        leaders = leaders.OrderBy(playerID => GetScore(playerID.SmallID)).ToList();
+        leaders = leaders.OrderBy(playerID => GetScore((byte)playerID.SmallID)).ToList();
 
         return leaders;
     }
@@ -127,7 +128,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
             return;
         }
 
-        SetScore(playerID.SmallID, score); 
+        SetScore((byte)playerID.SmallID, score); 
     }
 
     public int GetScore(PlayerID playerID) 
@@ -137,7 +138,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
             return 0;
         }
 
-        return GetScore(playerID.SmallID); 
+        return GetScore((byte)playerID.SmallID); 
     }
 
     public void AddScore(PlayerID playerID, int amount = 1) 
@@ -147,7 +148,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
             return;
         }
 
-        AddScore(playerID.SmallID, amount); 
+        AddScore((byte)playerID.SmallID, amount); 
     }
 
     public void SubtractScore(PlayerID playerID, int amount = 1) 
@@ -157,6 +158,6 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<byte>
             return;
         }
 
-        SubtractScore(playerID.SmallID, amount); 
+        SubtractScore((byte)playerID.SmallID, amount); 
     }
 }

@@ -76,7 +76,7 @@ namespace LabFusion.Marrow.Integration
                 return -1;
             }
 
-            return Entity.OwnerID.SmallID;
+            return (int)Entity.OwnerID.SmallID;
         }
 #else
         public UltEventHolder onOwnershipGainedHolder;

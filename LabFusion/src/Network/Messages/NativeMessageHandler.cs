@@ -68,7 +68,7 @@ public abstract class NativeMessageHandler : MessageHandler
 
             MessageRoute route = prefix.Route;
 
-            byte? sender = prefix.Sender;
+            ClientSmallID? sender = prefix.SenderSmallID;
             ClientPlatformID? platformID = message.PlatformID;
 
             // Prevent ID spoofing
@@ -89,7 +89,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 {
                     Route = route,
                     Sender = sender,
-                    PlatformID = platformID,
+                    SenderPlatformID = platformID,
                     Bytes = bytes,
                     IsServerHandled = message.IsServerHandled,
                 };
@@ -109,7 +109,7 @@ public abstract class NativeMessageHandler : MessageHandler
         }
     }
 
-    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref ClientPlatformID? platformID)
+    private static bool ValidateReceivedID(RelayType relayType, ref ClientSmallID? sender, ref ClientPlatformID? platformID)
     {
         // If we weren't given a PlatformID, there is nothing to validate
         if (!platformID.HasValue)
@@ -139,7 +139,7 @@ public abstract class NativeMessageHandler : MessageHandler
             return true;
         }
 
-        byte existingSmallID = playerID.SmallID;
+        ClientSmallID existingSmallID = playerID.SmallID;
 
         // Sender doesn't have a value, just assign it the existing value
         if (!sender.HasValue)

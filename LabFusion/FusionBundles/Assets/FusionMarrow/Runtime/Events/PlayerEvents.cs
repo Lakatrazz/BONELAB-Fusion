@@ -67,7 +67,7 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            _latestPlayerID = playerID.SmallID;
+            _latestPlayerID = (int)playerID.SmallID;
 
             onPlayerLoadedHolder.Get()?.Invoke();
         }
@@ -75,7 +75,7 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         private void OnPlayerStartedLoading(PlayerID playerID)
         {
-            _latestPlayerID = playerID.SmallID;
+            _latestPlayerID = (int)playerID.SmallID;
 
             onPlayerUnloadedHolder.Get()?.Invoke();
         }
@@ -96,7 +96,7 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            _latestPlayerID = playerID.SmallID;
+            _latestPlayerID = (int)playerID.SmallID;
 
             onPlayerUnloadedHolder.Get()?.Invoke();
         }
@@ -112,7 +112,7 @@ namespace LabFusion.Marrow.Integration
             switch (type)
             {
                 case RigActionType.Death:
-                    _latestPlayerID = playerID.SmallID;
+                    _latestPlayerID = (int)playerID.SmallID;
 
                     onPlayerDeathHolder.Get()?.Invoke();
                     break;
@@ -131,7 +131,7 @@ namespace LabFusion.Marrow.Integration
                 return string.Empty;
             }
 
-            var player = PlayerIDManager.GetPlayerID((byte)playerID);
+            var player = PlayerIDManager.GetPlayerID(new ClientSmallID(playerID));
 
             if (player == null)
             {
@@ -148,7 +148,7 @@ namespace LabFusion.Marrow.Integration
                 return -1;
             }
 
-            return PlayerIDManager.LocalSmallID;
+            return (int)PlayerIDManager.LocalSmallID;
         }
 
         public int GetHostID()
@@ -158,7 +158,7 @@ namespace LabFusion.Marrow.Integration
                 return -1;
             }
 
-            return PlayerIDManager.HostSmallID;
+            return (int)PlayerIDManager.HostSmallID;
         }
 
         public int GetLevelHostID() => GetHostID();

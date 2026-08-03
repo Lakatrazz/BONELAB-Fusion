@@ -17,7 +17,7 @@ public enum DescentNooseType
 
 public class DescentNooseData : INetSerializable
 {
-    public byte PlayerId;
+    public ClientSmallID PlayerId;
     public DescentNooseType Type;
 
     public void Serialize(INetSerializer serializer)

@@ -8,13 +8,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class PlayerInteractData : INetSerializable
 {
-    public const int Size = PlayerReference.Size + sizeof(byte);
-
     public PlayerReference OtherPlayerReference;
 
     public PlayerInteractType Type;
 
-    public int? GetSize() => Size;
+    public int? GetSize() => OtherPlayerReference.GetSize() + sizeof(byte);
 
     public void Serialize(INetSerializer serializer)
     {

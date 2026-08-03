@@ -38,7 +38,7 @@ public static class InternalServerHelpers
         LocalPlayer.InvokeApplyInitialMetadata();
 
         // Create local id
-        var id = new PlayerID(PlayerIDManager.LocalPlatformID, 0, LocalPlayer.Metadata.Metadata.LocalDictionary);
+        var id = new PlayerID(PlayerIDManager.LocalPlatformID, PlayerIDManager.HostSmallID, LocalPlayer.Metadata.Metadata.LocalDictionary);
         id.Insert();
         PlayerIDManager.ApplyLocalID();
 

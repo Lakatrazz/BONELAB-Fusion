@@ -1,4 +1,5 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Player;
 
@@ -7,15 +8,13 @@ namespace LabFusion.Player;
 /// </summary>
 public struct PlayerReference : INetSerializable
 {
-    public const int Size = sizeof(byte);
+    public ClientSmallID SmallID;
 
-    public byte ID;
-
-    public readonly int? GetSize() => Size;
+    public readonly int? GetSize() => SmallID.GetSize();
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref ID);
+        serializer.SerializeValue(ref SmallID);
     }
 
     public readonly bool TryGetPlayer(out PlayerID player)
@@ -27,15 +26,15 @@ public struct PlayerReference : INetSerializable
 
     public readonly PlayerID GetPlayer()
     {
-        return PlayerIDManager.GetPlayerID(ID);
+        return PlayerIDManager.GetPlayerID(SmallID);
     }
 
-    public PlayerReference() : this(0) { }
+    public PlayerReference() : this(ClientSmallID.Empty) { }
 
     public PlayerReference(PlayerID player) : this(player.SmallID) { }
 
-    public PlayerReference(byte id)
+    public PlayerReference(ClientSmallID smallID)
     {
-        ID = id;
+        SmallID = smallID;
     }
 }

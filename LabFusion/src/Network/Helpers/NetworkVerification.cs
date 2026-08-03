@@ -65,7 +65,7 @@ public static class NetworkVerification
     /// <param name="playerID"></param>
     /// <param name="senderID"></param>
     /// <returns></returns>
-    public static bool HasAuthorityOverPlayer(byte playerID, byte? senderID)
+    public static bool HasAuthorityOverPlayer(ClientSmallID playerID, ClientSmallID? senderID)
     {
         // Must have a sender to have authority
         if (!senderID.HasValue)

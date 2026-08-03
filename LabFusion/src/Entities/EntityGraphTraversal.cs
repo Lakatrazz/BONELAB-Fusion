@@ -1,10 +1,12 @@
-﻿namespace LabFusion.Entities;
+﻿using LabFusion.Network;
+
+namespace LabFusion.Entities;
 
 public static class EntityGraphTraversal
 {
     public static readonly int MaxDepth = 8;
 
-    public static List<NetworkEntity> GetAllOwnableLinkedEntities(NetworkEntity startEntity, out byte? lockedOwner)
+    public static List<NetworkEntity> GetAllOwnableLinkedEntities(NetworkEntity startEntity, out ClientSmallID? lockedOwner)
     {
         List<NetworkEntity> allEntities = new();
         HashSet<ushort> visitedEntities = new();
@@ -14,7 +16,7 @@ public static class EntityGraphTraversal
         return allEntities;
     }
 
-    private static void GetAllOwnableLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, out byte? lockedOwner, int depth = 0)
+    private static void GetAllOwnableLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, out ClientSmallID? lockedOwner, int depth = 0)
     {
         lockedOwner = null;
 

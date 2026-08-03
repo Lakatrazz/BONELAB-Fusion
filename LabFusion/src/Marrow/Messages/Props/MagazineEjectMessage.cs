@@ -17,7 +17,7 @@ public class MagazineEjectData : INetSerializable
 
     public int? GetSize() => Size;
 
-    public byte PlayerID;
+    public ClientSmallID PlayerID;
     public ushort MagazineID;
     public ushort GunID;
     public Handedness Handedness;

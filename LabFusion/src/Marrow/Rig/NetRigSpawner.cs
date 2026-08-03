@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
+using LabFusion.Network;
 
 using UnityEngine;
 
@@ -21,7 +22,7 @@ public static class NetRigSpawner
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static string GetNetRigName(int id) => $"{NetRigName} (ID {id})";
+    public static string GetNetRigName(ClientSmallID id) => $"{NetRigName} (ID {id})";
 
     /// <summary>
     /// Spawns a RigManager to be used for network players.

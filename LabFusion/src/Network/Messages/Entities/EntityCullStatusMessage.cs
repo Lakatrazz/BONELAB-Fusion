@@ -39,7 +39,7 @@ public class EntityCullStatusMessage : NativeMessageHandler
         var entity = data.GetEntity();
 
         // Validate the entity
-        if (entity == null || !entity.IsRegistered || entity.OwnerID == null || entity.OwnerID != sender.Value)
+        if (entity == null || !entity.IsRegistered || entity.OwnerID == null || entity.OwnerID.SmallID != sender.Value)
         {
             return;
         }

@@ -285,7 +285,7 @@ public class SmashBones : Gamemode
         bool spectator = team == SpectatorTeam;
         bool selfSpectator = TeamManager.GetLocalTeam() == SpectatorTeam;
 
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = !spectator;
             networkPlayer.NetworkRig.ForceHide = spectator && !selfSpectator;
@@ -299,7 +299,7 @@ public class SmashBones : Gamemode
 
     private void OnRemovedFromTeam(PlayerID player, Team team)
     {
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = false;
             networkPlayer.NetworkRig.ForceHide = false;
@@ -326,7 +326,7 @@ public class SmashBones : Gamemode
                 continue;
             }
 
-            if (!NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+            if (!NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
             {
                 continue;
             }
@@ -522,7 +522,7 @@ public class SmashBones : Gamemode
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
 
-        if (NetworkBeingManager.TryGetNetworkRig(new NetworkEntityReference(playerID.SmallID), out var networkRig))
+        if (NetworkBeingManager.TryGetNetworkRig(new NetworkEntityReference((ushort)playerID.SmallID), out var networkRig))
         {
             RigActionManager.OnRigAction(networkRig, RigActionType.Death);
         }
@@ -535,7 +535,7 @@ public class SmashBones : Gamemode
             return;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(playerID, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(playerID.SmallID, out var networkPlayer))
         {
             networkPlayer.LivesBar.Lives = lives;
         }
@@ -632,7 +632,7 @@ public class SmashBones : Gamemode
             return;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        if (NetworkPlayerManager.TryGetPlayer(player.SmallID, out var networkPlayer))
         {
             networkPlayer.LivesBar.Damage = damage.GetValue();
         }

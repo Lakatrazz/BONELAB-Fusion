@@ -178,7 +178,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     private static void SendToSources(float[] buffer, int sampleCount)
     {
-        var sources = VoiceSourceManager.GetVoicesByID(PlayerIDManager.LocalSmallID);
+        var sources = VoiceSourceManager.GetVoicesByID((int)PlayerIDManager.LocalSmallID);
 
         if (!sources.Any())
         {

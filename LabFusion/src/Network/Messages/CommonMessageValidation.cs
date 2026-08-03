@@ -13,7 +13,7 @@ public static class CommonMessageValidation
         return ValidateSenderOwnsEntity(entityReference, sender);
     }
 
-    public static bool ValidateSenderOwnsEntity(NetworkEntityReference entityReference, byte sender)
+    public static bool ValidateSenderOwnsEntity(NetworkEntityReference entityReference, ClientSmallID sender)
     {
         if (entityReference.TryGetEntity(out var networkEntity) && networkEntity.HasOwner && networkEntity.OwnerID.SmallID != sender)
         {

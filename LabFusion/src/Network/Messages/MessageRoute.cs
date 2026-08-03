@@ -20,30 +20,30 @@ public struct MessageRoute : INetSerializable
     /// <summary>
     /// The target receiver of this message. Only valid if <see cref="Type"/> is <see cref="RelayType.ToTarget"/>.
     /// </summary>
-    public byte? Target { get; set; }
+    public ClientSmallID? Target { get; set; }
 
     /// <summary>
     /// Multiple target receivers of this message. Only valid if <see cref="Type"/> is <see cref="RelayType.ToTargets"/>.
     /// </summary>
-    public ArraySegment<byte> Targets { get; set; }
+    public ArraySegment<ClientSmallID> Targets { get; set; }
 
     public MessageRoute(RelayType type, NetworkChannel channel)
     {
         Type = type;
         Channel = channel;
         Target = null;
-        Targets = ArraySegment<byte>.Empty;
+        Targets = ArraySegment<ClientSmallID>.Empty;
     }
 
-    public MessageRoute(byte target, NetworkChannel channel)
+    public MessageRoute(ClientSmallID target, NetworkChannel channel)
     {
         Type = RelayType.ToTarget;
         Channel = channel;
         Target = target;
-        Targets = ArraySegment<byte>.Empty;
+        Targets = ArraySegment<ClientSmallID>.Empty;
     }
 
-    public MessageRoute(ArraySegment<byte> targets, NetworkChannel channel)
+    public MessageRoute(ArraySegment<ClientSmallID> targets, NetworkChannel channel)
     {
         Type = RelayType.ToTargets;
         Channel = channel;
@@ -51,7 +51,7 @@ public struct MessageRoute : INetSerializable
         Targets = targets;
     }
 
-    public MessageRoute(NetworkChannel channel, params byte[] targets) : this(new ArraySegment<byte>(targets), channel) { }
+    public MessageRoute(NetworkChannel channel, params ClientSmallID[] targets) : this(new ArraySegment<ClientSmallID>(targets), channel) { }
 
     public readonly int GetSize()
     {
@@ -74,8 +74,8 @@ public struct MessageRoute : INetSerializable
     {
         var type = Type;
         var channel = Channel;
-        byte? target = Target;
-        ArraySegment<byte> targets = Targets;
+        ClientSmallID? target = Target;
+        ArraySegment<ClientSmallID> targets = Targets;
 
         serializer.SerializeValue(ref type, Precision.OneByte);
         serializer.SerializeValue(ref channel, Precision.OneByte);

@@ -20,7 +20,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class ConstraintCreateData : INetSerializable
 {
-    public byte SmallID;
+    public ClientSmallID SmallID;
 
     public ushort? ConstrainerID;
 
@@ -84,7 +84,7 @@ public class ConstraintCreateData : INetSerializable
         }
     }
 
-    public static ConstraintCreateData Create(byte smallId, ushort? constrainerId, ConstrainerPointPair pair)
+    public static ConstraintCreateData Create(ClientSmallID smallId, ushort? constrainerId, ConstrainerPointPair pair)
     {
         return new ConstraintCreateData()
         {
@@ -126,7 +126,7 @@ public class ConstraintCreateMessage : ModuleMessageHandler
             // If the player isn't hosting a level, limit the amount of constraints per second
             if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.Sender.Value)))
             {
-                var activity = LimitedActivityManager.GetTracker(nameof(ConstraintCreateMessage)).GetActivity(received.Sender.Value);
+                var activity = LimitedActivityManager.GetTracker(nameof(ConstraintCreateMessage)).GetActivity((int)received.Sender.Value);
 
                 activity.Increment();
 
