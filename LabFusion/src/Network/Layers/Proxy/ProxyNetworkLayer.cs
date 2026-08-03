@@ -138,7 +138,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                         break;
                     }
 
-                    PlayerIDManager.SetLongID(SteamId.Value);
+                    PlayerIDManager.SetPlatformID(new ClientPlatformID(SteamId.Value));
                     NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
                     writer.Put(SteamId.Value);
                     SendToProxyServer(writer);
@@ -155,20 +155,22 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 }
                 break;
             case (ulong)MessageTypes.OnDisconnected:
-                ulong longId = dataReader.GetULong();
-                if (PlayerIDManager.HasPlayerID(longId))
                 {
-                    // Update the mod so it knows this user has left
-                    InternalServerHelpers.OnPlayerLeft(longId);
+                    ClientPlatformID platformID = new(dataReader.GetString());
+                    if (PlayerIDManager.HasPlayerID(platformID))
+                    {
+                        // Update the mod so it knows this user has left
+                        InternalServerHelpers.OnPlayerLeft(platformID);
 
-                    // Send disconnect notif to everyone
-                    ConnectionSender.SendDisconnect(longId);
+                        // Send disconnect notif to everyone
+                        ConnectionSender.SendDisconnect(platformID);
+                    }
                 }
                 break;
             case (ulong)MessageTypes.OnMessage:
                 {
                     byte[] data = dataReader.GetBytesWithLength();
-                    ulong platformID = dataReader.GetULong();
+                    ClientPlatformID platformID = new(dataReader.GetString());
 
                     ProxySocketHandler.OnSocketMessageReceived(data, true, platformID);
                     break;
@@ -179,18 +181,15 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             case (ulong)MessageTypes.OnConnectionMessage:
                 {
                     byte[] data = dataReader.GetBytesWithLength();
-                    ulong platformID = dataReader.GetULong();
+                    ClientPlatformID platformID = new(dataReader.GetString());
 
                     ProxySocketHandler.OnSocketMessageReceived(data, false, platformID);
                     break;
                 }
             case (ulong)MessageTypes.JoinServer:
                 {
-                    ulong serverId = dataReader.GetULong();
-                    JoinServer(new SteamId()
-                    {
-                        Value = serverId
-                    });
+                    ClientPlatformID serverId = new(dataReader.GetString());
+                    JoinServer((ulong)serverId);
                 }
                 break;
             case (ulong)MessageTypes.StartServer:
@@ -212,7 +211,14 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 }
             case (ulong)MessageTypes.SteamFriends:
                 {
-                    FriendIds = dataReader.GetULongArray().ToList();
+                    FriendIds.Clear();
+
+                    var friends = dataReader.GetStringArray();
+
+                    foreach (var friend in friends)
+                    {
+                        FriendIds.Add(new ClientPlatformID(friend));
+                    }
                     break;
                 }
         }
@@ -341,8 +347,8 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
     }
 
-    public static List<ulong> FriendIds = new();
-    public override bool IsFriend(ulong userId)
+    public static List<ClientPlatformID> FriendIds = new();
+    public override bool IsFriend(ClientPlatformID userId)
     {
         if (FriendIds.Contains(userId))
             return true;
@@ -377,7 +383,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message)
     {
         if (!IsHost)
         {
@@ -386,7 +392,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
         MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
         NetDataWriter writer = NewWriter(type);
-        writer.Put(userId);
+        writer.Put(platformID.Value);
         byte[] data = message.ToByteArray();
         writer.PutBytesWithLength(data);
         SendToProxyServer(writer);
@@ -436,7 +442,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         InternalServerHelpers.OnDisconnect(reason);
     }
 
-    public override void DisconnectUser(ulong platformID)
+    public override void DisconnectUser(ClientPlatformID platformID)
     {
         // Make sure we are the host
         if (!_isServerActive)
@@ -446,7 +452,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
         NetDataWriter writer = NewWriter(MessageTypes.DisconnectUser);
 
-        writer.Put(platformID);
+        writer.Put(platformID.Value);
 
         SendToProxyServer(writer);
     }
@@ -483,7 +489,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 return;
             }
 
-            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
+            JoinServer((ulong)info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
         });
     }
 

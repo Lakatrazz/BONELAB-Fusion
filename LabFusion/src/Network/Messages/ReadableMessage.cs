@@ -16,7 +16,8 @@ public ref struct ReadableMessage
     public bool IsServerHandled { get; set; }
 
     /// <summary>
-    /// The platform ID of the message's sender provided by the <see cref="NetworkLayer"/>, if available.
+    /// The platform ID of the message's sender provided by the <see cref="NetworkLayer"/>.
+    /// If no platform ID was set, then this message was sent by the server.
     /// </summary>
-    public ulong? PlatformID { get; set; }
+    public ClientPlatformID? PlatformID { get; set; }
 }

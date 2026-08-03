@@ -31,7 +31,7 @@ public static class ProxySocketHandler
         }
     }
 
-    public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false, ulong? platformID = null)
+    public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false, ClientPlatformID? platformID = null)
     {
         try
         {

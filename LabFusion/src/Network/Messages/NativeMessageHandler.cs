@@ -69,7 +69,7 @@ public abstract class NativeMessageHandler : MessageHandler
             MessageRoute route = prefix.Route;
 
             byte? sender = prefix.Sender;
-            ulong? platformID = message.PlatformID;
+            ClientPlatformID? platformID = message.PlatformID;
 
             // Prevent ID spoofing
             if (isServerHandled && !ValidateReceivedID(route.Type, ref sender, ref platformID))
@@ -109,7 +109,7 @@ public abstract class NativeMessageHandler : MessageHandler
         }
     }
 
-    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref ulong? platformID)
+    private static bool ValidateReceivedID(RelayType relayType, ref byte? sender, ref ClientPlatformID? platformID)
     {
         // If we weren't given a PlatformID, there is nothing to validate
         if (!platformID.HasValue)

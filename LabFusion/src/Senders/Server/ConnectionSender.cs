@@ -29,7 +29,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendDisconnect(ulong platformID, string reason = "")
+    public static void SendDisconnect(ClientPlatformID platformID, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
@@ -44,7 +44,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendConnectionDeny(ulong platformID, string reason = "")
+    public static void SendConnectionDeny(ClientPlatformID platformID, string reason = "")
     {
         if (NetworkInfo.IsHost)
         {
@@ -77,7 +77,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendPlayerCatchup(ulong newUser, PlayerID id)
+    public static void SendPlayerCatchup(ClientPlatformID newUser, PlayerID id)
     {
         using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, false);

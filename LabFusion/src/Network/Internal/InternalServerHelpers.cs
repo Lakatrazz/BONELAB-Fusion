@@ -118,9 +118,9 @@ public static class InternalServerHelpers
     /// Cleans up a single user after they have left.
     /// </summary>
     /// <param name="longId"></param>
-    public static void OnPlayerLeft(ulong longId)
+    public static void OnPlayerLeft(ClientPlatformID platformID)
     {
-        var playerId = PlayerIDManager.GetPlayerID(longId);
+        var playerId = PlayerIDManager.GetPlayerID(platformID);
 
         // Make sure the player exists in our game
         if (playerId == null)

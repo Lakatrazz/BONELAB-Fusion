@@ -32,7 +32,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public static void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message)
     {
         if (message == null)
         {
@@ -43,7 +43,7 @@ public static class MessageSender
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(platformID, channel, message);
         }
     }
 
@@ -71,13 +71,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    var platformID = PlayerIDManager.LocalPlatformID;
+                    var localPlatformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = true,
-                        PlatformID = platformID,
+                        PlatformID = localPlatformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -107,13 +107,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    var platformID = PlayerIDManager.LocalPlatformID;
+                    var localPlatformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
-                        PlatformID = platformID,
+                        PlatformID = localPlatformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -144,13 +144,13 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    var platformID = PlayerIDManager.LocalPlatformID;
+                    var localPlatformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
-                        PlatformID = platformID,
+                        PlatformID = localPlatformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);
@@ -165,7 +165,7 @@ public static class MessageSender
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public static void BroadcastMessageExcept(ClientPlatformID platformID, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         if (message == null)
             return;
@@ -174,20 +174,20 @@ public static class MessageSender
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
+            NetworkLayerManager.Layer.BroadcastMessageExcept(platformID, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIDManager.LocalPlatformID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
+            if (!ignoreHost && platformID != PlayerIDManager.LocalPlatformID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    var platformID = PlayerIDManager.LocalPlatformID;
+                    var localPlatformID = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
                         Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
                         IsServerHandled = false,
-                        PlatformID = platformID,
+                        PlatformID = localPlatformID,
                     };
 
                     NativeMessageHandler.ReadMessage(readableMessage);

@@ -18,9 +18,9 @@ public struct ReceivedMessage
     public byte? Sender { get; set; }
 
     /// <summary>
-    /// The platform ID of the message sender. Only valid if the current <see cref="NetworkLayer"/> provides it.
+    /// The platform ID of the message sender. If no platform ID is set, then this message was sent directly from the server.
     /// </summary>
-    public ulong? PlatformID { get; set; }
+    public ClientPlatformID? PlatformID { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.
@@ -31,6 +31,12 @@ public struct ReceivedMessage
     /// Whether or not this message is being handled on the server's end. Not always true for the host, as it could be handled on the host's client.
     /// </summary>
     public bool IsServerHandled { get; set; }
+
+    /// <summary>
+    /// Whether or not this message was sent directly from the server rather than being relayed by a client.
+    /// This is equivalent to checking if <see cref="PlatformID"/> is null.
+    /// </summary>
+    public readonly bool IsServerSent => !PlatformID.HasValue;
 
     /// <summary>
     /// Reads the serializable that was written into this message.

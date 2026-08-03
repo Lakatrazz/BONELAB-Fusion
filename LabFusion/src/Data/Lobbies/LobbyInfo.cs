@@ -17,8 +17,9 @@ public class LobbyInfo
     public static readonly LobbyInfo Empty = new();
 
     // Info
+    // TODO: Separate from client ID
     [JsonPropertyName("lobbyID")]
-    public ulong LobbyID { get; set; } = 0;
+    public ClientPlatformID LobbyID { get; set; } = ClientPlatformID.Empty;
 
     [JsonPropertyName("lobbyCode")]
     public string LobbyCode { get; set; } = null;

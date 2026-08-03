@@ -28,7 +28,7 @@ public static class FusionDevTools
     public static bool DespawnConstrainer(PlayerID id)
     {
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
         if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Constrainer))
         {
             return true;
@@ -45,7 +45,7 @@ public static class FusionDevTools
         }
 
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
         if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
         {
             return true;
@@ -66,7 +66,7 @@ public static class FusionDevTools
         }
 
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
         if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
         {
             return true;

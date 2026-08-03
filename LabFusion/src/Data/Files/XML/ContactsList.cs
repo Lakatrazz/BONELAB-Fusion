@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Network;
 using LabFusion.Player;
 
 using System.Xml.Linq;
@@ -7,7 +8,7 @@ namespace LabFusion.Data;
 
 public sealed class Contact
 {
-    public ulong id;
+    public ClientPlatformID id;
     public string username;
     public float volume;
 
@@ -30,19 +31,19 @@ public sealed class Contact
 
     public void Update(PlayerID id)
     {
-        this.id = id;
+        this.id = id.PlatformID;
         username = id.Metadata.Username.GetValueOrEmpty();
     }
 
     public Contact(XElement element)
     {
-        id = 0;
+        id = default;
         username = string.Empty;
         volume = 1f;
 
         if (element.TryGetAttribute(nameof(id), out var rawId))
         {
-            ulong.TryParse(rawId, out id);
+            id = new ClientPlatformID(rawId);
         }
 
         if (element.TryGetAttribute(nameof(username), out var rawUser))
@@ -102,7 +103,7 @@ public static class ContactsList
         for (var i = 0; i < Contacts.Count; i++)
         {
             contact = Contacts[i];
-            if (contact.id == id)
+            if (contact.id == id.PlatformID)
             {
                 contact.Update(id);
                 return contact;

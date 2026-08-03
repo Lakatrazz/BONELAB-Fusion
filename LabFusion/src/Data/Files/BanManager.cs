@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using LabFusion.Network;
+using System.Text.Json.Serialization;
 
 namespace LabFusion.Data;
 
@@ -57,9 +58,9 @@ public static class BanManager
         WriteFile();
     }
 
-    public static void Pardon(ulong longId)
+    public static void Pardon(ClientPlatformID platformID)
     {
-        BanList.Bans.RemoveAll((info) => info.Player.PlatformID == longId);
+        BanList.Bans.RemoveAll((info) => info.Player.PlatformID == platformID);
 
         WriteFile();
     }

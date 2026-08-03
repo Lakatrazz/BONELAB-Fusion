@@ -66,8 +66,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Get steam information
         SteamId = SteamClient.SteamId;
-        PlayerIDManager.SetLongID(SteamId.Value);
-        LocalPlayer.Username = GetUsername(SteamId.Value);
+
+        var platformID = new ClientPlatformID(SteamId.Value);
+
+        PlayerIDManager.SetPlatformID(platformID);
+        LocalPlayer.Username = GetUsername(platformID);
 
         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
 
@@ -195,14 +198,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override string GetUsername(ulong userId)
+    public override string GetUsername(ClientPlatformID platformID)
     {
-        return new Friend(userId).Name;
+        return new Friend((ulong)platformID).Name;
     }
 
-    public override bool IsFriend(ulong userId)
+    public override bool IsFriend(ClientPlatformID platformID)
     {
-        return userId == PlayerIDManager.LocalPlatformID || new Friend(userId).IsFriend;
+        return platformID == PlayerIDManager.LocalPlatformID || new Friend((ulong)platformID).IsFriend;
     }
 
     public override void BroadcastMessage(NetworkChannel channel, NetMessage message)
@@ -232,7 +235,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    public override void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message)
+    public override void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message)
     {
         // Make sure this is actually the server
         if (!IsHost)
@@ -241,7 +244,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Get the connection from the userid dictionary
-        if (SteamSocket.ConnectedSteamIDs.TryGetValue(userId, out var connection))
+        if (SteamSocket.ConnectedSteamIDs.TryGetValue((ulong)platformID, out var connection))
         {
             SteamSocket.SendToClient(connection, channel, message);
         }
@@ -300,7 +303,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         InternalServerHelpers.OnDisconnect(reason);
     }
 
-    public override void DisconnectUser(ulong platformID)
+    public override void DisconnectUser(ClientPlatformID platformID)
     {
         // Make sure we are hosting a server
         if (!_isServerActive)
@@ -308,7 +311,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
             return;
         }
 
-        SteamSocket.DisconnectUser(platformID);
+        SteamSocket.DisconnectUser((ulong)platformID);
     }
 
     public string ServerCode { get; private set; } = null;
@@ -343,7 +346,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
                 return;
             }
 
-            JoinServer(info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
+            JoinServer((ulong)info.Lobbies[0].Metadata.LobbyInfo.LobbyID);
         });
     }
 

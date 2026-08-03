@@ -37,11 +37,11 @@ public class ProxyNetworkLobby : NetworkLobby
         return _cachedMetadata.TryGetValue(key, out value) && !string.IsNullOrWhiteSpace(value);
     }
 
-    public override Action CreateJoinDelegate(ulong lobbyId)
+    public override Action CreateJoinDelegate(ClientPlatformID lobbyId)
     {
         if (NetworkLayerManager.Layer is ProxyNetworkLayer proxyLayer)
         {
-            return () => proxyLayer.JoinServer(lobbyId);
+            return () => proxyLayer.JoinServer((ulong)lobbyId);
         }
 
         return null;

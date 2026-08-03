@@ -68,7 +68,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
             return;
         }
 
-        ulong platformID = received.PlatformID.Value;
+        ClientPlatformID platformID = received.PlatformID.Value;
 
         var newSmallId = PlayerIDManager.GetUniquePlayerID();
 
@@ -174,7 +174,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         OnConnectionAllowed(playerId, platformID);
     }
 
-    private static void OnConnectionAllowed(PlayerID playerID, ulong platformID)
+    private static void OnConnectionAllowed(PlayerID playerID, ClientPlatformID platformID)
     {
         // Reserve the player's smallID so that other players don't steal it
         PlayerIDManager.ReserveSmallID(playerID.SmallID);

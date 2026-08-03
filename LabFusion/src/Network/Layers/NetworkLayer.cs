@@ -120,21 +120,21 @@ public abstract class NetworkLayer
     /// Forcefully closes the connection for a connected user.
     /// </summary>
     /// <param name="platformID">The PlatformID of the connected user.</param>
-    public abstract void DisconnectUser(ulong platformID);
+    public abstract void DisconnectUser(ClientPlatformID platformID);
 
     /// <summary>
     /// Returns the username of the player with id userId.
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public virtual string GetUsername(ulong userId) => "Unknown";
+    public virtual string GetUsername(ClientPlatformID platformID) => "Unknown";
 
     /// <summary>
     /// Returns true if this is a friend (ex. steam friends).
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public virtual bool IsFriend(ulong userId) => false;
+    public virtual bool IsFriend(ClientPlatformID platformID) => false;
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.
@@ -150,7 +150,7 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void SendFromServer(ulong userId, NetworkChannel channel, NetMessage message) { }
+    public virtual void SendFromServer(ClientPlatformID platformID, NetworkChannel channel, NetMessage message) { }
 
     /// <summary>
     /// Sends the message to the dedicated server.
@@ -189,11 +189,11 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <param name="channel"></param>
     /// <param name="message"></param>
-    public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
+    public virtual void BroadcastMessageExcept(ClientPlatformID platformID, NetworkChannel channel, NetMessage message, bool ignoreHost = true)
     {
         foreach (var id in PlayerIDManager.PlayerIDs)
         {
-            if (id.PlatformID != userId && (id.SmallID != 0 || !ignoreHost))
+            if (id.PlatformID != platformID && (id.SmallID != 0 || !ignoreHost))
             {
                 SendFromServer(id.SmallID, channel, message);
             }

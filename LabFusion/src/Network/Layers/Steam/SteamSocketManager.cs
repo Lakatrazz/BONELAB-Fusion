@@ -44,7 +44,7 @@ public class SteamSocketManager : SocketManager
 
         // Remove connection from list
         var pair = ConnectedSteamIDs.First((p) => p.Value.Id == connection.Id);
-        var platformID = pair.Key;
+        var platformID = new ClientPlatformID(pair.Key);
 
         ConnectedSteamIDs.Remove(pair.Key);
 
@@ -52,7 +52,7 @@ public class SteamSocketManager : SocketManager
         if (PlayerIDManager.HasPlayerID(platformID))
         {
             // Update the mod so it knows this user has left
-            InternalServerHelpers.OnPlayerLeft(pair.Key);
+            InternalServerHelpers.OnPlayerLeft(platformID);
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(platformID);
@@ -67,6 +67,6 @@ public class SteamSocketManager : SocketManager
 
         ConnectedSteamIDs[platformID] = connection;
 
-        SteamSocketHandler.OnSocketMessageReceived(data, size, true, platformID);
+        SteamSocketHandler.OnSocketMessageReceived(data, size, true, new ClientPlatformID(platformID));
     }
 }

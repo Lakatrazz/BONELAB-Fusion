@@ -39,7 +39,7 @@ public class SmashBones : Gamemode
     public struct DamageInfo
     {
         [JsonPropertyName("platformID")]
-        public ulong PlatformID { get; set; }
+        public ClientPlatformID PlatformID { get; set; }
 
         [JsonPropertyName("damage")]
         public float Damage { get; set; }
@@ -49,7 +49,7 @@ public class SmashBones : Gamemode
     public struct DeathInfo
     {
         [JsonPropertyName("platformID")]
-        public ulong PlatformID { get; set; }
+        public ClientPlatformID PlatformID { get; set; }
 
         [JsonPropertyName("position")]
         public JsonVector3 Position { get; set; }

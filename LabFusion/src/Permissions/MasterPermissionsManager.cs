@@ -1,4 +1,5 @@
-﻿using LabFusion.Safety;
+﻿using LabFusion.Network;
+using LabFusion.Safety;
 
 namespace LabFusion.Permissions;
 
@@ -25,7 +26,7 @@ public static class MasterPermissionsManager
     /// </summary>
     /// <param name="platformID"></param>
     /// <returns></returns>
-    public static bool IsMaster(ulong platformID)
+    public static bool IsMaster(ClientPlatformID platformID)
     {
         return TrustedListManager.VerifyPlayer(platformID, string.Empty) == TrustedStatus.Master;
     }
@@ -35,7 +36,7 @@ public static class MasterPermissionsManager
     /// </summary>
     /// <param name="platformID"></param>
     /// <returns></returns>
-    public static MasterStatus GetMasterStatus(ulong platformID)
+    public static MasterStatus GetMasterStatus(ClientPlatformID platformID)
     {
         if (IsMaster(platformID))
         {

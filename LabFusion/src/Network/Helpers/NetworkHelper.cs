@@ -63,12 +63,12 @@ public static class NetworkHelper
     /// <summary>
     /// Returns true if this user is friended on the active network platform.
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="platformID"></param>
     /// <returns></returns>
-    public static bool IsFriend(ulong userId)
+    public static bool IsFriend(ClientPlatformID platformID)
     {
         if (NetworkLayerManager.Layer != null)
-            return NetworkLayerManager.Layer.IsFriend(userId);
+            return NetworkLayerManager.Layer.IsFriend(platformID);
 
         return false;
     }
@@ -80,7 +80,7 @@ public static class NetworkHelper
     public static void KickUser(PlayerID id)
     {
         // Don't kick master users
-        if (MasterPermissionsManager.IsMaster(id))
+        if (MasterPermissionsManager.IsMaster(id.PlatformID))
         {
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
@@ -99,7 +99,7 @@ public static class NetworkHelper
             return;
         }
 
-        ConnectionSender.SendDisconnect(id, "Kicked from Server");
+        ConnectionSender.SendDisconnect(id.PlatformID, "Kicked from Server");
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public static class NetworkHelper
     public static void BanUser(PlayerID id)
     {
         // Don't ban master users
-        if (MasterPermissionsManager.IsMaster(id))
+        if (MasterPermissionsManager.IsMaster(id.PlatformID))
         {
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
@@ -129,24 +129,24 @@ public static class NetworkHelper
         }
 
         BanManager.Ban(new PlayerInfo(id), "Banned");
-        ConnectionSender.SendDisconnect(id, "Banned from Server");
+        ConnectionSender.SendDisconnect(id.PlatformID, "Banned from Server");
     }
 
     /// <summary>
     /// Checks if a user is banned.
     /// </summary>
-    /// <param name="longID"></param>
+    /// <param name="platformID"></param>
     /// <returns></returns>
-    public static bool IsBanned(ulong longID)
+    public static bool IsBanned(ClientPlatformID platformID)
     {
         // Check if the user is a master
-        if (MasterPermissionsManager.IsMaster(longID))
+        if (MasterPermissionsManager.IsMaster(platformID))
             return false;
 
         // Check the ban list
         foreach (var ban in BanManager.BanList.Bans)
         {
-            if (ban.Player.PlatformID == longID)
+            if (ban.Player.PlatformID == platformID)
             {
                 return true;
             }
@@ -158,9 +158,9 @@ public static class NetworkHelper
     /// <summary>
     /// Pardons a user from the ban list.
     /// </summary>
-    /// <param name="longId"></param>
-    public static void PardonUser(ulong longId)
+    /// <param name="platformID"></param>
+    public static void PardonUser(ClientPlatformID platformID)
     {
-        BanManager.Pardon(longId);
+        BanManager.Pardon(platformID);
     }
 }

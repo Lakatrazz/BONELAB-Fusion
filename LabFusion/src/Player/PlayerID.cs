@@ -1,9 +1,10 @@
 ﻿using LabFusion.Network;
 using LabFusion.Network.Serialization;
-using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+
+using ClientPlatformID = LabFusion.Network.ClientPlatformID;
 
 namespace LabFusion.Player;
 
@@ -20,7 +21,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     public bool IsHost => SmallID == PlayerIDManager.HostSmallID;
 
-    public ulong PlatformID { get; private set; }
+    public ClientPlatformID PlatformID { get; private set; }
     public byte SmallID { get; private set; }
 
     private readonly PlayerMetadata _metadata = new();
@@ -55,7 +56,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         _isValid = false;
     }
 
-    public PlayerID(ulong platformID, byte smallID, Dictionary<string, string> metadata)
+    public PlayerID(ClientPlatformID platformID, byte smallID, Dictionary<string, string> metadata)
     {
         Metadata.CreateMetadata();
 
@@ -149,8 +150,6 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
     }
 
     public static implicit operator byte(PlayerID id) => id.SmallID;
-
-    public static implicit operator ulong(PlayerID id) => id.PlatformID;
 
     public static bool IsNullOrInvalid(PlayerID id)
     {

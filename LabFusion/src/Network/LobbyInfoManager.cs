@@ -87,7 +87,7 @@ public static class LobbyInfoManager
         MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, CommonMessageRoutes.ReliableToOtherClients);
     }
 
-    internal static void SendLobbyInfo(ulong platformID)
+    internal static void SendLobbyInfo(ClientPlatformID platformID)
     {
         if (!NetworkInfo.IsHost)
         {

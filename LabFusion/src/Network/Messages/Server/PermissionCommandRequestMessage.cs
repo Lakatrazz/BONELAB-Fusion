@@ -55,7 +55,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
             otherPlayer = PlayerIDManager.GetPlayerID(data.OtherPlayer.Value);
         }
 
-        FusionPermissions.FetchPermissionLevel(playerID, out var level, out _);
+        FusionPermissions.FetchPermissionLevel(playerID.PlatformID, out var level, out _);
 
         switch (data.Type)
         {

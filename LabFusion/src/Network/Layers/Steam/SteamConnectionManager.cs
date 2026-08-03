@@ -33,7 +33,7 @@ namespace LabFusion.Network
             base.OnMessage(data, size, messageNum, recvTime, channel);
 
             var steamID = ConnectionInfo.Identity.SteamId;
-            ulong? platformID = steamID.IsValid ? steamID.Value : null;
+            ClientPlatformID? platformID = steamID.IsValid ? new ClientPlatformID(steamID.Value) : null;
 
             SteamSocketHandler.OnSocketMessageReceived(data, size, false, platformID);
         }
