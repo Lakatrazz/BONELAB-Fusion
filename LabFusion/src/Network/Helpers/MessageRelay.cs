@@ -69,7 +69,7 @@ public static class MessageRelay
             case RelayType.ToOtherClients:
                 if (ServerManager.IsServerRunning)
                 {
-                    if (PlayerIDManager.TryGetPlatformID(route.Target, out var platformID))
+                    if (PlayerIDManager.TryGetPlatformID(sender, out var platformID))
                     {
                         ServerManager.SendToClientsExcept(message, channel, platformID);
                     }
