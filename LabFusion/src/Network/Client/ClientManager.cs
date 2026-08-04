@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Network;
+﻿using LabFusion.Senders;
+
+namespace LabFusion.Network;
 
 /// <summary>
 /// Manages state and data transfer for the client connected to the server.
@@ -6,14 +8,14 @@
 public static class ClientManager
 {
     /// <summary>
-    /// Returns true if the client is actively connecting to a server, but hasn't connected yet.
+    /// Returns true if the client is actively connecting to a server and can send messages, but hasn't been accepted by the server yet.
     /// </summary>
-    public static bool IsClientConnecting => false;
+    public static bool IsClientConnecting => IsLayerConnected && _attemptingConnection;
 
     /// <summary>
     /// Returns true if the client is actively connected to a server.
     /// </summary>
-    public static bool IsClientConnected => NetworkLayerManager.Layer?.IsClientConnected ?? false;
+    public static bool IsClientConnected => IsLayerConnected && !_attemptingConnection;
 
     /// <summary>
     /// Returns true if the client is also hosting the server they are connected to.
@@ -30,6 +32,10 @@ public static class ClientManager
     /// If the client is connected to a server, this will return the ID of the server the client is connected to.
     /// </summary>
     public static ServerID ConnectedServerID => NetworkLayerManager.Layer?.ConnectedServerID ?? ServerID.Empty;
+
+    private static bool IsLayerConnected => NetworkLayerManager.Layer?.IsClientConnected ?? false;
+
+    private static bool _attemptingConnection = false;
 
     /// <summary>
     /// Sends a message from the client to the connected server.
@@ -53,5 +59,17 @@ public static class ClientManager
         NetworkInfo.BytesUp += message.Length;
 
         layer.ClientSendToServer(message, channel);
+    }
+
+    internal static void OnConnectionEstablished()
+    {
+        _attemptingConnection = true;
+
+        ConnectionSender.SendConnectionRequest();
+    }
+
+    internal static void OnConnectionLost()
+    {
+        _attemptingConnection = false;
     }
 }

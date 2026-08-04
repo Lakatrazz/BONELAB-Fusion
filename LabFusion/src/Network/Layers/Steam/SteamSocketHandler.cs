@@ -33,7 +33,7 @@ public static class SteamSocketHandler
         }
     }
 
-    public static void SendToClients(this SteamSocketManager socketManager, Span<ClientPlatformID> clients, NetworkChannel channel, NetMessage message)
+    public static void ServerSendToClients(this SteamSocketManager socketManager, Span<ClientPlatformID> clients, NetworkChannel channel, NetMessage message)
     {
         SendType sendType = ConvertToSendType(channel);
 
@@ -56,7 +56,7 @@ public static class SteamSocketHandler
         }
     }
 
-    public static void BroadcastToServer(NetworkChannel channel, NetMessage message)
+    public static void ClientSendToServer(this SteamConnectionManager connectionManager, NetworkChannel channel, NetMessage message)
     {
         try
         {
@@ -68,12 +68,12 @@ public static class SteamSocketHandler
             unsafe
             {
                 IntPtr messagePtr = (IntPtr)message.Buffer;
-                Connection connection = SteamNetworkLayer.ClientSteamConnection.Connection;
+                Connection connection = connectionManager.Connection;
 
                 Result success = connection.SendMessage(messagePtr, sizeOfMessage, sendType);
+
                 if (success != Result.OK)
                 {
-                    // RETRY
                     Result retry = connection.SendMessage(messagePtr, sizeOfMessage, sendType);
 
                     if (retry != Result.OK)
@@ -85,7 +85,7 @@ public static class SteamSocketHandler
         }
         catch (Exception e)
         {
-            FusionLogger.Error($"Failed sending message to socket server with reason: {e.Message}\nTrace:{e.StackTrace}");
+            FusionLogger.LogException("sending message to socket server", e);
         }
     }
 

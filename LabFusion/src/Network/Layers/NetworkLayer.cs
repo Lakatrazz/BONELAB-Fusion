@@ -1,8 +1,4 @@
-﻿using System.Reflection;
-
-using LabFusion.Player;
-using LabFusion.Utilities;
-using LabFusion.Voice;
+﻿using LabFusion.Voice;
 
 namespace LabFusion.Network;
 
@@ -22,7 +18,35 @@ public enum ServerPrivacy
 /// </summary>
 public abstract class NetworkLayer
 {
-    public static event Action<NetworkLayer> LogInCompleted, LogOutCompleted;
+    /// <summary>
+    /// Invoked when a NetworkLayer finishes logging in.
+    /// </summary>
+    public static event Action<NetworkLayer> LogInCompleted;
+
+    /// <summary>
+    /// Invoked when a logged in NetworkLayer finishes logging out.
+    /// </summary>
+    public static event Action<NetworkLayer> LogOutCompleted;
+
+    /// <summary>
+    /// Invoked when a server is started on this instance and clients are able to connect.
+    /// </summary>
+    public static event Action ServerStarted;
+
+    /// <summary>
+    /// Invoked when the server running on this instance is stopped.
+    /// </summary>
+    public static event Action ServerStopped;
+
+    /// <summary>
+    /// Invoked when the client establishes a connection to the server and is able to send messages to the server.
+    /// </summary>
+    public static event Action ConnectionEstablished;
+
+    /// <summary>
+    /// Invoked when the client has lost connection or was disconnected from the server.
+    /// </summary>
+    public static event Action ConnectionLost;
 
     private Type _type;
     private bool _hasType;
@@ -68,6 +92,7 @@ public abstract class NetworkLayer
 
     /// <summary>
     /// Returns true if this NetworkLayer is running a client connected to a server.
+    /// <para>This should still return true even if the server hasn't accepted the client's connection yet, as long as the client can send data to the server.</para>
     /// </summary>
     public abstract bool IsClientConnected { get; }
 
@@ -123,11 +148,13 @@ public abstract class NetworkLayer
     /// <summary>
     /// Start running a server. 
     /// This will not automatically connect to the server as a client.
+    /// <para>When implementing, a successful server start should invoke <see cref="InvokeServerStartedEvent"/> afterwards so that the proper callbacks are received.</para>
     /// </summary>
     public abstract void StartServer();
 
     /// <summary>
     /// If a server is currently running, stop the server.
+    /// <para>When implementing, a successful stop of the server should invoke <see cref="InvokeServerStoppedEvent"/> afterwards so that the proper callbacks are received.</para>
     /// </summary>
     public abstract void StopServer();
 
@@ -139,12 +166,14 @@ public abstract class NetworkLayer
 
     /// <summary>
     /// Connect the client to a server.
+    /// <para>When implementing, a successful connection should invoke <see cref="InvokeConnectionEstablishedEvent"/> afterwards so that the proper callbacks are received.</para>
     /// </summary>
     /// <param name="server"></param>
     public abstract void ConnectToServer(ServerID server);
 
     /// <summary>
     /// If the client is currently connected to a server, disconnect from the server.
+    /// <para>When implementing, a successful disconnect should invoke <see cref="InvokeConnectionLostEvent"/> afterwards so that the proper callbacks are received.</para>
     /// </summary>
     public abstract void ClientDisconnectFromServer();
 
@@ -219,16 +248,6 @@ public abstract class NetworkLayer
     /// </summary>
     public abstract void LogOut();
 
-    protected void InvokeLoggedInEvent()
-    {
-        LogInCompleted?.Invoke(this);
-    }
-
-    protected void InvokeLoggedOutEvent()
-    {
-        LogOutCompleted?.Invoke(this);
-    }
-
     public virtual void OnUpdateLayer() { }
 
     public virtual void OnLateUpdateLayer() { }
@@ -246,4 +265,13 @@ public abstract class NetworkLayer
     {
         throw new NotImplementedException("The current NetworkLayer does not support joining by code!");
     }
+
+    protected void InvokeLoggedInEvent() => LogInCompleted?.Invoke(this);
+    protected void InvokeLoggedOutEvent() => LogOutCompleted?.Invoke(this);
+
+    protected void InvokeServerStartedEvent() => ServerStarted?.Invoke();
+    protected void InvokeServerStoppedEvent() => ServerStopped?.Invoke();
+
+    protected void InvokeConnectionEstablishedEvent() => ConnectionEstablished?.Invoke();
+    protected void InvokeConnectionLostEvent() => ConnectionLost?.Invoke();
 }

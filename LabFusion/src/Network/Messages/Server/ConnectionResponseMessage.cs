@@ -6,26 +6,23 @@ namespace LabFusion.Network;
 
 public class ConnectionResponseData : INetSerializable
 {
-    public PlayerID PlayerID = null;
+    public ClientPlatformID PlatformID;
+
+    public ClientSmallID SmallID;
+
+    public Dictionary<string, string> InitialMetadata;
 
     public bool IsInitialJoin = false;
 
-    public int? GetSize() => PlayerID.GetSize() + sizeof(bool);
+    public int? GetSize() => PlatformID.GetSize() + SmallID.GetSize() + InitialMetadata.GetSize() + sizeof(bool);
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref PlayerID);
+        serializer.SerializeValue(ref PlatformID);
+        serializer.SerializeValue(ref SmallID);
+        serializer.SerializeValue(ref InitialMetadata);
 
         serializer.SerializeValue(ref IsInitialJoin);
-    }
-
-    public static ConnectionResponseData Create(PlayerID id, bool isInitialJoin)
-    {
-        return new ConnectionResponseData()
-        {
-            PlayerID = id,
-            IsInitialJoin = isInitialJoin,
-        };
     }
 }
 
@@ -39,12 +36,17 @@ public class ConnectionResponseMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConnectionResponseData>();
 
-        // Insert the id into our list
-        data.PlayerID.Insert();
+        PlayerID playerID = PlayerIDManager.GetPlayerID(data.PlatformID);
+
+        if (playerID == null)
+        {
+            playerID = new PlayerID(data.PlatformID, data.SmallID, data.InitialMetadata);
+            playerID.Insert();
+        }
 
         // Check the id to see if its our own
         // If it is, just update our self reference
-        if (data.PlayerID.PlatformID == PlayerIDManager.LocalPlatformID)
+        if (playerID.PlatformID == PlayerIDManager.LocalPlatformID)
         {
             PlayerIDManager.ApplyLocalID();
 
@@ -55,15 +57,15 @@ public class ConnectionResponseMessage : NativeMessageHandler
         // Otherwise, create a network player
         else
         {
-            InternalServerHelpers.OnPlayerJoined(data.PlayerID, data.IsInitialJoin);
+            InternalServerHelpers.OnPlayerJoined(playerID, data.IsInitialJoin);
 
-            NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
+            NetworkPlayerManager.CreateNetworkPlayer(playerID);
         }
 
         // Send catchup messages now that the user is registered
         if (ServerManager.IsServerRunning)
         {
-            CatchupPlayer(data.PlayerID);
+            CatchupPlayer(playerID);
         }
     }
 

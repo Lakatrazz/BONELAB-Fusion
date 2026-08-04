@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Senders;
+using LabFusion.Utilities;
 
 using System.Reflection;
 
@@ -165,6 +166,12 @@ public static class NetworkLayerManager
     {
         NetworkLayer.LogInCompleted += OnLoggedIn;
         NetworkLayer.LogOutCompleted += OnLoggedOut;
+
+        NetworkLayer.ServerStarted += OnServerStarted;
+        NetworkLayer.ServerStopped += OnServerStopped;
+
+        NetworkLayer.ConnectionEstablished += OnConnectionEstablished;
+        NetworkLayer.ConnectionLost += OnConnectionLost;
     }
 
     private static void OnLoggedIn(NetworkLayer layer)
@@ -193,5 +200,27 @@ public static class NetworkLayerManager
             Layer = null;
             LoggedIn = false;
         }
+    }
+
+    private static void OnServerStarted()
+    {
+        InternalServerHelpers.OnStartServer();
+    }
+
+    private static void OnServerStopped()
+    {
+        InternalServerHelpers.OnDisconnect();
+    }
+    
+    private static void OnConnectionEstablished()
+    {
+        ClientManager.OnConnectionEstablished();
+    }
+
+    private static void OnConnectionLost()
+    {
+        ClientManager.OnConnectionLost();
+
+        InternalServerHelpers.OnDisconnect();
     }
 }

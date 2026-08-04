@@ -1,6 +1,7 @@
 ﻿using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.SDK.Modules;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -16,7 +17,7 @@ public static class MessageRelay
 
         using var message = NetMessage.Create(tag, writer, route, sender);
 
-        Relay(message, route, sender);
+        TryRelay(message, route, sender);
     }
 
     public static void RelayModule<TMessage, TData>(TData data, MessageRoute route) where TMessage : ModuleMessageHandler where TData : INetSerializable
@@ -29,7 +30,19 @@ public static class MessageRelay
 
         using var message = NetMessage.ModuleCreate<TMessage>(writer, route, sender);
 
-        Relay(message, route, sender);
+        TryRelay(message, route, sender);
+    }
+
+    private static void TryRelay(NetMessage message, MessageRoute route, ClientSmallID? sender = null)
+    {
+        try
+        {
+            Relay(message, route, sender);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException($"relaying message with type {route.Type} and channel {route.Channel}", e);
+        }
     }
 
     private static void Relay(NetMessage message, MessageRoute route, ClientSmallID? sender = null)
@@ -56,7 +69,14 @@ public static class MessageRelay
             case RelayType.ToOtherClients:
                 if (ServerManager.IsServerRunning)
                 {
-                    ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(route.Target.Value).PlatformID);
+                    if (PlayerIDManager.TryGetPlatformID(route.Target, out var platformID))
+                    {
+                        ServerManager.SendToClientsExcept(message, channel, platformID);
+                    }
+                    else
+                    {
+                        ServerManager.SendToClients(message, channel);
+                    }
                 }
                 else
                 {

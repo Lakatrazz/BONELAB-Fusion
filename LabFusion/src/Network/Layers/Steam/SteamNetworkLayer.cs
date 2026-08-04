@@ -2,7 +2,6 @@
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
-using LabFusion.Senders;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 
@@ -239,12 +238,17 @@ public abstract class SteamNetworkLayer : NetworkLayer
             return;
         }
 
-        ServerSteamSocket.SendToClients(clientPlatformIDs, channel, message);
+        ServerSteamSocket.ServerSendToClients(clientPlatformIDs, channel, message);
     }
 
     public override void ClientSendToServer(NetMessage message, NetworkChannel channel)
     {
-        SteamSocketHandler.BroadcastToServer(channel, message);
+        if (!IsClientConnected)
+        {
+            return;
+        }
+
+        ClientSteamConnection.ClientSendToServer(channel, message);
     }
 
     public override void StartServer()
@@ -252,9 +256,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
         ServerSteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>();
         _runningServerID = new ServerID(ClientSteamID);
 
-        InternalServerHelpers.OnStartServer();
-        
         RefreshServerCode();
+
+        InvokeServerStartedEvent();
     }
 
     public override void StopServer()
@@ -275,6 +279,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         ServerSteamSocket = null;
         _runningServerID = ServerID.Empty;
+
+        InvokeServerStoppedEvent();
     }
 
     public override void ServerDisconnectClient(ClientPlatformID client)
@@ -299,7 +305,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         ClientSteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverSteamID);
         _connectedServerID = server;
 
-        ConnectionSender.SendConnectionRequest();
+        InvokeConnectionEstablishedEvent();
     }
 
     public override void ClientDisconnectFromServer()
@@ -320,39 +326,18 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         ClientSteamConnection = null;
         _connectedServerID = ServerID.Empty;
+
+        InvokeConnectionLostEvent();
     }
 
     public override void Disconnect(string reason = "")
     {
-        // Make sure we are currently in a server
-        if (!IsServerRunning && !IsClientConnected)
-        {
-            return;
-        }
-
-        try
-        {
-            ClientSteamConnection?.Close();
-
-            ServerSteamSocket?.Close();
-        }
-        catch
-        {
-            FusionLogger.Log("Error closing socket server / connection manager");
-        }
-
-        InternalServerHelpers.OnDisconnect(reason);
+        throw new NotImplementedException();
     }
 
     public override void DisconnectUser(ClientPlatformID platformID)
     {
-        // Make sure we are hosting a server
-        if (!IsServerRunning)
-        {
-            return;
-        }
-
-        ServerSteamSocket.DisconnectUser((ulong)platformID);
+        throw new NotImplementedException();
     }
 
     public string ServerCode { get; private set; } = null;

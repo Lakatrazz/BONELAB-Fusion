@@ -34,16 +34,6 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnStartServer()
     {
-        // Apply initial metadata
-        LocalPlayer.InvokeApplyInitialMetadata();
-
-        // Create local id
-        var id = new PlayerID(PlayerIDManager.LocalPlatformID, PlayerIDManager.HostSmallID, LocalPlayer.Metadata.Metadata.LocalDictionary);
-        id.Insert();
-        PlayerIDManager.ApplyLocalID();
-
-        NetworkPlayerManager.CreateLocalPlayer();
-
         // Update hooks
         MultiplayerHooking.InvokeOnStartedServer();
 

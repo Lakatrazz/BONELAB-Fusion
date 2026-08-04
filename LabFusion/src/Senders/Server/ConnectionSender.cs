@@ -61,7 +61,13 @@ public static class ConnectionSender
     public static void SendPlayerCatchup(ClientPlatformID newUser, PlayerID id)
     {
         using var writer = NetWriter.Create();
-        var response = ConnectionResponseData.Create(id, false);
+        var response = new ConnectionResponseData()
+        {
+            PlatformID = id.PlatformID,
+            SmallID = id.SmallID,
+            InitialMetadata = id.Metadata.Metadata.LocalDictionary,
+            IsInitialJoin = false,
+        };
         writer.SerializeValue(ref response);
 
         using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
@@ -71,7 +77,13 @@ public static class ConnectionSender
     public static void SendPlayerJoin(PlayerID id)
     {
         using var writer = NetWriter.Create();
-        var response = ConnectionResponseData.Create(id, true);
+        var response = new ConnectionResponseData()
+        {
+            PlatformID = id.PlatformID,
+            SmallID = id.SmallID,
+            InitialMetadata = id.Metadata.Metadata.LocalDictionary,
+            IsInitialJoin = true,
+        };
         writer.SerializeValue(ref response);
 
         using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
