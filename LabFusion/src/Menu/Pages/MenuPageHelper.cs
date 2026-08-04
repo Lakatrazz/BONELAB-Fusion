@@ -23,7 +23,7 @@ public static class MenuPageHelper
         MenuLocation.OnInitializeMelon();
         MenuGamemode.OnInitializeMelon();
 
-        NetworkLayerManager.OnLoggedInChanged += OnLoggedInChanged;
+        NetworkLayerManager.LogInChanged += OnLoggedInChanged;
 
         ClientSettings.MenuSize.OnValueChanged += OnMenuSizeChanged;
     }

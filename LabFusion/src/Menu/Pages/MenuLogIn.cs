@@ -14,7 +14,7 @@ public static class MenuLogIn
 
     private static void OnLogInPageShown()
     {
-        ChangeLayerElement.gameObject.SetActive(NetworkLayer.SupportedLayers.Count > 1);
+        ChangeLayerElement.gameObject.SetActive(NetworkLayerManager.SupportedLayers.Count > 1);
     }
 
     public static void PopulateLogIn(GameObject logInGameObject)
@@ -36,7 +36,7 @@ public static class MenuLogIn
             .WithTitle("Change Layer")
             .Do(() =>
             {
-                int count = NetworkLayer.SupportedLayers.Count;
+                int count = NetworkLayerManager.SupportedLayers.Count;
 
                 if (count <= 0)
                 {
@@ -50,7 +50,7 @@ public static class MenuLogIn
                     _lastLayerIndex = 0;
                 }
 
-                ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastLayerIndex].Title;
+                ClientSettings.NetworkLayerTitle.Value = NetworkLayerManager.SupportedLayers[_lastLayerIndex].Title;
             });
 
         ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>

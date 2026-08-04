@@ -13,10 +13,10 @@ public static class NetworkLayerDeterminer
     {
         if (PlatformHelper.IsAndroid)
         {
-            return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
+            return NetworkLayerManager.GetLayer<ProxySteamVRNetworkLayer>();
         }
 
-        return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
+        return NetworkLayerManager.GetLayer<SteamVRNetworkLayer>();
     }
 
     public static NetworkLayer VerifyLayer(NetworkLayer layer)
@@ -31,7 +31,7 @@ public static class NetworkLayerDeterminer
         }
         else
         {
-            return NetworkLayer.GetLayer<EmptyNetworkLayer>();
+            return NetworkLayerManager.GetLayer<EmptyNetworkLayer>();
         }
     }
 
@@ -39,7 +39,7 @@ public static class NetworkLayerDeterminer
     {
         var title = ClientSettings.NetworkLayerTitle.Value;
 
-        if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
+        if (!NetworkLayerManager.LayerTitleLookup.TryGetValue(title, out var layer))
         {
             layer = GetDefaultLayer();
         }

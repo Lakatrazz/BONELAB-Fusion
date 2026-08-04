@@ -12,7 +12,7 @@ public static class MenuPopupsHelper
     {
         MenuToolbarHelper.OnInitializeMelon();
 
-        NetworkLayerManager.OnLoggedInChanged += OnLoggedInChanged;
+        NetworkLayerManager.LogInChanged += OnLoggedInChanged;
     }
 
     public static void PopulatePopups(GameObject popups)
