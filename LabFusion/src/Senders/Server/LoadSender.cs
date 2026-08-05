@@ -41,7 +41,7 @@ public static class LoadSender
 
         writer.SerializeValue(ref data);
 
-        using var message = NetMessage.Create(NativeMessageTag.SceneLoad, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.SceneLoad, writer, CommonMessageRoutes.None);
         ServerManager.SendToClient(message, NetworkChannel.Reliable, userId);
     }
 

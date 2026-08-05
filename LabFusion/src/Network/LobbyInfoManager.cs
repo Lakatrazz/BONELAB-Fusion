@@ -94,7 +94,7 @@ public static class LobbyInfoManager
         var data = ServerSettingsData.Create();
         writer.SerializeValue(ref data);
 
-        using var message = NetMessage.Create(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.ServerSettings, writer, CommonMessageRoutes.None);
 
         ServerManager.SendToClient(message, NetworkChannel.Reliable, platformID);
     }

@@ -18,7 +18,7 @@ public static class ConnectionSender
         var disconnect = DisconnectMessageData.Create(platformID, reason);
         writer.SerializeValue(ref disconnect);
 
-        using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
         ServerManager.SendToClients(message, NetworkChannel.Reliable);
 
         NetworkConnectionManager.TimeoutDisconnect(platformID);
@@ -35,7 +35,7 @@ public static class ConnectionSender
         var disconnect = DisconnectMessageData.Create(platformID, reason);
         writer.SerializeValue(ref disconnect);
         
-        using var message = NetMessage.Create(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.Disconnect, writer, CommonMessageRoutes.None);
         ServerManager.SendToClient(message, NetworkChannel.Reliable, platformID);
 
         NetworkConnectionManager.TimeoutDisconnect(platformID);
@@ -54,7 +54,7 @@ public static class ConnectionSender
         var data = ConnectionRequestData.Create(FusionMod.Version);
         data.Serialize(writer);
 
-        using NetMessage message = NetMessage.Create(NativeMessageTag.ConnectionRequest, writer, CommonMessageRoutes.None);
+        using NetMessage message = NetMessage.CreateNative(NativeMessageTag.ConnectionRequest, writer, CommonMessageRoutes.None);
         ClientManager.SendToServer(message, NetworkChannel.Reliable);
     }
 
@@ -70,7 +70,7 @@ public static class ConnectionSender
         };
         writer.SerializeValue(ref response);
 
-        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         ServerManager.SendToClient(message, NetworkChannel.Reliable, newUser);
     }
 
@@ -86,7 +86,7 @@ public static class ConnectionSender
         };
         writer.SerializeValue(ref response);
 
-        using var message = NetMessage.Create(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(NativeMessageTag.ConnectionResponse, writer, CommonMessageRoutes.None);
         ServerManager.SendToClients(message, NetworkChannel.Reliable);
     }
 }

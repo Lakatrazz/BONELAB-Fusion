@@ -199,7 +199,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, platformID);
 
         // Send the dynamics list
-        using var message = MessageCreator.CreateNative(DynamicsAssignData.Create(), NativeMessageTag.DynamicsAssignment, CommonMessageRoutes.None);
+        using var message = NetMessage.CreateNative(DynamicsAssignData.Create(), NativeMessageTag.DynamicsAssignment, CommonMessageRoutes.None);
 
         ServerManager.SendToClient(message, NetworkChannel.Reliable, platformID);
 

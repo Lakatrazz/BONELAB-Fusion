@@ -9,26 +9,18 @@ public static class MessageRelay
 {
     public static void RelayNative<TData>(TData data, byte tag, MessageRoute route) where TData : INetSerializable
     {
-        using var writer = NetWriter.Create(data.GetSize());
-
-        data.Serialize(writer);
-
         ClientSmallID? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
-        using var message = NetMessage.Create(tag, writer, route, sender);
+        using var message = NetMessage.CreateNative(data, tag, route, sender);
 
         TryRelay(message, route, sender);
     }
 
     public static void RelayModule<TMessage, TData>(TData data, MessageRoute route) where TMessage : ModuleMessageHandler where TData : INetSerializable
     {
-        using var writer = NetWriter.Create(data.GetSize());
-
-        data.Serialize(writer);
-
         ClientSmallID? sender = route.Type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
-        using var message = NetMessage.ModuleCreate<TMessage>(writer, route, sender);
+        using var message = NetMessage.CreateModule<TMessage, TData>(data, route, sender);
 
         TryRelay(message, route, sender);
     }

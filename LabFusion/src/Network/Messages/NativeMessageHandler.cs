@@ -181,7 +181,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToClients:
                 if (received.IsServerHandled)
                 {
-                    using var message = NetMessage.Create(Tag, received);
+                    using var message = NetMessage.CreateNative(Tag, received);
 
                     ServerManager.SendToClients(message, channel);
                     return;
@@ -190,7 +190,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToOtherClients:
                 if (received.IsServerHandled)
                 {
-                    using var message = NetMessage.Create(Tag, received);
+                    using var message = NetMessage.CreateNative(Tag, received);
 
                     ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(received.SenderSmallID.Value).PlatformID);
                     return;
@@ -199,7 +199,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToTarget:
                 if (received.IsServerHandled)
                 {
-                    using var message = NetMessage.Create(Tag, received);
+                    using var message = NetMessage.CreateNative(Tag, received);
 
                     ServerManager.SendToClient(message, channel, PlayerIDManager.GetPlayerID(route.Target.Value).PlatformID);
                     return;
@@ -208,7 +208,7 @@ public abstract class NativeMessageHandler : MessageHandler
             case RelayType.ToTargets:
                 if (received.IsServerHandled)
                 {
-                    using var message = NetMessage.Create(Tag, received);
+                    using var message = NetMessage.CreateNative(Tag, received);
 
                     foreach (var target in route.Targets)
                     {

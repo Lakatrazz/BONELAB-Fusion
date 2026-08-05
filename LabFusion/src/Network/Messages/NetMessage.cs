@@ -6,45 +6,67 @@ using System.Runtime.InteropServices;
 
 namespace LabFusion.Network;
 
+/// <summary>
+/// A message that can be sent over the network.
+/// <para>Allocates unmanaged memory and implements IDisposable, so make sure that you either wrap the message in a using block or manually dispose of it when done.</para>
+/// </summary>
 public unsafe class NetMessage : IDisposable
 {
-    private byte* _buffer;
-    private int _size;
+    /// <summary>
+    /// The amount of bytes written to <see cref="Buffer"/>.
+    /// </summary>
+    public int Length { get; private set; } = 0;
 
-    private bool _disposed;
+    /// <summary>
+    /// The pointer to the unmanaged byte array.
+    /// </summary>
+    public byte* Buffer { get; private set; } = null;
 
-    public int Length
+    /// <summary>
+    /// Whether the message and its buffer have already been disposed.
+    /// </summary>
+    public bool IsDisposed { get; private set; } = false;
+
+    /// <summary>
+    /// Creates a sendable native message given serializable data that is automatically written.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="data"></param>
+    /// <param name="tag"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateNative<TData>(TData data, byte tag, MessageRoute route, ClientSmallID? sender = null) where TData : INetSerializable
     {
-        get
-        {
-            return _size;
-        }
+        using var writer = NetWriter.Create(data.GetSize());
+
+        data.Serialize(writer);
+
+        return CreateNative(tag, writer, route, sender);
     }
 
-    public byte* Buffer
+    /// <summary>
+    /// Creates a sendable native message from its tag, the data from a writer, route, and sender.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <param name="writer"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateNative(byte tag, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
     {
-        get
-        {
-            return _buffer;
-        }
+        return CreateNative(tag, writer.Buffer, route, sender);
     }
 
-    private static NetMessage Create(int size)
-    {
-        return new NetMessage()
-        {
-            _buffer = (byte*)Marshal.AllocHGlobal(size),
-            _size = size,
-            _disposed = false,
-        };
-    }
-
-    public static NetMessage Create(byte tag, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
-    {
-        return Create(tag, writer.Buffer, route, sender);
-    }
-
-    public static NetMessage Create(byte tag, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
+    /// <summary>
+    /// Creates a sendable native message from its tag, data buffer, route, and sender.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <param name="buffer"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateNative(byte tag, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
     {
         var prefix = new MessagePrefix()
         {
@@ -59,17 +81,23 @@ public unsafe class NetMessage : IDisposable
         writer.Write(buffer);
 
         int size = writer.Length;
-        var message = Create(size);
+        var message = CreateEmpty(size);
 
         for (var i = 0; i < size; i++)
         {
-            message._buffer[i] = writer.Buffer[i];
+            message.Buffer[i] = writer.Buffer[i];
         }
 
         return message;
     }
 
-    public static NetMessage Create(byte tag, ReceivedMessage received)
+    /// <summary>
+    /// Recreates a sendable native message from a received message.
+    /// </summary>
+    /// <param name="tag"></param>
+    /// <param name="received"></param>
+    /// <returns></returns>
+    public static NetMessage CreateNative(byte tag, ReceivedMessage received)
     {
         var prefix = new MessagePrefix()
         {
@@ -84,32 +112,69 @@ public unsafe class NetMessage : IDisposable
         writer.Write(received.Bytes);
 
         int size = writer.Length;
-        var message = Create(size);
+        var message = CreateEmpty(size);
 
         for (var i = 0; i < size; i++)
         {
-            message._buffer[i] = writer.Buffer[i];
+            message.Buffer[i] = writer.Buffer[i];
         }
 
         return message;
     }
 
-    public static NetMessage ModuleCreate<TMessage>(NetWriter writer, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler
+    /// <summary>
+    /// Creates a sendable module message given serializable data that is automatically written.
+    /// </summary>
+    /// <typeparam name="TMessage"></typeparam>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="data"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateModule<TMessage, TData>(TData data, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler where TData : INetSerializable
     {
-        return ModuleCreate(typeof(TMessage), writer, route, sender);
+        using var writer = NetWriter.Create(data.GetSize());
+
+        data.Serialize(writer);
+
+        return CreateModule<TMessage>(writer, route, sender);
     }
 
-    public static NetMessage ModuleCreate<TMessage>(byte[] buffer, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler
+    /// <summary>
+    /// Creates a sendable module message from its type, the data from a writer, route, and sender.
+    /// </summary>
+    /// <typeparam name="TMessage"></typeparam>
+    /// <param name="writer"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateModule<TMessage>(NetWriter writer, MessageRoute route, ClientSmallID? sender = null) where TMessage : ModuleMessageHandler
     {
-        return ModuleCreate(typeof(TMessage), buffer, route, sender);
+        return CreateModule(typeof(TMessage), writer, route, sender);
     }
 
-    public static NetMessage ModuleCreate(Type type, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
+    /// <summary>
+    /// Creates a sendable module message from its type, the data from a writer, route, and sender.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="writer"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateModule(Type type, NetWriter writer, MessageRoute route, ClientSmallID? sender = null)
     {
-        return ModuleCreate(type, writer.Buffer, route, sender);
+        return CreateModule(type, writer.Buffer, route, sender);
     }
 
-    public static NetMessage ModuleCreate(Type type, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
+    /// <summary>
+    /// Creates a sendable module message from its type, data buffer, route, and sender.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="buffer"></param>
+    /// <param name="route"></param>
+    /// <param name="sender"></param>
+    /// <returns></returns>
+    public static NetMessage CreateModule(Type type, ArraySegment<byte> buffer, MessageRoute route, ClientSmallID? sender = null)
     {
         // Assign the module type
         var tag = ModuleMessageManager.GetHandlerTagByType(type);
@@ -144,35 +209,56 @@ public unsafe class NetMessage : IDisposable
         writer.Write(expandedBuffer);
 
         int size = writer.Length;
-        var message = Create(size);
+        var message = CreateEmpty(size);
 
         for (var i = 0; i < size; i++)
         {
-            message._buffer[i] = writer.Buffer[i];
+            message.Buffer[i] = writer.Buffer[i];
         }
 
         return message;
     }
 
+    /// <summary>
+    /// Converts the message into a managed byte array.
+    /// </summary>
+    /// <returns></returns>
     public byte[] ToByteArray()
     {
         var bytes = new byte[Length];
 
-        Marshal.Copy((IntPtr)_buffer, bytes, 0, Length);
+        Marshal.Copy((IntPtr)Buffer, bytes, 0, Length);
 
         return bytes;
     }
 
+    /// <summary>
+    /// Frees the unmanaged memory allocated for the message.
+    /// </summary>
     public void Dispose()
     {
-        if (_disposed)
+        if (IsDisposed)
         {
             return;
         }
 
         GC.SuppressFinalize(this);
-        Marshal.FreeHGlobal((IntPtr)_buffer);
+        Marshal.FreeHGlobal((IntPtr)Buffer);
 
-        _disposed = true;
+        IsDisposed = true;
+    }
+
+    /// <summary>
+    /// Creates an empty message from the amount of data that needs to be written.
+    /// </summary>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    private static NetMessage CreateEmpty(int size)
+    {
+        return new NetMessage()
+        {
+            Length = size,
+            Buffer = (byte*)Marshal.AllocHGlobal(size),
+        };
     }
 }
