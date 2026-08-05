@@ -26,7 +26,7 @@ public class PlayerSettingsMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerSettingsData>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

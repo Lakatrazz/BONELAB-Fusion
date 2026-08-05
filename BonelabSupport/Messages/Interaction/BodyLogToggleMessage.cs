@@ -28,7 +28,7 @@ public class BodyLogToggleMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BodyLogToggleData>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

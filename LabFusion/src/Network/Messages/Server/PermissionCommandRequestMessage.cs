@@ -37,7 +37,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
     {
         var data = received.ReadData<PermissionCommandRequestData>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

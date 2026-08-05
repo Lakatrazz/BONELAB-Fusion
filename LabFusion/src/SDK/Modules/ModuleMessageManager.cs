@@ -67,7 +67,7 @@ public static class ModuleMessageManager
     private static ModuleMessageHandler CreateHandler(Type type, long tag)
     {
         var handler = (ModuleMessageHandler)Activator.CreateInstance(type);
-        handler._tag = tag;
+        handler.Tag = tag;
         handler.NetAttributes = type.GetCustomAttributes<Net.NetAttribute>().ToArray();
         return handler;
     }

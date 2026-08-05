@@ -68,90 +68,90 @@ public abstract class NativeMessageHandler : MessageHandler
 
             MessageRoute route = prefix.Route;
 
-            ClientSmallID? sender = prefix.SenderSmallID;
-            ClientPlatformID? platformID = message.PlatformID;
-
-            // Prevent ID spoofing
-            if (isServerHandled && !ValidateReceivedID(route.Type, ref sender, ref platformID))
-            {
-                NetworkConnectionManager.DisconnectUser(platformID.Value);
-
-                throw new IDSpoofedException(platformID.ToString());
-            }
-
             var bytes = reader.ReadBytes();
 
             tag = prefix.Tag;
 
-            if (Handlers[tag] != null)
-            {
-                var payload = new ReceivedMessage()
-                {
-                    Route = route,
-                    Sender = sender,
-                    SenderPlatformID = platformID,
-                    Bytes = bytes,
-                    IsServerHandled = message.IsServerHandled,
-                };
+            var handler = Handlers[tag];
 
-                Handlers[tag].StartHandlingMessage(payload);
-            }
-#if DEBUG
-            else
+            if (handler == null)
             {
-                FusionLogger.Warn($"Received message with invalid tag {tag}!");
-            }
+#if DEBUG
+                FusionLogger.Warn($"Received native message with invalid tag {tag}!");
 #endif
+                return;
+            }
+
+            if (!handler.ValidateMessageSender(message, prefix, out var senderPlatformID, out var senderSmallID))
+            {
+                return;
+            }
+
+            var payload = new ReceivedMessage()
+            {
+                Route = route,
+                SenderPlatformID = senderPlatformID,
+                SenderSmallID = senderSmallID,
+                Bytes = bytes,
+                IsServerHandled = message.IsServerHandled,
+            };
+
+            handler.StartHandlingMessage(payload);
         }
         catch (Exception e)
         {
-            FusionLogger.Error($"Failed handling network message of tag {tag} with reason: {e.Message}\nTrace:{e.StackTrace}");
+            FusionLogger.LogException($"handling native message of tag {tag}", e);
         }
     }
 
-    private static bool ValidateReceivedID(RelayType relayType, ref ClientSmallID? sender, ref ClientPlatformID? platformID)
+    private bool ValidateMessageSender(ReadableMessage message, MessagePrefix prefix, out ClientPlatformID? senderPlatformID, out ClientSmallID? senderSmallID)
     {
-        // If we weren't given a PlatformID, there is nothing to validate
-        if (!platformID.HasValue)
+        bool isServerHandled = message.IsServerHandled;
+
+        if (isServerHandled)
         {
-            return true;
+            return ServerValidateMessageSender(message, out senderPlatformID, out senderSmallID);
         }
 
-        var playerID = PlayerIDManager.GetPlayerID(platformID.Value);
-        
-        // No existing PlayerID, nothing to validate
-        if (playerID == null)
+        return ClientValidateMessageSender(prefix, out senderPlatformID, out senderSmallID);
+    }
+
+    private bool ServerValidateMessageSender(ReadableMessage message, out ClientPlatformID? senderPlatformID, out ClientSmallID? senderSmallID)
+    {
+        senderPlatformID = message.SenderPlatformID;
+        senderSmallID = null;
+
+        if (!senderPlatformID.HasValue)
         {
-            // If this isn't a relay message, then we can allow the message to go through as its normal for the PlayerID to not be established
-            // However, relay messages should NOT go through! Otherwise, the user can impact the lobby without visibly being in it.
-            if (relayType != RelayType.None)
-            {
-                return false;
-            }
-
-            // Sender has a PlayerID but the PlatformID doesn't! User is spoofing!
-            if (sender.HasValue && PlayerIDManager.HasPlayerID(sender.Value))
-            {
-                return false;
-            }
-
-            sender = null;
-            return true;
-        }
-
-        ClientSmallID existingSmallID = playerID.SmallID;
-
-        // Sender doesn't have a value, just assign it the existing value
-        if (!sender.HasValue)
-        {
-            sender = existingSmallID;
-            return true;
-        }
-
-        // Received SmallID does not match the actual SmallID! User is spoofing!
-        if (existingSmallID != sender.Value)
-        {
+            FusionLogger.Warn("Server received a ReadableMessage with no SenderPlatformID set! Make sure the NetworkLayer is properly setting the sender when the server receives a message!");
             return false;
+        }
+
+        if (PlayerIDManager.TryGetSmallID(senderPlatformID.Value, out var existingSmallID))
+        {
+            senderSmallID = existingSmallID;
+        }
+
+        if (!senderSmallID.HasValue && !AllowConnectingClients)
+        {
+            FusionLogger.Warn($"Server received an unauthorized message of tag {Tag} from client with PlatformID {senderPlatformID.Value} while they were still connecting! Disconnecting client!");
+            
+            NetworkConnectionManager.DisconnectUser(senderPlatformID.Value);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool ClientValidateMessageSender(MessagePrefix prefix, out ClientPlatformID? senderPlatformID, out ClientSmallID? senderSmallID)
+    {
+        senderPlatformID = null;
+        senderSmallID = prefix.SenderSmallID;
+
+        if (senderSmallID.HasValue && PlayerIDManager.TryGetPlatformID(senderSmallID.Value, out var existingPlatformID))
+        {
+            senderPlatformID = existingPlatformID;
         }
 
         return true;
@@ -159,7 +159,7 @@ public abstract class NativeMessageHandler : MessageHandler
 
     public sealed override void Handle(ReceivedMessage received)
     {
-        CheckExpectedConditions(received);
+        CheckExpectedReceiver(received);
 
         if (received.IsServerHandled && !OnPreRelayMessage(received))
         {
@@ -192,7 +192,7 @@ public abstract class NativeMessageHandler : MessageHandler
                 {
                     using var message = NetMessage.Create(Tag, received);
 
-                    ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(received.Sender.Value).PlatformID);
+                    ServerManager.SendToClientsExcept(message, channel, PlayerIDManager.GetPlayerID(received.SenderSmallID.Value).PlatformID);
                     return;
                 }
                 break;

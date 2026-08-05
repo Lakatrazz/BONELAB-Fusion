@@ -101,7 +101,7 @@ public static class SteamSocketHandler
                 {
                     Buffer = messageSpan,
                     IsServerHandled = isServerHandled,
-                    PlatformID = platformID,
+                    SenderPlatformID = platformID,
                 };
 
                 NativeMessageHandler.ReadMessage(readableMessage);

@@ -124,15 +124,15 @@ public class ConstraintCreateMessage : ModuleMessageHandler
         if (received.IsServerHandled)
         {
             // If the player isn't hosting a level, limit the amount of constraints per second
-            if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.Sender.Value)))
+            if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.SenderSmallID.Value)))
             {
-                var activity = LimitedActivityManager.GetTracker(nameof(ConstraintCreateMessage)).GetActivity((int)received.Sender.Value);
+                var activity = LimitedActivityManager.GetTracker(nameof(ConstraintCreateMessage)).GetActivity((int)received.SenderSmallID.Value);
 
                 activity.Increment();
 
                 if (activity.Counter > MaxConstraintsPerSecond)
                 {
-                    FusionLogger.Warn($"Blocking Player {received.Sender.Value}'s constraint creation because they have tried to spawn {activity.Counter} entities in one second!");
+                    FusionLogger.Warn($"Blocking Player {received.SenderSmallID.Value}'s constraint creation because they have tried to spawn {activity.Counter} entities in one second!");
                     return;
                 }
             }

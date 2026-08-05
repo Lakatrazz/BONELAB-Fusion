@@ -39,7 +39,7 @@ public static class ProxySocketHandler
             {
                 Buffer = new ReadOnlySpan<byte>(message),
                 IsServerHandled = isServerHandled,
-                PlatformID = platformID,
+                SenderPlatformID = platformID,
             };
 
             NativeMessageHandler.ReadMessage(readableMessage);

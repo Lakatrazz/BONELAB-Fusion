@@ -83,6 +83,22 @@ public static class PlayerIDManager
         return GetPlayerID(HostSmallID);
     }
 
+    public static bool HasSmallID(ClientPlatformID platformID) => TryGetSmallID(platformID, out _);
+
+    public static bool TryGetSmallID(ClientPlatformID platformID, out ClientSmallID smallID)
+    {
+        var playerID = GetPlayerID(platformID);
+
+        if (playerID == null)
+        {
+            smallID = ClientSmallID.Empty;
+            return false;
+        }
+
+        smallID = playerID.SmallID;
+        return true;
+    }
+
     public static bool TryGetPlatformID(ClientSmallID smallID, out ClientPlatformID platformID)
     {
         var playerID = GetPlayerID(smallID);

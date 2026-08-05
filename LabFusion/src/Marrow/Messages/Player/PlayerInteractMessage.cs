@@ -27,7 +27,7 @@ public class PlayerInteractMessage : ModuleMessageHandler
     {
         var data = received.ReadData<PlayerInteractData>();
 
-        var sender = received.Sender.Value;
+        var sender = received.SenderSmallID.Value;
 
         var playerID = PlayerIDManager.GetPlayerID(sender);
 

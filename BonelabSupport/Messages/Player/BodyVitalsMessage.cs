@@ -13,7 +13,7 @@ public class BodyVitalsMessage : ModuleMessageHandler
     {
         var bodyVitals = received.ReadData<SerializedBodyVitals>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

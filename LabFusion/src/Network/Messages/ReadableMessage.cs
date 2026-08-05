@@ -18,6 +18,7 @@ public ref struct ReadableMessage
     /// <summary>
     /// The platform ID of the message's sender provided by the <see cref="NetworkLayer"/>.
     /// If no platform ID was set, then this message was sent by the server.
+    /// <para>This does not account for relays sent from another client, as those are only processed when the message is fully read.</para>
     /// </summary>
-    public ClientPlatformID? PlatformID { get; set; }
+    public ClientPlatformID? SenderPlatformID { get; set; }
 }

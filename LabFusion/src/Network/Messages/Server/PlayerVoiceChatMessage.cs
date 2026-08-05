@@ -27,7 +27,7 @@ public class PlayerVoiceChatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerVoiceChatData>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

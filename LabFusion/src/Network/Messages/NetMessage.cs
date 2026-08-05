@@ -75,7 +75,7 @@ public unsafe class NetMessage : IDisposable
         {
             Tag = tag,
             Route = received.Route,
-            SenderSmallID = received.Sender,
+            SenderSmallID = received.SenderSmallID,
         };
 
         using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length + sizeof(int));

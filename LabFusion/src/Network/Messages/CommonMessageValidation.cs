@@ -8,7 +8,7 @@ public static class CommonMessageValidation
     {
         var entityReference = received.ReadData<NetworkEntityReference>();
 
-        var sender = received.Sender.Value;
+        var sender = received.SenderSmallID.Value;
 
         return ValidateSenderOwnsEntity(entityReference, sender);
     }

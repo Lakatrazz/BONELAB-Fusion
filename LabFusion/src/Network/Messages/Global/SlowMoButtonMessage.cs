@@ -34,7 +34,7 @@ public class SlowMoButtonMessage : NativeMessageHandler
             TimeScaleMode.DISABLED => false,
             TimeScaleMode.LOW_GRAVITY => false,
             TimeScaleMode.CLIENT_SIDE => false,
-            TimeScaleMode.HOST_ONLY => received.Sender == PlayerIDManager.HostSmallID,
+            TimeScaleMode.HOST_ONLY => received.SenderSmallID == PlayerIDManager.HostSmallID,
             _ => true,
         };
     }

@@ -22,6 +22,13 @@ public static class ServerManager
     public static ServerID RunningServerID => NetworkLayerManager.Layer?.RunningServerID ?? ServerID.Empty;
 
     /// <summary>
+    /// Returns true if a connected client has been accepted into the server.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <returns></returns>
+    public static bool IsClientAccepted(ClientPlatformID client) => PlayerIDManager.HasSmallID(client);
+
+    /// <summary>
     /// Sends a message from the server to a specific client.
     /// </summary>
     /// <param name="message"></param>

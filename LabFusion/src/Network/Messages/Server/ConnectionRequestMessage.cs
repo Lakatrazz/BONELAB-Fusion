@@ -53,11 +53,9 @@ public class ConnectionRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionRequest;
 
-    // Only the server should be able to receive a connection request.
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
-    // When a client sends a request to connect, they do not have an established PlayerID yet, so a direct relay must be allowed.
-    public override bool AllowDirectRelay => true;
+    public override bool AllowConnectingClients => true;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

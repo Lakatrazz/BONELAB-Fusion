@@ -13,14 +13,14 @@ public struct ReceivedMessage
     public MessageRoute Route { get; set; }
 
     /// <summary>
-    /// The small ID of the message sender. Only valid if the <see cref="MessageRoute.Type"/> is NOT <see cref="RelayType.None"/>.
-    /// </summary>
-    public ClientSmallID? Sender { get; set; }
-
-    /// <summary>
     /// The platform ID of the message sender. If no platform ID is set, then this message was sent directly from the server.
     /// </summary>
     public ClientPlatformID? SenderPlatformID { get; set; }
+
+    /// <summary>
+    /// The small ID of the message sender. Only valid if <see cref="SenderPlatformID"/> is set and the sender's connection has been authorized by the server.
+    /// </summary>
+    public ClientSmallID? SenderSmallID { get; set; }
 
     /// <summary>
     /// The bytes sent in this message.
@@ -63,8 +63,8 @@ public struct ReceivedMessage
         return new ReceivedMessage()
         {
             Route = Route,
-            Sender = Sender,
             SenderPlatformID = SenderPlatformID,
+            SenderSmallID = SenderSmallID,
             Bytes = buffer,
             IsServerHandled = IsServerHandled,
         };

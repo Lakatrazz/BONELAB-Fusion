@@ -35,7 +35,7 @@ public class RigAvatarMessage : ModuleMessageHandler
     {
         var data = received.ReadData<RigAvatarData>();
 
-        var sender = received.Sender.Value;
+        var sender = received.SenderSmallID.Value;
 
         if (!CommonMessageValidation.ValidateSenderOwnsEntity(data.RigReference, sender))
         {

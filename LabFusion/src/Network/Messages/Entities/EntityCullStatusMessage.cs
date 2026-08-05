@@ -26,7 +26,7 @@ public class EntityCullStatusMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

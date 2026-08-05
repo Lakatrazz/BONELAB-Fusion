@@ -8,12 +8,11 @@ public abstract class MessageHandler
     public virtual ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.Both;
 
     /// <summary>
-    /// Allows this message to be sent by Clients using the <see cref="RelayType.None"/> relay type.
-    /// This should only be enabled for initial connection messages and nothing else for security reasons.
-    /// <para>Regardless of this setting, the Server can always send messages to Clients using <see cref="RelayType.None"/>.</para>
+    /// Allows this message to be sent by clients that haven't been accepted by the server yet, leaving their PlayerID and ClientSmallID unestablished.
+    /// <para>This should be disabled for most messages, but left enabled for connection messages as the client would not have been authorized by that point.</para>
     /// <para>Defaults to false.</para>
     /// </summary>
-    public virtual bool AllowDirectRelay => false;
+    public virtual bool AllowConnectingClients => false;
 
     public Net.NetAttribute[] NetAttributes { get; set; }
 
@@ -83,25 +82,15 @@ public abstract class MessageHandler
     internal bool ProcessPreRelayMessage(ReceivedMessage received) => OnPreRelayMessage(received);
 
     /// <summary>
-    /// Throws exceptions and/or disconnects the sender if the conditions set by <see cref="ExpectedReceiver"/> or <see cref="AllowDirectRelay"/> fail.
+    /// Throws exceptions if the conditions set by <see cref="ExpectedReceiver"/> fail.
     /// </summary>
     /// <param name="received"></param>
     /// <exception cref="MessageExpectedServerException"></exception>
     /// <exception cref="MessageExpectedClientException"></exception>
-    public void CheckExpectedConditions(ReceivedMessage received)
+    public void CheckExpectedReceiver(ReceivedMessage received)
     {
         bool isServerHandled = received.IsServerHandled;
 
-        // Check for the relay type
-        bool isDirectRelay = received.Route.Type == RelayType.None;
-
-        if (isServerHandled && !AllowDirectRelay && isDirectRelay)
-        {
-            DisconnectSenderAndThrowException();
-            return;
-        }
-
-        // Check for the expected receiver
         if (ExpectedReceiver == ExpectedReceiverType.ServerOnly && !isServerHandled)
         {
             throw new MessageExpectedServerException();
@@ -109,18 +98,6 @@ public abstract class MessageHandler
         else if (ExpectedReceiver == ExpectedReceiverType.ClientsOnly && isServerHandled)
         {
             throw new MessageExpectedClientException();
-        }
-
-        void DisconnectSenderAndThrowException()
-        {
-            var platformID = received.SenderPlatformID;
-
-            if (platformID.HasValue)
-            {
-                NetworkConnectionManager.DisconnectUser(platformID.Value);
-            }
-
-            throw new MessageSpoofedException(platformID.ToString());
         }
     }
 

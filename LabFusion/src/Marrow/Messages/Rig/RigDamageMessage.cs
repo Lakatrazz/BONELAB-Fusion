@@ -38,7 +38,7 @@ public class RigDamageMessage : ModuleMessageHandler
     {
         var data = received.ReadData<RigDamageData>();
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {

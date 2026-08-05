@@ -18,7 +18,7 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
         var value = data.Value;
         var playerID = data.Player.SmallID;
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         // Make sure the message sender is able to modify this player's metadata
         if (!NetworkVerification.HasAuthorityOverPlayer(playerID, sender))

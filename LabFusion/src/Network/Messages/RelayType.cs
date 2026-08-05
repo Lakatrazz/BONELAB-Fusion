@@ -6,9 +6,7 @@
 public enum RelayType : byte
 {
     /// <summary>
-    /// Relays the message to the server, but without a proper "Sender" set. 
-    /// Only use this before a proper ID has been established.
-    /// <para>This relay type can only be used if the message has <see cref="MessageHandler.AllowDirectRelay"/> enabled OR when sent by the server.</para>
+    /// No relay was used. The message was sent directly between the server and client.
     /// </summary>
     None,
 

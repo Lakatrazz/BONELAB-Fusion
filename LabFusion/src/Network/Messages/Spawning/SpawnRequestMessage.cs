@@ -44,7 +44,7 @@ public class SpawnRequestMessage : NativeMessageHandler
 
         var responseData = new SpawnResponseData()
         {
-            OwnerID = received.Sender.Value,
+            OwnerID = received.SenderSmallID.Value,
             EntityID = entityID,
             SpawnData = data,
         };

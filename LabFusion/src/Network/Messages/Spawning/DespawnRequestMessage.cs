@@ -34,7 +34,7 @@ public class DespawnRequestMessage : NativeMessageHandler
 
         var response = new DespawnResponseData()
         {
-            Despawner = new(received.Sender.Value),
+            Despawner = new(received.SenderSmallID.Value),
             Entity = data.Entity,
             DespawnEffect = data.DespawnEffect,
         };

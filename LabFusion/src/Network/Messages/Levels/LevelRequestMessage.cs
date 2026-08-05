@@ -40,7 +40,7 @@ public class LevelRequestMessage : NativeMessageHandler
             return;
         }
 
-        var sender = received.Sender;
+        var sender = received.SenderSmallID;
 
         if (!sender.HasValue)
         {
