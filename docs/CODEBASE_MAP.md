@@ -4,28 +4,33 @@ Source inspected: `Lakatrazz/BONELAB-Fusion` at `4b0505be680b3232f3b2db862a3dcd2
 
 This is a focused developer map, not a complete API reference. It answers the questions from issue #107: where the main pieces live, how the runtime enters and updates them, how networking is layered, and where a gameplay/economy feature would plug in.
 
+Companion pages on this branch:
+
+- [`DIRECTORY_GUIDE.md`](DIRECTORY_GUIDE.md) - directory-by-directory orientation for `LabFusion/src/` and `BonelabSupport/`.
+- [`RUNTIME_AND_NETWORKING.md`](RUNTIME_AND_NETWORKING.md) - startup, frame order, scene/gamemode lifecycle and message flow.
+- [`CS_ECONOMY_EXTENSION_GUIDE.md`](CS_ECONOMY_EXTENSION_GUIDE.md) - concrete host-authoritative design for the Counter-Strike-style economy mentioned in issue #107.
+
 ## Top-level projects
 
-- `LabFusion/` — main Fusion mod. This contains the MelonLoader entrypoint, networking stack, player/entity replication, gamemode SDK, menus, point shop, voice, scene synchronization and most common multiplayer behavior.
-- `BonelabSupport/` — BONELAB-specific support module. It contains game-specific patches, messages and extenders for BONELAB controllers, arena/campaign behavior, props, player vitals and other BONELAB-only integration points.
-- `LabFusionUpdater/` — updater/plugin project used to keep Fusion releases current.
-- `Staging/` — release/staging material rather than the main runtime implementation.
-- `LabFusion.sln` — solution entrypoint for the C# projects.
+- `LabFusion/` - main Fusion mod. This contains the MelonLoader entrypoint, networking stack, player/entity replication, gamemode SDK, menus, point shop, voice, scene synchronization and most common multiplayer behavior.
+- `BonelabSupport/` - BONELAB-specific support module. It contains game-specific patches, messages and extenders for BONELAB controllers, arena/campaign behavior, props, player vitals and other BONELAB-only integration points.
+- `LabFusionUpdater/` - updater/plugin project used to keep Fusion releases current.
+- `LabFusion.sln` - solution entrypoint for the C# projects.
 
 Inside `LabFusion/`, the most useful source roots for feature work are:
 
-- `src/Network/` — transport abstraction, lobby/matchmaking interfaces, connection lifecycle, serialization and message routing.
-- `src/Entities/` — networked entities, players, props, ownership/registration and per-frame entity updates.
-- `src/Player/` — local/network player behavior and player IDs.
-- `src/Scene/` — scene/level lifecycle and network scene synchronization.
-- `src/SDK/Gamemodes/` — base gamemode API, built-in gamemodes, teams and gamemode metadata.
-- `src/SDK/Points/` — persistent local point/"bit" balance, purchasable point items and point-shop state.
-- `src/SDK/Messages/` and `src/Network/Messages/` — module/native message contracts and handlers.
-- `src/Senders/` — higher-level helpers that construct and relay common messages.
-- `src/RPC/` — RPC registration and network asset spawning/request helpers.
-- `src/Menu/` and `src/UI/` — Fusion menu data/pages, matchmaking UI and popup UI.
-- `src/Support/` — support-module loading/coordination.
-- `src/Utilities/Fusion/MultiplayerHooking.cs` — common multiplayer lifecycle hooks used by systems such as gamemodes.
+- `src/Network/` - transport abstraction, lobby/matchmaking interfaces, connection lifecycle, serialization and message routing.
+- `src/Entities/` - networked entities, players, props, ownership/registration and per-frame entity updates.
+- `src/Player/` - local/network player behavior and player IDs.
+- `src/Scene/` - scene/level lifecycle and network scene synchronization.
+- `src/SDK/Gamemodes/` - base gamemode API, built-in gamemodes, teams and gamemode metadata.
+- `src/SDK/Points/` - persistent local point/"bit" balance, purchasable point items and point-shop state.
+- `src/SDK/Messages/` and `src/Network/Messages/` - module/native message contracts and handlers.
+- `src/Senders/` - higher-level helpers that construct and relay common messages.
+- `src/RPC/` - RPC registration and network asset spawning/request helpers.
+- `src/Menu/` and `src/UI/` - Fusion menu data/pages, matchmaking UI and popup UI.
+- `src/Support/` - support-module loading/coordination.
+- `src/Utilities/Fusion/MultiplayerHooking.cs` - common multiplayer lifecycle hooks used by systems such as gamemodes.
 
 ## Runtime entrypoint and lifecycle
 
