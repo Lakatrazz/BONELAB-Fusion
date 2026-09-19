@@ -1,4 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Forklift.Model;
+using Il2CppSLZ.Marrow.Forklift.Model;
 
 using LabFusion.Utilities;
 
@@ -54,13 +54,7 @@ public static class ModIOManager
 
     private static IEnumerator CoGetMod(string url, string token, ModCallback modCallback)
     {
-        var handler = new HttpClientHandler()
-        {
-            ClientCertificateOptions = ClientCertificateOption.Manual,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-
-        using HttpClient client = new(handler);
+        using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         // Read the mod json

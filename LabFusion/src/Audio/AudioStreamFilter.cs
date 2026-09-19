@@ -17,6 +17,20 @@ public sealed class AudioStreamFilter : MonoBehaviour
 
     public const int QueueCapacity = 8192;
 
+    private readonly object _queueLock = new();
+
+    [HideFromIl2Cpp]
+    public int BufferedSamples
+    {
+        get
+        {
+            lock (_queueLock)
+            {
+                return ReadingQueue.Count;
+            }
+        }
+    }
+
     [HideFromIl2Cpp]
     public Queue<float> ReadingQueue { get; } = new(QueueCapacity);
 
@@ -34,12 +48,15 @@ public sealed class AudioStreamFilter : MonoBehaviour
     [HideFromIl2Cpp]
     public void Enqueue(float sample)
     {
-        if (ReadingQueue.Count >= QueueCapacity)
+        lock (_queueLock)
         {
-            ReadingQueue.Dequeue();
-        }
+            if (ReadingQueue.Count >= QueueCapacity)
+            {
+                ReadingQueue.Dequeue();
+            }
 
-        ReadingQueue.Enqueue(sample);
+            ReadingQueue.Enqueue(sample);
+        }
     }
 
     [HideFromIl2Cpp]
@@ -51,8 +68,11 @@ public sealed class AudioStreamFilter : MonoBehaviour
     [HideFromIl2Cpp]
     public void ClearValues()
     {
-        ReadingQueue.Clear();
-        Peak = 1f;
+        lock (_queueLock)
+        {
+            ReadingQueue.Clear();
+            Peak = 1f;
+        }
     }
 
     private void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
@@ -71,9 +91,12 @@ public sealed class AudioStreamFilter : MonoBehaviour
         {
             float output = 0f;
 
-            if (ReadingQueue.Count > 0)
+            lock (_queueLock)
             {
-                output = ReadingQueue.Dequeue() * SampleMultiplier;
+                if (ReadingQueue.Count > 0)
+                {
+                    output = ReadingQueue.Dequeue() * SampleMultiplier;
+                }
             }
 
             ReadingArray[i] = output;

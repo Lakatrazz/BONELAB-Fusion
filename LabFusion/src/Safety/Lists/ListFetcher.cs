@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 using MelonLoader;
 
@@ -27,13 +27,7 @@ public static class ListFetcher
     
     private static IEnumerator CoFetchFile(string url, Action<string> callback)
     {
-        var handler = new HttpClientHandler()
-        {
-            ClientCertificateOptions = ClientCertificateOption.Automatic,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-
-        using var client = new HttpClient(handler);
+        using var client = new HttpClient();
 
         var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
 

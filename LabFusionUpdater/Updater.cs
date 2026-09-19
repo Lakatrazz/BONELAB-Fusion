@@ -41,11 +41,18 @@ public static class Updater
 
         if (File.Exists(FusionUpdaterPlugin.ModAssemblyPath))
         {
-            AssemblyName localAssemblyInfo = AssemblyName.GetAssemblyName(FusionUpdaterPlugin.ModAssemblyPath);
+            try
+            {
+                AssemblyName localAssemblyInfo = AssemblyName.GetAssemblyName(FusionUpdaterPlugin.ModAssemblyPath);
 
-            localVersion = new Version(localAssemblyInfo.Version.Major, localAssemblyInfo.Version.Minor, localAssemblyInfo.Version.Build); // Remaking the object so there's no 4th number
+                localVersion = new Version(localAssemblyInfo.Version.Major, localAssemblyInfo.Version.Minor, localAssemblyInfo.Version.Build); // Remaking the object so there's no 4th number
 
-            FusionUpdaterPlugin.Logger.Msg($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} found in Mods folder. Version: {localVersion}");
+                FusionUpdaterPlugin.Logger.Msg($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} found in Mods folder. Version: {localVersion}");
+            }
+            catch (Exception e) when (e is BadImageFormatException || e is IOException)
+            {
+                FusionUpdaterPlugin.Logger.Error($"Could not read the installed mod version: {e.Message}");
+            }
         }
 
         try
@@ -74,23 +81,15 @@ public static class Updater
 
     private static ExitResult DownloadMod(Version currentVersion, string modAssemblyPath)
     {
-        // Setup the HttpClient and request for getting information from github
-        using var client = new HttpClient();
-
-        var handler = new HttpClientHandler()
-        {
-            ClientCertificateOptions = ClientCertificateOption.Manual,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-
-        using HttpClient request = new(handler);
+        using HttpClient request = new();
 
         request.DefaultRequestHeaders.Add(AcceptHeaderName, AcceptHeaderValue);
         request.DefaultRequestHeaders.Add(UserAgentHeaderName, UserAgentHeaderValue);
 
         try
         {
-            var response = request.Send(new HttpRequestMessage(HttpMethod.Get, ReleasesApi));
+            using var response = request.Send(new HttpRequestMessage(HttpMethod.Get, ReleasesApi));
+            response.EnsureSuccessStatusCode();
 
             using var reader = new StreamReader(response.Content.ReadAsStream(), Encoding.UTF8);
 
@@ -130,12 +129,13 @@ public static class Updater
                     string downloadUrl = asset["browser_download_url"].ToString();
 
                     // Send a download request to the http client
-                    var downloadResponse = request.Send(new HttpRequestMessage(HttpMethod.Get, downloadUrl));
+                    using var downloadResponse = request.Send(new HttpRequestMessage(HttpMethod.Get, downloadUrl), HttpCompletionOption.ResponseHeadersRead);
+                    downloadResponse.EnsureSuccessStatusCode();
 
-                    using var fileStream = new FileStream(modAssemblyPath, FileMode.Create, FileAccess.Write);
-
-                    downloadResponse.Content.ReadAsStream().CopyTo(fileStream);
+                    using var stream = downloadResponse.Content.ReadAsStream();
+                    InstallMod(stream, modAssemblyPath);
                     downloadedMod = true;
+                    break;
                 }
             }
 
@@ -152,6 +152,38 @@ public static class Updater
             Console.WriteLine(e.ToString());
 
             return ExitResult.Error;
+        }
+    }
+
+    internal static void InstallMod(Stream stream, string modAssemblyPath)
+    {
+        var temporaryPath = modAssemblyPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+
+        try
+        {
+            using (var fileStream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                stream.CopyTo(fileStream);
+                fileStream.Flush(true);
+            }
+
+            if (AssemblyName.GetAssemblyName(temporaryPath).Name != ModName)
+            {
+                throw new InvalidDataException("The update does not contain the expected assembly.");
+            }
+
+            if (File.Exists(modAssemblyPath))
+            {
+                File.Replace(temporaryPath, modAssemblyPath, null);
+            }
+            else
+            {
+                File.Move(temporaryPath, modAssemblyPath);
+            }
+        }
+        finally
+        {
+            File.Delete(temporaryPath);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+using LabFusion.Data;
 using LabFusion.Preferences;
 using LabFusion.Safety;
 using LabFusion.Utilities;
@@ -177,108 +177,140 @@ public static class ModIODownloader
 
         void FailDownload()
         {
-            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
             EndDownload();
+
+            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
         }
     }
 
     private static IEnumerator CoDownloadWithToken(string token, ModTransaction transaction, ModIOFile modFile, string url)
     {
-        // Before doing anything, make sure all mod directories are valid
-        ModDownloadManager.ValidateDirectories();
+        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
+        using var routine = DownloadWithToken(token, transaction, modFile, url, zipPath);
+        bool handedOff = false;
 
-        // Initialize the transaction progress at 0%
+        try
+        {
+            while (true)
+            {
+                bool moved;
+                try
+                {
+                    moved = routine.MoveNext();
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("downloading mod", e);
+                    break;
+                }
+
+                if (!moved)
+                {
+                    handedOff = true;
+                    break;
+                }
+
+                yield return routine.Current;
+            }
+        }
+        finally
+        {
+            if (!handedOff)
+            {
+                EndDownload();
+                DeleteDownload(zipPath);
+                transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            }
+        }
+    }
+
+    private static IEnumerator<object> DownloadWithToken(string token, ModTransaction transaction, ModIOFile modFile, string url, string zipPath)
+    {
+        ModDownloadManager.ValidateDirectories();
         transaction.Report(0f);
 
-        // Send a request to mod.io for the headers
-        // We don't want to read the whole content yet
-        var handler = new HttpClientHandler()
-        {
-            ClientCertificateOptions = ClientCertificateOption.Manual,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-
-        using HttpClient client = new(handler);
+        using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-
         while (!responseTask.IsCompleted)
         {
             yield return null;
         }
 
-        // Make sure the response was successful
-        if (!responseTask.IsCompletedSuccessfully)
-        {
-            FusionLogger.LogException("getting response from mod.io", responseTask.Exception);
-
-            FailDownload();
-
-            yield break;
-        }
-
-        // Get the resulting content
-        var content = responseTask.Result.Content;
-        var contentLength = content.Headers.ContentLength.Value;
-
-        // Check if the file size is too large to download
+        using var response = responseTask.GetAwaiter().GetResult();
+        response.EnsureSuccessStatusCode();
+        var content = response.Content;
+        var contentLength = content.Headers.ContentLength;
         var maxBytes = transaction.MaxBytes;
 
-        if (maxBytes.HasValue && contentLength > maxBytes.Value)
+        if (maxBytes.HasValue && contentLength.HasValue && contentLength.Value > maxBytes.Value)
         {
-            FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to the file size being too large.");
-
-            FailDownload();
-
-            yield break;
+            throw new InvalidDataException("The mod exceeds the download size limit.");
         }
 
-        // Install the content into a zip file
-        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
-
-        // Make sure this using statement ends before we load the pallet, so that the file is not in use
-        using (var copyStream = new FileStream(zipPath, FileMode.Create))
+        using (var copyStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write))
         {
-            var copyTask = content.CopyToAsync(copyStream);
+            long copied = 0;
+            var copyTask = CopyDownload(content, copyStream, maxBytes, bytes => System.Threading.Interlocked.Exchange(ref copied, bytes));
 
             while (!copyTask.IsCompleted)
             {
-                transaction.Report((float)copyStream.Length / contentLength);
+                if (contentLength > 0)
+                {
+                    transaction.Report((float)System.Threading.Interlocked.Read(ref copied) / contentLength.Value);
+                }
 
                 yield return null;
             }
 
-            if (!copyTask.IsCompletedSuccessfully)
-            {
-                FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
-
-                FailDownload();
-
-                yield break;
-            }
+            copyTask.GetAwaiter().GetResult();
         }
 
-        // Set progress to 100%
         transaction.Report(1f);
-
-        // Load the pallet
         ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Temporary, OnScheduledLoad, transaction.Callback);
 
         void OnScheduledLoad()
         {
-            // Delete temp zip
-            File.Delete(zipPath);
-
             EndDownload();
+            DeleteDownload(zipPath);
+        }
+    }
+
+    internal static async Task CopyDownload(HttpContent content, Stream destination, long? maxBytes, Action<long> progress)
+    {
+        using var source = await content.ReadAsStreamAsync().ConfigureAwait(false);
+        var buffer = new byte[81920];
+        long total = 0;
+        int read;
+
+        while ((read = await source.ReadAsync(buffer.AsMemory()).ConfigureAwait(false)) != 0)
+        {
+            if (maxBytes.HasValue && read > maxBytes.Value - total)
+            {
+                throw new InvalidDataException("The mod exceeds the download size limit.");
+            }
+
+            await destination.WriteAsync(buffer.AsMemory(0, read)).ConfigureAwait(false);
+            total += read;
+            progress?.Invoke(total);
         }
 
-        void FailDownload()
+        if (content.Headers.ContentLength is long expected && total != expected)
         {
-            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            throw new InvalidDataException("The mod download is incomplete.");
+        }
+    }
 
-            EndDownload();
+    private static void DeleteDownload(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("deleting downloaded zip", e);
         }
     }
 

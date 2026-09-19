@@ -143,7 +143,14 @@ public class DescentEventHandler : GamemodeLevelEventHandler
 
         Instance = this;
         _introEvents.Clear();
+        _nooseEvents.Clear();
+        _elevatorEvents.Clear();
 
+        CacheValues();
+    }
+
+    public void CacheValues()
+    {
         Noose = GameObject.FindObjectOfType<NooseBonelabIntro>(true);
         Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
         GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);
@@ -162,8 +169,6 @@ public class DescentEventHandler : GamemodeLevelEventHandler
 
         return false;
     }
-
-    public void CacheValues() => OnLevelLoaded();
 
     protected override void OnPlayerCatchup(PlayerID playerID)
     {

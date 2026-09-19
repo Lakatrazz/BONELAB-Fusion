@@ -91,6 +91,64 @@ public static class ModDownloadManager
 
     private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
+        using var routine = LoadPalletFromZipCore(path, modFile, temporary, downloadCallback);
+        bool scheduled = false;
+
+        try
+        {
+            while (true)
+            {
+                bool moved;
+                try
+                {
+                    moved = routine.MoveNext();
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("installing downloaded pallet", e);
+                    break;
+                }
+
+                if (!moved)
+                {
+                    scheduled = true;
+                    break;
+                }
+
+                yield return routine.Current;
+            }
+        }
+        finally
+        {
+            try
+            {
+                var extractedDirectory = Path.Combine(ExportPath, Path.GetFileNameWithoutExtension(path));
+                if (Directory.Exists(extractedDirectory))
+                {
+                    Directory.Delete(extractedDirectory, true);
+                }
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("cleaning up extracted pallet", e);
+            }
+
+            try
+            {
+                if (!scheduled)
+                {
+                    downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+                }
+            }
+            finally
+            {
+                scheduledCallback?.Invoke();
+            }
+        }
+    }
+
+    private static IEnumerator<object> LoadPalletFromZipCore(string path, ModIOFile modFile, bool temporary, DownloadCallback downloadCallback)
+    {
         var fileName = Path.GetFileNameWithoutExtension(path);
         var extractedDirectory = ExportPath + "/" + fileName;
 
@@ -119,13 +177,7 @@ public static class ModDownloadManager
 
         if (!unzipTask.IsCompletedSuccessfully)
         {
-            FusionLogger.LogException($"unzipping mod at path {path}", unzipTask.Exception);
-
-            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-            scheduledCallback?.Invoke();
-
-            yield break;
+            throw new IOException("Failed to extract the downloaded pallet.", unzipTask.Exception);
         }
 
 #if DEBUG
@@ -137,26 +189,14 @@ public static class ModDownloadManager
 
         if (string.IsNullOrWhiteSpace(extractedPallet))
         {
-            FusionLogger.Warn($"Failed to find pallet json at {extractedDirectory}, aborting download!");
-
-            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-            scheduledCallback?.Invoke();
-
-            yield break;
+            throw new InvalidDataException("The archive does not contain a pallet JSON file.");
         }
 
         var palletDirectory = Path.GetDirectoryName(extractedPallet);
 
         if (string.IsNullOrWhiteSpace(palletDirectory))
         {
-            FusionLogger.Warn($"Failed to get directory name of pallet {extractedPallet}, aborting download!");
-
-            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-            scheduledCallback?.Invoke();
-
-            yield break;
+            throw new InvalidDataException("The pallet directory is invalid.");
         }
 
         var palletDirectoryInfo = new DirectoryInfo(palletDirectory);
@@ -180,7 +220,10 @@ public static class ModDownloadManager
         Directory.Move(palletDirectory, palletPath);
 
         // Delete extracted folder
-        Directory.Delete(extractedDirectory, true);
+        if (Directory.Exists(extractedDirectory))
+        {
+            Directory.Delete(extractedDirectory, true);
+        }
 
         // Add pallet to load queue
         var jsonPath = FindPalletJson(palletPath);
@@ -215,8 +258,5 @@ public static class ModDownloadManager
         };
 
         ModForklift.SchedulePalletLoad(shipment);
-
-        // Run scheduled callback
-        scheduledCallback?.Invoke();
     }
 }

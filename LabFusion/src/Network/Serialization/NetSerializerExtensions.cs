@@ -40,6 +40,7 @@ public static class NetSerializerExtensions
 
         if (!hasValue)
         {
+            value = null;
             return false;
         }
 
@@ -76,61 +77,61 @@ public static class NetSerializerExtensions
 
         if (type == typeof(int))
         {
-            int casted = (int)value;
+            int casted = serializer.IsReader ? default : (int)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(uint))
         {
-            uint casted = (uint)value;
+            uint casted = serializer.IsReader ? default : (uint)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(short))
         {
-            short casted = (short)value;
+            short casted = serializer.IsReader ? default : (short)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(ushort))
         {
-            ushort casted = (ushort)value;
+            ushort casted = serializer.IsReader ? default : (ushort)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(long))
         {
-            long casted = (long)value;
+            long casted = serializer.IsReader ? default : (long)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(ulong))
         {
-            ulong casted = (ulong)value;
+            ulong casted = serializer.IsReader ? default : (ulong)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(double))
         {
-            double casted = (double)value;
+            double casted = serializer.IsReader ? default : (double)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(bool))
         {
-            bool casted = (bool)value;
+            bool casted = serializer.IsReader ? default : (bool)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(byte))
         {
-            byte casted = (byte)value;
+            byte casted = serializer.IsReader ? default : (byte)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
         else if (type == typeof(sbyte))
         {
-            sbyte casted = (sbyte)value;
+            sbyte casted = serializer.IsReader ? default : (sbyte)value;
             serializer.SerializeValue(ref casted);
             value = casted;
         }
@@ -233,6 +234,11 @@ public static class NetSerializerExtensions
 
         if (serializer.IsReader)
         {
+            if (serializer is NetReader reader)
+            {
+                reader.ValidateCollectionLength(length, sizeof(int) * 2);
+            }
+
             value = new(length);
 
             for (var i = 0; i < length; i++)
@@ -272,6 +278,11 @@ public static class NetSerializerExtensions
 
         if (serializer.IsReader)
         {
+            if (serializer is NetReader reader)
+            {
+                reader.ValidateCollectionLength(length, sizeof(int));
+            }
+
             value = new(length);
 
             for (var i = 0; i < length; i++)

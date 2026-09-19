@@ -1,4 +1,4 @@
-﻿using MelonLoader;
+using MelonLoader;
 
 using UnityEngine;
 
@@ -68,13 +68,7 @@ public static class ModIOThumbnailDownloader
 
     private static IEnumerator CoDownloadThumbnail(string url, Action<Texture> callback)
     {
-        var handler = new HttpClientHandler()
-        {
-            ClientCertificateOptions = ClientCertificateOption.Automatic,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-
-        using HttpClient client = new(handler);
+        using HttpClient client = new();
 
         var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 

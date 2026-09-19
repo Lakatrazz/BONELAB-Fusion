@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PathMap>$(MSBuildProjectDirectory)=/tests</PathMap>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../LabFusionUpdater/Updater.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/ModIO/ModIODownloader.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/ModIO/ModTransaction.cs" />
+    <Compile Include="Stubs.cs" />
+    <Compile Include="ProxyStubs.cs" />
+    <Compile Include="AudioStubs.cs" />
+    <Compile Include="../../LabFusion/src/Audio/AudioStreamFilter.cs" />
+    <Compile Include="../../LabFusion/src/Network/Layers/Proxy/ProxyLobbyManager.cs" />
+    <Compile Include="../../LabFusion/src/Network/Layers/Proxy/ProxyMatchmaker.cs" />
+    <Compile Include="../../LabFusion/src/Network/Lobbies/IMatchmaker.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/ModDownloadManager.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/ModIO/ModIOFile.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/DownloadCallbackInfo.cs" />
+    <Compile Include="../../LabFusion/src/Downloading/ModResult.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/NetReader.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/NetWriter.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/NetSerializerExtensions.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/INetSerializer.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/INetSerializable.cs" />
+    <Compile Include="../../LabFusion/src/Network/Serialization/Precision.cs" />
+    <Compile Include="../../LabFusion/src/Math/EnumConverter.cs" />
+    <Compile Include="../../LabFusion/src/Extensions/ByteExtensions.cs" />
+    <Compile Include="../../LabFusion/src/Entities/Identification/EntityIDList.cs" />
+  </ItemGroup>
+</Project>

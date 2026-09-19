@@ -17,6 +17,15 @@ public sealed class NetReader : INetSerializer, IDisposable
 
     public int Length { get; set; }
 
+    internal void ValidateCollectionLength(int length, int minimumElementSize)
+    {
+        if (length < 0 || Position < 0 || Position > Length || Length > _buffer.Length ||
+            length > (Length - Position) / minimumElementSize)
+        {
+            throw new IndexOutOfRangeException("Collection length exceeds the remaining packet data.");
+        }
+    }
+
     public static NetReader Create(byte[] buffer)
     {
         var reader = new NetReader
@@ -119,7 +128,7 @@ public sealed class NetReader : INetSerializer, IDisposable
             return null;
         }
 
-        if (Position + length > Length)
+        if (length > Length - Position)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", length, Length - Position - 4));
         }
@@ -173,7 +182,7 @@ public sealed class NetReader : INetSerializer, IDisposable
     {
         int length = ReadInt32();
 
-        if (Position + length > Length)
+        if (length < 0 || length > Length - Position)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", length, Length - Position - 4));
         }
@@ -189,6 +198,8 @@ public sealed class NetReader : INetSerializer, IDisposable
     public string[] ReadStrings()
     {
         int length = ReadInt32();
+
+        ValidateCollectionLength(length, sizeof(int));
 
         string[] array = new string[length];
 

@@ -81,7 +81,9 @@ public class ProxyLobbyManager
 
     public Task<ulong[]> RequestLobbyIDs(ProxyLobbyRequestParameters parameters)
     {
-        _lobbyIdSource = new TaskCompletionSource<ulong[]>();
+        _lobbyIdSource?.TrySetCanceled();
+        var source = new TaskCompletionSource<ulong[]>();
+        _lobbyIdSource = source;
 
         NetDataWriter writer = ProxyNetworkLayer.NewWriter(MessageTypes.LobbyIDs);
 
@@ -89,11 +91,16 @@ public class ProxyLobbyManager
 
         _networkLayer.SendToProxyServer(writer);
 
-        return _lobbyIdSource.Task;
+        return source.Task;
     }
 
     public Task<LobbyMetadataInfo> RequestLobbyMetadataInfo(ulong lobbyId)
     {
+        if (_metadataInfoRequests.TryGetValue(lobbyId, out var pending))
+        {
+            return pending.Task;
+        }
+
         var tcs = new TaskCompletionSource<LobbyMetadataInfo>();
         _metadataInfoRequests.Add(lobbyId, tcs);
         NetDataWriter writer = ProxyNetworkLayer.NewWriter(MessageTypes.LobbyMetadata);
@@ -101,5 +108,23 @@ public class ProxyLobbyManager
         _networkLayer.SendToProxyServer(writer);
 
         return tcs.Task;
+    }
+
+    internal void CancelLobbyIDs(Task<ulong[]> task)
+    {
+        if (task != null && _lobbyIdSource?.Task == task)
+        {
+            _lobbyIdSource.TrySetCanceled();
+            _lobbyIdSource = null;
+        }
+    }
+
+    internal void CancelLobbyMetadata(ulong lobbyId, Task<LobbyMetadataInfo> task)
+    {
+        if (_metadataInfoRequests.TryGetValue(lobbyId, out var pending) && pending.Task == task)
+        {
+            _metadataInfoRequests.Remove(lobbyId);
+            pending.TrySetCanceled();
+        }
     }
 }

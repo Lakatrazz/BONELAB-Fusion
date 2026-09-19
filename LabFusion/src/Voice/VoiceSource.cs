@@ -133,7 +133,7 @@ public class VoiceSource : MonoBehaviour
 
         StreamFilter.TickPeak(deltaTime);
 
-        if (StreamFilter.ReadingQueue.Count <= 0)
+        if (StreamFilter.BufferedSamples <= 0)
         {
             _timeSinceInput += deltaTime;
         }

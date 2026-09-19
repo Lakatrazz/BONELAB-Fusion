@@ -1,4 +1,4 @@
-﻿using LabFusion.UI.Popups;
+using LabFusion.UI.Popups;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -61,38 +61,22 @@ public sealed class ProxyMatchmaker : IMatchmaker
 
     private IEnumerator FindLobbies(ProxyLobbyRequestParameters parameters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        // Fetch lobbies
-        var task = _lobbyManager.RequestLobbyIDs(parameters);
-
-        float timeTaken = 0f;
-
-        while (!task.IsCompleted)
-        {
-            yield return null;
-
-            timeTaken += TimeReferences.DeltaTime;
-
-            if (timeTaken >= 20f)
-            {
-                SendTimeOutNotification();
-                yield break;
-            }
-        }
-
-        // Get metadata
         List<IMatchmaker.LobbyInfo> netLobbies = new();
+        Task<ulong[]> task = null;
+        Task<LobbyMetadataInfo> metadataTask = null;
+        ulong pendingLobby = 0;
 
-        var lobbies = task.Result;
-
-        foreach (var lobby in lobbies)
+        try
         {
-            var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+            // Fetch lobbies
+            task = _lobbyManager.RequestLobbyIDs(parameters);
 
-            timeTaken = 0f;
+            float timeTaken = 0f;
 
-            while (!metadataTask.IsCompleted)
+            while (!task.IsCompleted)
             {
                 yield return null;
+
                 timeTaken += TimeReferences.DeltaTime;
 
                 if (timeTaken >= 20f)
@@ -102,29 +86,65 @@ public sealed class ProxyMatchmaker : IMatchmaker
                 }
             }
 
-            LobbyMetadataInfo metadata = metadataTask.Result;
-            ProxyNetworkLobby networkLobby = new()
+            if (!task.IsCompletedSuccessfully)
             {
-                info = metadata,
-            };
-
-            if (!metadata.HasLobbyOpen)
-            {
-                continue;
+                yield break;
             }
 
-            netLobbies.Add(new IMatchmaker.LobbyInfo()
+            var lobbies = task.Result;
+
+            foreach (var lobby in lobbies)
             {
-                Lobby = networkLobby,
-                Metadata = metadata,
+                pendingLobby = lobby;
+                metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+
+                timeTaken = 0f;
+
+                while (!metadataTask.IsCompleted)
+                {
+                    yield return null;
+                    timeTaken += TimeReferences.DeltaTime;
+
+                    if (timeTaken >= 20f)
+                    {
+                        SendTimeOutNotification();
+                        yield break;
+                    }
+                }
+
+                if (!metadataTask.IsCompletedSuccessfully)
+                {
+                    yield break;
+                }
+
+                LobbyMetadataInfo metadata = metadataTask.Result;
+                ProxyNetworkLobby networkLobby = new()
+                {
+                    info = metadata,
+                };
+
+                if (!metadata.HasLobbyOpen)
+                {
+                    continue;
+                }
+
+                netLobbies.Add(new IMatchmaker.LobbyInfo()
+                {
+                    Lobby = networkLobby,
+                    Metadata = metadata,
+                });
+            }
+
+        }
+        finally
+        {
+            _lobbyManager.CancelLobbyIDs(task);
+            _lobbyManager.CancelLobbyMetadata(pendingLobby, metadataTask);
+
+            callback?.Invoke(new IMatchmaker.MatchmakerCallbackInfo()
+            {
+                Lobbies = netLobbies.ToArray(),
             });
         }
-
-        var info = new IMatchmaker.MatchmakerCallbackInfo()
-        {
-            Lobbies = netLobbies.ToArray(),
-        };
-
-        callback?.Invoke(info);
     }
 }

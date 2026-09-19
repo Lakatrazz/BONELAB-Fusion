@@ -53,18 +53,17 @@ public class EntityIDList<TEntity>
 
     public ushort AllocateNewID()
     {
-        _lastID++;
-
-        // Check if the id is already being used or reserved
-        if (IsUsedID(LastID))
+        for (int i = 0; i <= ushort.MaxValue; i++)
         {
-            while (IsUsedID(LastID) && LastID < ushort.MaxValue)
+            _lastID = unchecked((ushort)(_lastID + 1));
+
+            if (!IsUsedID(LastID))
             {
-                _lastID++;
+                return LastID;
             }
         }
 
-        return LastID;
+        throw new InvalidOperationException("No entity IDs are available.");
     }
 
     public bool HasEntity(ushort id)
