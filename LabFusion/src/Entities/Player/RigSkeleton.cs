@@ -12,6 +12,8 @@ public class RigSkeleton
 
     public Transform TrackedPlayspace = null;
 
+    public PhysicsRig PhysicsRig = null;
+
     public Rigidbody PhysicsPelvis = null;
 
     public Hand PhysicsLeftHand = null;
@@ -29,12 +31,12 @@ public class RigSkeleton
 
         TrackedPlayspace = openControllerRig.vrRoot;
 
-        var physicsRig = rigManager.physicsRig;
+        PhysicsRig = rigManager.physicsRig;
 
-        PhysicsPelvis = physicsRig.m_pelvis.GetComponent<Rigidbody>();
+        PhysicsPelvis = PhysicsRig.m_pelvis.GetComponent<Rigidbody>();
 
-        PhysicsLeftHand = physicsRig.leftHand;
-        PhysicsRightHand = physicsRig.rightHand;
+        PhysicsLeftHand = PhysicsRig.leftHand;
+        PhysicsRightHand = PhysicsRig.rightHand;
 
         RemapRig = rigManager.remapHeptaRig;
 

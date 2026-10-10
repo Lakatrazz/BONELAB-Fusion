@@ -11,14 +11,15 @@ public class SerializedSmallVector2 : INetSerializable
 
     public int? GetSize() => Size;
 
-    public sbyte x, y;
-    public float magnitude;
+    public sbyte X, Y;
+
+    public float Magnitude;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref x);
-        serializer.SerializeValue(ref y);
-        serializer.SerializeValue(ref magnitude);
+        serializer.SerializeValue(ref X);
+        serializer.SerializeValue(ref Y);
+        serializer.SerializeValue(ref Magnitude);
     }
 
     public static SerializedSmallVector2 Compress(Vector2 vector)
@@ -28,15 +29,15 @@ public class SerializedSmallVector2 : INetSerializable
 
         return new SerializedSmallVector2()
         {
-            x = normalized.x.ToSByte(),
-            y = normalized.y.ToSByte(),
-            magnitude = magnitude,
+            X = normalized.x.ToSByte(),
+            Y = normalized.y.ToSByte(),
+            Magnitude = magnitude,
         };
     }
 
     public Vector2 Expand()
     {
-        var normalized = new Vector2(x.ToSingle(), y.ToSingle()).normalized;
-        return normalized * magnitude;
+        var normalized = new Vector2(X.ToSingle(), Y.ToSingle()).normalized;
+        return normalized * Magnitude;
     }
 }

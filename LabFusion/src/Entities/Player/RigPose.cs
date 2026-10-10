@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow.Serialization;
+using LabFusion.Math;
 using LabFusion.Network.Serialization;
 
 using UnityEngine;
@@ -10,6 +11,7 @@ public class RigPose : INetSerializable
 {
     public const int Size = SerializedLocalTransform.Size * RigSkeleton.TrackerCount +
         SerializedSmallQuaternion.Size +
+        SerializedSmallVector2.Size +
         BodyPose.Size +
         SerializedController.Size * 2 +
         sizeof(float) * 4;
@@ -19,6 +21,8 @@ public class RigPose : INetSerializable
     public SerializedSmallQuaternion TrackedPlayspace = SerializedSmallQuaternion.Default;
 
     public Quaternion TrackedPlayspaceExpanded = Quaternion.identity;
+
+    public Vector2 EyeGaze = Vector2.zero;
 
     public BodyPose PelvisPose = new();
 
@@ -47,6 +51,11 @@ public class RigPose : INetSerializable
         TrackedPlayspaceExpanded = skeleton.TrackedPlayspace.rotation;
 
         TrackedPlayspace = SerializedSmallQuaternion.Compress(TrackedPlayspaceExpanded);
+
+        // Read eyes
+        var readEyeGaze = skeleton.PhysicsRig.eyeGaze;
+
+        EyeGaze = new Vector2(readEyeGaze.x, readEyeGaze.y);
 
         // Read bodies
         PelvisPose.ReadFrom(skeleton.PhysicsPelvis);
@@ -85,6 +94,8 @@ public class RigPose : INetSerializable
             TrackedPlayspaceExpanded = TrackedPlayspace.Expand();
         }
 
+        SerializeEyeGaze(serializer);
+
         serializer.SerializeValue(ref PelvisPose);
 
         serializer.SerializeValue(ref LeftController);
@@ -94,5 +105,25 @@ public class RigPose : INetSerializable
         serializer.SerializeValue(ref FeetOffset);
         serializer.SerializeValue(ref Health);
         serializer.SerializeValue(ref MaxHealth);
+    }
+
+    private void SerializeEyeGaze(INetSerializer serializer)
+    {
+        SerializedSmallVector2 serializedEyeGaze = null;
+
+        if (!serializer.IsReader)
+        {
+            serializedEyeGaze = SerializedSmallVector2.Compress(EyeGaze);
+        }
+
+        serializer.SerializeValue(ref serializedEyeGaze);
+
+        if (serializer.IsReader)
+        {
+            var expandedEyeGaze = serializedEyeGaze.Expand();
+
+            EyeGaze.x = ManagedMathf.Clamp(expandedEyeGaze.x, -1f, 1f);
+            EyeGaze.y = ManagedMathf.Clamp(expandedEyeGaze.y, -1f, 1f);
+        }
     }
 }

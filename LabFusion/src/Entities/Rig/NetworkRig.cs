@@ -366,6 +366,9 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
             trackedPoint.SetLocalPositionAndRotation(smoothPoint.Position, smoothPoint.Rotation);
         }
+
+        var eyeGaze = RigPose.EyeGaze;
+        rigManager.ControllerRig.eyeGaze = new Vector4(eyeGaze.x, eyeGaze.y, 1f, 2f);
     }
 
     private void CopyPosePointsToSmoothPoints()
