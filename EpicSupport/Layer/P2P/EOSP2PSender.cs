@@ -40,7 +40,7 @@ internal class EOSP2PSender
             {
                 var remoteUserId = GetProductUserId(clientPlatformID);
 
-                SendRaw(rented, channel, remoteUserId, false);
+                SendRaw(new ArraySegment<byte>(rented, 0, message.Length), channel, remoteUserId, false);
             }
         }
         finally
@@ -62,7 +62,7 @@ internal class EOSP2PSender
         {
             CopyInto(message, rented);
 
-            SendRaw(rented, channel, remoteUserId, isServerHandled);
+            SendRaw(new ArraySegment<byte>(rented, 0, message.Length), channel, remoteUserId, isServerHandled);
         }
         finally
         {
@@ -101,7 +101,11 @@ internal class EOSP2PSender
                 Reliability = reliability,
             };
 
-            P2P.P2PInterface.SendPacket(ref sendOptions);
+            var result = P2P.P2PInterface.SendPacket(ref sendOptions);
+            if (result != Result.Success)
+            {
+                EpicModule.Logger.Warn($"Failed to send EOS P2P packet: {result}");
+            }
         }
     }
 
@@ -143,7 +147,7 @@ internal class EOSP2PSender
     {
         return channel switch
         {
-            NetworkChannel.Reliable => PacketReliability.ReliableUnordered,
+            NetworkChannel.Reliable => PacketReliability.ReliableOrdered,
             NetworkChannel.Unreliable => PacketReliability.UnreliableUnordered,
             _ => throw new ArgumentOutOfRangeException(nameof(channel)),
         };
