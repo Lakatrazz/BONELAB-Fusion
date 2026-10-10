@@ -11,9 +11,8 @@ using LabFusion.Utilities;
 
 using UnityEngine.Rendering;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
-// Disables game pausing completely while in a server
 [HarmonyPatch(typeof(XRHMD))]
 public static class XRHMDPatches
 {
@@ -21,8 +20,13 @@ public static class XRHMDPatches
     [HarmonyPostfix]
     public static void IsUserPresent(ref bool __result)
     {
-        if (NetworkManager.HasServer)
-            __result = true;
+        if (!NetworkManager.HasServer)
+        {
+            return;
+        }
+
+        // While in a server, prevent the game from pausing
+        __result = true;
     }
 }
 
@@ -31,7 +35,7 @@ public static class OpenControllerRigPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(OpenControllerRig.OnBeginCameraRendering))]
-    public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam)
+    public static bool OnBeginCameraRenderingPrefix(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam)
     {
         if (NetworkPlayerManager.HasExternalPlayer(__instance.manager))
         {
@@ -40,13 +44,10 @@ public static class OpenControllerRigPatches
 
         return true;
     }
-}
 
-// Removes pause hooks for external players, so they dont break your camera
-[HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.OnEarlyUpdate))]
-public static class OpenEarlyUpdatePatch
-{
-    public static void Prefix(OpenControllerRig __instance, ref Il2CppSystem.Action<bool> __state)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(OpenControllerRig.OnEarlyUpdate))]
+    public static void OnEarlyUpdatePrefix(OpenControllerRig __instance, ref Il2CppSystem.Action<bool> __state)
     {
         __state = OpenControllerRig.OnPauseStateChange;
 
@@ -57,17 +58,16 @@ public static class OpenEarlyUpdatePatch
         }
     }
 
-    public static void Postfix(ref Il2CppSystem.Action<bool> __state)
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(OpenControllerRig.OnEarlyUpdate))]
+    public static void OnEarlyUpdatePostfix(ref Il2CppSystem.Action<bool> __state)
     {
-        OpenControllerRig.OnPauseStateChange = __state;
+        OpenControllerRig.OnPauseStateChange = null;
     }
-}
 
-// Overrides hand and headset positions for external rigs
-[HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.OnRealHeptaEarlyUpdate))]
-public static class OpenRealHeptaEarlyUpdatePatch
-{
-    public static void Prefix(OpenControllerRig __instance, float deltaTime)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(OpenControllerRig.OnRealHeptaEarlyUpdate))]
+    public static void OnRealHeptaEarlyUpdatePrefix(OpenControllerRig __instance)
     {
         var rigManager = __instance.manager;
 

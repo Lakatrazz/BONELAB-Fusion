@@ -11,7 +11,7 @@ using Il2CppSLZ.Marrow.Combat;
 
 using HarmonyLib;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(PlayerDamageReceiver))]
 public static class PlayerDamageReceiverPatches

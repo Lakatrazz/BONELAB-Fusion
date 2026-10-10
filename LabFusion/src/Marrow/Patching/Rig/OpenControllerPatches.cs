@@ -7,7 +7,7 @@ using Il2CppSLZ.Marrow;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(OpenController))]
 public static class OpenControllerPatches

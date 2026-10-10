@@ -5,15 +5,15 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Player;
+using LabFusion.Marrow.Rig;
 
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 using Il2CppSLZ.Marrow;
-using LabFusion.Marrow.Rig;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(ArtRig))]
 public static class ArtRigPatches
