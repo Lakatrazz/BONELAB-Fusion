@@ -48,6 +48,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
+    public RigBlendShapes BlendShapes { get; private set; } = null;
+
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
     public ManagedTransform[] SmoothTrackedTransforms { get; private set; } = null;
@@ -118,6 +120,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         networkEntity.ConnectExtender(this);
 
         AvatarSetter.SetEntity(networkEntity);
+
+        BlendShapes = new RigBlendShapes(new(networkEntity));
     }
 
     public void DisconnectFromEntity() 
@@ -405,6 +409,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         };
 
         ClientManager.RelayModule<RigPoseUpdateMessage, RigPoseUpdateData>(data, CommonMessageRoutes.UnreliableToOtherClients);
+
+        BlendShapes.OnOwnedUpdate();
     }
 
     private void OnTickReceivedRig(float deltaTime)
@@ -706,6 +712,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     private void OnAvatarSwapped()
     {
         RegisterDynamicComponents();
+
+        BlendShapes.OnAvatarChanged(RigRefs.RigManager.avatar);
     }
 
     private void OnJump()
