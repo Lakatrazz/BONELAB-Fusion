@@ -12,25 +12,43 @@ public class RigBlendShapes
 {
     public const float BlendShapeMin = 0f, BlendShapeMax = 100f;
 
-    public Avatar Avatar { get; set; } = null;
+    public Avatar Avatar { get; private set; } = null;
 
-    public AvatarBlendShapeDetector BlendShapeDetector { get; set; } = null;
+    public AvatarBlendShapeDetector BlendShapeDetector { get; private set; } = null;
 
-    public NetworkEntityReference RigReference { get; }
+    public NetworkEntityReference RigReference { get; private set; } = default;
 
-    public RigBlendShapes(NetworkEntityReference rigReference)
+    public bool IsInitialized { get; private set; } = false;
+
+    public bool IsReady => IsInitialized && Avatar != null;
+
+    public void Initialize(NetworkEntityReference rigReference)
     {
         RigReference = rigReference;
+        IsInitialized = true;
+    }
+
+    public void AssignAvatar(Avatar avatar)
+    {
+        Avatar = avatar;
+
+        BlendShapeDetector = new AvatarBlendShapeDetector(avatar);
+        BlendShapeDetector.BlendShapeChanged += OnBlendShapeChanged;
     }
 
     public void OnOwnedUpdate()
     {
+        if (!IsReady)
+        {
+            return;
+        }
+
         BlendShapeDetector?.CheckForChanges();
     }
 
     public void OnBlendShapeReceived(AvatarBlendShapePath path)
     {
-        if (Avatar == null)
+        if (!IsReady)
         {
             return;
         }
@@ -43,14 +61,6 @@ public class RigBlendShapes
         }
 
         skinnedMeshRenderer.SetBlendShapeWeight(path.BlendShapeIndex, ManagedMathf.Clamp(path.BlendShapeValue, BlendShapeMin, BlendShapeMax));
-    }
-
-    public void OnAvatarChanged(Avatar avatar)
-    {
-        Avatar = avatar;
-
-        BlendShapeDetector = new AvatarBlendShapeDetector(avatar);
-        BlendShapeDetector.BlendShapeChanged += OnBlendShapeChanged;
     }
 
     private void OnBlendShapeChanged(AvatarBlendShapePath path)

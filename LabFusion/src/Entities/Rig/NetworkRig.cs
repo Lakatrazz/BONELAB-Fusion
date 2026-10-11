@@ -48,7 +48,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
-    public RigBlendShapes BlendShapes { get; private set; } = null;
+    public RigBlendShapes BlendShapes { get; } = new();
 
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
@@ -120,8 +120,6 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         networkEntity.ConnectExtender(this);
 
         AvatarSetter.SetEntity(networkEntity);
-
-        BlendShapes = new RigBlendShapes(new(networkEntity));
     }
 
     public void DisconnectFromEntity() 
@@ -177,6 +175,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         NetworkEntity.EntityDataCatchingUp += OnEntityDataCatchup;
         NetworkEntity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
+
+        BlendShapes.Initialize(new(NetworkEntity));
     }
 
     public void OnExtenderUnregistered()
@@ -623,6 +623,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         RigGrabber = new(NetworkEntity, RigRefs);
 
+        BlendShapes.AssignAvatar(rigManager.avatar);
+
         HookRig();
 
         MarkDirty();
@@ -713,7 +715,7 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     {
         RegisterDynamicComponents();
 
-        BlendShapes.OnAvatarChanged(RigRefs.RigManager.avatar);
+        BlendShapes.AssignAvatar(RigRefs.RigManager.avatar);
     }
 
     private void OnJump()
