@@ -3,7 +3,6 @@
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
-using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Extensions;
 using LabFusion.Player;
@@ -15,7 +14,7 @@ using LabFusion.Marrow.Player;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(HeadSFX))]
 public static class HeadSFXPatches
@@ -149,63 +148,6 @@ public static class HeadSFXPatches
         }
 
         LocalPlayer.ClearConstraints();
-    }
-}
-
-[HarmonyPatch(typeof(Health))]
-public static class HealthPatches
-{
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(Health.Respawn))]
-    public static void Respawn(Health __instance)
-    {
-        var rigManager = __instance._rigManager;
-
-        if (rigManager.IsLocalPlayer())
-        {
-            LocalHealth.InvokeRespawn();
-        }
-
-        if (!NetworkSceneManager.IsLevelNetworked)
-        {
-            return;
-        }
-
-        if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
-        {
-            return;
-        }
-
-        var networkEntity = networkRig.NetworkEntity;
-
-        if (!networkEntity.IsOwner)
-        {
-            return;
-        }
-
-        RigActionManager.RelayRigAction(new(networkEntity), RigActionType.Respawn);
-
-        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
-
-        // If there's a NetworkPlayer, and we own it, then it can only be the local player
-        if (networkPlayer != null)
-        {
-            OnLocalPlayerRespawn();
-        }
-    }
-
-    private static void OnLocalPlayerRespawn()
-    {
-        LocalPlayer.ClearConstraints();
-
-        // Unragdoll after respawning
-        if (LocalPlayer.RagdollOnDeath)
-        {
-            LocalRagdoll.ToggleRagdoll(false);
-
-            // Teleport so we don't fling
-            LocalPlayer.TeleportToCheckpoint();
-        }
     }
 }
 

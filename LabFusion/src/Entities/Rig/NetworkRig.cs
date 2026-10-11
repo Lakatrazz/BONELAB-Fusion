@@ -48,6 +48,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
     public RigAvatarSetter AvatarSetter { get; private set; } = null;
 
+    public RigBlendShapes BlendShapes { get; } = new();
+
     public EntityPoseReceiver PoseReceiver { get; private set; } = new();
 
     public ManagedTransform[] SmoothTrackedTransforms { get; private set; } = null;
@@ -173,6 +175,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         NetworkEntity.EntityDataCatchingUp += OnEntityDataCatchup;
         NetworkEntity.EntityOwnershipTransferred += OnEntityOwnershipTransfer;
+
+        BlendShapes.Initialize(new(NetworkEntity));
     }
 
     public void OnExtenderUnregistered()
@@ -366,6 +370,9 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
             trackedPoint.SetLocalPositionAndRotation(smoothPoint.Position, smoothPoint.Rotation);
         }
+
+        var eyeGaze = RigPose.EyeGaze;
+        rigManager.ControllerRig.eyeGaze = new Vector4(eyeGaze.x, eyeGaze.y, 1f, 2f);
     }
 
     private void CopyPosePointsToSmoothPoints()
@@ -402,6 +409,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
         };
 
         ClientManager.RelayModule<RigPoseUpdateMessage, RigPoseUpdateData>(data, CommonMessageRoutes.UnreliableToOtherClients);
+
+        BlendShapes.OnOwnedUpdate();
     }
 
     private void OnTickReceivedRig(float deltaTime)
@@ -614,6 +623,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
 
         RigGrabber = new(NetworkEntity, RigRefs);
 
+        BlendShapes.AssignAvatar(rigManager.avatar);
+
         HookRig();
 
         MarkDirty();
@@ -703,6 +714,8 @@ public class NetworkRig : IEntityExtender, IMarrowEntityExtender
     private void OnAvatarSwapped()
     {
         RegisterDynamicComponents();
+
+        BlendShapes.AssignAvatar(RigRefs.RigManager.avatar);
     }
 
     private void OnJump()

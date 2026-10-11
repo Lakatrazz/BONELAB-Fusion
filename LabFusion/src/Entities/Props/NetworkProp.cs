@@ -185,6 +185,11 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
     public void HoldReceivedPose()
     {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
         WriteToPose(PoseReceiver.ReceivedPose);
 
         PoseReceiver.ResyncReceivedPose();
@@ -812,6 +817,8 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
         if (!isOwner && hasOwner)
         {
+            PoseReceiver.ResyncReceivedPose();
+
             TeleportToPose();
 
             TryTakeUncullOwnership();
