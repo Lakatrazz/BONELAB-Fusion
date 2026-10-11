@@ -1,4 +1,6 @@
-﻿using LabFusion.Marrow.Rig;
+﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
+
+using LabFusion.Marrow.Rig;
 using LabFusion.Network.Serialization;
 
 using UnityEngine;
@@ -29,13 +31,33 @@ public struct AvatarBlendShapePath : INetSerializable
         serializer.SerializeValue(ref BlendShapeValue);
     }
 
-    public readonly SkinnedMeshRenderer GetRenderer(Avatar avatar)
+    public readonly bool TryGetRenderer(Avatar avatar, out SkinnedMeshRenderer renderer)
+    {
+        renderer = null;
+
+        var renderers = GetRenderers(avatar);
+
+        if (renderers == null)
+        {
+            return false;
+        }
+
+        if (renderers.Length <= MeshIndex)
+        {
+            return false;
+        }
+
+        renderer = renderers[MeshIndex];
+        return renderer != null;
+    }
+
+    public readonly Il2CppReferenceArray<SkinnedMeshRenderer> GetRenderers(Avatar avatar)
     {
         return MeshType switch
         {
-            AvatarMeshType.Head => avatar.headMeshes[MeshIndex],
-            AvatarMeshType.Hair => avatar.hairMeshes[MeshIndex],
-            _ => avatar.bodyMeshes[MeshIndex],
+            AvatarMeshType.Head => avatar.headMeshes,
+            AvatarMeshType.Hair => avatar.hairMeshes,
+            _ => avatar.bodyMeshes,
         };
     }
 }

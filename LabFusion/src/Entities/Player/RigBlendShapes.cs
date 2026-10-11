@@ -53,14 +53,12 @@ public class RigBlendShapes
             return;
         }
 
-        var skinnedMeshRenderer = path.GetRenderer(Avatar);
-
-        if (skinnedMeshRenderer == null)
+        if (!path.TryGetRenderer(Avatar, out var renderer))
         {
             return;
         }
 
-        skinnedMeshRenderer.SetBlendShapeWeight(path.BlendShapeIndex, ManagedMathf.Clamp(path.BlendShapeValue, BlendShapeMin, BlendShapeMax));
+        renderer.SetBlendShapeWeight(path.BlendShapeIndex, ManagedMathf.Clamp(path.BlendShapeValue, BlendShapeMin, BlendShapeMax));
     }
 
     private void OnBlendShapeChanged(AvatarBlendShapePath path)

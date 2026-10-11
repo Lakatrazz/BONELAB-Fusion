@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Marrow.Data;
-using LabFusion.Math;
 
 using UnityEngine;
 
@@ -11,6 +10,8 @@ namespace LabFusion.Marrow.Rig;
 
 public class AvatarBlendShapeDetector
 {
+    public static readonly float ChangeThreshold = 1f;
+
     public Dictionary<int, float[]> BodyMeshBlendShapes { get; } = new();
     public Dictionary<int, float[]> HeadMeshBlendShapes { get; } = new();
     public Dictionary<int, float[]> HairMeshBlendShapes { get; } = new();
@@ -50,7 +51,7 @@ public class AvatarBlendShapeDetector
                 float currentShape = shapes[i];
                 float newShape = renderer.GetBlendShapeWeight(i);
 
-                if (!ManagedMathf.Approximately(currentShape, newShape))
+                if (MathF.Abs(newShape - currentShape) >= ChangeThreshold)
                 {
                     shapes[i] = newShape;
 
