@@ -18,7 +18,7 @@ internal class EOSLobby : EOSInterface
         LobbyInterface = lobbyInterface;
         LocalUserId = localUserId;
     }
-
+    
     internal void CreateLobby()
     {
         var createOptions = new CreateLobbyOptions
@@ -37,6 +37,7 @@ internal class EOSLobby : EOSInterface
         
         LobbyInterface.CreateLobby(ref createOptions, null, (ref CreateLobbyCallbackInfo info) =>
         {
+            // Frequently happens when the game freezes during level reload
             if (info.ResultCode == Result.TimedOut)
             {
                 EpicModule.Logger.Warn("Lobby creation timed out, retrying...");
@@ -69,8 +70,12 @@ internal class EOSLobby : EOSInterface
         });
     }
 
+    private bool destroyLobbyPending;
     internal void DestroyLobby()
     {
+        if (destroyLobbyPending)
+            return;
+        
         if (CurrentLobby == null)
         {
             EpicModule.Logger.Warn("No current lobby to destroy");
@@ -91,6 +96,8 @@ internal class EOSLobby : EOSInterface
             EpicModule.Logger.Error($"Failed to copy lobby info: {copyInfoResult}");
             return;
         }
+        
+        destroyLobbyPending = true;
 
         var destroyOptions = new DestroyLobbyOptions
         {
@@ -109,10 +116,12 @@ internal class EOSLobby : EOSInterface
             if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound)
             {
                 EpicModule.Logger.Error($"Failed to destroy lobby: {info.ResultCode}");
+                destroyLobbyPending = false;
                 return;
             }
             
             CurrentLobby = null;
+            destroyLobbyPending = false;
         });
     }
     
@@ -167,7 +176,7 @@ internal class EOSLobby : EOSInterface
         
         LobbyInterface.UpdateLobby(ref updateLobbyOptions, null, (ref UpdateLobbyCallbackInfo info) =>
         {
-            if (info.ResultCode != Result.Success)
+            if (info.ResultCode != Result.Success && info.ResultCode != Result.NotFound && info.ResultCode != Result.UnexpectedError)
             {
                 EpicModule.Logger.Error($"Failed to update lobby attribute '{key}': {info.ResultCode}");
             }

@@ -124,8 +124,8 @@ internal class EOSP2PSender
             SocketId = P2P.SocketId,
             Channel = 0,
             Data = new ArraySegment<byte>(Array.Empty<byte>()),
-            Reliability = PacketReliability.ReliableOrdered,
-            AllowDelayedDelivery = true
+            AllowDelayedDelivery = true,
+            Reliability = PacketReliability.ReliableOrdered
         };
 
         P2P.P2PInterface.SendPacket(ref sendOptions);
@@ -163,5 +163,4 @@ internal class EOSP2PSender
         
         return userId;
     }
-
 }

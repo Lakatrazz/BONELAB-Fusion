@@ -46,6 +46,9 @@ internal class EOSP2PServer
     
     internal void DisconnectPeer(ProductUserId remoteUserId)
     {
+        if (!remoteUserId.IsValid())
+            return;
+        
         var closeOptions = new CloseConnectionOptions
         {
             LocalUserId = P2P.LocalUserId, 

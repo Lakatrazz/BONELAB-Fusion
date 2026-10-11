@@ -22,7 +22,7 @@ internal class EOSP2PClient
 
     internal void Connect(ProductUserId remoteUserId)
     {
-        if (remoteUserId == null)
+        if (!remoteUserId.IsValid())
             return;
         
         IsConnecting = true;
@@ -37,6 +37,9 @@ internal class EOSP2PClient
 
     internal void Disconnect()
     {
+        if (!ConnectedUserId.IsValid())
+            return;
+        
         var closeOptions = new CloseConnectionOptions
         {
             LocalUserId = P2P.LocalUserId,
