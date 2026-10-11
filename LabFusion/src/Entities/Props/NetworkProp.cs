@@ -267,8 +267,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
             var bodyPose = pose.Bodies[i];
 
-            transform.position = bodyPose.Position;
-            transform.rotation = bodyPose.Rotation;
+            transform.SetPositionAndRotation(bodyPose.Position, bodyPose.Rotation);
             rigidbody.velocity = bodyPose.Velocity;
             rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
