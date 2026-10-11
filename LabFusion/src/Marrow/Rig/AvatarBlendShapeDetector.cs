@@ -1,6 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Marrow.Data;
+using LabFusion.Marrow.Integration;
 
 using UnityEngine;
 
@@ -85,6 +86,12 @@ public class AvatarBlendShapeDetector
             var renderer = renderers[i];
 
             if (renderer == null)
+            {
+                continue;
+            }
+
+            // If avatar creators put a Desyncer on a SkinnedMeshRenderer, don't sync its blendshapes
+            if (Desyncer.Cache.ContainsSource(renderer.gameObject))
             {
                 continue;
             }
