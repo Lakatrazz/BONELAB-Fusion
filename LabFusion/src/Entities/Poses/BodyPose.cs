@@ -28,6 +28,13 @@ public class BodyPose : INetSerializable
         AngularVelocity = rigidbody.angularVelocity;
     }
 
+    public void ReadFrom(Transform transform)
+    {
+        Position = transform.position;
+        Rotation = transform.rotation;
+        Velocity = AngularVelocity = Vector3.zero;
+    }
+
     public void WriteTo(BodyPose target)
     {
         target.Position = Position;

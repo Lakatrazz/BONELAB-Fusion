@@ -285,16 +285,15 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
         {
             var body = _bodies[i];
 
+            var bodyPose = pose.Bodies[i];
+
             if (!body.HasRigidbody)
             {
+                bodyPose.ReadFrom(body.transform);
                 continue;
             }
 
-            var bodyPose = pose.Bodies[i];
-
-            var rigidbody = body._rigidbody;
-
-            bodyPose.ReadFrom(rigidbody);
+            bodyPose.ReadFrom(body._rigidbody);
         }
     }
 
