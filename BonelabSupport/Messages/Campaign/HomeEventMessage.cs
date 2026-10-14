@@ -9,24 +9,24 @@ namespace MarrowFusion.Bonelab.Messages;
 
 public enum HomeEventType
 {
-    UNKNOWN = 0,
-    WARMUP_JIMMY_ARM = 1,
-    REACH_WINDMILL = 2,
-    REACHED_TAXI = 3,
-    ARM_HIDE = 4,
-    DRIVING_END = 5,
-    COMPLETE_GAME = 6,
-    SPLINE_LOOP_COUNTER = 7,
+    None = 0,
+    WarmupJimmyArm = 1,
+    ReachWindmill = 2,
+    ReachedTaxi = 3,
+    ArmHide = 4,
+    DrivingEnd = 5,
+    CompleteGame = 6,
+    SplineLoopCounter = 7,
 }
 
 public class HomeEventData : INetSerializable
 {
-    public byte SelectionNumber;
+    public int? GetSize() => sizeof(byte);
+
     public HomeEventType Type;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SelectionNumber);
         serializer.SerializeValue(ref Type, Precision.OneByte);
     }
 }
@@ -55,29 +55,29 @@ public class HomeEventMessage : ModuleMessageHandler
             switch (data.Type)
             {
                 default:
-                case HomeEventType.UNKNOWN:
+                case HomeEventType.None:
                     break;
-                case HomeEventType.WARMUP_JIMMY_ARM:
+                case HomeEventType.WarmupJimmyArm:
                     controller.WarmUpJimmyArm();
                     break;
-                case HomeEventType.REACH_WINDMILL:
+                case HomeEventType.ReachWindmill:
                     controller.ReachWindmill();
                     break;
-                case HomeEventType.REACHED_TAXI:
+                case HomeEventType.ReachedTaxi:
                     controller.ReachedTaxi();
                     break;
-                case HomeEventType.ARM_HIDE:
+                case HomeEventType.ArmHide:
                     controller.ArmHide();
 
                     HomeEventHandler.TeleportToJimmyFinger();
                     break;
-                case HomeEventType.DRIVING_END:
+                case HomeEventType.DrivingEnd:
                     controller.DrivingEnd();
                     break;
-                case HomeEventType.COMPLETE_GAME:
+                case HomeEventType.CompleteGame:
                     controller.CompleteGame();
                     break;
-                case HomeEventType.SPLINE_LOOP_COUNTER:
+                case HomeEventType.SplineLoopCounter:
                     HomeEventHandler.TaxiController.SplineLoopCounter();
                     break;
             }
