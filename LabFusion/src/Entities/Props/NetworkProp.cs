@@ -267,8 +267,7 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
 
             var bodyPose = pose.Bodies[i];
 
-            transform.position = bodyPose.Position;
-            transform.rotation = bodyPose.Rotation;
+            transform.SetPositionAndRotation(bodyPose.Position, bodyPose.Rotation);
             rigidbody.velocity = bodyPose.Velocity;
             rigidbody.angularVelocity = bodyPose.AngularVelocity;
         }
@@ -286,16 +285,20 @@ public class NetworkProp : IEntityExtender, IEntityPosableExtender, IEntityDespa
         {
             var body = _bodies[i];
 
-            if (!body.HasRigidbody)
+            var bodyPose = pose.Bodies[i];
+
+            // When a Rigidbody is disabled, its position and rotation may just be initialized to identity even if the transform is at a valid position and rotation
+            // So, when an entity is culled it should always use the transform position and rotation, otherwise it could easily send a completely empty pose to clients
+            // If there's no rigidbody then that's obviously another case where the transform would be used instead.
+            bool useTransform = IsCulled || !body.HasRigidbody;
+
+            if (useTransform)
             {
+                bodyPose.ReadFrom(body.transform);
                 continue;
             }
 
-            var bodyPose = pose.Bodies[i];
-
-            var rigidbody = body._rigidbody;
-
-            bodyPose.ReadFrom(rigidbody);
+            bodyPose.ReadFrom(body._rigidbody);
         }
     }
 
