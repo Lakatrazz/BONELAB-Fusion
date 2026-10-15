@@ -4,14 +4,13 @@ namespace LabFusion.Voice;
 
 public class JawFlapper
 {
+    public const float MinAngle = 0f;
+
     public const float MaxAngle = 40f;
 
     private float _voiceLoudness = 0f;
 
-    public float GetAngle()
-    {
-        return _voiceLoudness * MaxAngle;
-    }
+    public float GetAngle() => ManagedMathf.Lerp(MinAngle, MaxAngle, CurveLoudness(_voiceLoudness));
 
     public void ClearJaw()
     {
@@ -24,4 +23,6 @@ public class JawFlapper
 
         _voiceLoudness = ManagedMathf.Lerp(_voiceLoudness, target, Smoothing.CalculateDecay(12f, deltaTime));
     }
+
+    private static float CurveLoudness(float loudness) => loudness * loudness;
 }
