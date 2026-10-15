@@ -123,7 +123,7 @@ public static class ModPathManager
     {
         foreach (var file in Directory.GetFiles(directory))
         {
-            if (file.EndsWith(ModPathManager.PalletExtension))
+            if (file.EndsWith(PalletExtension))
             {
                 return file;
             }
@@ -144,12 +144,12 @@ public static class ModPathManager
 
     internal static void Initialize()
     {
-        DetermineRootPath();
+        UpdateRootPath();
 
-        ClientSettings.Downloading.DownloadDirectory.OnValueChanged += OnDownloadPathOverrideChanged;
+        ClientSettings.Downloading.DownloadDirectory.OnValueChanged += OnDownloadDirectoryChanged;
     }
 
-    private static void OnDownloadPathOverrideChanged(string value) => DetermineRootPath();
+    private static void OnDownloadDirectoryChanged(string value) => UpdateRootPath();
 
     private static string DetermineRootPath()
     {
