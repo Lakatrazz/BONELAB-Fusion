@@ -27,8 +27,8 @@ internal class EOSP2PReceiver
         }
     }
 
-    private ProductUserId _peerId;
-    private SocketId _socketId;
+    private ProductUserId peerId;
+    private SocketId socketId;
     private bool TryReceiveNextPacket()
     {
         var sizeOptions = new GetNextReceivedPacketSizeOptions
@@ -52,7 +52,7 @@ internal class EOSP2PReceiver
                 MaxDataSizeBytes = packetSize,
             };
 
-            var receiveResult = P2P.P2PInterface.ReceivePacket(ref receiveOptions, ref _peerId, ref _socketId, out byte channel, rented, out uint bytesWritten);
+            var receiveResult = P2P.P2PInterface.ReceivePacket(ref receiveOptions, ref peerId, ref socketId, out byte channel, rented, out uint bytesWritten);
             if (receiveResult != Result.Success)
             {
                 return false;
@@ -64,7 +64,7 @@ internal class EOSP2PReceiver
                 return true;
             }
             
-            HandlePacket(_peerId, rented, (int)bytesWritten, channel);
+            HandlePacket(peerId, rented, (int)bytesWritten, channel);
 
             return true;
         }
@@ -83,7 +83,7 @@ internal class EOSP2PReceiver
             // We are still waiting for more fragments
             return;
         }
-
+        
         switch (channel)
         {
             case EOSP2P.ServerReliableChannel:

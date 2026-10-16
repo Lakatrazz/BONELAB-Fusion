@@ -19,7 +19,7 @@ internal class EOSLobby : EOSInterface
         LocalUserId = localUserId;
     }
     
-    internal void CreateLobby()
+    internal void Create()
     {
         var createOptions = new CreateLobbyOptions
         {
@@ -41,7 +41,7 @@ internal class EOSLobby : EOSInterface
             if (info.ResultCode == Result.TimedOut)
             {
                 EpicModule.Logger.Warn("Lobby creation timed out, retrying...");
-                CreateLobby();
+                Create();
                 return;
             }
             
@@ -71,7 +71,7 @@ internal class EOSLobby : EOSInterface
     }
 
     private bool destroyLobbyPending;
-    internal void DestroyLobby()
+    internal void Destroy()
     {
         if (destroyLobbyPending)
             return;

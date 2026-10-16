@@ -5,6 +5,10 @@ using MarrowFusion.Epic.Utilities;
 
 namespace MarrowFusion.Epic;
 
+// TODO: Add on pre client connection stuff
+// - Check if logged in via epic
+// - Check for active sanctions
+
 public class EpicGamesNetworkLayer : NetworkLayer
 {
     public override string Title => "Epic Online Services";
@@ -25,6 +29,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override Matchmaker Matchmaker => _matchmaker;
     
+    public EpicAccountId ClientEpicAccountId { get; private set; }
     public ProductUserId ClientProductUserId { get; private set; }
     
     private ServerID _runningServerID = ServerID.Empty;
@@ -102,7 +107,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         await ThreadHelper.RunOnMainThreadAsTask(() =>
         {
-            Runtime.Lobby.CreateLobby();
+            Runtime.Lobby.Create();
             Runtime.P2P.Server.Start();
         });
         
@@ -117,7 +122,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     {
         await ThreadHelper.RunOnMainThreadAsTask(() =>
         {
-            Runtime.Lobby.DestroyLobby();
+            Runtime.Lobby.Destroy();
             Runtime.P2P.Server.Stop();
         });
         
@@ -129,7 +134,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
     protected override async Task<bool> TryDisconnectClientAsync(ClientPlatformID client, CancellationToken cancellationToken)
     {
         ProductUserId targetUserId = ProductUserId.FromString(client.ToString());
-        
+
         var server = Runtime.P2P.Server;
         
         await ThreadHelper.RunOnMainThreadAsTask(() => server.DisconnectPeer(targetUserId));
@@ -191,11 +196,26 @@ public class EpicGamesNetworkLayer : NetworkLayer
         return true;
     }
 
+    protected override async Task<string> TryGetLocalUsernameAsync()
+    {
+        var task = await ThreadHelper.RunOnMainThreadAsTask(() => Runtime.UserInfo.GetDisplayNameAsync(ClientEpicAccountId));
+
+        return await task;
+    }
+
+    protected override async Task<string> TryGetClientUsernameAsync(ClientPlatformID client)
+    {
+        var task = await ThreadHelper.RunOnMainThreadAsTask(() => Runtime.UserInfo.GetDisplayNameAsync(ProductUserId.FromString(client.ToString())));
+
+        return await task;
+    }
+
     protected override void OnInitialize()
     {
+        ClientEpicAccountId = Runtime.Auth.LocalAccountId;
         ClientProductUserId = Runtime.Connect.LocalUserId;
         
-        EpicModule.Logger.Log($"EOS initialized with ProductUserId {ClientID}!");
+        EpicModule.Logger.Log($"{Platform} initialized with ProductUserId {ClientID}!");
 
         _matchmaker = new EpicMatchmaker(Runtime);
     }

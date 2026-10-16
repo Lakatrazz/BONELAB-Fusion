@@ -25,27 +25,9 @@ internal class EOSP2PSender
     
     internal void SendToClients(NetMessage message, NetworkChannel channel, ReadOnlySpan<ClientPlatformID> clientPlatformIDs)
     {
-        if (clientPlatformIDs.Length == 0)
+        foreach (var clientPlatformID in clientPlatformIDs)
         {
-            return;
-        }
-        
-        byte[] rented = ArrayPool<byte>.Shared.Rent(message.Length);
-
-        try
-        {
-            CopyInto(message, rented);
-
-            foreach (var clientPlatformID in clientPlatformIDs)
-            {
-                var remoteUserId = GetProductUserId(clientPlatformID);
-
-                SendRaw(new ArraySegment<byte>(rented, 0, message.Length), channel, remoteUserId, false);
-            }
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(rented);
+            SendToClient(message, channel, clientPlatformID);
         }
     }
 

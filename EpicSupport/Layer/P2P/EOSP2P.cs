@@ -5,6 +5,11 @@ namespace MarrowFusion.Epic;
 
 internal class EOSP2P : EOSInterface
 {
+    internal const byte ClientReliableChannel = 1;
+    internal const byte ClientUnreliableChannel = 2;
+    internal const byte ServerReliableChannel = 3;
+    internal const byte ServerUnreliableChannel = 4;
+    
     internal EOSRuntime Runtime;
     internal P2PInterface P2PInterface;
     internal ProductUserId LocalUserId;
@@ -13,11 +18,6 @@ internal class EOSP2P : EOSInterface
 
     internal EOSP2PClient Client;
     internal EOSP2PServer Server;
-    
-    internal const byte ClientReliableChannel = 1;
-    internal const byte ClientUnreliableChannel = 2;
-    internal const byte ServerReliableChannel = 3;
-    internal const byte ServerUnreliableChannel = 4;
     
     internal PacketFragmenter Fragmenter;
     internal EOSP2PSender Sender;
@@ -39,14 +39,6 @@ internal class EOSP2P : EOSInterface
 
     internal override Task<bool> InitializeAsync()
     {
-        var portOptions = new SetPortRangeOptions
-        {
-            Port = 7777,
-            MaxAdditionalPortsToTry = 99
-        };
-        
-        P2PInterface.SetPortRange(ref portOptions);
-        
         var relayOptions = new SetRelayControlOptions
         {
             RelayControl = RelayControl.ForceRelays

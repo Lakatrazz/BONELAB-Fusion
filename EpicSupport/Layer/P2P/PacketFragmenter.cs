@@ -97,17 +97,14 @@ internal class PacketFragmenter
 
     private static void WriteHeader(byte[] buffer, uint packetId, ushort fragmentId, bool lastFragment)
     {
-        // packetId (little-endian)
         buffer[0] = (byte)packetId;
         buffer[1] = (byte)(packetId >> 8);
         buffer[2] = (byte)(packetId >> 16);
         buffer[3] = (byte)(packetId >> 24);
-
-        // fragmentId (little-endian)
+        
         buffer[4] = (byte)fragmentId;
         buffer[5] = (byte)(fragmentId >> 8);
-
-        // lastFragment
+        
         buffer[6] = lastFragment ? (byte)1 : (byte)0;
     }
 
@@ -152,7 +149,7 @@ internal class PacketFragmenter
         int offset = fragmentId * MaxPayloadSize;
         if (offset + payloadLength > slot.Buffer.Length)
         {
-            EpicModule.Logger.Warn("Fragment payload exceeds reassembly buffer bounds; dropping reassembly");
+            EpicModule.Logger.Warn("Fragment payload exceeds reassembly buffer bounds. Dropping reassembly");
             FreeSlot(ref slot);
             return false;
         }
@@ -168,7 +165,7 @@ internal class PacketFragmenter
             ulong invalidMask = slot.ExpectedCount >= 64 ? 0UL : ~((1UL << slot.ExpectedCount) - 1UL);
             if ((slot.ReceivedMask & invalidMask) != 0)
             {
-                EpicModule.Logger.Warn("Received fragment id beyond declared message length; dropping reassembly.");
+                EpicModule.Logger.Warn("Received fragment id beyond declared message length. Dropping reassembly.");
                 FreeSlot(ref slot);
                 return false;
             }

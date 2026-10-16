@@ -88,6 +88,8 @@ internal class EOSP2PServer
         ConnectionEstablishedId = P2P.P2PInterface.AddNotifyPeerConnectionEstablished(ref establishedOptions, null, (ref OnPeerConnectionEstablishedInfo info) =>
         {
             ConnectedPeers.Add(info.RemoteUserId);
+
+            EpicModule.Logger.Log($"Client connected with ID: {info.RemoteUserId.ToString()}");
         });
         
         var closedOptions = new AddNotifyPeerConnectionClosedOptions
@@ -105,6 +107,8 @@ internal class EOSP2PServer
             NetworkLayerManager.Layer?.DisconnectClient(platformID);
             
             P2P.Fragmenter.ClearPendingForSender(info.RemoteUserId);
+            
+            EpicModule.Logger.Log($"Client disconnected with ID: {info.RemoteUserId.ToString()}");
         });
     }
 

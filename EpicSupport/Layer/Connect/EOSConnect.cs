@@ -7,12 +7,15 @@ namespace MarrowFusion.Epic;
 
 internal class EOSConnect : EOSInterface
 {
+    internal EOSRuntime Runtime;
     internal ConnectInterface ConnectInterface;
     internal ProductUserId LocalUserId;
-    internal ulong ExpirationNotificationId = Common.INVALID_NOTIFICATIONID;
+    
+    private ulong ExpirationNotificationId = Common.INVALID_NOTIFICATIONID;
 
-    internal EOSConnect(ConnectInterface connectInterface)
+    internal EOSConnect(EOSRuntime eosRuntime, ConnectInterface connectInterface)
     {
+        Runtime = eosRuntime;
         ConnectInterface = connectInterface;
     }
 
@@ -23,24 +26,22 @@ internal class EOSConnect : EOSInterface
 
     private async Task<bool> LoginAsync()
     {
-        if (!await CreateDeviceIdAsync())
+        string idToken = Runtime.Auth.CopyIdToken();
+        if (string.IsNullOrEmpty(idToken))
+        {
+            EpicModule.Logger.Error("No Epic ID token available for Connect login");
             return false;
-
-        string displayName = await PlatformHelper.GetPlatformUsernameAsync();
-
+        }
+        
         var loginOptions = new LoginOptions
         {
             Credentials = new Credentials
             {
-                Type = ExternalCredentialType.DeviceidAccessToken,
-                Token = string.Empty
-            },
-            UserLoginInfo = new UserLoginInfo
-            {
-                DisplayName = displayName
+                Type = ExternalCredentialType.EpicIdToken,
+                Token = idToken
             }
         };
-
+        
         var loginResult = await LoginAsync(loginOptions);
         if (loginResult.ResultCode == Result.Success)
         {
@@ -57,7 +58,6 @@ internal class EOSConnect : EOSInterface
             if (createUserResult.ResultCode != Result.Success)
             {
                 EpicModule.Logger.Error($"CreateUser failed: {createUserResult.ResultCode}");
-
                 return false;
             }
 
@@ -66,7 +66,6 @@ internal class EOSConnect : EOSInterface
         else
         {
             EpicModule.Logger.Error($"Login failed: {loginResult.ResultCode}");
-
             return false;
         }
 
@@ -75,30 +74,6 @@ internal class EOSConnect : EOSInterface
 
         RegisterAuthExpiration();
         return true;
-    }
-
-    private Task<bool> CreateDeviceIdAsync()
-    {
-        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var deviceIdOptions = new CreateDeviceIdOptions
-        {
-            DeviceModel = Environment.MachineName
-        };
-
-        ConnectInterface.CreateDeviceId(ref deviceIdOptions, null, (ref CreateDeviceIdCallbackInfo data) =>
-        {
-            bool success = data.ResultCode == Result.Success || data.ResultCode == Result.DuplicateNotAllowed;
-
-            if (!success)
-            {
-                EpicModule.Logger.Error($"CreateDeviceId failed: {data.ResultCode}");
-            }
-
-            tcs.TrySetResult(success);
-        });
-
-        return tcs.Task;
     }
 
     private Task<LoginCallbackInfo> LoginAsync(LoginOptions options)
@@ -152,8 +127,47 @@ internal class EOSConnect : EOSInterface
         if (await LoginAsync())
             return;
 
-        EpicModule.Logger.Error("Failed to refresh token, logging out...");
+        EpicModule.Logger.Error("Failed to refresh connect token, logging out...");
 
         NetworkLayerManager.LogOut();
+    }
+    
+    internal Task<EpicAccountId> GetEpicAccountIdAsync(ProductUserId productUserId)
+    {
+        var tcs = new TaskCompletionSource<EpicAccountId>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var options = new QueryProductUserIdMappingsOptions
+        {
+            LocalUserId = LocalUserId,
+            ProductUserIds = new[] { productUserId }
+        };
+
+        ConnectInterface.QueryProductUserIdMappings(ref options, null, (ref QueryProductUserIdMappingsCallbackInfo data) =>
+        {
+            if (data.ResultCode != Result.Success)
+            {
+                tcs.TrySetResult(null);
+                return;
+            }
+
+            var mappingOptions = new GetProductUserIdMappingOptions
+            {
+                LocalUserId = LocalUserId,
+                TargetProductUserId = productUserId
+            };
+
+            var result = ConnectInterface.GetProductUserIdMapping(ref mappingOptions, out var epicAccountIdStr);
+            if (result != Result.Success || string.IsNullOrEmpty(epicAccountIdStr))
+            {
+                tcs.TrySetResult(null);
+                return;
+            }
+            
+            var epicAccountId = EpicAccountId.FromString(epicAccountIdStr);
+
+            tcs.TrySetResult(epicAccountId != null && epicAccountId.IsValid() ? epicAccountId : null);
+        });
+
+        return tcs.Task;
     }
 }

@@ -37,7 +37,7 @@ internal class EOSP2PClient
 
     internal void Disconnect()
     {
-        if (!ConnectedUserId.IsValid())
+        if (ConnectedUserId == null || !ConnectedUserId.IsValid())
             return;
         
         var closeOptions = new CloseConnectionOptions
@@ -73,6 +73,8 @@ internal class EOSP2PClient
             
             IsConnecting = false;
             IsConnected = true;
+            
+            EpicModule.Logger.Log($"Connected to server with ID: {info.RemoteUserId.ToString()}");
         });
         
         var closedOptions = new AddNotifyPeerConnectionClosedOptions
@@ -87,6 +89,8 @@ internal class EOSP2PClient
                 return;
             
             NetworkManager.DisconnectClientAndServer();
+            
+            EpicModule.Logger.Log($"Disconnected from server with ID: {info.RemoteUserId.ToString()}");
         });
     }
 
