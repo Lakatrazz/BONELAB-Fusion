@@ -111,7 +111,7 @@ public static class LocalPlayer
     /// <returns></returns>
     public static NetworkPlayer? GetNetworkPlayer()
     {
-        if (!NetworkManager.HasServer)
+        if (!ClientManager.IsClientConnected)
         {
             return null;
         }
