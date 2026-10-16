@@ -63,7 +63,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            bool canUnragdoll = !LocalRagdoll.RagdollLocked || ForceAllowUnragdoll;
+            bool canUnragdoll = !LocalRagdoll.IsRagdollLocked || ForceAllowUnragdoll;
 
             if (!canUnragdoll)
             {
@@ -99,7 +99,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            bool canUnragdoll = !LocalRagdoll.RagdollLocked || ForceAllowUnragdoll;
+            bool canUnragdoll = !LocalRagdoll.IsRagdollLocked || ForceAllowUnragdoll;
 
             if (!canUnragdoll)
             {
