@@ -112,7 +112,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     private readonly List<ClientSmallID> _dataCaughtUpPlayers = new();
     private readonly Dictionary<ClientSmallID, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
-    private readonly HashSet<IEntityExtender> _extenders = new();
+    private readonly List<IEntityExtender> _extenders = new();
+
     private bool _isUnregisteringExtenders = false;
 
     private readonly List<NetworkEntity> _linkedEntities = new();
@@ -167,12 +168,12 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// <param name="extender"></param>
     public void ConnectExtender(IEntityExtender extender)
     {
-        bool added = _extenders.Add(extender);
-
-        if (!added)
+        if (_extenders.Contains(extender))
         {
             return;
         }
+
+        _extenders.Add(extender);
 
         if (IsRegistered)
         {
