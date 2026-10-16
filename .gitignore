@@ -362,3 +362,6 @@ Staging/Thunderstore/Plugins
 **/Assets/AddressableAssetsData
 **/_MarrowAssets/PackedAssets
 **/_MarrowAssets/PackedAssets.meta
+
+# Jetbrains Rider
+/.idea
