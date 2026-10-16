@@ -1,40 +1,33 @@
-﻿using LabFusion.Extensions;
-
-using Object = UnityEngine.Object;
+﻿using Object = UnityEngine.Object;
 
 namespace LabFusion.Utilities;
 
 public class FusionComponentCache<TSource, TComponent> where TSource : Object where TComponent : class
 {
-    private readonly Dictionary<TSource, TComponent> _cache = new(new UnityComparer());
+    private readonly Dictionary<int, TComponent> _instanceIDToComponent = new();
 
-    public ICollection<TComponent> Components => _cache.Values;
+    public ICollection<TComponent> Components => _instanceIDToComponent.Values;
 
-    public TComponent Get(TSource source)
-    {
-        if (_cache.TryGetValue(source, out var component))
-        {
-            return component;
-        }
+    public TComponent Get(TSource source) => Get(source.GetInstanceID());
 
-        return null;
-    }
+    public TComponent Get(int instanceID) => TryGet(instanceID, out var component) ? component : null;
 
-    public bool TryGet(TSource source, out TComponent value)
-    {
-        return _cache.TryGetValue(source, out value);
-    }
+    public bool TryGet(TSource source, out TComponent component) => TryGet(source.GetInstanceID(), out component);
+
+    public bool TryGet(int instanceID, out TComponent component) => _instanceIDToComponent.TryGetValue(instanceID, out component);
 
     public bool ContainsSource(TSource source)
     {
-        return _cache.ContainsKey(source);
+        return _instanceIDToComponent.ContainsKey(source.GetInstanceID());
     }
 
-    public void Add(TSource source, TComponent component)
+    public void Add(TSource source, TComponent component) => Add(source.GetInstanceID(), component);
+
+    public void Add(int instanceID, TComponent component)
     {
-        if (_cache.ContainsKey(source))
+        if (_instanceIDToComponent.ContainsKey(instanceID))
         {
-            _cache[source] = component;
+            _instanceIDToComponent[instanceID] = component;
 
 #if DEBUG
             FusionLogger.Warn("Attempted to add component to a ComponentCache, but Source already existed. This is probably fine.");
@@ -43,11 +36,10 @@ public class FusionComponentCache<TSource, TComponent> where TSource : Object wh
             return;
         }
 
-        _cache.Add(source, component);
+        _instanceIDToComponent.Add(instanceID, component);
     }
 
-    public void Remove(TSource source)
-    {
-        _cache.Remove(source);
-    }
+    public void Remove(TSource source) => Remove(source.GetInstanceID());
+
+    public void Remove(int instanceID) => _instanceIDToComponent.Remove(instanceID);
 }

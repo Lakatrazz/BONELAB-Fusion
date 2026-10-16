@@ -1,5 +1,7 @@
-﻿using LabFusion.Utilities;
-using LabFusion.Data;
+﻿using LabFusion.Data;
+using LabFusion.Utilities;
+
+using System.Runtime.InteropServices;
 
 namespace LabFusion.Entities;
 
@@ -11,46 +13,70 @@ public sealed class EntityUpdatableManager
 
     public void OnEntityUpdate(float deltaTime)
     {
-        foreach (var entity in UpdateManager.Entries)
+        // Microoptimization, skips certain safety checks
+        Span<IEntityUpdatable> span = CollectionsMarshal.AsSpan(UpdateManager.Entries);
+        
+        foreach (var entity in span)
         {
-            try
-            {
-                entity.OnEntityUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running IEntityUpdatable Update", e);
-            }
+            OnEntityUpdate(entity, deltaTime);
         }
     }
 
     public void OnEntityFixedUpdate(float deltaTime)
     {
-        foreach (var entity in FixedUpdateManager.Entries)
+        // Microoptimization, skips certain safety checks
+        Span<IEntityFixedUpdatable> span = CollectionsMarshal.AsSpan(FixedUpdateManager.Entries);
+
+        foreach (var entity in span)
         {
-            try
-            {
-                entity.OnEntityFixedUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running IEntityFixedUpdatable FixedUpdate", e);
-            }
+            OnEntityFixedUpdate(entity, deltaTime);
         }
     }
 
     public void OnEntityLateUpdate(float deltaTime)
     {
-        foreach (var entity in LateUpdateManager.Entries)
+        // Microoptimization, skips certain safety checks
+        Span<IEntityLateUpdatable> span = CollectionsMarshal.AsSpan(LateUpdateManager.Entries);
+
+        foreach (var entity in span)
         {
-            try
-            {
-                entity.OnEntityLateUpdate(deltaTime);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("running IEntityLateUpdatable LateUpdate", e);
-            }
+            OnEntityLateUpdate(entity, deltaTime);
+        }
+    }
+
+    private static void OnEntityUpdate(IEntityUpdatable entity, float deltaTime)
+    {
+        try
+        {
+            entity.OnEntityUpdate(deltaTime);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("running IEntityUpdatable Update", e);
+        }
+    }
+
+    private static void OnEntityFixedUpdate(IEntityFixedUpdatable entity, float deltaTime)
+    {
+        try
+        {
+            entity.OnEntityFixedUpdate(deltaTime);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("running IEntityFixedUpdatable FixedUpdate", e);
+        }
+    }
+
+    private static void OnEntityLateUpdate(IEntityLateUpdatable entity, float deltaTime)
+    {
+        try
+        {
+            entity.OnEntityLateUpdate(deltaTime);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("running IEntityLateUpdatable LateUpdate", e);
         }
     }
 }

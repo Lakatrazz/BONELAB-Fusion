@@ -33,7 +33,7 @@ public static class TaxiControllerPatches
             return false;
         }
 
-        ServerManager.SendToClientsExceptHostModule<HomeEventMessage, HomeEventData>(new HomeEventData() { Type = HomeEventType.SPLINE_LOOP_COUNTER, SelectionNumber = 0 }, NetworkChannel.Reliable);
+        ServerManager.SendToClientsExceptHostModule<HomeEventMessage, HomeEventData>(new HomeEventData() { Type = HomeEventType.SplineLoopCounter }, NetworkChannel.Reliable);
         return true;
     }
 }

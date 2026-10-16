@@ -4,6 +4,7 @@ using LabFusion.Data;
 using LabFusion.Marrow.Patching;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
+using LabFusion.Extensions;
 
 using MelonLoader;
 
@@ -13,13 +14,51 @@ using UnityEngine;
 
 namespace LabFusion.Player;
 
+/// <summary>
+/// Provides functions for interacting with the local player's ragdoll, including toggling the ragdoll or knocking out the player temporarily.
+/// </summary>
 public static class LocalRagdoll
 {
-    private static bool _knockedOut = false;
+    /// <summary>
+    /// Invoked when the local player has been knocked out.
+    /// </summary>
+    public static event Action KnockoutStarted;
 
-    public static bool KnockedOut => _knockedOut;
+    /// <summary>
+    /// Invoked when the local player is no longer knocked out.
+    /// </summary>
+    public static event Action KnockoutEnded;
 
-    public static bool RagdollLocked
+    /// <summary>
+    /// Returns true if the local player is currently knocked out (ragdolled and screen is fading from black).
+    /// </summary>
+    public static bool IsKnockedOut
+    {
+        get => _isKnockedOut;
+        private set
+        {
+            if (_isKnockedOut == value)
+            {
+                return;
+            }
+
+            if (value)
+            {
+                KnockoutStarted?.InvokeSafe("invoking LocalRagdoll.KnockoutStarted event");
+            }
+            else
+            {
+                KnockoutEnded?.InvokeSafe("invoking LocalRagdoll.KnockoutEnded event");
+            }
+
+            _isKnockedOut = value;
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the local player's ragdoll is currently locked, and they cannot unragdoll.
+    /// </summary>
+    public static bool IsRagdollLocked
     {
         get
         {
@@ -42,9 +81,11 @@ public static class LocalRagdoll
                 }
             }
 
-            return KnockedOut;
+            return IsKnockedOut;
         }
     }
+
+    private static bool _isKnockedOut = false;
 
     /// <summary>
     /// Ragdolls or unragdolls the player.
@@ -93,7 +134,7 @@ public static class LocalRagdoll
             return;
         }
 
-        if (KnockedOut)
+        if (IsKnockedOut)
         {
             return;
         }
@@ -113,26 +154,26 @@ public static class LocalRagdoll
         LocalVision.Blind = blind;
         LocalVision.BlindColor = Color.black;
 
-        _knockedOut = true;
+        IsKnockedOut = true;
 
         // Wait a certain amount of time to wake up
         float elapsed = 0f;
 
-        float eyeLength = Mathf.Min(10f, length);
+        float eyeLength = MathF.Min(10f, length);
 
         while (elapsed <= length)
         {
             elapsed += TimeReferences.DeltaTime;
 
-            float eyeStart = Mathf.Max(length - eyeLength, 0f);
+            float eyeStart = MathF.Max(length - eyeLength, 0f);
 
-            float eyeProgress = Mathf.Max(elapsed - eyeStart, 0f) / eyeLength;
-            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, Mathf.Pow(eyeProgress, 3f));
+            float eyeProgress = MathF.Max(elapsed - eyeStart, 0f) / eyeLength;
+            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, MathF.Pow(eyeProgress, 3f));
 
             yield return null;
         }
 
-        _knockedOut = false;
+        IsKnockedOut = false;
 
         LocalVision.Blind = false;
         LocalVision.BlindColor = Color.black;
