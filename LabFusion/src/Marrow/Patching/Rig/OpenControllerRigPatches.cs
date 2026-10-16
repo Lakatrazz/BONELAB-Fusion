@@ -62,7 +62,7 @@ public static class OpenControllerRigPatches
     [HarmonyPatch(nameof(OpenControllerRig.OnEarlyUpdate))]
     public static void OnEarlyUpdatePostfix(ref Il2CppSystem.Action<bool> __state)
     {
-        OpenControllerRig.OnPauseStateChange = null;
+        OpenControllerRig.OnPauseStateChange = __state;
     }
 
     [HarmonyPrefix]
