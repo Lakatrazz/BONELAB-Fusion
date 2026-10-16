@@ -113,6 +113,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     private readonly Dictionary<ClientSmallID, NetworkEntityPlayerDelegate> _dataCatchupCallbacks = new();
 
     private readonly List<IEntityExtender> _extenders = new();
+    private readonly Dictionary<Type, IEntityExtender> _extendersByType = new();
 
     private bool _isUnregisteringExtenders = false;
 
@@ -174,6 +175,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         }
 
         _extenders.Add(extender);
+        AddExtenderTypes(extender);
 
         if (IsRegistered)
         {
@@ -201,37 +203,61 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
             return;
         }
 
+        RemoveExtenderTypes(extender);
+
         if (IsRegistered)
         {
             UnregisterExtender(extender);
         }
     }
 
-    public TExtender GetExtender<TExtender>() where TExtender : IEntityExtender
-    {
-        foreach (var extender in _extenders)
-        {
-            if (extender is TExtender result)
-            {
-                return result;
-            }
-        }
+    public TExtender GetExtender<TExtender>() where TExtender : IEntityExtender => _extendersByType.TryGetValue(typeof(TExtender), out var result) ? (TExtender)result : default;
 
-        return default;
+    public IEntityExtender GetExtender(Type type) => _extendersByType.TryGetValue(type, out var result) ? result : default;
+
+    private void AddExtenderTypes(IEntityExtender extender)
+    {
+        var type = extender.GetType();
+
+        _extendersByType[type] = extender;
+
+        foreach (var interfaceType in type.GetInterfaces())
+        {
+            if (IsExtenderTypeInvalid(interfaceType))
+            {
+                continue;
+            }
+
+            _extendersByType[interfaceType] = extender;
+        }
     }
 
-    public IEntityExtender GetExtender(Type type)
+    private void RemoveExtenderTypes(IEntityExtender extender)
     {
-        foreach (var extender in _extenders)
+        var type = extender.GetType();
+
+        _extendersByType.Remove(type);
+
+        foreach (var interfaceType in type.GetInterfaces())
         {
-            if (type.IsAssignableFrom(extender.GetType()))
+            if (IsExtenderTypeInvalid(interfaceType))
             {
-                return extender;
+                continue;
+            }
+
+            if (_extendersByType.TryGetValue(interfaceType, out var value) && value == extender)
+            {
+                _extendersByType.Remove(type);
             }
         }
-
-        return null;
     }
+
+    private void RemoveExtenderTypes()
+    {
+        _extendersByType.Clear();
+    }
+
+    private static bool IsExtenderTypeInvalid(Type type) => type == typeof(IEntityExtender) || !typeof(IEntityExtender).IsAssignableFrom(type);
 
     internal void OnPlayerLeft(PlayerID playerID)
     {
@@ -466,6 +492,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     private void DisconnectExtenders()
     {
         _extenders.Clear();
+        RemoveExtenderTypes();
     }
 
     private static void RegisterExtender(IEntityExtender extender)
