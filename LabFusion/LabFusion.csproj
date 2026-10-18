@@ -107,6 +107,8 @@
     <None Remove="FusionHelper\Steamworks\**" />
     <None Remove="src\Data\Containers\Levels\**" />
     <None Remove="src\Data\Interfaces\**" />
+    <None Remove="SupportModules\EpicSupport.dll" />
+    <EmbeddedResource Include="SupportModules\EpicSupport.dll" />
   </ItemGroup>
 
   <ItemGroup>
