@@ -72,6 +72,7 @@ public static class LobbyFilterManager
         {
             FilterFull = FullFilter.IsActive(),
             FilterMismatchingVersions = MismatchingVersionsFilter.IsActive(),
+            IncludeFriendPrivateLobbies = true,
         };
     }
 }

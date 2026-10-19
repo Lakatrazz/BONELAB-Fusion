@@ -17,6 +17,7 @@ public struct LobbyMetadataInfo
         ClientHasLevel = false,
         LobbyCode = null,
         Privacy = ServerPrivacy.PUBLIC,
+        FriendsCanJoin = false,
         Full = false,
         VersionMajor = 0,
         VersionMinor = 0,
@@ -32,6 +33,8 @@ public struct LobbyMetadataInfo
     public string LobbyCode { get; set; }
 
     public ServerPrivacy Privacy { get; set; }
+
+    public bool FriendsCanJoin { get; set; }
 
     public bool Full { get; set; }
 
@@ -56,6 +59,7 @@ public struct LobbyMetadataInfo
             HasLobbyOpen = NetworkInfo.IsHost,
             LobbyCode = lobbyInfo.LobbyCode,
             Privacy = lobbyInfo.Privacy,
+            FriendsCanJoin = lobbyInfo.FriendsCanJoin,
             Full = lobbyInfo.PlayerCount >= lobbyInfo.MaxPlayers,
             VersionMajor = lobbyInfo.LobbyVersion.Major,
             VersionMinor = lobbyInfo.LobbyVersion.Minor,
@@ -69,6 +73,7 @@ public struct LobbyMetadataInfo
         lobby.SetMetadata(LobbyKeys.HasLobbyOpenKey, HasLobbyOpen.ToString());
         lobby.SetMetadata(LobbyKeys.LobbyCodeKey, LobbyCode?.ToUpper());
         lobby.SetMetadata(LobbyKeys.PrivacyKey, ((int)Privacy).ToString());
+        lobby.SetMetadata(LobbyKeys.FriendsCanJoinKey, FriendsCanJoin.ToString());
         lobby.SetMetadata(LobbyKeys.FullKey, Full.ToString());
         lobby.SetMetadata(LobbyKeys.VersionMajorKey, VersionMajor.ToString());
         lobby.SetMetadata(LobbyKeys.VersionMinorKey, VersionMinor.ToString());
@@ -87,6 +92,7 @@ public struct LobbyMetadataInfo
             LobbyCode = lobby.GetMetadata(LobbyKeys.LobbyCodeKey),
             Game = lobby.GetMetadata(LobbyKeys.GameKey),
             Full = lobby.GetMetadata(LobbyKeys.FullKey) == bool.TrueString,
+            FriendsCanJoin = lobby.GetMetadata(LobbyKeys.FriendsCanJoinKey) == bool.TrueString,
         };
 
         if (lobby.TryGetMetadata(LobbyKeys.PrivacyKey, out var rawPrivacy) && int.TryParse(rawPrivacy, out var privacyInt)) 

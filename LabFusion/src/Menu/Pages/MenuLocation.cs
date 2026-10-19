@@ -31,6 +31,7 @@ public static class MenuLocation
     public static BoolElement KnockoutElement { get; private set; }
     public static IntElement KnockoutLengthElement { get; private set; }
     public static BoolElement PlayerConstrainingElement { get; private set; }
+    public static BoolElement FriendsCanJoinElement { get; private set; }
     public static FloatElement MaxAvatarHeightElement { get; private set; }
 
     public static EnumElement DevToolsElement { get; private set; }
@@ -238,6 +239,12 @@ public static class MenuLocation
             .WithTitle("Player Constraining")
             .WithValue(info.PlayerConstraining);
 
+        FriendsCanJoinElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Friends Can Join Without Code")
+            .WithValue(info.FriendsCanJoin);
+
         MaxAvatarHeightElement
             .Cleared()
             .WithInteractability(ownsSettings)
@@ -408,6 +415,12 @@ public static class MenuLocation
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.PlayerConstraining)
             .WithTitle("Player Constraining");
+
+        FriendsCanJoinElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.FriendsCanJoin)
+            .WithTitle("Friends Can Join Without Code");
 
         MaxAvatarHeightElement
             .Cleared()
@@ -812,6 +825,8 @@ public static class MenuLocation
         KnockoutLengthElement = generalGroup.AddElement<IntElement>("Knockout Length");
 
         PlayerConstrainingElement = generalGroup.AddElement<BoolElement>("Player Constraining");
+
+        FriendsCanJoinElement = generalGroup.AddElement<BoolElement>("Friends Can Join Without Code");
 
         MaxAvatarHeightElement = generalGroup.AddElement<FloatElement>("Max Avatar Height");
 

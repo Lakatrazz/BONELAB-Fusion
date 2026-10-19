@@ -259,6 +259,9 @@ public static class MenuMatchmaking
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
                 return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyID);
+            case ServerPrivacy.PRIVATE:
+                // Private servers are only listed for friends if the host opted in
+                return info.Metadata.LobbyInfo.FriendsCanJoin && NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyID);
             default:
                 return false;
         }

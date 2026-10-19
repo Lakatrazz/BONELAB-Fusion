@@ -68,6 +68,9 @@ public class LobbyInfo
     [JsonPropertyName("privacy")]
     public ServerPrivacy Privacy { get; set; } = ServerPrivacy.PUBLIC;
 
+    [JsonPropertyName("friendsCanJoin")]
+    public bool FriendsCanJoin { get; set; } = false;
+
     [JsonPropertyName("slowMoMode")]
     public TimeScaleMode SlowMoMode { get; set; } = TimeScaleMode.DISABLED;
 
@@ -151,6 +154,7 @@ public class LobbyInfo
         // Settings
         NameTags = SavedServerSettings.NameTags.Value;
         Privacy = SavedServerSettings.Privacy.Value;
+        FriendsCanJoin = SavedServerSettings.FriendsCanJoin.Value;
         SlowMoMode = SavedServerSettings.SlowMoMode.Value;
         MaxPlayers = SavedServerSettings.MaxPlayers.Value;
         VoiceChat = SavedServerSettings.VoiceChat.Value;

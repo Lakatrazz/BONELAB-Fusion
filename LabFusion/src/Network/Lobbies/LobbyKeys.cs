@@ -31,6 +31,11 @@ public static class LobbyKeys
     public const string PrivacyKey = "Privacy";
 
     /// <summary>
+    /// The key for whether the host allows friends to join without a code, even if the lobby is private.
+    /// </summary>
+    public const string FriendsCanJoinKey = "FriendsCanJoin";
+
+    /// <summary>
     /// The key to get if a lobby is full.
     /// </summary>
     public const string FullKey = "Full";

@@ -18,7 +18,7 @@ public sealed class SteamMatchmaker : IMatchmaker
 
     public void RequestLobbies(MatchmakerFilters filters, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
     {
-        MelonCoroutines.Start(FindLobbies(FetchLobbies, filters, callback));
+        MelonCoroutines.Start(FindLobbies(FetchLobbiesWithFriends, filters, callback));
     }
 
     public void RequestLobbiesByCode(string code, Action<IMatchmaker.MatchmakerCallbackInfo> callback)
@@ -99,6 +99,67 @@ public sealed class SteamMatchmaker : IMatchmaker
             .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.PRIVATE)
             .WithNotEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.LOCKED)
             .RequestAsync();
+    }
+
+    private static async Task<Lobby[]> FetchLobbiesWithFriends(MatchmakerFilters filters)
+    {
+        var publicTask = FetchLobbies(filters);
+
+        if (!filters.IncludeFriendPrivateLobbies)
+        {
+            return await publicTask;
+        }
+
+        var friendTask = FetchFriendPrivateLobbies(filters);
+
+        var publicLobbies = await publicTask;
+
+        // A failed friend search should never hide the regular results
+        Lobby[] friendLobbies = null;
+
+        try
+        {
+            friendLobbies = await friendTask;
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("searching for friend lobbies", e);
+        }
+
+        if (friendLobbies == null)
+        {
+            return publicLobbies;
+        }
+
+        var merged = new List<Lobby>(publicLobbies ?? Array.Empty<Lobby>());
+
+        foreach (var lobby in friendLobbies)
+        {
+            if (!merged.Any(l => l.Id == lobby.Id))
+            {
+                merged.Add(lobby);
+            }
+        }
+
+        return merged.ToArray();
+    }
+
+    /// <summary>
+    /// Finds private lobbies whose host is a Steam friend and has explicitly allowed friends to join without a code.
+    /// </summary>
+    private static async Task<Lobby[]> FetchFriendPrivateLobbies(MatchmakerFilters filters)
+    {
+        var query = SteamMatchmaking.LobbyList;
+        query = AddPersistentFilters(query);
+        query = AddMatchmakingFilters(query, filters);
+
+        var lobbies = await query
+            .WithEqual(LobbyKeys.PrivacyKey, (int)ServerPrivacy.PRIVATE)
+            .WithKeyValue(LobbyKeys.FriendsCanJoinKey, bool.TrueString)
+            .RequestAsync();
+
+        // Steam can't filter by owner, so only keep lobbies hosted by friends
+        return lobbies?.Where(l => l.Owner.IsFriend).ToArray();
     }
 
     private static Task<Lobby[]> FetchLobbiesByCode(string code)

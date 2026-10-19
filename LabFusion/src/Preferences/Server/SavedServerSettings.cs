@@ -17,6 +17,7 @@ public static class SavedServerSettings
     public static FusionPref<bool> VoiceChat { get; private set; }
     public static FusionPref<bool> PlayerConstraining { get; private set; }
     public static FusionPref<ServerPrivacy> Privacy { get; private set; }
+    public static FusionPref<bool> FriendsCanJoin { get; private set; }
     public static FusionPref<TimeScaleMode> SlowMoMode { get; private set; }
     public static FusionPref<int> MaxPlayers { get; private set; }
 
@@ -50,6 +51,7 @@ public static class SavedServerSettings
         VoiceChat = new FusionPref<bool>(category, "Server Voicechat Enabled", true, updateMode);
         PlayerConstraining = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, updateMode);
         Privacy = new FusionPref<ServerPrivacy>(category, "Server Privacy", ServerPrivacy.PUBLIC, updateMode);
+        FriendsCanJoin = new FusionPref<bool>(category, "Friends Can Join Without Code", false, updateMode);
         SlowMoMode = new FusionPref<TimeScaleMode>(category, "Time Scale Mode", TimeScaleMode.LOW_GRAVITY, updateMode);
         MaxPlayers = new FusionPref<int>(category, "Max Players", 10, updateMode);
 
