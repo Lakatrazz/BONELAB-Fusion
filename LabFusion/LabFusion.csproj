@@ -31,6 +31,7 @@
     <Compile Remove="FusionBundles\Assets\SLZShaders\**" />
     <Compile Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <Compile Remove="FusionBundles\Assets\XR\**" />
+    <Compile Remove="FusionBundles\Assets\_Fusion\FusionResources\**" />
     <Compile Remove="FusionBundles\Assets\_MarrowAssets\**" />
     <Compile Remove="FusionBundles\BuiltPallets\**" />
     <Compile Remove="FusionBundles\Library\**" />
@@ -62,6 +63,7 @@
     <EmbeddedResource Remove="FusionBundles\Assets\SLZShaders\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\XR\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\_Fusion\FusionResources\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\_MarrowAssets\**" />
     <EmbeddedResource Remove="FusionBundles\BuiltPallets\**" />
     <EmbeddedResource Remove="FusionBundles\Library\**" />
@@ -93,6 +95,7 @@
     <None Remove="FusionBundles\Assets\SLZShaders\**" />
     <None Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <None Remove="FusionBundles\Assets\XR\**" />
+    <None Remove="FusionBundles\Assets\_Fusion\FusionResources\**" />
     <None Remove="FusionBundles\Assets\_MarrowAssets\**" />
     <None Remove="FusionBundles\BuiltPallets\**" />
     <None Remove="FusionBundles\Library\**" />
@@ -114,6 +117,7 @@
     <None Remove="FusionBundles\Assets\_Fusion\FusionAssets.meta" />
     <None Remove="FusionBundles\Assets\_Fusion\FusionMarrow.meta" />
     <None Remove="FusionBundles\Assets\_Fusion\FusionProxies.meta" />
+    <None Remove="FusionBundles\Assets\_Fusion\FusionResources.meta" />
     <None Remove="SupportModules\EpicSupport.dll" />
     <EmbeddedResource Include="SupportModules\EpicSupport.dll" />
   </ItemGroup>
