@@ -351,7 +351,6 @@ MigrationBackup/
 .ionide/
 
 # Fusion Build Results
-LabFusion/FusionBundles/Assets/AssetBundles/
 [Bb]uilt[Pp]allets
 
 # Fusion Staging
@@ -365,3 +364,6 @@ Staging/Thunderstore/Plugins
 
 # Jetbrains Rider
 /.idea
+
+# Fusion Resources
+!**/FusionResources/**
