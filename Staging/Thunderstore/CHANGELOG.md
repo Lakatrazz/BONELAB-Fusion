@@ -51,6 +51,10 @@ Removed:
 - Link censoring
 - Unnecessary writing of embedded txt files to disk
 
+## v1.14.3
+Fixed:
+- Abuse of base game save deletion scripts
+
 ## v1.14.2
 Changed:
 - Old mod.io API to the new API
