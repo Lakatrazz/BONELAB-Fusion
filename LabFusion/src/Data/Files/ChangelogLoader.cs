@@ -19,7 +19,7 @@ public static class ChangelogLoader
 
     private static string ReadResource(string resourcePath)
     {
-        var text = EmbeddedResource.LoadTextFromAssembly(FusionMod.FusionAssembly, resourcePath);
+        var text = EmbeddedResources.LoadTextFromAssembly(FusionMod.FusionAssembly, resourcePath);
 
         return text;
     }

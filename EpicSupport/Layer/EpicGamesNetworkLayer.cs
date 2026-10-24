@@ -38,16 +38,10 @@ public class EpicGamesNetworkLayer : NetworkLayer
     private Matchmaker _matchmaker = null;
     
     internal EOSRuntime Runtime;
-    
-    public override bool CheckSupported()
-    {
-        return true;
-    }
 
-    public override bool CheckValidation()
-    {
-        return EOSSDKLoader.HasEOSSDK;
-    }
+    public override bool CheckSupported() => true;
+
+    public override bool CheckValidation() => EOSSDKLoader.IsSDKAvailable();
 
     public override void SendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID clientPlatformID)
     {
@@ -81,6 +75,13 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     protected override async Task<bool> TryLogInAsync(CancellationToken cancellationToken)
     {
+        var loadSDKTask = await ThreadHelper.RunOnMainThreadAsTask(EOSSDKLoader.TryLoadEOSSDK);
+
+        if (!loadSDKTask)
+        {
+            return false;
+        }
+
         Runtime = new EOSRuntime();
 
         Task<bool> initializationTask = null;

@@ -4,7 +4,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Data;
 
-public static class EmbeddedResource
+public static class EmbeddedResources
 {
     public static byte[] LoadBytesFromAssembly(Assembly assembly, string name)
     {

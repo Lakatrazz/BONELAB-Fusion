@@ -1,6 +1,5 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppTMPro;
 
@@ -94,7 +93,7 @@ public static class MenuCreator
         switch (contentStatus)
         {
             default:
-            case FusionPalletReferences.PalletStatus.MISSING:
+            case FusionPalletReferences.PalletStatus.Missing:
                 Notifier.Send(new Notification()
                 {
                     Title = "Missing Fusion Content",
@@ -107,7 +106,7 @@ public static class MenuCreator
 
                 DownloadContent();
                 return false;
-            case FusionPalletReferences.PalletStatus.OUTDATED:
+            case FusionPalletReferences.PalletStatus.Outdated:
                 Notifier.Send(new Notification()
                 {
                     Title = "Outdated Fusion Content",
@@ -120,7 +119,7 @@ public static class MenuCreator
 
                 DownloadContent();
                 return false;
-            case FusionPalletReferences.PalletStatus.FOUND:
+            case FusionPalletReferences.PalletStatus.Found:
                 return true;
         }
     }
@@ -200,7 +199,7 @@ public static class MenuCreator
     private static void SpawnMenu()
     {
         // Make sure the content is the right version
-        if (FusionPalletReferences.ValidateContentPallet() != FusionPalletReferences.PalletStatus.FOUND)
+        if (FusionPalletReferences.ValidateContentPallet() != FusionPalletReferences.PalletStatus.Found)
         {
             return;
         }

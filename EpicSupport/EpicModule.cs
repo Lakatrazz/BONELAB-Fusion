@@ -28,8 +28,6 @@ public class EpicModule : Module
 
         ModuleAssembly = Assembly.GetExecutingAssembly();
 
-        EOSSDKLoader.OnLoadEOSSDK();
-        
         if (PlatformHelper.IsAndroid)
         {
             ImportRedirector.SetImportResolver();

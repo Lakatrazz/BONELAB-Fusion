@@ -99,7 +99,7 @@ public static class SupportManager
 
     private static void LoadModuleFromPath(Assembly assembly, string path)
     {
-        var moduleAssembly = EmbeddedResource.LoadAssemblyFromAssembly(assembly, path);
+        var moduleAssembly = EmbeddedResources.LoadAssemblyFromAssembly(assembly, path);
 
         if (moduleAssembly == null)
         {

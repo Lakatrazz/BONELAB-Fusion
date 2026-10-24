@@ -80,9 +80,6 @@ public class FusionMod : MelonMod
         // Prepare the data path for writing files
         PersistentData.OnPathInitialize();
         
-        // Load APIs
-        SteamAPILoader.OnLoadSteamAPI();
-
         // Initialize data and hooks
         RpcManager.OnInitialize();
     }
@@ -120,13 +117,6 @@ public class FusionMod : MelonMod
         GamemodeManager.OnInitializeMelon();
         GamemodeConditionsChecker.OnInitializeMelon();
         GamemodeRoundManager.OnInitializeMelon();
-
-        // Hook into asset warehouse
-        var onReady = () =>
-        {
-            CosmeticLoader.OnAssetWarehouseReady();
-        };
-        AssetWarehouse.OnReady(onReady);
 
         // Create prefs
         FusionPreferences.Initialize();
@@ -198,9 +188,6 @@ public class FusionMod : MelonMod
 
         // Undo game changes
         MuteUIHelper.OnDeinitializeMelon();
-
-        // Free APIs
-        SteamAPILoader.OnFreeSteamAPI();
     }
 
     public override void OnPreferencesLoaded()

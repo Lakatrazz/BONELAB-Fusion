@@ -8,4 +8,6 @@ public static class ResourcePaths
     public const string RawCreditsPath = "LabFusion.dependencies.resources.text.credits.raw_credits_0";
 
     public const string AppDataSubFolder = "/Fusion/";
+
+    public static readonly string ExternalResourcesRelativePath = Path.Combine("_Fusion", "FusionResources");
 }

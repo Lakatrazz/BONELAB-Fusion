@@ -115,7 +115,7 @@ internal static class EOSJNI
 
             string outputPath = PersistentData.GetPath(fileName);
 
-            byte[] bytes = EmbeddedResource.LoadBytesFromAssembly(assembly, resource);
+            byte[] bytes = EmbeddedResources.LoadBytesFromAssembly(assembly, resource);
 
             File.WriteAllBytes(outputPath, bytes);
         }

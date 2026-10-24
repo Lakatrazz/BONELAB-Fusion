@@ -59,15 +59,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private Matchmaker _matchmaker = null;
     private SteamLobby _currentLobby;
 
-    public override bool CheckSupported()
-    {
-        return !PlatformHelper.IsAndroid;
-    }
+    public override bool CheckSupported() => !PlatformHelper.IsAndroid;
 
-    public override bool CheckValidation()
-    {
-        return SteamAPILoader.HasSteamAPI;
-    }
+    public override bool CheckValidation() => SteamAPILoader.IsAPIAvailable();
 
     public override void SendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID client)
     {
@@ -106,6 +100,13 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     protected override async Task<bool> TryLogInAsync(CancellationToken cancellationToken)
     {
+        var loadAPITask = await ThreadHelper.RunOnMainThreadAsTask(SteamAPILoader.TryLoadSteamAPI);
+
+        if (!loadAPITask)
+        {
+            return false;
+        }
+
         if (SteamClient.IsValid)
         {
             return false;

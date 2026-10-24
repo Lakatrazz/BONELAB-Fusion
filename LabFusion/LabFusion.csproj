@@ -129,7 +129,6 @@
 
   <ItemGroup>
     <None Remove="dependencies\BoneLib.dll" />
-    <None Remove="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <None Remove="dependencies\resources\text\credits\raw_credits_01.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_02.txt" />
     <None Remove="dependencies\resources\text\credits\raw_credits_03.txt" />
@@ -344,7 +343,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="dependencies\resources\lib\x86_64\steam_api64.dll" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_02.txt" />
     <EmbeddedResource Include="dependencies\resources\text\credits\raw_credits_03.txt" />
