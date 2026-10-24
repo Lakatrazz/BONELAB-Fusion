@@ -10,6 +10,7 @@ using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
 using LabFusion.UI.Popups;
 using LabFusion.Marrow.Pool;
+using LabFusion.Data;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -214,6 +215,9 @@ public static class MenuCreator
 
     private static void OnMenuSpawned(Poolee poolee)
     {
+        // We have the updated version of the menu that we need, so we can initialize the other resources from the content pallet
+        ExternalResources.Initialize();
+
         // Get references to the UI Rig
         var uiRig = UIRig.Instance;
 
