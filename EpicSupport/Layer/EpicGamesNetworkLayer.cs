@@ -41,7 +41,7 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     public override bool CheckSupported() => true;
 
-    public override bool CheckValidation() => EOSSDKLoader.IsSDKAvailable();
+    public override bool CheckValidation() => EpicResourceManager.IsResourcesAvailable();
 
     public override void SendToClient(NetMessage message, NetworkChannel channel, ClientPlatformID clientPlatformID)
     {
@@ -75,9 +75,9 @@ public class EpicGamesNetworkLayer : NetworkLayer
 
     protected override async Task<bool> TryLogInAsync(CancellationToken cancellationToken)
     {
-        var loadSDKTask = await ThreadHelper.RunOnMainThreadAsTask(EOSSDKLoader.TryLoadEOSSDK);
+        var loadResourcesTask = await ThreadHelper.RunOnMainThreadAsTask(EpicResourceManager.TryLoadResources);
 
-        if (!loadSDKTask)
+        if (!loadResourcesTask)
         {
             return false;
         }

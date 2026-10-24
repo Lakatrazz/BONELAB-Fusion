@@ -1,13 +1,17 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
-using JNISharp.NativeInterface;
+﻿using JNISharp.NativeInterface;
+
 using LabFusion.Data;
+
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace MarrowFusion.Epic.Utilities;
 
-internal static class EOSJNI
+public static class EOSJNI
 {
     private static readonly BindingFlags allBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField | BindingFlags.GetProperty | BindingFlags.SetProperty;
+
+    public static bool IsInitialized => javaVM != IntPtr.Zero;
 
     private static IntPtr javaVM;
 
@@ -17,14 +21,52 @@ internal static class EOSJNI
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int JNI_OnLoadDelegate(IntPtr javaVM, IntPtr reserved);
 
-    internal static void Initialize()
+    public static string GetDexRelativePath() => EpicResourcePaths.DexRelativePath;
+
+    public static string GetDexAbsolutePath() => ExternalResources.GetAbsolutePath(GetDexRelativePath());
+
+    public static bool TryGetDexAbsolutePath(out string absolutePath)
     {
-        if (javaVM != IntPtr.Zero)
+        absolutePath = null;
+
+        if (!ExternalResources.IsAvailable)
+        {
+            return false;
+        }
+
+        absolutePath = GetDexAbsolutePath();
+        return Directory.Exists(absolutePath);
+    }
+
+    public static bool IsDexAvailable()
+    {
+        if (IsInitialized)
+        {
+            return true;
+        }
+
+        return TryGetDexAbsolutePath(out _);
+    }
+
+    public static bool TryInitialize()
+    {
+        Initialize();
+        return IsInitialized;
+    }
+
+    public static void Initialize()
+    {
+        if (IsInitialized)
+        {
             return;
+        }
 
-        ExtractDexFiles();
+        if (!TryGetDexAbsolutePath(out var path))
+        {
+            return;
+        }
 
-        foreach (string dexFile in Directory.GetFiles(PersistentData.GetPath(""), "*.dex", SearchOption.TopDirectoryOnly))
+        foreach (string dexFile in Directory.GetFiles(path, "*.dex", SearchOption.TopDirectoryOnly))
         {
             InjectDex(dexFile);
         }

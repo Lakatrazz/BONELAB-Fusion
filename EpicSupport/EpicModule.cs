@@ -28,12 +28,7 @@ public class EpicModule : Module
 
         ModuleAssembly = Assembly.GetExecutingAssembly();
 
-        if (PlatformHelper.IsAndroid)
-        {
-            ImportRedirector.SetImportResolver();
-            ImportRedirector.Redirect("EOSSDK-Win64-Shipping.dll", "EOSSDK");
-            EOSJNI.Initialize();
-        }
+        EpicResourceManager.Initialize();
 
         NetworkLayerManager.LoadLayers(ModuleAssembly);
     }

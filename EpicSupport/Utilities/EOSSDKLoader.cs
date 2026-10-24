@@ -15,6 +15,19 @@ public static class EOSSDKLoader
 
     public static string GetSDKAbsolutePath() => ExternalResources.GetAbsolutePath(GetSDKRelativePath());
 
+    public static bool TryGetSDKAbsolutePath(out string absolutePath)
+    {
+        absolutePath = null;
+
+        if (!ExternalResources.IsAvailable)
+        {
+            return false;
+        }
+
+        absolutePath = GetSDKAbsolutePath();
+        return File.Exists(absolutePath);
+    }
+
     public static bool IsSDKAvailable()
     {
         if (IsSDKLoaded)
@@ -22,14 +35,7 @@ public static class EOSSDKLoader
             return true;
         }
 
-        if (!ExternalResources.IsAvailable)
-        {
-            return false;
-        }
-
-        var path = GetSDKAbsolutePath();
-
-        return File.Exists(path);
+        return TryGetSDKAbsolutePath(out _);
     }
 
     public static bool TryLoadEOSSDK()
@@ -45,12 +51,10 @@ public static class EOSSDKLoader
             return;
         }
 
-        if (!ExternalResources.IsAvailable)
+        if (!TryGetSDKAbsolutePath(out var path))
         {
             return;
         }
-
-        var path = GetSDKAbsolutePath();
 
         if (TryLoadLibrary(path, out var libraryPtr, out var errorCode))
         {

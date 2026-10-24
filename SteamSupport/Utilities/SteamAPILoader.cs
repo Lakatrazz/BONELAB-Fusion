@@ -13,12 +13,9 @@ public static class SteamAPILoader
 
     public static string GetAPIAbsolutePath() => ExternalResources.GetAbsolutePath(GetAPIRelativePath());
 
-    public static bool IsAPIAvailable()
+    public static bool TryGetAPIAbsolutePath(out string absolutePath)
     {
-        if (IsAPILoaded)
-        {
-            return true;
-        }
+        absolutePath = null;
 
         if (!ExternalResources.IsAvailable)
         {
@@ -30,9 +27,18 @@ public static class SteamAPILoader
             return false;
         }
 
-        var path = GetAPIAbsolutePath();
+        absolutePath = GetAPIAbsolutePath();
+        return File.Exists(absolutePath);
+    }
 
-        return File.Exists(path);
+    public static bool IsAPIAvailable()
+    {
+        if (IsAPILoaded)
+        {
+            return true;
+        }
+
+        return TryGetAPIAbsolutePath(out _);
     }
 
     public static bool TryLoadSteamAPI()
@@ -48,13 +54,10 @@ public static class SteamAPILoader
             return;
         }
 
-        if (PlatformHelper.IsAndroid)
+        if (!TryGetAPIAbsolutePath(out var path))
         {
-            IsAPILoaded = false;
             return;
         }
-
-        var path = GetAPIAbsolutePath();
 
         if (TryLoadLibrary(path, out var libraryPtr, out var errorCode))
         {
