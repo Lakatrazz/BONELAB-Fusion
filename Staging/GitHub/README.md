@@ -1,6 +1,6 @@
 ## **Fusion**
-#### Changed:
-- Old mod.io API to the new API
+#### Fixed:
+- Abuse of base game save deletion scripts
 
 ## **Fusion Auto Updater**
 - No changes
