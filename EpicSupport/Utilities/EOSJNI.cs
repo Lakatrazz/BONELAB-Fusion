@@ -136,33 +136,6 @@ public static class EOSJNI
         JNI.CallStaticVoidMethod(eosSdkClass, initMethod, activity);
     }
 
-    private static void ExtractDexFiles()
-    {
-        const string resourcePrefix = "EpicSupport.dependencies.resources.dex.";
-
-        Assembly assembly = EpicModule.ModuleAssembly;
-
-        string[] resources = assembly.GetManifestResourceNames().Where(x =>
-        x.StartsWith(
-            resourcePrefix,
-            StringComparison.OrdinalIgnoreCase) &&
-        x.EndsWith(
-            ".dex",
-            StringComparison.OrdinalIgnoreCase))
-        .ToArray();
-
-        foreach (string resource in resources)
-        {
-            string fileName = resource[resourcePrefix.Length..];
-
-            string outputPath = PersistentData.GetPath(fileName);
-
-            byte[] bytes = EmbeddedResources.LoadBytesFromAssembly(assembly, resource);
-
-            File.WriteAllBytes(outputPath, bytes);
-        }
-    }
-
     private static void InjectDex(string dexPath)
     {
         JClass threadClass = JNI.FindClass("java/lang/Thread");
