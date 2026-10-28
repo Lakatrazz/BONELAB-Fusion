@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+
 using System.Text.Json.Serialization;
 
 namespace LabFusion.Data;

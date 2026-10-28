@@ -57,7 +57,7 @@ public static class ModBlacklist
 
     public static string GetFilePath()
     {
-        return PersistentData.GetPath("mod_blacklist.txt");
+        return PersistentData.GetAbsolutePath("mod_blacklist.txt");
     }
 
     public static bool IsBlacklisted(string identifier)

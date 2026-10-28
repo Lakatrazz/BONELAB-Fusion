@@ -104,5 +104,5 @@ public static class ExternalResources
         return resourcesPath;
     }
 
-    private static string GetPersistentResourcesPath() => PersistentData.GetPath(ResourcePaths.ExternalResourcesRelativePath);
+    private static string GetPersistentResourcesPath() => PersistentData.GetAbsolutePath(ResourcePaths.ExternalResourcesRelativePath);
 }

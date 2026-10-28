@@ -16,7 +16,7 @@ public static class JsonSaver
 
     public static void WriteJsonToFileWithBackup<T>(string path, T value)
     {
-        string fullPath = PersistentData.GetPath(path);
+        string fullPath = PersistentData.GetAbsolutePath(path);
 
         CreateDirectoryIfMissing(fullPath);
 
@@ -37,7 +37,7 @@ public static class JsonSaver
 
     public static void WriteJsonToFile<T>(string path, T value)
     {
-        string fullPath = PersistentData.GetPath(path);
+        string fullPath = PersistentData.GetAbsolutePath(path);
 
         CreateDirectoryIfMissing(fullPath);
 
@@ -53,7 +53,7 @@ public static class JsonSaver
             return value;
         }
 
-        string fullPath = PersistentData.GetPath(path);
+        string fullPath = PersistentData.GetAbsolutePath(path);
         string backupPath = fullPath + BackupSuffix;
 
         if (File.Exists(backupPath))
@@ -71,7 +71,7 @@ public static class JsonSaver
     {
         value = default;
 
-        string fullPath = PersistentData.GetPath(path);
+        string fullPath = PersistentData.GetAbsolutePath(path);
 
         if (!File.Exists(fullPath))
         {

@@ -78,7 +78,7 @@ public class FusionMod : MelonMod
         FusionAssembly = MelonAssembly.Assembly;
 
         // Prepare the data path for writing files
-        PersistentData.OnPathInitialize();
+        PersistentData.InitializePath();
         
         // Initialize data and hooks
         RpcManager.OnInitialize();

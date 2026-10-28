@@ -15,7 +15,7 @@ namespace LabFusion.Data
         {
             _fileName = fileName;
             _rootName = rootName;
-            _filePath = PersistentData.GetPath(_fileName);
+            _filePath = PersistentData.GetAbsolutePath(_fileName);
         }
 
         public void ReadFile(Action<XDocument> onRead)
