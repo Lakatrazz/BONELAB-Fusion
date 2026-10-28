@@ -16,11 +16,7 @@ public class PlatformInfo : IEquatable<PlatformInfo>
     public PlatformInfo(ClientPlatformID platformID)
     {
         PlatformID = platformID;
-
-        if (NetworkLayerManager.HasLayer)
-        {
-            Platform = NetworkLayerManager.Layer.Platform;
-        }
+        Platform = NetworkLayerManager.Platform;
     }
 
     public bool Equals(PlatformInfo other)
