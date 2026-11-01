@@ -3,6 +3,7 @@ using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
+using LabFusion.Moderation;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
@@ -529,9 +530,9 @@ public static class MenuLocation
 
         var banListPage = element.BansElement.AddPage();
 
-        BanManager.ReadFile();
+        ModerationManager.RefreshBans();
 
-        foreach (var ban in BanManager.BanList.Bans)
+        foreach (var ban in ModerationManager.GetBans())
         {
             var player = ban.Player;
 
@@ -606,7 +607,7 @@ public static class MenuLocation
             .WithColor(Color.yellow)
             .Do(() =>
             {
-                NetworkHelper.PardonUser(playerInfo.PlatformID);
+                ModerationManager.Unban(playerInfo.PlatformID);
             });
 
         // Disable unnecessary elements

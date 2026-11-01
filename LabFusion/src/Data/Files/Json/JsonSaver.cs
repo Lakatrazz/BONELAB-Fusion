@@ -35,9 +35,9 @@ public static class JsonSaver
         WriteJsonToFile(path, value);
     }
 
-    public static void WriteJsonToFile<T>(string path, T value)
+    public static void WriteJsonToFile<T>(string relativePath, T value)
     {
-        string fullPath = PersistentData.GetAbsolutePath(path);
+        string fullPath = PersistentData.GetAbsolutePath(relativePath);
 
         CreateDirectoryIfMissing(fullPath);
 
@@ -46,32 +46,32 @@ public static class JsonSaver
         File.WriteAllText(fullPath, jsonText);
     }
 
-    public static T ReadJsonFromFileWithBackup<T>(string path)
+    public static T ReadJsonFromFileWithBackup<T>(string relativePath)
     {
-        if (TryReadJsonFromFile<T>(path, out var value)) 
+        if (TryReadJsonFromFile<T>(relativePath, out var value)) 
         {
             return value;
         }
 
-        string fullPath = PersistentData.GetAbsolutePath(path);
+        string fullPath = PersistentData.GetAbsolutePath(relativePath);
         string backupPath = fullPath + BackupSuffix;
 
         if (File.Exists(backupPath))
         {
             File.Copy(backupPath, fullPath, true);
 
-            TryReadJsonFromFile(path, out value);
+            TryReadJsonFromFile(relativePath, out value);
             return value;
         }
 
         return default;
     }
 
-    public static bool TryReadJsonFromFile<T>(string path, out T value)
+    public static bool TryReadJsonFromFile<T>(string relativePath, out T value)
     {
         value = default;
 
-        string fullPath = PersistentData.GetAbsolutePath(path);
+        string fullPath = PersistentData.GetAbsolutePath(relativePath);
 
         if (!File.Exists(fullPath))
         {
@@ -86,7 +86,7 @@ public static class JsonSaver
         }
         catch (UnauthorizedAccessException e)
         {
-            FusionLogger.LogException($"reading save data at {path}", e);
+            FusionLogger.LogException($"reading save data at {relativePath}", e);
             return false;
         }
 
@@ -97,7 +97,7 @@ public static class JsonSaver
         }
         catch (Exception e)
         {
-            FusionLogger.LogException($"deserializing save data at {path}", e);
+            FusionLogger.LogException($"deserializing save data at {relativePath}", e);
             return false;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Entities;
+using LabFusion.Moderation;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Representation;
@@ -69,7 +70,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Kicking))
                 {
-                    NetworkHelper.KickUser(otherPlayer);
+                    ModerationManager.Kick(otherPlayer.PlatformID);
                 }
                 break;
             case PermissionCommandType.BAN:
@@ -80,7 +81,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Banning))
                 {
-                    NetworkHelper.BanUser(otherPlayer);
+                    ModerationManager.Ban(otherPlayer);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_THEM:

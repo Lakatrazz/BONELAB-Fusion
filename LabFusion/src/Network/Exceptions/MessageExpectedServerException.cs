@@ -1,4 +1,4 @@
-﻿namespace LabFusion.Exceptions;
+﻿namespace LabFusion.Network;
 
 /// <summary>
 /// An exception thrown whenever a Client receives a Message which is only expected on the Server.

@@ -11,6 +11,11 @@ public static class ResourcePaths
     public static readonly string PersistentDataRelativePath = "/Fusion";
 
     /// <summary>
+    /// The relative path for server files within the Fusion persistent data folder.
+    /// </summary>
+    public static readonly string ServerRelativePath = "/Server";
+
+    /// <summary>
     /// The relative path that stores extracted external resources both in the content pallet and the persistent data folder.
     /// </summary>
     public static readonly string ExternalResourcesRelativePath = Path.Combine("_Fusion", "FusionResources");

@@ -7,6 +7,7 @@ using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
+using LabFusion.Moderation;
 
 namespace LabFusion.Network;
 
@@ -142,7 +143,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         FusionPermissions.FetchPermissionLevel(platformID, out var level, out _);
 
         // Check for banning
-        if (NetworkHelper.IsBanned(platformID))
+        if (ModerationManager.IsBanned(platformID))
         {
             ServerManager.SendDisconnect(platformID, "Banned from Server");
             return;

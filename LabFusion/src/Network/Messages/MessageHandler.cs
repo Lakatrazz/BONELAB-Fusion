@@ -1,5 +1,4 @@
-﻿using LabFusion.Exceptions;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 

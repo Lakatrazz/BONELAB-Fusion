@@ -1,4 +1,5 @@
-﻿using LabFusion.SDK.Achievements;
+﻿using LabFusion.Moderation;
+using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 
 namespace LabFusion.Data
