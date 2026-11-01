@@ -9,7 +9,7 @@ namespace MarrowFusion.Bonelab.Messages;
 
 public class FlashlightToggleData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(bool);
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(bool);
 
     public NetworkEntityReference FlashlightEntity;
 

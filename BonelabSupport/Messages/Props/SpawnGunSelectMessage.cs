@@ -12,14 +12,14 @@ namespace MarrowFusion.Bonelab.Messages;
 
 public class SpawnGunSelectData : INetSerializable
 {
-    public int? GetSize() => sizeof(ushort) + Barcode.GetSize();
+    public int? GetSize() => NetworkEntityReference.Size + Barcode.GetSize();
 
-    public ushort SpawnGunID;
+    public NetworkEntityReference SpawnGunReference;
     public string Barcode;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref SpawnGunID);
+        serializer.SerializeValue(ref SpawnGunReference);
         serializer.SerializeValue(ref Barcode);
     }
 }
@@ -31,9 +31,7 @@ public class SpawnGunSelectMessage : ModuleMessageHandler
     {
         var data = received.ReadData<SpawnGunSelectData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SpawnGunID);
-
-        if (entity == null)
+        if (!data.SpawnGunReference.TryGetEntity(out var entity))
         {
             return;
         }

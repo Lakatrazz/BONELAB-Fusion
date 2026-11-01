@@ -14,9 +14,9 @@ namespace MarrowFusion.Bonelab.Messages;
 
 public class KeySlotData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + ComponentPathData.Size;
+    public static readonly int Size = sizeof(ushort) + ComponentPathData.Size;
 
-    public ushort KeyId;
+    public NetworkEntityID KeyId;
     public ComponentPathData ReceiverData;
 
     public int? GetSize() => Size;

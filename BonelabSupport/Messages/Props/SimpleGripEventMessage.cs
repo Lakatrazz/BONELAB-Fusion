@@ -16,7 +16,7 @@ public enum SimpleGripEventType
 
 public class SimpleGripEventData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(byte) * 2;
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(byte) * 2;
 
     public int? GetSize() => Size;
 

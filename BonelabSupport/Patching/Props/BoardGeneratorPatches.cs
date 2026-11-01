@@ -3,13 +3,14 @@
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.RPC;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Entities;
+
 using MarrowFusion.Bonelab.Messages;
 using MarrowFusion.Bonelab.Extenders;
-using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public static class BoardSpawnerAsyncPatches
     public static BoardPointData GetPointData(Vector3 point, MarrowBody body)
     {
         bool hasBody = false;
-        ushort entityId = 0;
+        NetworkEntityID entityId = NetworkEntityID.Empty;
         ushort bodyIndex = 0;
 
         if (body != null && MarrowBodyExtender.Cache.TryGet(body, out var entity))

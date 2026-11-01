@@ -171,7 +171,7 @@ public static class SimpleGripEventsPatches
         return true;
     }
 
-    private static void SendGripEvent(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
+    private static void SendGripEvent(NetworkEntityID entityId, byte gripEventIndex, SimpleGripEventType type)
     {
         var data = new SimpleGripEventData()
         {

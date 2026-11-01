@@ -101,7 +101,7 @@ public static class SpawnGunPatches
 
         var data = new SpawnGunSelectData()
         {
-            SpawnGunID = entity.ID,
+            SpawnGunReference = new(entity),
             Barcode = barcode,
         };
 

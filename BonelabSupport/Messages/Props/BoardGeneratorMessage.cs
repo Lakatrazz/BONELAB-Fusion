@@ -18,7 +18,7 @@ public class BoardPointData : INetSerializable
 {
     public Vector3 Point;
     public bool HasBody;
-    public ushort EntityID;
+    public NetworkEntityID EntityID;
     public ushort BodyIndex;
 
     public MarrowBody GetMarrowBody()
@@ -28,7 +28,7 @@ public class BoardPointData : INetSerializable
             return null;
         }
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(EntityID);
+        var entity = NetworkEntityManager.GetEntity(EntityID);
 
         if (entity == null)
         {
@@ -63,11 +63,9 @@ public class BoardPointData : INetSerializable
 
 public class BoardGeneratorData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
-
     public ClientSmallID OwnerID;
-    public ushort BoardID;
-    public ushort BoardGeneratorID;
+    public NetworkEntityID BoardID;
+    public NetworkEntityID BoardGeneratorID;
 
     public BoardPointData FirstPoint;
     public BoardPointData EndPoint;
