@@ -36,7 +36,7 @@ public class KeySlotMessage : ModuleMessageHandler
     {
         var data = received.ReadData<KeySlotData>();
 
-        var keyEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.KeyId);
+        var keyEntity = NetworkEntityManager.GetEntity(data.KeyId);
 
         if (keyEntity == null)
         {

@@ -89,7 +89,7 @@ public class NetworkConstraint : IEntityExtender
 
     private void UnregisterOtherConstraint()
     {
-        var otherEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(OtherID);
+        var otherEntity = NetworkEntityManager.GetEntity(OtherID);
 
         if (otherEntity == null)
         {

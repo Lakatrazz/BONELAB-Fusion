@@ -44,7 +44,7 @@ public static class NetworkPlayerManager
     {
         player = null;
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(new((ushort)playerID));
+        var entity = NetworkEntityManager.GetEntity(new((ushort)playerID));
 
         if (entity == null)
         {

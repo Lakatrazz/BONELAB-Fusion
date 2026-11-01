@@ -88,7 +88,7 @@ public class BoardGeneratorMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BoardGeneratorData>();
 
-        var board = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.BoardID);
+        var board = NetworkEntityManager.GetEntity(data.BoardID);
 
         if (board == null)
         {
@@ -118,7 +118,7 @@ public class BoardGeneratorMessage : ModuleMessageHandler
         marrowEntity.ResetMass();
 
         // Get the board generator
-        var boardGun = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.BoardGeneratorID);
+        var boardGun = NetworkEntityManager.GetEntity(data.BoardGeneratorID);
 
         if (boardGun == null)
         {

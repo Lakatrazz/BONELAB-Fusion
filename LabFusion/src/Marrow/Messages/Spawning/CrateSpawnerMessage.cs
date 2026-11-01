@@ -38,7 +38,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
             return;
         }
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SpawnedID);
+        var entity = NetworkEntityManager.GetEntity(data.SpawnedID);
 
         if (entity == null)
         {

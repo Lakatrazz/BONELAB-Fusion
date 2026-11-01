@@ -25,7 +25,7 @@ public class InventoryAmmoReceiverDropMessage : ModuleMessageHandler
     {
         var data = received.ReadData<InventoryAmmoReceiverDropData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityID);
+        var entity = NetworkEntityManager.GetEntity(data.EntityID);
 
         if (entity == null)
         {

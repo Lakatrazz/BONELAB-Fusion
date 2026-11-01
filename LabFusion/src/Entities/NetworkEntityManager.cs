@@ -112,7 +112,7 @@ public static class NetworkEntityManager
     /// <param name="callback"></param>
     public static void HookEntityRegistered(NetworkEntityID id, NetworkEntityDelegate callback)
     {
-        var entity = IDManager.RegisteredEntities.GetEntity(id);
+        var entity = GetEntity(id);
 
         if (entity != null)
         {

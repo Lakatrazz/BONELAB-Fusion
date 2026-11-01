@@ -40,7 +40,7 @@ public class ConstrainerModeMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstrainerModeData>();
 
-        var constrainer = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstrainerID);
+        var constrainer = NetworkEntityManager.GetEntity(data.ConstrainerID);
 
         if (constrainer == null)
         {

@@ -34,14 +34,14 @@ public class InventorySlotInsertMessage : ModuleMessageHandler
     {
         var data = received.ReadData<InventorySlotInsertData>();
 
-        var weaponEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.WeaponID);
+        var weaponEntity = NetworkEntityManager.GetEntity(data.WeaponID);
 
         if (weaponEntity == null)
         {
             return;
         }
 
-        var slotEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SlotEntityID);
+        var slotEntity = NetworkEntityManager.GetEntity(data.SlotEntityID);
 
         if (slotEntity == null)
         {

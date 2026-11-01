@@ -27,7 +27,7 @@ public class ConstraintDeleteMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstraintDeleteData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstraintID);
+        var entity = NetworkEntityManager.GetEntity(data.ConstraintID);
 
         if (entity == null)
         {

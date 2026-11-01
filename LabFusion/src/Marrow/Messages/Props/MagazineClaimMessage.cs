@@ -32,7 +32,7 @@ public class MagazineClaimMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagazineClaimData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityID);
+        var entity = NetworkEntityManager.GetEntity(data.EntityID);
 
         if (entity == null)
         {

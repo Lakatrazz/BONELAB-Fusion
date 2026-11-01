@@ -38,7 +38,7 @@ public class RandomObjectMessage : ModuleMessageHandler
         var data = received.ReadData<RandomObjectData>();
 
         // Right now only syncs RandomObject on individual objects (props, avatars, etc). No scene syncing yet.
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.GetEntity(data.entityId);
 
         if (entity == null)
         {

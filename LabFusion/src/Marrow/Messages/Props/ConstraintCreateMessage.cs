@@ -116,7 +116,7 @@ public class ConstraintCreateMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstraintCreateData>();
 
-        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstrainerID.Value) : null;
+        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.GetEntity(data.ConstrainerID.Value) : null;
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
