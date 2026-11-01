@@ -7,13 +7,12 @@ using LabFusion.Moderation;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
-using LabFusion.Representation;
 using LabFusion.RPC;
 using LabFusion.Safety;
 using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
-using LabFusion.Utilities;
+using LabFusion.Permissions;
 
 using UnityEngine;
 
@@ -637,9 +636,9 @@ public static class MenuLocation
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);
 
         // Get permissions
-        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID.Value, out var selfLevel, out _);
+        var selfLevel = PlayerPermissions.GetLocalPermissionLevel();
 
-        FusionPermissions.FetchPermissionLevel(player.PlatformID, out var level, out Color color);
+        var level = PlayerPermissions.GetPermissionLevel(player.PlatformID);
 
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
@@ -678,7 +677,7 @@ public static class MenuLocation
 
         permissionsElement.OnValueChanged += (v) =>
         {
-            FusionPermissions.TrySetPermission(player.PlatformID, username, (PermissionLevel)v);
+            PlayerPermissions.TrySetPermissionLevel(player.PlatformID, (PermissionLevel)v);
         };
 
         permissionsElement.Interactable = !player.IsMe && ServerManager.IsServerRunning;
@@ -706,10 +705,10 @@ public static class MenuLocation
             return;
         }
 
-        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || ServerManager.IsServerRunning;
-        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || ServerManager.IsServerRunning;
+        bool sufficientPerms = PermissionManager.IsSufficient(selfLevel, level) || ServerManager.IsServerRunning;
+        bool greaterPerms = PermissionManager.IsGreater(selfLevel, level) || ServerManager.IsServerRunning;
 
-        if (!sufficientPerms && !higherPerms)
+        if (!sufficientPerms && !greaterPerms)
         {
             return;
         }
@@ -717,7 +716,7 @@ public static class MenuLocation
         GroupElement moderationGroup = null;
 
         // Kick button
-        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Kicking))
+        if (greaterPerms && PermissionManager.IsSufficient(selfLevel, lobbyInfo.Kicking))
         {
             moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
 
@@ -730,7 +729,7 @@ public static class MenuLocation
         }
 
         // Ban button
-        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Banning))
+        if (greaterPerms && PermissionManager.IsSufficient(selfLevel, lobbyInfo.Banning))
         {
             moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
 
@@ -743,7 +742,7 @@ public static class MenuLocation
         }
 
         // Teleport buttons
-        if (FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Teleportation))
+        if (PermissionManager.IsSufficient(selfLevel, lobbyInfo.Teleportation))
         {
             moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
 
@@ -840,13 +839,14 @@ public static class MenuLocation
             return;
         }
 
-        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID.Value, out var selfLevel, out _);
+        var selfLevel = PlayerPermissions.GetLocalPermissionLevel();
+
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
         var teleportAllElement = playersGroup.AddElement<FunctionElement>("Teleport All")
             .Do(() =>
             {
-                if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
+                if (PermissionManager.IsSufficient(selfLevel, activeLobbyInfo.Teleportation))
                 {
                     foreach (var playerId in PlayerIDManager.PlayerIDs)
                     {

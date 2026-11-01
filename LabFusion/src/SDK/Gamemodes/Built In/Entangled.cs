@@ -3,7 +3,6 @@ using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.UI.Popups;

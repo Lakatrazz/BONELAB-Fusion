@@ -9,12 +9,12 @@ namespace LabFusion.Moderation;
 public static class BanManager
 {
     /// <summary>
-    /// The name of the file storing the BanList.
+    /// The name of the file storing the bans.
     /// </summary>
     public static readonly string FileName = "bans.json";
 
     /// <summary>
-    /// The relative path of the BanList to the persistent data folder.
+    /// The relative path of the bans to the persistent data folder.
     /// </summary>
     public static string RelativeFilePath => Path.Combine(ResourcePaths.ServerRelativePath, FileName);
 

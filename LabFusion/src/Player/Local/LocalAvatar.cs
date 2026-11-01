@@ -8,9 +8,7 @@ using LabFusion.Marrow;
 using LabFusion.Marrow.Extensions;
 using LabFusion.Math;
 using LabFusion.Network;
-using LabFusion.Representation;
-using LabFusion.Senders;
-using LabFusion.Utilities;
+using LabFusion.Permissions;
 
 using UnityEngine;
 
@@ -132,7 +130,7 @@ public static class LocalAvatar
 
         var requirement = LobbyInfoManager.LobbyInfo.CustomAvatars;
 
-        if (!FusionPermissions.HasSufficientPermissions(level, requirement))
+        if (!PermissionManager.IsSufficient(level, requirement))
         {
             return false;
         }

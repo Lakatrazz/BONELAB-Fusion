@@ -2,7 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
-using LabFusion.Representation;
+using LabFusion.Permissions;
 using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
@@ -97,22 +97,22 @@ public class LobbyInfo
 
     // Permissions
     [JsonPropertyName("devTools")]
-    public PermissionLevel DevTools { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel DevTools { get; set; } = PermissionLevel.Default;
 
     [JsonPropertyName("constrainer")]
-    public PermissionLevel Constrainer { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel Constrainer { get; set; } = PermissionLevel.Default;
 
     [JsonPropertyName("customAvatars")]
-    public PermissionLevel CustomAvatars { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel CustomAvatars { get; set; } = PermissionLevel.Default;
 
     [JsonPropertyName("kicking")]
-    public PermissionLevel Kicking { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel Kicking { get; set; } = PermissionLevel.Default;
 
     [JsonPropertyName("banning")]
-    public PermissionLevel Banning { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel Banning { get; set; } = PermissionLevel.Default;
 
     [JsonPropertyName("teleportation")]
-    public PermissionLevel Teleportation { get; set; } = PermissionLevel.DEFAULT;
+    public PermissionLevel Teleportation { get; set; } = PermissionLevel.Default;
 
     /// <summary>
     /// Writes the current lobby information to this LobbyInfo. This only works for the server host as it uses local server settings.

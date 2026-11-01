@@ -1,4 +1,5 @@
 ﻿using LabFusion.Moderation;
+using LabFusion.Permissions;
 using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 
@@ -8,7 +9,7 @@ namespace LabFusion.Data
     {
         public static void OnInitializeMelon()
         {
-            PermissionList.ReadFile();
+            PermissionManager.ReadFile();
             BanManager.ReadFile();
             ContactsList.ReadFile();
             PointSaveManager.ReadFile();

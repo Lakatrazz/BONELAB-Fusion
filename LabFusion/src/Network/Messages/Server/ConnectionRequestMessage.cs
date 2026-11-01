@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences.Server;
@@ -140,7 +139,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // Get the permission level
-        FusionPermissions.FetchPermissionLevel(platformID, out var level, out _);
+        var level = PlayerPermissions.GetPermissionLevel(platformID);
 
         // Check for banning
         if (ModerationManager.IsBanned(platformID))

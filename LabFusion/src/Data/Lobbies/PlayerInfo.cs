@@ -1,6 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Representation;
+using LabFusion.Permissions;
 
 using System.Text.Json.Serialization;
 

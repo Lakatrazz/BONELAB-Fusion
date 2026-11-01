@@ -1,8 +1,8 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Moderation;
 using LabFusion.Network.Serialization;
+using LabFusion.Permissions;
 using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.Senders;
 
 namespace LabFusion.Network;
@@ -56,7 +56,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
             otherPlayer = PlayerIDManager.GetPlayerID(data.OtherPlayer.Value);
         }
 
-        FusionPermissions.FetchPermissionLevel(playerID.PlatformID, out var level, out _);
+        var level = PlayerPermissions.GetPermissionLevel(playerID.PlatformID);
 
         switch (data.Type)
         {
@@ -68,7 +68,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
                     return;
                 }
 
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Kicking))
+                if (otherPlayer != null && PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Kicking))
                 {
                     ModerationManager.Kick(otherPlayer.PlatformID);
                 }
@@ -79,13 +79,13 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
                     return;
                 }
 
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Banning))
+                if (otherPlayer != null && PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Banning))
                 {
                     ModerationManager.Ban(otherPlayer);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_THEM:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
+                if (otherPlayer != null && PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     if (NetworkPlayerManager.TryGetPlayer(otherPlayer.SmallID, out var otherNetPlayer) && otherNetPlayer.NetworkRig.HasRig)
                     {
@@ -94,7 +94,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_ME:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
+                if (otherPlayer != null && PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     if (NetworkPlayerManager.TryGetPlayer(playerID.SmallID, out var player) && player.NetworkRig.HasRig)
                     {

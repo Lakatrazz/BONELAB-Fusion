@@ -1,6 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Preferences.Client;
-using LabFusion.Representation;
+using LabFusion.Permissions;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Safety;
@@ -19,7 +19,7 @@ public static class MetadataHelper
             return true;
         }
 
-        level = PermissionLevel.DEFAULT;
+        level = PermissionLevel.Default;
         return false;
     }
 

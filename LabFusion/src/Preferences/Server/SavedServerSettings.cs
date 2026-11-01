@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Permissions;
 using LabFusion.Senders;
 using LabFusion.Extensions;
 
@@ -65,13 +65,13 @@ public static class SavedServerSettings
         MaxAvatarHeight = new FusionPref<float>(category, "Max Avatar Height", 20f, updateMode);
 
         // Server permissions
-        DevTools = new FusionPref<PermissionLevel>(category, "Dev Tools Allowed", PermissionLevel.DEFAULT, updateMode);
-        Constrainer = new FusionPref<PermissionLevel>(category, "Constrainer Allowed", PermissionLevel.DEFAULT, updateMode);
-        CustomAvatars = new FusionPref<PermissionLevel>(category, "Custom Avatars Allowed", PermissionLevel.DEFAULT, updateMode);
-        Kicking = new FusionPref<PermissionLevel>(category, "Kicking Allowed", PermissionLevel.OPERATOR, updateMode);
-        Banning = new FusionPref<PermissionLevel>(category, "Banning Allowed", PermissionLevel.OPERATOR, updateMode);
+        DevTools = new FusionPref<PermissionLevel>(category, "Dev Tools Allowed", PermissionLevel.Default, updateMode);
+        Constrainer = new FusionPref<PermissionLevel>(category, "Constrainer Allowed", PermissionLevel.Default, updateMode);
+        CustomAvatars = new FusionPref<PermissionLevel>(category, "Custom Avatars Allowed", PermissionLevel.Default, updateMode);
+        Kicking = new FusionPref<PermissionLevel>(category, "Kicking Allowed", PermissionLevel.Operator, updateMode);
+        Banning = new FusionPref<PermissionLevel>(category, "Banning Allowed", PermissionLevel.Operator, updateMode);
 
-        Teleportation = new FusionPref<PermissionLevel>(category, "Teleportation", PermissionLevel.OPERATOR, updateMode);
+        Teleportation = new FusionPref<PermissionLevel>(category, "Teleportation", PermissionLevel.Operator, updateMode);
     }
 
     public static void PushSettingsUpdate()
