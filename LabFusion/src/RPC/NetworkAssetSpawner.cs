@@ -96,7 +96,7 @@ public static class NetworkAssetSpawner
             return false;
         }
 
-        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityIDLookup.Keys.ToArray();
+        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityByID.Keys.ToArray();
 
         foreach (var entity in entities)
         {

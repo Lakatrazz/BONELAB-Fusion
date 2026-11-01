@@ -3,12 +3,32 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Entities;
 
+/// <summary>
+/// Manages a list of entities, their IDs, and callbacks.
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
 public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 {
+    /// <summary>
+    /// The list of registered entities by their IDs.
+    /// </summary>
     public EntityIDList<TEntity> RegisteredEntities { get; } = new();
 
-    public event Action<TEntity> EntityRegistered, EntityUnregistered;
+    /// <summary>
+    /// An event that is invoked when an entity is registered.
+    /// </summary>
+    public event Action<TEntity> EntityRegistered;
 
+    /// <summary>
+    /// An event that is invoked when an entity is unregistered.
+    /// </summary>
+    public event Action<TEntity> EntityUnregistered;
+
+    /// <summary>
+    /// Registers an entity at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="entity"></param>
     public void RegisterEntity(NetworkEntityID id, TEntity entity)
     {
         if (RegisteredEntities.HasEntity(id))
@@ -24,6 +44,10 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         EntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
+    /// <summary>
+    /// Unregisters the entity at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
     public void UnregisterEntity(NetworkEntityID id)
     {
         // Check if the entity is registered
@@ -40,6 +64,10 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         EntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
     }
 
+    /// <summary>
+    /// Unregisters an entity.
+    /// </summary>
+    /// <param name="entity"></param>
     public void UnregisterEntity(TEntity entity)
     {
         if (entity.IsRegistered)

@@ -106,7 +106,7 @@ public class FusionMod : MelonMod
 
         OLDLobbyFilterManager.LoadBuiltInFilters();
 
-        NetworkEntityManager.OnInitializeManager();
+        NetworkEntityManager.Initialize();
         NetworkPlayerManager.Initialize();
 
         PopupManager.OnInitializeMelon();
