@@ -11,10 +11,10 @@ namespace LabFusion.Marrow.Messages;
 
 public class InventorySlotInsertData : INetSerializable
 {
-    public const int Size = sizeof(ushort) * 2 + sizeof(byte);
+    public static readonly int Size = NetworkEntityID.Size * 2 + sizeof(byte);
 
-    public ushort SlotEntityID;
-    public ushort WeaponID;
+    public NetworkEntityID SlotEntityID;
+    public NetworkEntityID WeaponID;
     public byte SlotIndex;
 
     public int? GetSize() => Size;

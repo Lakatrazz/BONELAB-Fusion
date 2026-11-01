@@ -8,11 +8,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class NimbusGunNoClipData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + sizeof(bool);
+    public static readonly int Size = NetworkEntityID.Size + sizeof(bool);
 
     public int? GetSize() => Size;
 
-    public ushort NimbusGunID;
+    public NetworkEntityID NimbusGunID;
     public bool NoClip;
 
     public void Serialize(INetSerializer serializer)

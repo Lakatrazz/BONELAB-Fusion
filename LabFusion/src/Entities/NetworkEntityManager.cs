@@ -17,7 +17,7 @@ public static class NetworkEntityManager
 
     public static EntityValidationList OwnershipTransferValidators { get; } = new();
 
-    private static readonly Dictionary<ushort, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
+    private static readonly Dictionary<NetworkEntityID, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
 
     internal static void OnInitializeManager()
     {
@@ -195,7 +195,7 @@ public static class NetworkEntityManager
         TransferOwnership(entity, PlayerIDManager.LocalID);
     }
 
-    public static void HookEntityRegistered(ushort id, NetworkEntityDelegate callback)
+    public static void HookEntityRegistered(NetworkEntityID id, NetworkEntityDelegate callback)
     {
         var entity = IDManager.RegisteredEntities.GetEntity(id);
 

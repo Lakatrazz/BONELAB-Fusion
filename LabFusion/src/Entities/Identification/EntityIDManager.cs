@@ -9,7 +9,7 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 
     public event Action<TEntity> EntityRegistered, EntityUnregistered;
 
-    public void RegisterEntity(ushort id, TEntity entity)
+    public void RegisterEntity(NetworkEntityID id, TEntity entity)
     {
         if (RegisteredEntities.HasEntity(id))
         {
@@ -24,7 +24,7 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         EntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
-    public void UnregisterEntity(ushort id)
+    public void UnregisterEntity(NetworkEntityID id)
     {
         // Check if the entity is registered
         if (!RegisteredEntities.HasEntity(id))

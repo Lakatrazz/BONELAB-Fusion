@@ -2,13 +2,13 @@
 
 public interface INetworkRegistrable
 {
-    ushort ID { get; }
+    NetworkEntityID ID { get; }
 
     bool IsRegistered { get; }
 
     bool IsDestroyed { get; }
 
-    void Register(ushort id);
+    void Register(NetworkEntityID id);
 
     void Unregister();
 }

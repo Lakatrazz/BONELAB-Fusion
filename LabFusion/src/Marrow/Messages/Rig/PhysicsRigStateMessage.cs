@@ -18,7 +18,7 @@ public enum PhysicsRigStateType
 
 public class PhysicsRigStateData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(byte) * 3;
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(byte) * 3;
 
     public NetworkEntityReference RigReference;
 

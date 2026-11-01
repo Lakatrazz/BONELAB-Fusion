@@ -38,7 +38,7 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         }
     }
 
-    private static void SendOwnershipResponse(ClientSmallID ownerID, ushort entityID)
+    private static void SendOwnershipResponse(ClientSmallID ownerID, NetworkEntityID entityID)
     {
         var response = new EntityPlayerData()
         {

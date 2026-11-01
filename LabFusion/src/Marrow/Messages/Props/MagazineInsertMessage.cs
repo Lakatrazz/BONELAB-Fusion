@@ -11,12 +11,12 @@ namespace LabFusion.Marrow.Messages;
 
 public class MagazineInsertData : INetSerializable
 {
-    public const int Size = sizeof(ushort) * 2;
+    public static readonly int Size = NetworkEntityID.Size * 2;
 
     public int? GetSize() => Size;
 
-    public ushort MagazineID;
-    public ushort GunID;
+    public NetworkEntityID MagazineID;
+    public NetworkEntityID GunID;
 
     public void Serialize(INetSerializer serializer)
     {

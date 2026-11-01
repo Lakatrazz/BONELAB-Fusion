@@ -40,7 +40,7 @@ public class SpawnRequestMessage : NativeMessageHandler
             return;
         }
 
-        var entityID = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
+        var entityID = NetworkEntityManager.IDManager.RegisteredEntities.AllocateUniqueID();
 
         var responseData = new SpawnResponseData()
         {

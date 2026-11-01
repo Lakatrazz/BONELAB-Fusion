@@ -33,7 +33,7 @@ public sealed class MarrowEntityCreateRequest : ModuleMessageHandler
         var hashData = data.HashData;
 
         var ownerID = received.SenderSmallID.Value;
-        var entityID = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
+        var entityID = NetworkEntityManager.IDManager.RegisteredEntities.AllocateUniqueID();
         var trackerID = data.TrackerID;
 
         var responseData = new MarrowEntityCreateResponseData()

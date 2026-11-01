@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class RigBlendShapeData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + AvatarBlendShapePath.Size;
+    public static readonly int Size = NetworkEntityReference.Size + AvatarBlendShapePath.Size;
 
     public int? GetSize() => Size;
 

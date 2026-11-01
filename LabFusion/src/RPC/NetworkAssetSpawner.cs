@@ -37,7 +37,7 @@ public static class NetworkAssetSpawner
 
     public struct DespawnRequestInfo
     {
-        public ushort EntityID;
+        public NetworkEntityID EntityID;
 
         public bool DespawnEffect;
     }

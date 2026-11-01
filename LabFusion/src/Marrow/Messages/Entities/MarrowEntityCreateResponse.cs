@@ -10,11 +10,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class MarrowEntityCreateResponseData : INetSerializable
 {
-    public int? GetSize() => ClientSmallID.Size + sizeof(ushort) + ComponentHashData.Size + sizeof(uint);
+    public int? GetSize() => ClientSmallID.Size + NetworkEntityID.Size + ComponentHashData.Size + sizeof(uint);
 
     public ClientSmallID OwnerID;
 
-    public ushort EntityID;
+    public NetworkEntityID EntityID;
 
     public ComponentHashData HashData;
 

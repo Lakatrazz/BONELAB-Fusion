@@ -10,9 +10,9 @@ namespace LabFusion.Marrow.Messages;
 
 public class ConstraintDeleteData : INetSerializable
 {
-    public const int Size = sizeof(ushort);
+    public static readonly int Size = NetworkEntityID.Size;
 
-    public ushort ConstraintID;
+    public NetworkEntityID ConstraintID;
 
     public void Serialize(INetSerializer serializer)
     {

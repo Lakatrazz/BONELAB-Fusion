@@ -4,12 +4,19 @@ namespace LabFusion.Entities;
 
 /// <summary>
 /// A serializable reference to a NetworkEntity.
+/// <para>Currently, this just wraps NetworkEntityID. However, if you know that you want to send a reference to a network entity that actively exists over the network, it is recommended to use this instead.</para>
 /// </summary>
 public struct NetworkEntityReference : INetSerializable
 {
-    public const int Size = sizeof(ushort);
+    /// <summary>
+    /// The size of a network entity reference in bytes.
+    /// </summary>
+    public static readonly int Size = NetworkEntityID.Size;
 
-    public ushort ID;
+    /// <summary>
+    /// The internal ID of the network entity.
+    /// </summary>
+    public NetworkEntityID ID;
 
     public readonly int? GetSize() => Size;
 
@@ -35,11 +42,11 @@ public struct NetworkEntityReference : INetSerializable
         return NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(ID);
     }
 
-    public NetworkEntityReference() : this(0) { }
+    public NetworkEntityReference() : this(NetworkEntityID.Empty) { }
 
     public NetworkEntityReference(NetworkEntity entity) : this(entity.ID) { }
 
-    public NetworkEntityReference(ushort id)
+    public NetworkEntityReference(NetworkEntityID id)
     {
         ID = id;
     }

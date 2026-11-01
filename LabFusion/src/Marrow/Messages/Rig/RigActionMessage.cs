@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class RigActionData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(byte);
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(byte);
 
     public NetworkEntityReference RigReference;
 

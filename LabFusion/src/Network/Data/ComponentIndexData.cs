@@ -8,7 +8,7 @@ namespace LabFusion.Network;
 
 public class ComponentIndexData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(ushort);
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(ushort);
 
     public NetworkEntityReference Entity;
     public ushort ComponentIndex;
@@ -31,7 +31,7 @@ public class ComponentIndexData : INetSerializable
         };
     }
 
-    public static ComponentIndexData CreateFromEntity(ushort entityID, ushort componentIndex)
+    public static ComponentIndexData CreateFromEntity(NetworkEntityID entityID, ushort componentIndex)
     {
         return new ComponentIndexData()
         {

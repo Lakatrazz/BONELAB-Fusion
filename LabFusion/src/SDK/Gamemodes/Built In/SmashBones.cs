@@ -522,7 +522,7 @@ public class SmashBones : Gamemode
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
 
-        if (NetworkBeingManager.TryGetNetworkRig(new NetworkEntityReference((ushort)playerID.SmallID), out var networkRig))
+        if (NetworkBeingManager.TryGetNetworkRig(new NetworkEntityReference(new NetworkEntityID((ushort)playerID.SmallID)), out var networkRig))
         {
             RigActionManager.OnRigAction(networkRig, RigActionType.Death);
         }

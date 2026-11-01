@@ -47,8 +47,8 @@ public struct ConstrainerPointPair
 public static class ConstrainerPatches
 {
     public static bool IsReceivingConstraints { get; set; } = false;
-    public static ushort FirstId { get; set; }
-    public static ushort SecondId { get; set; }
+    public static NetworkEntityID FirstId { get; set; }
+    public static NetworkEntityID SecondId { get; set; }
 
     private static bool IsPlayer(MarrowBody body)
     {

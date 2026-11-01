@@ -24,11 +24,11 @@ namespace LabFusion.Network;
 
 public class SpawnResponseData : INetSerializable
 {
-    public int? GetSize() => sizeof(byte) + sizeof(ushort) + SpawnData.GetSize();
+    public int? GetSize() => sizeof(byte) + NetworkEntityID.Size + SpawnData.GetSize();
 
     public ClientSmallID OwnerID;
 
-    public ushort EntityID;
+    public NetworkEntityID EntityID;
 
     public SerializedSpawnData SpawnData;
 
@@ -55,7 +55,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
         ClientSmallID owner = data.OwnerID;
         string barcode = spawnData.Barcode;
-        ushort entityID = data.EntityID;
+        NetworkEntityID entityID = data.EntityID;
         var trackerID = spawnData.TrackerID;
         var spawnEffect = spawnData.SpawnEffect;
 
@@ -203,7 +203,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         }
     }
 
-    private static NetworkEntity CreateGhostNetworkEntity(ClientSmallID ownerID, ushort entityID, EntitySource source, out NetworkPropGhost propGhost)
+    private static NetworkEntity CreateGhostNetworkEntity(ClientSmallID ownerID, NetworkEntityID entityID, EntitySource source, out NetworkPropGhost propGhost)
     {
         // Create the NetworkEntity and assign its owner
         var playerID = PlayerIDManager.GetPlayerID(ownerID);

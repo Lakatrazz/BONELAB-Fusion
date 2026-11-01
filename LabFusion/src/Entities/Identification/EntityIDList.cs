@@ -1,19 +1,19 @@
 ﻿namespace LabFusion.Entities;
 
-public delegate void EntityIDEvent<TEntity>(ushort id, TEntity entity);
+public delegate void EntityIDEvent<TEntity>(NetworkEntityID id, TEntity entity);
 
 public class EntityIDList<TEntity>
 {
-    public Dictionary<ushort, TEntity> IDEntityLookup { get; } = new();
-    public Dictionary<TEntity, ushort> EntityIDLookup { get; } = new();
+    public Dictionary<NetworkEntityID, TEntity> IDEntityLookup { get; } = new();
+    public Dictionary<TEntity, NetworkEntityID> EntityIDLookup { get; } = new();
 
-    public HashSet<ushort> ReservedIDs { get; } = new();
+    public HashSet<NetworkEntityID> ReservedIDs { get; } = new();
 
     public event EntityIDEvent<TEntity> EntityAdded, EntityRemoved;
 
-    public ushort LastID { get; private set; } = 0;
+    public NetworkEntityID LastID { get; private set; } = NetworkEntityID.Empty;
 
-    public void ReserveID(ushort id)
+    public void Reserve(NetworkEntityID id)
     {
         if (ReservedIDs.Contains(id))
         {
@@ -22,50 +22,46 @@ public class EntityIDList<TEntity>
 
         if (LastID <= id)
         {
-            LastID = id;
-            LastID++;
+            LastID = id.GetNext();
         }
 
         ReservedIDs.Add(id);
     }
 
-    public void Unreserve(ushort id)
+    public void Unreserve(NetworkEntityID id)
     {
         ReservedIDs.Remove(id);
     }
 
-    public bool IsReserved(ushort id)
+    public bool IsReserved(NetworkEntityID id)
     {
         return ReservedIDs.Contains(id);
     }
 
-    private bool IsUsedID(ushort id)
+    public bool IsUsed(NetworkEntityID id)
     {
         return IDEntityLookup.ContainsKey(id) || IsReserved(id);
     }
 
-    public ushort AllocateNewID()
+    public NetworkEntityID AllocateUniqueID()
     {
-        LastID++;
+        LastID = LastID.GetNext();
 
-        // Check if the id is already being used or reserved
-        if (IsUsedID(LastID))
+        // If the ID is used, keep looping until we get a new valid one, or we run out
+        while (IsUsed(LastID) && LastID.HasSpace())
         {
-            while (IsUsedID(LastID) && LastID < ushort.MaxValue)
-            {
-                LastID++;
-            }
+            LastID = LastID.GetNext();
         }
 
         return LastID;
     }
 
-    public bool HasEntity(ushort id)
+    public bool HasEntity(NetworkEntityID id)
     {
         return IDEntityLookup.ContainsKey(id);
     }
 
-    public TEntity GetEntity(ushort id)
+    public TEntity GetEntity(NetworkEntityID id)
     {
         if (IDEntityLookup.TryGetValue(id, out var entity))
         {
@@ -75,7 +71,7 @@ public class EntityIDList<TEntity>
         return default;
     }
 
-    public void AddEntity(ushort id, TEntity entity)
+    public void AddEntity(NetworkEntityID id, TEntity entity)
     {
         IDEntityLookup.Add(id, entity);
         EntityIDLookup.Add(entity, id);
@@ -83,7 +79,7 @@ public class EntityIDList<TEntity>
         EntityAdded?.Invoke(id, entity);
     }
 
-    public void RemoveEntity(ushort id)
+    public void RemoveEntity(NetworkEntityID id)
     {
         if (!IDEntityLookup.ContainsKey(id))
         {
@@ -107,7 +103,7 @@ public class EntityIDList<TEntity>
         RemoveEntity(id, entity);
     }
 
-    private void RemoveEntity(ushort id, TEntity entity)
+    private void RemoveEntity(NetworkEntityID id, TEntity entity)
     {
         IDEntityLookup.Remove(id);
         EntityIDLookup.Remove(entity);
@@ -118,11 +114,11 @@ public class EntityIDList<TEntity>
     public void ClearID()
     {
         // Get highest unused id
-        LastID = 0;
+        LastID = NetworkEntityID.Empty;
 
-        while (IsUsedID(LastID) && LastID < ushort.MaxValue)
+        while (IsUsed(LastID) && LastID.HasSpace())
         {
-            LastID++;
+            LastID = LastID.GetNext();
         }
     }
 

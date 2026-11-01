@@ -13,7 +13,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class RigSeatData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + ComponentIndexData.Size + sizeof(bool) * 2;
+    public static readonly int Size = NetworkEntityReference.Size + ComponentIndexData.Size + sizeof(bool) * 2;
 
     public NetworkEntityReference RigReference;
 

@@ -14,7 +14,7 @@ public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerID 
 /// </summary>
 public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
-    private ushort _id = 0;
+    private NetworkEntityID _id = NetworkEntityID.Empty;
 
     private bool _isRegistered = false;
     private bool _isDestroyed = false;
@@ -26,7 +26,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// <summary>
     /// The identifier for this entity.
     /// </summary>
-    public ushort ID => _id;
+    public NetworkEntityID ID => _id;
 
     /// <summary>
     /// Whether or not this entity is registered and ready.
@@ -358,7 +358,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         _dataCaughtUpPlayers.Clear();
     }
 
-    public void Register(ushort id)
+    public void Register(NetworkEntityID id)
     {
         _isRegistered = true;
         _id = id;
@@ -372,7 +372,7 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void Unregister()
     {
         _isRegistered = false;
-        _id = 0;
+        _id = NetworkEntityID.Empty;
 
         _isDestroyed = true;
 

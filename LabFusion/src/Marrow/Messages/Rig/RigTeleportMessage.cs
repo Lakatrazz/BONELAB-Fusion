@@ -12,7 +12,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class RigTeleportData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(float) * 3;
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(float) * 3;
 
     public NetworkEntityReference RigReference;
 

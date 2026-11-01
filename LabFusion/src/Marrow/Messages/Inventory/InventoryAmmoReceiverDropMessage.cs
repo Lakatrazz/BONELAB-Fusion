@@ -8,11 +8,9 @@ namespace LabFusion.Marrow.Messages;
 
 public class InventoryAmmoReceiverDropData : INetSerializable
 {
-    public const int Size = sizeof(ushort);
+    public int? GetSize() => NetworkEntityID.Size;
 
-    public int? GetSize() => Size;
-
-    public ushort EntityID;
+    public NetworkEntityID EntityID;
 
     public void Serialize(INetSerializer serializer)
     {

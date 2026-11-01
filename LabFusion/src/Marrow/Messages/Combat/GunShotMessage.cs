@@ -10,7 +10,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class GunShotData : INetSerializable
 {
-    public const int Size = sizeof(byte) + ComponentIndexData.Size;
+    public static readonly int Size = sizeof(byte) + ComponentIndexData.Size;
 
     public byte AmmoCount;
 

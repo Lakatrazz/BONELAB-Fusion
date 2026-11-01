@@ -9,7 +9,7 @@ namespace LabFusion.Network;
 
 public class ComponentPathData : INetSerializable
 {
-    public const int Size = sizeof(bool) * 2 + ComponentIndexData.Size + ComponentHashData.Size;
+    public static readonly int Size = sizeof(bool) * 2 + ComponentIndexData.Size + ComponentHashData.Size;
 
     public bool HasEntity => IndexData != null;
 
