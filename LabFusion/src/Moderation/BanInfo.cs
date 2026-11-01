@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network;
 
 using System.Text.Json.Serialization;
 
@@ -11,10 +11,10 @@ namespace LabFusion.Moderation;
 public class BanInfo
 {
     /// <summary>
-    /// The player that is banned.
+    /// The platform ID of the player that is banned.
     /// </summary>
     [JsonPropertyName("player")]
-    public PlayerInfo Player { get; set; } = null;
+    public ClientPlatformID PlatformID { get; set; } = ClientPlatformID.Empty;
 
     /// <summary>
     /// The reason the player is banned.

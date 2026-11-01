@@ -13,6 +13,7 @@ using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Permissions;
+using LabFusion.Contacts;
 
 using UnityEngine;
 
@@ -533,7 +534,7 @@ public static class MenuLocation
 
         foreach (var ban in ModerationManager.GetBans())
         {
-            var player = ban.Player;
+            var player = PlayerHistoryManager.GetPlayerInfoOrDefault(ban.PlatformID);
 
             string username = player.Username.RemoveRichText();
 
@@ -657,12 +658,12 @@ public static class MenuLocation
 
             volumeElement.gameObject.SetActive(true);
 
-            volumeElement.Value = ContactsList.GetContact(player).volume;
+            volumeElement.Value = ContactManager.GetContactInfo(player.PlatformID).Volume;
             volumeElement.OnValueChanged += (v) =>
             {
-                var contact = ContactsList.GetContact(player);
-                contact.volume = v;
-                ContactsList.UpdateContact(contact);
+                var contactInfo = ContactManager.GetContactInfo(player.PlatformID);
+                contactInfo = contactInfo with { Volume = v };
+                ContactManager.SetContactInfo(player.PlatformID, contactInfo);
             };
         }
 

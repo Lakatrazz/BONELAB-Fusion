@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Player;
 
 namespace LabFusion.Moderation;
 
@@ -52,9 +53,9 @@ public static class BanManager
     /// <param name="platform"></param>
     /// <param name="playerInfo"></param>
     /// <param name="reason"></param>
-    public static void Ban(string platform, PlayerInfo playerInfo, string reason) => Ban(platform, new BanInfo()
+    public static void Ban(string platform, ClientPlatformID platformID, string reason) => Ban(platform, new BanInfo()
     {
-        Player = playerInfo,
+        PlatformID = platformID,
         Reason = reason,
     });
 
@@ -68,6 +69,8 @@ public static class BanManager
         BanList.AddBan(platform, banInfo);
 
         WriteFile();
+
+        PlayerHistoryManager.UpdateHistoryEntry(platform, banInfo.PlatformID);
     }
 
     /// <summary>

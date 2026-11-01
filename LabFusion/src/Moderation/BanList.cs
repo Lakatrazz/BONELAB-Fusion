@@ -42,7 +42,7 @@ public class BanList
     public void AddBan(string platform, BanInfo banInfo)
     {
         // Remove a ban if it already exists for this platform ID
-        RemoveBan(platform, banInfo.Player.PlatformID);
+        RemoveBan(platform, banInfo.PlatformID);
 
         var bans = GetBans(platform);
         bans.Add(banInfo);
@@ -60,7 +60,7 @@ public class BanList
             return;
         }
 
-        bans.RemoveAll((info) => info.Player.PlatformID == platformID);
+        bans.RemoveAll((info) => info.PlatformID == platformID);
     }
 
     /// <summary>
@@ -76,6 +76,6 @@ public class BanList
             return false;
         }
 
-        return bans.Exists((info) => info.Player.PlatformID == platformID);
+        return bans.Exists((info) => info.PlatformID == platformID);
     }
 }

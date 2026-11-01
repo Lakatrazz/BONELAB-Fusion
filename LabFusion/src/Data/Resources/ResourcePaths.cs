@@ -11,6 +11,11 @@ public static class ResourcePaths
     public static readonly string PersistentDataRelativePath = "/Fusion";
 
     /// <summary>
+    /// The relative path for client files within the Fusion persistent data folder.
+    /// </summary>
+    public static readonly string ClientRelativePath = "/Client";
+
+    /// <summary>
     /// The relative path for server files within the Fusion persistent data folder.
     /// </summary>
     public static readonly string ServerRelativePath = "/Server";

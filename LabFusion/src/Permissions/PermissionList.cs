@@ -3,7 +3,7 @@
 namespace LabFusion.Permissions;
 
 /// <summary>
-/// A serializable list of permissions by different platforms/
+/// A serializable list of permissions by different platforms.
 /// </summary>
 [Serializable]
 public class PermissionList

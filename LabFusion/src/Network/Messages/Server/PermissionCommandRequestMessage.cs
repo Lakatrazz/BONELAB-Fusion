@@ -81,7 +81,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 
                 if (otherPlayer != null && PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Banning))
                 {
-                    ModerationManager.Ban(otherPlayer);
+                    ModerationManager.Ban(otherPlayer.PlatformID);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_THEM:

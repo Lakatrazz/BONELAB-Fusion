@@ -119,6 +119,7 @@ public class FusionMod : MelonMod
         FusionPreferences.Initialize();
 
         PlayerPermissions.Initialize();
+        PlayerHistoryManager.Initialize();
 
         LobbyInfoManager.OnInitialize();
 

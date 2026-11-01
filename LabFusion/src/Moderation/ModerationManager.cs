@@ -1,6 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
-using LabFusion.Player;
+﻿using LabFusion.Network;
 
 namespace LabFusion.Moderation;
 
@@ -37,14 +35,14 @@ public static class ModerationManager
     /// <summary>
     /// Bans a user from the current platform.
     /// </summary>
-    /// <param name="playerID"></param>
-    public static void Ban(PlayerID playerID)
+    /// <param name="platformID"></param>
+    public static void Ban(ClientPlatformID platformID)
     {
         var platform = NetworkLayerManager.Platform;
 
-        BanManager.Ban(platform, new PlayerInfo(playerID), "Banned");
+        BanManager.Ban(platform, platformID, "Banned");
 
-        ServerManager.SendDisconnect(playerID.PlatformID, "Banned from Server");
+        ServerManager.SendDisconnect(platformID, "Banned from Server");
     }
 
     /// <summary>
