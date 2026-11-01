@@ -1,11 +1,8 @@
-﻿using System.Collections;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using LabFusion.Network;
 using LabFusion.Marrow.Messages;
-using LabFusion.Entities;
-using LabFusion.Senders;
+using LabFusion.Marrow.Rpc;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Scene;
 using LabFusion.Marrow.Rig;
@@ -14,8 +11,6 @@ using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;
-
-using MelonLoader;
 
 namespace LabFusion.Marrow.Patching;
 
@@ -60,7 +55,7 @@ public static class SeatPatches
 
         if (rM.HasOwnership())
         {
-            MelonCoroutines.Start(SendSeatEnter(__instance));
+            SendSeatCreateAndEnter(__instance);
         }
         else
         {
@@ -70,52 +65,52 @@ public static class SeatPatches
         return true;
     }
 
-    private static IEnumerator SendSeatEnter(Seat __instance)
+    private static void SendSeatCreateAndEnter(Seat seat)
     {
-        var marrowBody = MarrowBody.Cache.Get(__instance.seatRb.gameObject);
+        var marrowBody = MarrowBody.Cache.Get(seat.seatRb.gameObject);
 
         if (marrowBody == null)
         {
-            yield break;
+            return;
         }
 
-        // Create new syncable if this doesn't exist
-        if (!SeatExtender.Cache.ContainsSource(__instance))
+        if (!SeatExtender.Cache.ContainsSource(seat))
         {
-            bool isAwaiting = true;
-            PropSender.SendPropCreation(marrowBody.Entity, (p) =>
+            NetworkMarrowEntityCreator.SendCreateRequest(new NetworkMarrowEntityCreator.MarrowEntityCreateRequestInfo()
             {
-                isAwaiting = false;
+                MarrowEntity = marrowBody.Entity,
+                CreatedCallback = (info) =>
+                {
+                    SendSeatEnter(seat);
+                },
             });
-
-            while (isAwaiting)
-            {
-                yield return null;
-            }
+            return;
         }
 
-        yield return null;
+        SendSeatEnter(seat);
+    }
 
-        // Send seat request
-        var rigManager = __instance.rigManager;
+    private static void SendSeatEnter(Seat seat)
+    {
+        var rigManager = seat.rigManager;
 
         if (!NetworkBeingManager.TryGetNetworkRig(rigManager, out var networkRig))
         {
-            yield break;
+            return;
         }
 
         var networkRigEntity = networkRig.NetworkEntity;
 
         if (!networkRigEntity.IsOwner)
         {
-            yield break;
+            return;
         }
 
-        var seatComponentData = ComponentIndexData.CreateFromComponent<Seat, SeatExtender>(__instance, SeatExtender.Cache);
+        var seatComponentData = ComponentIndexData.CreateFromComponent<Seat, SeatExtender>(seat, SeatExtender.Cache);
 
         if (seatComponentData == null)
         {
-            yield break;
+            return;
         }
 
         var data = new RigSeatData()
