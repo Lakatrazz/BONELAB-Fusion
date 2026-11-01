@@ -14,8 +14,6 @@ public static class NativeMessageTag
 
         SceneLoad = 12,
 
-        EntityUnqueueRequest = 13,
-        EntityUnqueueResponse = 14,
         EntityOwnershipRequest = 15,
         EntityOwnershipResponse = 16,
 

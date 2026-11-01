@@ -33,7 +33,6 @@ public static class NetworkEntityManager
     public static void CleanupIDs()
     {
         IDManager.RegisteredEntities.ClearID();
-        IDManager.QueuedEntities.ClearID();
 
         _entityRegisteredCallbacks.Clear();
     }
@@ -59,23 +58,6 @@ public static class NetworkEntityManager
         }
 
         IDManager.RegisteredEntities.Clear();
-
-        // Clear queued entities
-        var queuedEntities = IDManager.QueuedEntities.EntityIDLookup.Keys.ToList();
-
-        foreach (var entity in queuedEntities)
-        {
-            try
-            {
-                entity.Unregister();
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("unregistering queued NetworkEntity", e);
-            }
-        }
-
-        IDManager.QueuedEntities.Clear();
 
         _entityRegisteredCallbacks.Clear();
     }
@@ -168,18 +150,6 @@ public static class NetworkEntityManager
     public static void OnLateUpdate(float deltaTime)
     {
         UpdatableManager.OnEntityLateUpdate(deltaTime);
-    }
-
-    public static void RequestUnqueue(ushort queuedID)
-    {
-        if (!NetworkManager.HasServer)
-        {
-            return;
-        }
-
-        var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID.Value, queuedID);
-
-        ClientManager.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, CommonMessageRoutes.ReliableToServer);
     }
 
     public static void TransferOwnership(NetworkEntity entity, PlayerID ownerID)
