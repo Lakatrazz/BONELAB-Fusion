@@ -55,6 +55,11 @@ public sealed class PlayerInfo
     public int AvatarModID { get; init; } = -1;
 
     /// <summary>
+    /// Creates PlayerInfo from a blank platform ID.
+    /// </summary>
+    public PlayerInfo() : this(ClientPlatformID.Empty) { }
+
+    /// <summary>
     /// Creates PlayerInfo from a platform ID.
     /// <para>This will not have any information about the player except for the ID. A default username will be assigned.</para>
     /// </summary>

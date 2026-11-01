@@ -64,7 +64,7 @@ public static class ContactManager
     {
         var clientList = ContactList.GetClientList(platform);
 
-        if (clientList.ContactsByClient.TryGetValue(platformID, out var contactInfo))
+        if (clientList.ContactsByClient.TryGetValue(platformID.ToString(), out var contactInfo))
         {
             return contactInfo;
         }
@@ -89,7 +89,7 @@ public static class ContactManager
     {
         var clientList = ContactList.GetClientList(platform);
 
-        clientList.ContactsByClient[platformID] = contactInfo;
+        clientList.ContactsByClient[platformID.ToString()] = contactInfo;
 
         WriteFile();
 

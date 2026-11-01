@@ -56,7 +56,7 @@ public static class PlayerHistoryManager
     {
         var clientList = PlayerHistory.GetClientList(platform);
         
-        if (clientList.EntriesByClient.TryGetValue(platformID, out var entry))
+        if (clientList.EntriesByClient.TryGetValue(platformID.ToString(), out var entry))
         {
             return entry;
         }
@@ -110,7 +110,7 @@ public static class PlayerHistoryManager
 
         var clientList = PlayerHistory.GetClientList(platform);
 
-        clientList.EntriesByClient[platformID] = playerHistoryEntry;
+        clientList.EntriesByClient[platformID.ToString()] = playerHistoryEntry;
 
         WriteFile();
     }

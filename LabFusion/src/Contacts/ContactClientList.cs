@@ -1,6 +1,4 @@
-﻿using LabFusion.Network;
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Contacts;
 
@@ -14,5 +12,5 @@ public sealed class ContactClientList
     /// The contact info for each client.
     /// </summary>
     [JsonPropertyName("clients")]
-    public Dictionary<ClientPlatformID, ContactInfo> ContactsByClient { get; } = new();
+    public Dictionary<string, ContactInfo> ContactsByClient { get; } = new();
 }

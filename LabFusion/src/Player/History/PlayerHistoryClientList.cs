@@ -1,6 +1,4 @@
-﻿using LabFusion.Network;
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Player;
 
@@ -14,5 +12,5 @@ public sealed class PlayerHistoryClientList
     /// <summary>
     /// The list of player history entries by client platform IDs.
     /// </summary>
-    public Dictionary<ClientPlatformID, PlayerHistoryEntry> EntriesByClient { get; set; } = new();
+    public Dictionary<string, PlayerHistoryEntry> EntriesByClient { get; set; } = new();
 }

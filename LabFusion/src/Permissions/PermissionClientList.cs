@@ -1,6 +1,4 @@
-﻿using LabFusion.Network;
-
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace LabFusion.Permissions;
 
@@ -14,5 +12,5 @@ public class PermissionClientList
     /// The permission info for each client.
     /// </summary>
     [JsonPropertyName("clients")]
-    public Dictionary<ClientPlatformID, PermissionInfo> PermissionsByClient { get; set; } = new();
+    public Dictionary<string, PermissionInfo> PermissionsByClient { get; set; } = new();
 }

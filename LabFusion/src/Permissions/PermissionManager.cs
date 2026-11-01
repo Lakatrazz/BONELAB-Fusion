@@ -56,7 +56,7 @@ public static class PermissionManager
     {
         var clientList = PermissionList.GetClientList(platform);
 
-        if (clientList.PermissionsByClient.TryGetValue(platformID, out var permissionInfo))
+        if (clientList.PermissionsByClient.TryGetValue(platformID.ToString(), out var permissionInfo))
         {
             return permissionInfo.Level;
         }
@@ -74,7 +74,7 @@ public static class PermissionManager
     {
         var clientList = PermissionList.GetClientList(platform);
 
-        clientList.PermissionsByClient[platformID] = new PermissionInfo()
+        clientList.PermissionsByClient[platformID.ToString()] = new PermissionInfo()
         {
             Level = level,
         };
