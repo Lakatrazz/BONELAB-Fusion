@@ -8,17 +8,17 @@ public static class ResourcePaths
     /// <summary>
     /// The relative path for Fusion's persistent data inside of the main persistent data folder.
     /// </summary>
-    public static readonly string PersistentDataRelativePath = "/Fusion";
+    public static readonly string PersistentDataRelativePath = "Fusion";
 
     /// <summary>
     /// The relative path for client files within the Fusion persistent data folder.
     /// </summary>
-    public static readonly string ClientRelativePath = "/Client";
+    public static readonly string ClientRelativePath = "Client";
 
     /// <summary>
     /// The relative path for server files within the Fusion persistent data folder.
     /// </summary>
-    public static readonly string ServerRelativePath = "/Server";
+    public static readonly string ServerRelativePath = "Server";
 
     /// <summary>
     /// The relative path that stores extracted external resources both in the content pallet and the persistent data folder.
