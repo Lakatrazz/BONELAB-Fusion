@@ -30,9 +30,9 @@ public struct NetworkEntityID : INetSerializable
 
     private ushort _value;
 
-    public NetworkEntityID(byte id) { _value = id; }
-    public NetworkEntityID(ushort id) : this((byte)id) { }
-    public NetworkEntityID(int id) : this((byte)id) { }
+    public NetworkEntityID(ushort id) { _value = id; }
+    public NetworkEntityID(byte id) : this((ushort)id) { }
+    public NetworkEntityID(int id) : this((ushort)id) { }
 
     public readonly int? GetSize() => Size;
 
