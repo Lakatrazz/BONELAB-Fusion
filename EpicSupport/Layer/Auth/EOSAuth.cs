@@ -57,7 +57,7 @@ internal class EOSAuth : EOSInterface
                 Type = type,
                 Token = token,
             },
-            ScopeFlags = AuthScopeFlags.BasicProfile
+            ScopeFlags = AuthScopeFlags.BasicProfile | AuthScopeFlags.FriendsList
         };
  
         AuthInterface.Login(ref options, null, (ref LoginCallbackInfo data) =>

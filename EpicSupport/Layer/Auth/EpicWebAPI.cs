@@ -8,7 +8,7 @@ namespace MarrowFusion.Epic;
 
 internal class EpicWebAPI
 {
-    private const string Scope = "basic_profile";
+    private const string Scope = "basic_profile friends_list";
     private const string DeviceAuthUrl = "https://api.epicgames.dev/epic/oauth/v2/deviceAuthorization";
     private const string TokenUrl = "https://api.epicgames.dev/epic/oauth/v2/token";
 

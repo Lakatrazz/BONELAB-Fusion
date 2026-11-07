@@ -5,6 +5,7 @@ internal class EOSRuntime
     internal EOSPlatform Platform { get; private set; }
     internal EOSAuth Auth { get; private set; }
     internal EOSUserInfo UserInfo { get; private set; }
+    internal EOSFriends Friends { get; private set; }
     internal EOSConnect Connect { get; private set; }
     internal EOSP2P P2P { get; private set; }
     internal EOSLobby Lobby { get; private set; }
@@ -26,6 +27,11 @@ internal class EOSRuntime
         UserInfo = new EOSUserInfo(this, Platform.PlatformInterface.GetUserInfoInterface(), Auth.LocalAccountId);
         
         if (!await UserInfo.InitializeAsync())
+            return false;
+        
+        Friends = new EOSFriends(this, Platform.PlatformInterface.GetFriendsInterface(), Auth.LocalAccountId);
+        
+        if (!await Friends.InitializeAsync())
             return false;
 
         Connect = new EOSConnect(this, Platform.PlatformInterface.GetConnectInterface());
@@ -49,6 +55,7 @@ internal class EOSRuntime
             return false;
         
         Reports = new EOSReports(this, Platform.PlatformInterface.GetReportsInterface(), Connect.LocalUserId);
+        
         if (!await Reports.InitializeAsync())
             return false;
 
@@ -60,6 +67,7 @@ internal class EOSRuntime
         Platform?.Tick();
         Auth?.Tick();
         UserInfo?.Tick();
+        Friends?.Tick();
         Connect?.Tick();
         P2P?.Tick();
         Lobby?.Tick();
@@ -74,6 +82,7 @@ internal class EOSRuntime
         Lobby?.Shutdown();
         P2P?.Shutdown();
         Connect?.Shutdown();
+        Friends?.Shutdown();
         UserInfo?.Shutdown();
         Auth?.Shutdown();
         Platform?.Shutdown();
