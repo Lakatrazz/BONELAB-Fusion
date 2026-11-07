@@ -11,7 +11,7 @@ using LabFusion.Marrow.Serialization;
 using LabFusion.Menu;
 using LabFusion.Network;
 using LabFusion.Preferences.Client;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Utilities;
 
 namespace LabFusion.Scene;

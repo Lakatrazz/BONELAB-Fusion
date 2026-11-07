@@ -1,6 +1,6 @@
 ﻿using LabFusion.Network;
 
-namespace LabFusion.RPC;
+namespace LabFusion.Rpc;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class RpcAttribute : Attribute

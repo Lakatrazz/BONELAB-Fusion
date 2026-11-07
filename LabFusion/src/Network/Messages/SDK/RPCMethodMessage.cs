@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network.Serialization;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 
 namespace LabFusion.Network;
 

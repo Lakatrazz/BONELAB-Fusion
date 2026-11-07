@@ -3,7 +3,7 @@
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Scene;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Pool;

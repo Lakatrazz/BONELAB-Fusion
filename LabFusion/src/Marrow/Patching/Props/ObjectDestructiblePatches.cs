@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Messages;
 using LabFusion.Scene;

@@ -6,7 +6,7 @@ using MelonLoader;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Data;
 
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Messages;

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Scene;
 using LabFusion.Entities;
 

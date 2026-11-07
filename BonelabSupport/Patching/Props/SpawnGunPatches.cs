@@ -9,7 +9,7 @@ using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
 using LabFusion.Scene;

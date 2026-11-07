@@ -2,7 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.SDK.Messages;
 using LabFusion.Utilities;
 

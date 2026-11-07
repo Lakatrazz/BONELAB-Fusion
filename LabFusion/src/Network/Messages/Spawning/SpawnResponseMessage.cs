@@ -13,7 +13,7 @@ using LabFusion.Marrow.Serialization;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Safety;
 using LabFusion.Senders;
 using LabFusion.Utilities;

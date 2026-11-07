@@ -2,7 +2,7 @@
 
 using Il2CppSLZ.Bonelab;
 
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Scene;
 
 using UnityEngine;

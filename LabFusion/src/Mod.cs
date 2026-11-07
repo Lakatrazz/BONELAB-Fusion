@@ -16,7 +16,7 @@ using LabFusion.Downloading;
 using LabFusion.Menu;
 using LabFusion.SDK.Modules;
 using LabFusion.Player;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.UI.Popups;
 using LabFusion.Safety;
 using LabFusion.Support;

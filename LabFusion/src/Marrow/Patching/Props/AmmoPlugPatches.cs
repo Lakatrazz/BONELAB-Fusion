@@ -3,7 +3,7 @@
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Marrow.Extenders;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Scene;
 
 namespace LabFusion.Marrow.Patching;

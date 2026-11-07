@@ -8,7 +8,7 @@ using LabFusion.Utilities;
 
 using MelonLoader;
 
-namespace LabFusion.RPC;
+namespace LabFusion.Rpc;
 
 public static class NetworkModRequester
 {

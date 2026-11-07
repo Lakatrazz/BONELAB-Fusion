@@ -7,7 +7,7 @@ using LabFusion.Moderation;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Safety;
 using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;

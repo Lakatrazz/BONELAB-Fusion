@@ -7,7 +7,7 @@ using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Scene;
 using LabFusion.Marrow.Pool;
 

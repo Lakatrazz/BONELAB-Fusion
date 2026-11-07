@@ -9,7 +9,7 @@ using LabFusion.Network;
 
 using UnityEngine;
 
-namespace LabFusion.RPC;
+namespace LabFusion.Rpc;
 
 public static class NetworkAssetSpawner
 {

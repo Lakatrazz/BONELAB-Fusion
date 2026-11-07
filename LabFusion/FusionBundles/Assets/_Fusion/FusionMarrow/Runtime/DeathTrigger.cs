@@ -6,7 +6,7 @@ using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Extensions;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 #endif
 
 using UnityEngine;

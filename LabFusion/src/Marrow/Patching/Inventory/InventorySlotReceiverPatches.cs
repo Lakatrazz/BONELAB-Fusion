@@ -5,7 +5,7 @@ using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.Scene;
 using LabFusion.Utilities;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Extenders;
 

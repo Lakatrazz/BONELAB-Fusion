@@ -5,7 +5,7 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Entities;
 

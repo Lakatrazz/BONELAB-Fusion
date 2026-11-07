@@ -6,7 +6,7 @@ using LabFusion.Marrow.Data;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Extensions;
 using LabFusion.Preferences.Client;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Utilities;
 
 using UnityEngine;

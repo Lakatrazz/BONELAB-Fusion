@@ -2,7 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Marrow.Messages;

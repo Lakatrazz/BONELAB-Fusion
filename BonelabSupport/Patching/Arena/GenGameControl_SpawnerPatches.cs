@@ -3,7 +3,7 @@
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Data;
 
-using LabFusion.RPC;
+using LabFusion.Rpc;
 using LabFusion.Scene;
 
 using UnityEngine;

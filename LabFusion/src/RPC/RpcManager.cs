@@ -7,7 +7,7 @@ using LabFusion.Utilities;
 
 using System.Reflection;
 
-namespace LabFusion.RPC;
+namespace LabFusion.Rpc;
 
 using Harmony = HarmonyLib.Harmony;
 
