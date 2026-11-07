@@ -145,7 +145,7 @@ public static class InventoryAmmoReceiverPatches
             });
 
             // Play the ammo release sound effect
-            var data = new InventoryAmmoReceiverDropData() { EntityID = (ushort)PlayerIDManager.LocalID.SmallID };
+            var data = new InventoryAmmoReceiverDropData() { EntityID = new((ushort)PlayerIDManager.LocalID.SmallID) };
 
             ClientManager.RelayModule<InventoryAmmoReceiverDropMessage, InventoryAmmoReceiverDropData>(data, CommonMessageRoutes.ReliableToClients);
         }

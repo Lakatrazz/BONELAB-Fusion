@@ -1,7 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Combat;
 
-using LabFusion.Exceptions;
+using LabFusion.Entities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -43,7 +43,7 @@ public static class PlayerSender
 
         var data = new RigTeleportData()
         {
-            RigReference = new((ushort)target),
+            RigReference = new(new NetworkEntityID((ushort)target)),
             Position = position,
         };
 
@@ -65,7 +65,7 @@ public static class PlayerSender
         // TODO: Make work for all owned rigs
         var data = new RigDamageData()
         {
-            RigReference = new((ushort)target),
+            RigReference = new(new NetworkEntityID((ushort)target)),
             Attack = new(attack),
             Part = part
         };

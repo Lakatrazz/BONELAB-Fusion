@@ -10,13 +10,11 @@ using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
 using LabFusion.Voice;
 using LabFusion.SDK.Lobbies;
-using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
 using LabFusion.Downloading;
 using LabFusion.Menu;
 using LabFusion.SDK.Modules;
-using LabFusion.Representation;
 using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.UI.Popups;
@@ -32,7 +30,6 @@ using LabFusion.Debugging;
 using MelonLoader;
 
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
 namespace LabFusion;
@@ -78,11 +75,8 @@ public class FusionMod : MelonMod
         FusionAssembly = MelonAssembly.Assembly;
 
         // Prepare the data path for writing files
-        PersistentData.OnPathInitialize();
+        PersistentData.InitializePath();
         
-        // Load APIs
-        SteamAPILoader.OnLoadSteamAPI();
-
         // Initialize data and hooks
         RpcManager.OnInitialize();
     }
@@ -112,7 +106,7 @@ public class FusionMod : MelonMod
 
         OLDLobbyFilterManager.LoadBuiltInFilters();
 
-        NetworkEntityManager.OnInitializeManager();
+        NetworkEntityManager.Initialize();
         NetworkPlayerManager.Initialize();
 
         PopupManager.OnInitializeMelon();
@@ -121,17 +115,11 @@ public class FusionMod : MelonMod
         GamemodeConditionsChecker.OnInitializeMelon();
         GamemodeRoundManager.OnInitializeMelon();
 
-        // Hook into asset warehouse
-        var onReady = () =>
-        {
-            CosmeticLoader.OnAssetWarehouseReady();
-        };
-        AssetWarehouse.OnReady(onReady);
-
         // Create prefs
         FusionPreferences.Initialize();
 
-        FusionPermissions.OnInitializeMelon();
+        PlayerPermissions.Initialize();
+        PlayerHistoryManager.Initialize();
 
         LobbyInfoManager.OnInitialize();
 
@@ -198,9 +186,6 @@ public class FusionMod : MelonMod
 
         // Undo game changes
         MuteUIHelper.OnDeinitializeMelon();
-
-        // Free APIs
-        SteamAPILoader.OnFreeSteamAPI();
     }
 
     public override void OnPreferencesLoaded()

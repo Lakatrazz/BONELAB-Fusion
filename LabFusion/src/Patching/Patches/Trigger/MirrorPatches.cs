@@ -5,11 +5,9 @@ using UnityEngine;
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
 
-using LabFusion.SDK.Points;
 using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.MonoBehaviours;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.SDK.Wearables;

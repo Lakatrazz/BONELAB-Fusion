@@ -37,7 +37,7 @@ public static class NetworkAssetSpawner
 
     public struct DespawnRequestInfo
     {
-        public ushort EntityID;
+        public NetworkEntityID EntityID;
 
         public bool DespawnEffect;
     }
@@ -96,7 +96,7 @@ public static class NetworkAssetSpawner
             return false;
         }
 
-        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityIDLookup.Keys.ToArray();
+        var entities = NetworkEntityManager.IDManager.RegisteredEntities.EntityByID.Keys.ToArray();
 
         foreach (var entity in entities)
         {

@@ -14,11 +14,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class InventorySlotDropData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 3 + sizeof(ushort);
+    public static readonly int Size = sizeof(byte) * 3 + NetworkEntityID.Size;
 
     public int? GetSize() => Size;
 
-    public ushort SlotEntityID;
+    public NetworkEntityID SlotEntityID;
     public ClientSmallID GrabberID;
     public byte SlotIndex;
     public Handedness Handedness;
@@ -39,7 +39,7 @@ public class InventorySlotDropMessage : ModuleMessageHandler
     {
         var data = received.ReadData<InventorySlotDropData>();
 
-        var slotEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SlotEntityID);
+        var slotEntity = NetworkEntityManager.GetEntity(data.SlotEntityID);
 
         if (slotEntity == null)
         {

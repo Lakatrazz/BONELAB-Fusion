@@ -8,10 +8,10 @@ namespace LabFusion.Marrow.Messages;
 
 public class ButtonChargeData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public static readonly int Size = sizeof(byte) * 2 + NetworkEntityID.Size;
 
     public ClientSmallID smallId;
-    public ushort entityId;
+    public NetworkEntityID entityId;
 
     public bool charged;
 
@@ -22,7 +22,7 @@ public class ButtonChargeData : INetSerializable
         serializer.SerializeValue(ref charged);
     }
 
-    public static ButtonChargeData Create(ClientSmallID smallId, ushort entityId, bool charged)
+    public static ButtonChargeData Create(ClientSmallID smallId, NetworkEntityID entityId, bool charged)
     {
         return new ButtonChargeData()
         {
@@ -40,7 +40,7 @@ public class ButtonChargeMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ButtonChargeData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.GetEntity(data.entityId);
 
         if (entity == null)
         {

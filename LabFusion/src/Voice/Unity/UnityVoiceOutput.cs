@@ -1,5 +1,6 @@
-﻿using LabFusion.Data;
-using LabFusion.Player;
+﻿using LabFusion.Player;
+using LabFusion.Contacts;
+using LabFusion.Network;
 
 namespace LabFusion.Voice.Unity;
 
@@ -19,26 +20,31 @@ public class UnityVoiceOutput : IVoiceOutput
     public void OnEnable()
     {
         // Hook into contact info changing
-        ContactsList.OnContactUpdated += OnContactUpdated;
+        ContactManager.ContactUpdated += OnContactUpdated;
 
         // Update the contact info
-        OnContactUpdated(ContactsList.GetContact(PlayerID));
+        OnContactUpdated(ContactManager.GetContactInfo(PlayerID.PlatformID));
     }
 
     public void OnDisable()
     {
         // Unhook contact updating
-        ContactsList.OnContactUpdated -= OnContactUpdated;
+        ContactManager.ContactUpdated -= OnContactUpdated;
     }
 
-    private void OnContactUpdated(Contact contact)
+    private void OnContactUpdated(ClientPlatformID platformID, ContactInfo contactInfo)
     {
-        if (contact.id != PlayerID.PlatformID)
+        if (platformID != PlayerID.PlatformID)
         {
             return;
         }
 
-        Volume = contact.volume;
+        OnContactUpdated(contactInfo);
+    }
+
+    private void OnContactUpdated(ContactInfo contactInfo)
+    {
+        Volume = contactInfo.Volume;
     }
 
     void IVoiceOutput.OnEncodedDataReceived(byte[] data)

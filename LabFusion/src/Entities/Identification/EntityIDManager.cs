@@ -3,15 +3,33 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Entities;
 
+/// <summary>
+/// Manages a list of entities, their IDs, and callbacks.
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
 public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
 {
+    /// <summary>
+    /// The list of registered entities by their IDs.
+    /// </summary>
     public EntityIDList<TEntity> RegisteredEntities { get; } = new();
 
-    public EntityIDList<TEntity> QueuedEntities { get; } = new();
+    /// <summary>
+    /// An event that is invoked when an entity is registered.
+    /// </summary>
+    public event Action<TEntity> EntityRegistered;
 
-    public event Action<TEntity> EntityRegistered, EntityUnregistered;
+    /// <summary>
+    /// An event that is invoked when an entity is unregistered.
+    /// </summary>
+    public event Action<TEntity> EntityUnregistered;
 
-    public void RegisterEntity(ushort id, TEntity entity)
+    /// <summary>
+    /// Registers an entity at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="entity"></param>
+    public void RegisterEntity(NetworkEntityID id, TEntity entity)
     {
         if (RegisteredEntities.HasEntity(id))
         {
@@ -26,7 +44,11 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         EntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
-    public void UnregisterEntity(ushort id)
+    /// <summary>
+    /// Unregisters the entity at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    public void UnregisterEntity(NetworkEntityID id)
     {
         // Check if the entity is registered
         if (!RegisteredEntities.HasEntity(id))
@@ -42,49 +64,15 @@ public class EntityIDManager<TEntity> where TEntity : INetworkRegistrable
         EntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
     }
 
+    /// <summary>
+    /// Unregisters an entity.
+    /// </summary>
+    /// <param name="entity"></param>
     public void UnregisterEntity(TEntity entity)
     {
-        // Unqueue the entity
-        if (entity.IsQueued)
-        {
-            QueuedEntities.RemoveEntity(entity);
-        }
-
-        // Unregister the entity
         if (entity.IsRegistered)
         {
             UnregisterEntity(entity.ID);
         }
-    }
-
-    public ushort QueueEntity(TEntity entity)
-    {
-        var id = QueuedEntities.AllocateNewID();
-
-        QueuedEntities.AddEntity(id, entity);
-        entity.Queue(id);
-
-        return id;
-    }
-
-    public (bool, TEntity) UnqueueEntity(ushort queuedID, ushort allocatedID)
-    {
-        if (!QueuedEntities.HasEntity(queuedID))
-        {
-            return (false, default);
-        }
-
-        var entity = QueuedEntities.GetEntity(queuedID);
-        QueuedEntities.RemoveEntity(entity);
-
-        if (entity.IsDestroyed)
-        {
-            FusionLogger.Warn($"Attempted to unqueue an Entity with allocated id {allocatedID}, but it was destroyed!");
-            return (false, default);
-        }
-
-        RegisterEntity(allocatedID, entity);
-
-        return (true, entity);
     }
 }

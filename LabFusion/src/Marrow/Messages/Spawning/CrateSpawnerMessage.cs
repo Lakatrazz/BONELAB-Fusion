@@ -12,11 +12,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class CrateSpawnerData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + ComponentPathData.Size;
+    public static readonly int Size = sizeof(ushort) + ComponentPathData.Size;
 
     public int? GetSize() => Size;
 
-    public ushort SpawnedID;
+    public NetworkEntityID SpawnedID;
     public ComponentPathData PathData;
 
     public void Serialize(INetSerializer serializer)
@@ -38,7 +38,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
             return;
         }
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.SpawnedID);
+        var entity = NetworkEntityManager.GetEntity(data.SpawnedID);
 
         if (entity == null)
         {
@@ -60,7 +60,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
         };
     }
 
-    public static void SendCrateSpawnerMessage(CrateSpawner crateSpawner, ushort entityID, PlayerID target = null)
+    public static void SendCrateSpawnerMessage(CrateSpawner crateSpawner, NetworkEntityID entityID, PlayerID target = null)
     {
         var data = new CrateSpawnerData()
         {

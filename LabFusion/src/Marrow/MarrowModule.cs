@@ -54,6 +54,8 @@ public class MarrowModule : Module
 
         ModuleMessageManager.RegisterHandler<EntityRepresentationRequestMessage>();
         ModuleMessageManager.RegisterHandler<EntityRepresentationResponseMessage>();
+        ModuleMessageManager.RegisterHandler<MarrowEntityCreateRequest>();
+        ModuleMessageManager.RegisterHandler<MarrowEntityCreateResponse>();
 
         ModuleMessageManager.RegisterHandler<InventoryAmmoReceiverDropMessage>();
         ModuleMessageManager.RegisterHandler<InventorySlotDropMessage>();

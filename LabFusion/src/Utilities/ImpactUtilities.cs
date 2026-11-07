@@ -1,8 +1,8 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Entities;
-using LabFusion.Senders;
 using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Rpc;
 
 using UnityEngine;
 
@@ -42,7 +42,10 @@ public static class ImpactUtilities
         // Create a new network entity
         else
         {
-            DelayUtilities.InvokeDelayed(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
+            NetworkMarrowEntityCreator.SendCreateRequest(new NetworkMarrowEntityCreator.MarrowEntityCreateRequestInfo()
+            {
+                MarrowEntity = marrowBody.Entity,
+            });
         }
     }
 }

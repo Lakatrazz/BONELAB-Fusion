@@ -11,10 +11,10 @@ namespace LabFusion.Marrow.Messages;
 
 public class MagazineClaimData : INetSerializable
 {
-    public int? GetSize() => OwnerID.GetSize() + sizeof(ushort) + sizeof(byte);
+    public int? GetSize() => OwnerID.GetSize() + NetworkEntityID.Size + sizeof(byte);
 
     public ClientSmallID OwnerID;
-    public ushort EntityID;
+    public NetworkEntityID EntityID;
     public Handedness Handedness;
 
     public void Serialize(INetSerializer serializer)
@@ -32,7 +32,7 @@ public class MagazineClaimMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagazineClaimData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.EntityID);
+        var entity = NetworkEntityManager.GetEntity(data.EntityID);
 
         if (entity == null)
         {

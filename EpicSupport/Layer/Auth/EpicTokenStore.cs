@@ -8,7 +8,7 @@ internal static class EpicTokenStore
 
     internal static string Get()
     {
-        var path = PersistentData.GetPath(FileName);
+        var path = PersistentData.GetAbsolutePath(FileName);
         
         try
         {
@@ -29,7 +29,7 @@ internal static class EpicTokenStore
         if (string.IsNullOrEmpty(token))
             return;
         
-        var path = PersistentData.GetPath(FileName);
+        var path = PersistentData.GetAbsolutePath(FileName);
         
         try
         {
@@ -43,7 +43,7 @@ internal static class EpicTokenStore
     
     internal static void Clear()
     {
-        var path = PersistentData.GetPath(FileName);
+        var path = PersistentData.GetAbsolutePath(FileName);
         
         try
         {

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace LabFusion.Marrow;
 
 [Serializable]
-public class PalletUseEntry
+public class PalletUseHistoryEntry
 {
     [JsonPropertyName("barcode")]
     public string Barcode { get; set; } = string.Empty;
@@ -21,7 +21,7 @@ public class PalletUseEntry
 public class PalletUseHistory
 {
     [JsonPropertyName("entries")]
-    public List<PalletUseEntry> Entries { get; set; } = new();
+    public List<PalletUseHistoryEntry> Entries { get; set; } = new();
 }
 
 public static class PalletUseHistoryManager
@@ -30,7 +30,7 @@ public static class PalletUseHistoryManager
 
     public static HashSet<string> ActivelyUsedPallets { get; } = new();
 
-    public static readonly string FileName = "palletUseHistory.json";
+    public static readonly string FileName = "pallet_use_history.json";
 
     public static bool IsDirty { get; private set; } = false;
 
@@ -93,7 +93,7 @@ public static class PalletUseHistoryManager
         MarkPalletUsed(crate.Pallet); 
     }
 
-    public static PalletUseEntry GetOrAddEntry(string barcode)
+    public static PalletUseHistoryEntry GetOrAddEntry(string barcode)
     {
         var existingEntry = GetEntry(barcode);
 
@@ -102,13 +102,13 @@ public static class PalletUseHistoryManager
             return existingEntry;
         }
 
-        var newEntry = new PalletUseEntry() { Barcode = barcode };
+        var newEntry = new PalletUseHistoryEntry() { Barcode = barcode };
         History.Entries.Add(newEntry);
 
         return newEntry;
     }
 
-    public static PalletUseEntry GetEntry(string barcode)
+    public static PalletUseHistoryEntry GetEntry(string barcode)
     {
         return History.Entries.FirstOrDefault(e => e.Barcode == barcode);
     }

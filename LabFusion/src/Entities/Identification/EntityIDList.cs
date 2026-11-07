@@ -1,19 +1,54 @@
 ﻿namespace LabFusion.Entities;
 
-public delegate void EntityIDEvent<TEntity>(ushort id, TEntity entity);
+/// <summary>
+/// A delegate that runs when changes occur to an EntityIDList.
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
+/// <param name="id"></param>
+/// <param name="entity"></param>
+public delegate void EntityIDDelegate<TEntity>(NetworkEntityID id, TEntity entity);
 
+/// <summary>
+/// A list of entities and their IDs.
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
 public class EntityIDList<TEntity>
 {
-    public Dictionary<ushort, TEntity> IDEntityLookup { get; } = new();
-    public Dictionary<TEntity, ushort> EntityIDLookup { get; } = new();
+    /// <summary>
+    /// The list of entity IDs by their entity.
+    /// </summary>
+    public Dictionary<NetworkEntityID, TEntity> IDByEntity { get; } = new();
 
-    public HashSet<ushort> ReservedIDs { get; } = new();
+    /// <summary>
+    /// The list of entities by their ID.
+    /// </summary>
+    public Dictionary<TEntity, NetworkEntityID> EntityByID { get; } = new();
 
-    public event EntityIDEvent<TEntity> EntityAdded, EntityRemoved;
+    /// <summary>
+    /// The list of reserved entity IDs. These IDs cannot be allocated automatically and have to manually be used.
+    /// </summary>
+    public HashSet<NetworkEntityID> ReservedIDs { get; } = new();
 
-    public ushort LastID { get; private set; } = 0;
+    /// <summary>
+    /// An event that is invoked when an entity is added to the list.
+    /// </summary>
+    public event EntityIDDelegate<TEntity> EntityAdded;
 
-    public void ReserveID(ushort id)
+    /// <summary>
+    /// An event that is invoked when an entity is removed from the list.
+    /// </summary>
+    public event EntityIDDelegate<TEntity> EntityRemoved;
+
+    /// <summary>
+    /// The last ID that was allocated for the list. New entities will allocate the next ID after. Reserved IDs cannot be allocated.
+    /// </summary>
+    public NetworkEntityID LastID { get; private set; } = NetworkEntityID.Empty;
+
+    /// <summary>
+    /// Reserves an entity ID so that it cannot be automatically allocated.
+    /// </summary>
+    /// <param name="id"></param>
+    public void Reserve(NetworkEntityID id)
     {
         if (ReservedIDs.Contains(id))
         {
@@ -22,52 +57,93 @@ public class EntityIDList<TEntity>
 
         if (LastID <= id)
         {
-            LastID = id;
-            LastID++;
+            LastID = id.GetNext();
         }
 
         ReservedIDs.Add(id);
     }
 
-    public void Unreserve(ushort id)
+    /// <summary>
+    /// Unreserves an entity ID so that it is free to be allocated.
+    /// </summary>
+    /// <param name="id"></param>
+    public void Unreserve(NetworkEntityID id)
     {
         ReservedIDs.Remove(id);
     }
 
-    public bool IsReserved(ushort id)
+    /// <summary>
+    /// Returns true if an entity ID is reserved.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public bool IsReserved(NetworkEntityID id)
     {
         return ReservedIDs.Contains(id);
     }
 
-    private bool IsUsedID(ushort id)
+    /// <summary>
+    /// Returns true if an entity ID is currently taken, whether registered or reserved.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public bool IsUsed(NetworkEntityID id)
     {
-        return IDEntityLookup.ContainsKey(id) || IsReserved(id);
+        return IDByEntity.ContainsKey(id) || IsReserved(id);
     }
 
-    public ushort AllocateNewID()
+    /// <summary>
+    /// Allocates a unique ID if available.
+    /// <para>If none are available, this will currently just return the maximum ID. This is not ideal as this would mean multiple entities trying to use the same ID, but the ID should never get this large regardless.</para>
+    /// </summary>
+    /// <returns></returns>
+    public NetworkEntityID AllocateUniqueID()
     {
-        LastID++;
+        LastID = LastID.GetNext();
 
-        // Check if the id is already being used or reserved
-        if (IsUsedID(LastID))
+        // If the ID is used, keep looping until we get a new valid one, or we run out
+        while (IsUsed(LastID) && LastID.HasSpace())
         {
-            while (IsUsedID(LastID) && LastID < ushort.MaxValue)
-            {
-                LastID++;
-            }
+            LastID = LastID.GetNext();
         }
 
         return LastID;
     }
 
-    public bool HasEntity(ushort id)
+
+    /// <summary>
+    /// Clears the last allocated ID.
+    /// </summary>
+    public void ClearID()
     {
-        return IDEntityLookup.ContainsKey(id);
+        // Get highest unused id
+        LastID = NetworkEntityID.Empty;
+
+        while (IsUsed(LastID) && LastID.HasSpace())
+        {
+            LastID = LastID.GetNext();
+        }
     }
 
-    public TEntity GetEntity(ushort id)
+
+    /// <summary>
+    /// Returns true if an entity is registered at an ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public bool HasEntity(NetworkEntityID id)
     {
-        if (IDEntityLookup.TryGetValue(id, out var entity))
+        return IDByEntity.ContainsKey(id);
+    }
+
+    /// <summary>
+    /// Gets an entity from its ID, or returns null if none is found.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public TEntity GetEntity(NetworkEntityID id)
+    {
+        if (IDByEntity.TryGetValue(id, out var entity))
         {
             return entity;
         }
@@ -75,67 +151,72 @@ public class EntityIDList<TEntity>
         return default;
     }
 
-    public void AddEntity(ushort id, TEntity entity)
+    /// <summary>
+    /// Adds an entity to the list at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="entity"></param>
+    public void AddEntity(NetworkEntityID id, TEntity entity)
     {
-        IDEntityLookup.Add(id, entity);
-        EntityIDLookup.Add(entity, id);
+        IDByEntity.Add(id, entity);
+        EntityByID.Add(entity, id);
 
         EntityAdded?.Invoke(id, entity);
     }
 
-    public void RemoveEntity(ushort id)
+    /// <summary>
+    /// Removes an entity from the list at a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    public void RemoveEntity(NetworkEntityID id)
     {
-        if (!IDEntityLookup.ContainsKey(id))
+        if (!IDByEntity.ContainsKey(id))
         {
             return;
         }
 
-        var entity = IDEntityLookup[id];
+        var entity = IDByEntity[id];
 
         RemoveEntity(id, entity);
     }
 
+    /// <summary>
+    /// Removes an entity from the list.
+    /// </summary>
+    /// <param name="entity"></param>
     public void RemoveEntity(TEntity entity)
     {
-        if (!EntityIDLookup.ContainsKey(entity))
+        if (!EntityByID.ContainsKey(entity))
         {
             return;
         }
 
-        var id = EntityIDLookup[entity];
+        var id = EntityByID[entity];
 
         RemoveEntity(id, entity);
     }
 
-    private void RemoveEntity(ushort id, TEntity entity)
-    {
-        IDEntityLookup.Remove(id);
-        EntityIDLookup.Remove(entity);
-
-        EntityRemoved?.Invoke(id, entity);
-    }
-
-    public void ClearID()
-    {
-        // Get highest unused id
-        LastID = 0;
-
-        while (IsUsedID(LastID) && LastID < ushort.MaxValue)
-        {
-            LastID++;
-        }
-    }
-
+    /// <summary>
+    /// Clears all entities as well as the last allocated ID.
+    /// </summary>
     public void Clear()
     {
-        foreach (var entity in IDEntityLookup)
+        foreach (var entity in IDByEntity)
         {
             EntityRemoved?.Invoke(entity.Key, entity.Value);
         }
 
-        IDEntityLookup.Clear();
-        EntityIDLookup.Clear();
+        IDByEntity.Clear();
+        EntityByID.Clear();
 
         ClearID();
+    }
+
+    private void RemoveEntity(NetworkEntityID id, TEntity entity)
+    {
+        IDByEntity.Remove(id);
+        EntityByID.Remove(entity);
+
+        EntityRemoved?.Invoke(id, entity);
     }
 }

@@ -22,7 +22,7 @@ public class ConstraintCreateData : INetSerializable
 {
     public ClientSmallID SmallID;
 
-    public ushort? ConstrainerID;
+    public NetworkEntityID? ConstrainerID;
 
     public Constrainer.ConstraintMode Mode;
 
@@ -38,8 +38,8 @@ public class ConstraintCreateData : INetSerializable
     public Vector3 Normal1;
     public Vector3 Normal2;
 
-    public ushort Point1Id;
-    public ushort Point2Id;
+    public NetworkEntityID Point1Id;
+    public NetworkEntityID Point2Id;
 
     public int? GetSize()
     {
@@ -84,7 +84,7 @@ public class ConstraintCreateData : INetSerializable
         }
     }
 
-    public static ConstraintCreateData Create(ClientSmallID smallId, ushort? constrainerId, ConstrainerPointPair pair)
+    public static ConstraintCreateData Create(ClientSmallID smallId, NetworkEntityID? constrainerId, ConstrainerPointPair pair)
     {
         return new ConstraintCreateData()
         {
@@ -101,8 +101,8 @@ public class ConstraintCreateData : INetSerializable
             Normal2 = pair.normal2,
 
             // These are unknown by the client, but are set by the server
-            Point1Id = 0,
-            Point2Id = 0,
+            Point1Id = NetworkEntityID.Empty,
+            Point2Id = NetworkEntityID.Empty,
         };
     }
 }
@@ -116,7 +116,7 @@ public class ConstraintCreateMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstraintCreateData>();
 
-        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstrainerID.Value) : null;
+        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.GetEntity(data.ConstrainerID.Value) : null;
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
@@ -141,8 +141,8 @@ public class ConstraintCreateMessage : ModuleMessageHandler
             if (hasConstrainer)
             {
                 // Recreate the message so we can assign server-side sync ids
-                data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
-                data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateNewID();
+                data.Point1Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateUniqueID();
+                data.Point2Id = NetworkEntityManager.IDManager.RegisteredEntities.AllocateUniqueID();
 
                 ServerManager.SendToClientsModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable);
             }
@@ -230,8 +230,8 @@ public class ConstraintCreateMessage : ModuleMessageHandler
 
             comp.PrimaryButtonUp();
 
-            ConstrainerPatches.FirstId = 0;
-            ConstrainerPatches.SecondId = 0;
+            ConstrainerPatches.FirstId = NetworkEntityID.Empty;
+            ConstrainerPatches.SecondId = NetworkEntityID.Empty;
             ConstrainerPatches.IsReceivingConstraints = false;
 
             // Reset positions

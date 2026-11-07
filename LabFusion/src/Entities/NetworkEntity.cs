@@ -14,11 +14,9 @@ public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerID 
 /// </summary>
 public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
-    private ushort _id = 0;
-    private ushort _queueID = 0;
+    private NetworkEntityID _id = NetworkEntityID.Empty;
 
     private bool _isRegistered = false;
-    private bool _isQueued = false;
     private bool _isDestroyed = false;
 
     private bool _isOwnerLocked = false;
@@ -28,22 +26,12 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
     /// <summary>
     /// The identifier for this entity.
     /// </summary>
-    public ushort ID => _id;
-
-    /// <summary>
-    /// If the entity has not been registered yet and is waiting for an ID from the server, a queue ID is given.
-    /// </summary>
-    public ushort QueueID => _queueID;
+    public NetworkEntityID ID => _id;
 
     /// <summary>
     /// Whether or not this entity is registered and ready.
     /// </summary>
     public bool IsRegistered => _isRegistered;
-
-    /// <summary>
-    /// Whether or not this entity is waiting for an ID from the server.
-    /// </summary>
-    public bool IsQueued => _isQueued;
 
     /// <summary>
     /// Whether or not this entity has been destroyed and is no longer valid.
@@ -370,20 +358,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
         _dataCaughtUpPlayers.Clear();
     }
 
-    public void Queue(ushort queuedId)
+    public void Register(NetworkEntityID id)
     {
-        _queueID = queuedId;
-        _isQueued = true;
-
-        _isRegistered = false;
-        _id = 0;
-    }
-
-    public void Register(ushort id)
-    {
-        _isQueued = false;
-        _queueID = 0;
-
         _isRegistered = true;
         _id = id;
 
@@ -395,11 +371,8 @@ public sealed class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public void Unregister()
     {
-        _isQueued = false;
-        _queueID = 0;
-
         _isRegistered = false;
-        _id = 0;
+        _id = NetworkEntityID.Empty;
 
         _isDestroyed = true;
 

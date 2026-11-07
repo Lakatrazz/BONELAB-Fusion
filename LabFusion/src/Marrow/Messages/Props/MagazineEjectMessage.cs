@@ -13,13 +13,13 @@ namespace LabFusion.Marrow.Messages;
 
 public class MagazineEjectData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
+    public static readonly int Size = sizeof(byte) * 2 + NetworkEntityID.Size * 2;
 
     public int? GetSize() => Size;
 
     public ClientSmallID PlayerID;
-    public ushort MagazineID;
-    public ushort GunID;
+    public NetworkEntityID MagazineID;
+    public NetworkEntityID GunID;
     public Handedness Handedness;
 
     public void Serialize(INetSerializer serializer)
@@ -38,7 +38,7 @@ public class MagazineEjectMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagazineEjectData>();
 
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.GunID);
+        var entity = NetworkEntityManager.GetEntity(data.GunID);
 
         if (entity == null)
         {

@@ -2,7 +2,7 @@
 using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Permissions;
 using LabFusion.Safety;
 using LabFusion.SDK.Lobbies;
 

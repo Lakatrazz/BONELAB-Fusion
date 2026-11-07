@@ -15,6 +15,11 @@ public delegate void NetworkLayerDelegate(NetworkLayer layer);
 public static class NetworkLayerManager
 {
     /// <summary>
+    /// The default NetworkLayer platform if there is no network layer.
+    /// </summary>
+    public static readonly string DefaultPlatform = "None";
+
+    /// <summary>
     /// The list of loaded NetworkLayers.
     /// </summary>
     public static readonly List<NetworkLayer> Layers = new();
@@ -38,6 +43,11 @@ public static class NetworkLayerManager
     /// Returns if there is an active network layer.
     /// </summary>
     public static bool HasLayer => Layer != null;
+
+    /// <summary>
+    /// The platform based on the active NetworkLayer, or <see cref="DefaultPlatform"/> if there is no NetworkLayer active.
+    /// </summary>
+    public static string Platform => Layer?.Platform ?? DefaultPlatform;
 
     /// <summary>
     /// Returns if the active layer is currently being logged in to.

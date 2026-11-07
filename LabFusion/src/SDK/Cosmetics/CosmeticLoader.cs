@@ -17,7 +17,17 @@ public static class CosmeticLoader
         FusionTags.Cosmetic,
     };
 
-    public static void OnAssetWarehouseReady()
+    public static void Initialize()
+    {
+        var onReady = () =>
+        {
+            OnAssetWarehouseReady();
+        };
+
+        AssetWarehouse.OnReady(onReady);
+    }
+
+    private static void OnAssetWarehouseReady()
     {
         // Load initial cosmetics
         LoadAllCosmetics();

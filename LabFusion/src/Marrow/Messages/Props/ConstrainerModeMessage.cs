@@ -10,11 +10,11 @@ namespace LabFusion.Marrow.Messages;
 
 public class ConstrainerModeData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort);
+    public static readonly int Size = sizeof(byte) + NetworkEntityID.Size;
 
     public int? GetSize() => Size;
 
-    public ushort ConstrainerID;
+    public NetworkEntityID ConstrainerID;
     public Constrainer.ConstraintMode Mode;
 
     public void Serialize(INetSerializer serializer)
@@ -23,7 +23,7 @@ public class ConstrainerModeData : INetSerializable
         serializer.SerializeValue(ref Mode, Precision.OneByte);
     }
 
-    public static ConstrainerModeData Create(byte smallId, ushort constrainerId, Constrainer.ConstraintMode mode)
+    public static ConstrainerModeData Create(byte smallId, NetworkEntityID constrainerId, Constrainer.ConstraintMode mode)
     {
         return new ConstrainerModeData()
         {
@@ -40,7 +40,7 @@ public class ConstrainerModeMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ConstrainerModeData>();
 
-        var constrainer = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.ConstrainerID);
+        var constrainer = NetworkEntityManager.GetEntity(data.ConstrainerID);
 
         if (constrainer == null)
         {

@@ -2,3 +2,6 @@
 
 # IDE0023: Use block body for conversion operators
 csharp_style_expression_bodied_operators = false
+
+dotnet_style_namespace_match_folder = false
+dotnet_diagnostic.IDE0130.severity = none

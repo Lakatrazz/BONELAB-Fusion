@@ -6,9 +6,9 @@ using LabFusion.Extensions;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Marrow.Interaction;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Rpc;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -95,7 +95,10 @@ public class RigGrabber
         }
         else
         {
-            PropSender.SendPropCreation(marrowEntity, null, false);
+            NetworkMarrowEntityCreator.SendCreateRequest(new NetworkMarrowEntityCreator.MarrowEntityCreateRequestInfo()
+            {
+                MarrowEntity = marrowEntity
+            });
         }
     }
 
@@ -122,13 +125,16 @@ public class RigGrabber
         }
         else
         {
-            PropSender.SendPropCreation(marrowEntity, OnEntityRegistered);
+            NetworkMarrowEntityCreator.SendCreateRequest(new NetworkMarrowEntityCreator.MarrowEntityCreateRequestInfo()
+            {
+                MarrowEntity = marrowEntity,
+                CreatedCallback = OnEntityCreated,
+            });
         }
 
-        void OnEntityRegistered(NetworkEntity networkEntity)
-        {
-            TrySendGrab(hand, grip);
-        }
+        void OnEntityRegistered(NetworkEntity networkEntity) => TrySendGrab(hand, grip);
+
+        void OnEntityCreated(NetworkMarrowEntityCreator.MarrowEntityCreateCallbackInfo info) => TrySendGrab(hand, grip);
     }
 
     public void OnOwnedHandDetach(Hand hand, Grip grip)

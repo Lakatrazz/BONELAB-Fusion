@@ -5,7 +5,7 @@ namespace LabFusion.Network;
 
 public class DespawnRequestData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + sizeof(bool);
+    public static readonly int Size = NetworkEntityReference.Size + sizeof(bool);
 
     public NetworkEntityReference Entity;
 

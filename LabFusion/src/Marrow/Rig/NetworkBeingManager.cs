@@ -38,7 +38,7 @@ public static class NetworkBeingManager
         return networkRig.NetworkEntity.IsOwner;
     }
 
-    public static bool TryGetNetworkRig(ushort entityID, out NetworkRig networkRig) => TryGetNetworkRig(new NetworkEntityReference(entityID), out networkRig);
+    public static bool TryGetNetworkRig(NetworkEntityID entityID, out NetworkRig networkRig) => TryGetNetworkRig(new NetworkEntityReference(entityID), out networkRig);
 
     public static bool TryGetNetworkRig(NetworkEntityReference entityReference, out NetworkRig networkRig)
     {

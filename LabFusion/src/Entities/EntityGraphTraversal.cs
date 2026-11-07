@@ -9,14 +9,14 @@ public static class EntityGraphTraversal
     public static List<NetworkEntity> GetAllOwnableLinkedEntities(NetworkEntity startEntity, out ClientSmallID? lockedOwner)
     {
         List<NetworkEntity> allEntities = new();
-        HashSet<ushort> visitedEntities = new();
+        HashSet<NetworkEntityID> visitedEntities = new();
 
         GetAllOwnableLinkedEntitiesRecursive(startEntity, allEntities, visitedEntities, out lockedOwner);
 
         return allEntities;
     }
 
-    private static void GetAllOwnableLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, out ClientSmallID? lockedOwner, int depth = 0)
+    private static void GetAllOwnableLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<NetworkEntityID> visitedEntities, out ClientSmallID? lockedOwner, int depth = 0)
     {
         lockedOwner = null;
 
@@ -57,14 +57,14 @@ public static class EntityGraphTraversal
     public static List<NetworkEntity> GetAllLinkedEntities(NetworkEntity startEntity)
     {
         List<NetworkEntity> allEntities = new();
-        HashSet<ushort> visitedEntities = new();
+        HashSet<NetworkEntityID> visitedEntities = new();
 
         GetAllLinkedEntitiesRecursive(startEntity, allEntities, visitedEntities);
 
         return allEntities;
     }
 
-    private static void GetAllLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<ushort> visitedEntities, int depth = 0)
+    private static void GetAllLinkedEntitiesRecursive(NetworkEntity entity, List<NetworkEntity> allEntities, HashSet<NetworkEntityID> visitedEntities, int depth = 0)
     {
         if (!visitedEntities.Add(entity.ID))
         {

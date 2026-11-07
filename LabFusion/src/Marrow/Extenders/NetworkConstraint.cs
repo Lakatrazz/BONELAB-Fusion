@@ -32,7 +32,7 @@ public class NetworkConstraint : IEntityExtender
 
     public ConstrainerPointPair PointPair { get; set; }
 
-    public ushort OtherID { get; set; } = 0;
+    public NetworkEntityID OtherID { get; set; } = NetworkEntityID.Empty;
 
     public NetworkEntity BodyEntity { get; set; } = null;
     public NetworkEntity OtherBodyEntity { get; set; } = null;
@@ -89,7 +89,7 @@ public class NetworkConstraint : IEntityExtender
 
     private void UnregisterOtherConstraint()
     {
-        var otherEntity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(OtherID);
+        var otherEntity = NetworkEntityManager.GetEntity(OtherID);
 
         if (otherEntity == null)
         {

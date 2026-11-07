@@ -13,6 +13,11 @@ namespace LabFusion.Network;
 public struct ClientSmallID : IEquatable<ClientSmallID>, INetSerializable
 {
     /// <summary>
+    /// The size in bytes of a client small ID.
+    /// </summary>
+    public static readonly int Size = sizeof(byte);
+
+    /// <summary>
     /// Represents an empty or invalid small ID.
     /// </summary>
     public static readonly ClientSmallID Empty = new();
@@ -26,7 +31,7 @@ public struct ClientSmallID : IEquatable<ClientSmallID>, INetSerializable
     public ClientSmallID(ushort id) : this((byte)id) { }
     public ClientSmallID(int id) : this((byte)id) { }
 
-    public readonly int? GetSize() => sizeof(byte);
+    public readonly int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {

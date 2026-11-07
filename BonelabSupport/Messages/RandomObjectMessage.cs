@@ -8,9 +8,7 @@ namespace MarrowFusion.Bonelab.Messages;
 
 public class RandomObjectData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort) * 3;
-
-    public ushort entityId;
+    public NetworkEntityID entityId;
     public ushort componentIndex;
 
     public ushort objectIndex;
@@ -22,7 +20,7 @@ public class RandomObjectData : INetSerializable
         serializer.SerializeValue(ref objectIndex);
     }
 
-    public static RandomObjectData Create(ushort entityId, ushort componentIndex, ushort objectIndex)
+    public static RandomObjectData Create(NetworkEntityID entityId, ushort componentIndex, ushort objectIndex)
     {
         return new RandomObjectData()
         {
@@ -40,7 +38,7 @@ public class RandomObjectMessage : ModuleMessageHandler
         var data = received.ReadData<RandomObjectData>();
 
         // Right now only syncs RandomObject on individual objects (props, avatars, etc). No scene syncing yet.
-        var entity = NetworkEntityManager.IDManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.GetEntity(data.entityId);
 
         if (entity == null)
         {

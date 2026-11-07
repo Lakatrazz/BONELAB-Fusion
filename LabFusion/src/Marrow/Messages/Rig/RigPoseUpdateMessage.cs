@@ -8,7 +8,7 @@ namespace LabFusion.Marrow.Messages;
 
 public class RigPoseUpdateData : INetSerializable
 {
-    public const int Size = NetworkEntityReference.Size + RigPose.Size;
+    public static readonly int Size = NetworkEntityReference.Size + RigPose.Size;
 
     public int? GetSize() => Size;
 

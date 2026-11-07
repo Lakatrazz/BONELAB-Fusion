@@ -1,6 +1,6 @@
 ﻿using LabFusion.Network;
+using LabFusion.Permissions;
 using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Utilities;
@@ -28,8 +28,8 @@ public static class FusionDevTools
     public static bool DespawnConstrainer(PlayerID id)
     {
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
-        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Constrainer))
+        var level = PlayerPermissions.GetPermissionLevel(id.PlatformID);
+        if (!PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.Constrainer))
         {
             return true;
         }
@@ -45,8 +45,8 @@ public static class FusionDevTools
         }
 
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
-        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
+        var level = PlayerPermissions.GetPermissionLevel(id.PlatformID);
+        if (!PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.DevTools))
         {
             return true;
         }
@@ -66,8 +66,8 @@ public static class FusionDevTools
         }
 
         // Check permission level
-        FusionPermissions.FetchPermissionLevel(id.PlatformID, out var level, out _);
-        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
+        var level = PlayerPermissions.GetPermissionLevel(id.PlatformID);
+        if (!PermissionManager.IsSufficient(level, LobbyInfoManager.LobbyInfo.DevTools))
         {
             return true;
         }

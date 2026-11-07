@@ -20,31 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="dependencies\resources\dex\" />
-    <Folder Include="dependencies\resources\lib\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="JNISharp">
       <HintPath>dependencies\JNISharp.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="dependencies\resources\dex\classes.dex" />
-    <EmbeddedResource Include="dependencies\resources\dex\classes.dex" />
-    <None Remove="dependencies\resources\dex\classes2.dex" />
-    <EmbeddedResource Include="dependencies\resources\dex\classes2.dex" />
-    <None Remove="dependencies\resources\dex\classes3.dex" />
-    <EmbeddedResource Include="dependencies\resources\dex\classes3.dex" />
-    <None Remove="dependencies\resources\dex\classes4.dex" />
-    <EmbeddedResource Include="dependencies\resources\dex\classes4.dex" />
-    <None Remove="dependencies\resources\dex\classes5.dex" />
-    <EmbeddedResource Include="dependencies\resources\dex\classes5.dex" />
-    <None Remove="dependencies\resources\lib\arm64\libEOSSDK.so" />
-    <EmbeddedResource Include="dependencies\resources\lib\arm64\libEOSSDK.so" />
-    <None Remove="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
-    <EmbeddedResource Include="dependencies\resources\lib\x86_64\EOSSDK-Win64-Shipping.dll" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
